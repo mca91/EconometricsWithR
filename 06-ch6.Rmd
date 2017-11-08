@@ -1,0 +1,617 @@
+# Regression Models with Multiple Regressors
+
+In what follows we introduce linear regression models that use more than just one explanatory variable and discuss important key concepts in multiple regression. As we broaden our scope beyond the relationship of only two variables (dependent and independent variable), some potential issues arise, such as multicollinearity and omitted variable bias. In particular, this chapter deals with omitted variables and their hazard to causal interpretation of OLS-estimated coefficients. Naturally, we will introduce estimation of multiple regression models using <tt>R</tt>. We will also advocate thoughtful usage of multiple regression models by simulation sudies in <tt>R</tt> that demonstrate consequences of using highly correlated regressors or a misspecified model. 
+
+## Omitted Variable Bias {-}
+
+Previous analysis of the relationship between test score and class size discussed in Chapters 4 and 5 has a major flaw: we ignored other potentially important determinants of test scores that vary with our regressor. The influences of those variables were collected in the error term. This might induce an estimation bias, i.e. the mean of the OLS estimator's sampling distribution is no longer equal to the true mean and we measure a wrong effect on test scores of a unit change in the student-teacher ratio. This is called omitted variable bias, see Key Concept 6.1.<br>
+
+<div class="keyconcept">
+
+<h3 class = "right"> Key Concept 6.1 </h3>          
+<h3 class = "left"> Omitted Variable Bias in Regression with a Single Regressor </h3>
+
+Omitted variable bias is the bias in the OLS estimator that arises when the regressor, $X$, is *correlated* with an omitted variable. For omitted variable bias to occur, two conditions must be fulfilled:
+
+1. $X$ is correlated with the omitted variable. 
+2. The omitted variable is a determinant of the dependent variable $Y$.
+
+Together, 1. and 2. result in a violation of the first OLS assumption $E(u_i\vert X_i) = 0$. Formally, the resulting bias can be expressed as
+
+$$ \hat\beta_1 \xrightarrow[]{p} \beta_1 + \rho_{Xu} \frac{\sigma_u}{\sigma_X}. \tag{6.1} $$
+See Appendix 6.1 in the book for a detailed derivation. <br>
+(<a href="#mjx-eqn-6.1">6.1</a>) states that OVB is a problem that cannot be aleviated by increasing the numner of observations used to estimate $\beta_1$ since then $\hat\beta_1$ is inconsistent: OVB prevents the estimator to converge in probability to the true parameter value. Strength and direction of the bias are driven by $\rho_{Xu}$, the correlation between the error term and the regressor.
+
+</div>
+
+In our example of test score and class size, it is fairly easy to come up with variables that may cause such a bias if omitted. As mentioned in the book, a highly relevant variable could be the percentage of english learners in the school district: it is plausible that the ability to speak, read and write english is an important factor for successful learning. Therefore, students that are still learning english are likely to perform worse in the tests than native speakers are. Also, it is conceivable that the share of english learning students is larger in school districts where class sizes are large. Think of less well-off urban districs were a lot of immigrants live. <br>
+
+Let us think about a possible bias induced by omitting the share of english learning students ($PctEL$) in view of (<a href="#mjx-eqn-6.1">6.1</a>) when the estimated regression model excludes $PctEL$ although the true DGP is 
+
+$$ TestScore = \beta_0 + \beta_1 \times STR + \beta_2 \times PctEL \tag{6.2}$$ 
+
+where $STR$ and $PctEL$ are correlated, 
+
+$$corr(STR,PctEL)\neq0.$$
+
+After defining our variables in <tt>R</tt>, we compute the correlation between $STR$ and $PctEL$ as well as the correlation between $STR$ and $TestScore$.
+
+```{r, message=F, warnings=F}
+# load the AER package
+library(AER)
+
+# load the data set
+data(CASchools)   
+
+# define variables
+CASchools$STR <- CASchools$students/CASchools$teachers       
+CASchools$score <- (CASchools$read + CASchools$math)/2
+
+# compute correlations
+cor(CASchools$STR, CASchools$score)
+cor(CASchools$STR, CASchools$english)
+```
+
+The fact that $\widehat{corr}(STR, Testscore) = -0.2264$ is cause for concern that omitting $PctEL$ leads to a negatively biased estimate $\hat\beta_1$ since then $\rho_{Xu} < 0$ and we have $\sigma_X>0$, $\sigma_u>0$ by definition. As consequence we expect $\hat\beta_1$,  the coefficient on $STR$, to be too large in absolute value. Put differently, the OLS estimate of $\hat\beta_1$ suggests that small classes improve test scores but the estimated effect of small classes is too strong as it captures the effect of having fewer English learners, too. 
+
+What happens to the magnitude of $\hat\beta_1$ if we add the variable $PctEL$ to the regression, that is if we estimate the model 
+$$ TestScore = \beta_0 + \beta_1 \times STR + \beta_2 \times PctEL + u $$
+
+instead? And what do we expect about the sign of, $\hat\beta_2$, the estimated coefficient on $PctEL$? Following the reasoning above we should end up with a (still) negative but larger coefficient estimate $\hat\beta_1$ and a negative estimate $\hat\beta_2$. 
+
+Let us estimate both regression models and compare. Performing a multiple regression in <tt>R</tt> is straightforward. One can simply add additional variables to the right hand side of the `formula` argument of the function `lm()` by using their names and the `+` operator. Notice that `english` is the name of the column in the data set `CASchools` which contains observations on the share of English learning students.
+
+```{r}
+# estimate both regression models
+mod <- lm(score ~ STR, data = CASchools) 
+mult.mod <- lm(score ~ STR + english, data = CASchools)
+
+mod
+mult.mod
+```
+
+We find the outcomes to be consistent with our expectations. <br> The following section discusses some thoery on multiple regression models.
+
+## The Multiple Regression Model {-}
+
+In a multiple regression model we extend the basic concept of the simple regression model discussed in Chapter 4 and 5. A multiple regression model enables us to estimate the effect on $Y_i$ of changing a regressor $X_{1i}$ if the remaining regressors $X_{2i},X_{3i}\dots,X_{ki}$ *do not vary*. In fact we already have performed estimation of the multiple regression model (<a href="#mjx-eqn-6.2">6.2</a>) using <tt>R</tt> in the previous section. Recall that the interpretation of the coefficient on student-teacher ratio is the effect on test scores of a one unit change student-teacher ratio if the percentage of English learners is kept constant.
+
+As in the simple regression model, we assume the true relationship between $Y$ and $X_{2i},X_{3i}\dots$ to be linear. On average, this relation is given by the population regression function
+
+$$ E(Y_i\vert X_{1i}=x_1, X_{2i}=x_2,  X_{3i}=x_3,\dots, X_{ki}=x_k) = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_3 + \dots + \beta_k x_k. \tag{6.3} $$
+
+As in the simple regression model, this relation does not hold exactly since there are disturbing influences to the dependent variable $Y$ we cannot observe as explanatory variables. Therefore we add an error term $u$ which represents deviations of the observations from the population regression line to (<a href="#mjx-eqn-6.3">6.3</a>). This yields the population multiple regression model
+
+$$ Y_i = \beta_0 + \beta_1 X_{1i} + \beta_2 X_{2i} + \beta_3 X_{3i} + \dots + \beta_k X_{ki} + u_i \ \ , \ \ i=1,\dots,n. \tag{6.4} $$ 
+
+<div class="keyconcept">
+
+<h3 class = "right"> Key Concept 6.2 </h3>          
+<h3 class = "left"> The Multiple Regression Model </h3>
+
+The multiple regression model is
+
+$$ Y_i = \beta_0 + \beta_1 X_{1i} + \beta_2 X_{2i} + \beta_3 X_{3i} + \dots + \beta_k X_{ki} + u_i \ \ , \ \ i=1,\dots,n.  $$ 
+
+Designations are similar to those in the simple regression model:
+
+- $Y_i$ is the $i^{th}$ observation in the dependent variable. Observations on the $k$ regressors are denoted by $X_{1i},X_{2i},\dots,X_{ki}$ and $u_i$ is the error term.
+- The average relationship between $Y$ and the regressors is given by the population regression line
+$$ E(Y_i\vert X_{1i}=x_1, X_{2i}=x_2,  X_{3i}=x_3,\dots, X_{ki}=x_k) = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_3 + \dots + \beta_k x_k. $$
+- $\beta_0$ is the intercept; it is the expected value of $Y$ when all $X$s equal $0$. $\beta_j \ , \ j=1,\dots,k$ are the coefficients on $X_j \ , \ j=1,\dots,k$. $\beta_1$ measures the expected change in $Y_i$ that results from a one unit change in $X_{1i}$ while holding all other regressors $X_{ji} \ , \ j\neq1$ constant. 
+
+</div>
+
+Key Concept 6.2 summarizes the core concepts of the multiple regression model.<br>
+How can we estimate the coefficients of the multiple regression model (<a href="#mjx-eqn-6.4">6.4</a>)? We will not go to much into detail on this issue as our focus lies on usage of <tt>R</tt> instead of the technical refinements. However it should be pointed out that, similarly to the simple regression model, the coefficients of the multiple regression model can be estimated using OLS. As in the simple model, we seek to minimize the sum of squared prediction mistakes by choosing estimates $b_0,b_1,\dots,b_k$ for the coefficients $\beta_0,\beta_1,\dots,\beta_k$ such that 
+
+$$\sum_{i=1}^n (Y_i - b_0 - b_1 X_{1i} - b_2 X_{2i} - \dots -  b_k X_{ki})^2 \tag{6.5}$$
+
+is minimized. Note that (<a href="#mjx-eqn-6.5">6.5</a>) is simply an extension of $SSR$ in the case with just one regressor and an intercept. The estimators that minimize (<a href="#mjx-eqn-6.5">6.5</a>) are hence denoted $\hat\beta_0,\hat\beta_1,\dots,\hat\beta_k$ and, as in the simple regression model, we call them the ordinary least squares estimators of $\beta_0,\beta_1,\dots,\beta_k$. For the predicted value of $Y_i$ given the regressors and the estimates $\hat\beta_0,\hat\beta_1,\dots,\hat\beta_k$ we have
+
+$$ \hat{Y}_i = \hat\beta_0 + \hat\beta_1 X_{1i} + \dots +\hat\beta_k X_{ki}. $$
+and, as before, the difference of $Y_i$ and its predicted value $\hat{Y}_i$ is called the OLS residual of observation $i$: $\hat{u} = Y_i - \hat{Y}_i$.
+
+<br> For further information regarding the theory behind multiple regression, see Chapter 18.1 in the book which inter alia presents a derivation of the OLS estimator in the multiple regression model using matrix notation.
+
+Now let us jump back to the example of test scores and class sizes. The estimated model object is `mult.mod`. As for simple regression models we can use the `summary()` function to obtain information on estimated coefficients and model statistics.
+
+```{r}
+summary(mult.mod)$coef
+```
+
+So the estimated multiple regression model is
+
+$$ \widehat{TestScore} = \underset{(7.41)}{686.03} - \underset{(0.38)}{1.10} \times STR - \underset{(0.04)}{0.65} \times PctEL \tag{6.6}.  $$
+
+Unlike in the simple regression model where the data can be represented by points in the two-dimensional cartesian coordinate system, we are now dealing with three dimensions. Hence observations can be represented by points in the three-dimensional real space, denoted $\mathbb{R}^3$. Therefore (<a href="#mjx-eqn-6.6">6.6</a>) is now longer a regression line but a *regression plane*. This idea extends to higher dimensions when we further expand the number of regressors $k$. We then say that the regression model can be represented a hyperplane in the $k+1$ dimensional space. It is already hard to imagine such a space if $k=3$ and we best stick with the general idea that, in the multiple regression model, the dependent variable is explained by a *linear combination of the regressors*. However, in the present case we are able to visualize the situation. The following figure is an interactive 3D visualization of the data and the estimated regression plane (<a href="#mjx-eqn-6.6">6.6</a>).
+
+<center>
+```{r, echo=F, fig.height=5, fig.width=9, warning=F, message=F}
+library(plotly)
+
+Sys.setenv("plotly_username"="mca_unidue")
+Sys.setenv("plotly_api_key"="NKcv2lBiEbkOyiNdUXhk")
+
+y <- CASchools$score
+x1 <- CASchools$STR
+x2 <- CASchools$english
+df <- data.frame(y, x1, x2)
+
+reg <- lm(y ~ x1 + x2)
+cf.mod <- coef(reg)
+
+x1.seq <- seq(min(x1),max(x1),length.out=25)
+x2.seq <- seq(min(x2),max(x2),length.out=25)
+z <- t(outer(x1.seq, x2.seq, function(x,y) cf.mod[1] + cf.mod[2]*x + cf.mod[3]*y))
+
+
+rbPal <- colorRampPalette(c('red','blue'))
+cols <- rbPal(10)[as.numeric(cut(abs(y-reg$fitted.values), breaks = 10))]
+
+m <- list(
+  t = 5
+)
+
+p <- plot_ly(x=~x1.seq, 
+             y=~x2.seq, 
+             z=~z,
+             colors = "red",
+             opacity = 0.9,
+             name = "Reg.Plane",
+             type="surface"
+     ) %>%
+  add_trace(data=df, name='CASchools', x=x1, y=x2, z=y, mode="markers", type="scatter3d",
+            marker = list(color=cols, opacity=0.85, symbol=105, size=4)
+  ) %>%
+  hide_colorbar() %>%
+  layout(
+    margin = m,
+    showlegend = FALSE,
+    scene = list(
+      aspectmode = "manual", aspectratio = list(x=1, y=1.3, z=1),
+      xaxis = list(title = "STR"),
+      yaxis = list(title = "PctEL"),
+      zaxis = list(title = "TestScore"),
+      camera = list(eye = list(x = -2,y = -0.1, z=0.05),
+                    center = list(x = 0,
+                                  y = 0,
+                                  z = 0
+                                  )
+               )
+    )
+    
+  )
+
+p <- p %>% config(showLink = F, displayModeBar = F);p
+```
+</center>
+
+We observe that the estimated regression plane fits the data reasonably well --- at least with regard to the shape and spatial poistion of the point cloud. The color of the markers is an indicator for the absolute deviation from the predicted regression plane. Observations that are coloured more reddish lie close to the regression plane while the color shifts to blue with growing distance. An anomaly that can be seen from the plot is that there might be heteroskedasticity: we see that the dispersion of regression errors made, i.e. the distance of observations to the regression plane shows a tendency to decrease as the share of English learning students increases.   
+
+## Measures of Fit in Multiple Regression {-}
+
+In multiple regression, common summary statistics are $SER$, $R$^2 and the adjusted $R^2$.
+
+Taking the code from Section 6.3 You could simply use `summary(mult.mod)` to print the $SER$, $R^2$ and adjusted-$R^2$. For multiple regression models the $SER$ is computed as
+
+$$ SER = s_{\hat u} = \sqrt{s_{\hat u}^2} $$
+where, in contrast to the simple regression model we apply a modification to the denominator of the premultiplied factor in $s_{\hat u}^2$ in order to accommodate for additional regressors. Thus,
+
+$$ s_{\hat u}^2 = \frac{1}{n-k-1} \, SSR $$
+
+with $k$ the number of regressors *excluding* the intercept. <br> While `summary()` computes the $R^2$ just as in the case of a single regressor, it is not a reliable measure for multiple regression models. This is due to $R^2$ becoming larger every time an additional regressor is added to the model since adding a regressor decreases the $SSR$ --- at least unless the respective estimated coefficient is exactly zero what practically never happens to be the case (see chapter 6.4 in the book). The adjusted $R^2$ takes this into consideration by "punishing" the addition of regressors using a correction factor. So the adjusted $R^2$ or simply $\overline{R^2}$ is a modified version of $R^2$.
+
+$$ \overline{R^2} = 1-\frac{n-1}{n-k-1} \, \frac{SSR}{TSS} $$
+
+As You may have already suspected, `summary()` adjusts the formula for $SER$ by itself and it computes $\overline{R^2}$ and of course $R^2$ by default, therby leaving the decision which measure to rely on up to the user. 
+ 
+You can find the measures at the bottom of the output produced by calling `summary(mult.mod)`. 
+
+<div class="unfolded">
+```{r}
+summary(mult.mod)
+```
+</div>
+
+We can also compute the measures by hand using the formulas above. Let us check if the results coincide with the values provided by `summary()`.
+
+<div class="unfolded">
+```{r}
+# define the components
+n <- nrow(CASchools)                            # number of observations (rows)
+k <- 2                                          # number of regressors
+
+y_mean <- mean(CASchools$score)                 # mean of avg. test-scores
+
+SSR <- sum(residuals(mult.mod)^2)               # sum of squared residuals
+TSS <- sum((CASchools$score - y_mean )^2)       # total sum of squares
+ESS <- sum((fitted(mult.mod) - y_mean)^2)       # explained sum of squares
+
+# compute the measures
+
+SER <- sqrt(1/(n-k-1) * SSR)                    # standard error of the regression
+Rsq <- 1 - (SSR / TSS)                          # R^2
+adj_Rsq <- 1 - (n-1)/(n-k-1) * SSR/TSS          # adj. R^2
+
+# Print the measures to the console
+c("SER" = SER, "R2" = Rsq, "Adj.R2" = adj_Rsq)
+```
+</div>
+
+We find that the results do match. Now, what can be said about the fit of our multiple regression model for test scores with the percentage of english learners as an additional regressor? Does it improve on the simple model including only an intercept and a measure of the class size? The answer is yes: this is easily seen by comparing these measures of fit with those for the simple regression model `mod`.
+
+```{r}
+# SER
+summary(mod)$sigma
+
+# R^2
+summary(mod)$r.squared
+
+# Adj. R^2
+summary(mod)$adj.r.squared
+```
+
+Including $PctEL$ as a regressor boots the $R^2$ from about $5\%$ to $42.6\%$. Qualitatively the same is observed for $\overline{R^2}$ which we deem to be more reliable in view of the discussion above. Notice that the difference between $R^2$ and $\overline{R^2}$ is small since $k=2$ and $n$ is large. Condensed, the fit of (<a href="#mjx-eqn-6.6">6.6</a>) improves vastly on the fit of the simple regression model with $STR$ as the only regressor.<br>
+Comparing prediction errors we find that the prediction precision of the multiple regression model (<a href="#mjx-eqn-6.6">6.6</a>) improves upon the simple model as adding $PctEL$ lowers the $SER$ from $18.6$ to $14.5$ units of test score.
+
+<br>
+As already mentioned $R^2$ and $\overline{R^2}$ may be used to quantify how good a model fits the data. However it is rarely a good idea to maximize these measures by stuffing the model with regressors in general. You will (hopefully) not find any serious study that does so. Instead it is more fruitful to include regressors that improve estimation of the causal effect of interest which is *not* assessed by means of a low $SSR$. The issue of variable selection is covered in Chapter 7 of this script and Chapter 7 in the book.
+
+## OLS Assumptions in Multiple Regression {-}
+
+In the multiple regression model we extend the known three least squares assumptions imposed for the simple regression model (see [Chapter 4](#ch4), Key Concept 4.3) and add a fourth assumption. These assumptions are presented in Key Concept 6.4. While we will not go into the details of assumptions 1, 2 and 3 since their ideas have been discussed before and are easily generalized to the case of multiple regressors, we will devote our attention to the fourth assumption. This forth assumption forbids the occurence of perfect correlation between any pair of regressors. 
+
+<div class="keyconcept">
+
+<h3 class = "right"> Key Concept 6.4 </h3>          
+<h3 class = "left"> The Least Squares Assumptions in the Multiple Regression Model </h3>
+
+The multiple regression model is given by
+
+$$ Y_i = \beta_0 + \beta_1 X_{1i} + \beta_1 X_{2i} + \dots + \beta_k X_{ki} + u_i \ , \ i=1,\dots,n. $$
+
+The OLS assumptions in the multiple regression model are an extension of the ones made for the simple regression model:
+
+1. Regressors $(X_{1i}, X_{2i}, \dots, X_{ki}, Y_i) \ , \ i=1,\dots,n$ are drawn such that the i.i.d. assumption holds. 
+2. $u_i$ is an error term with conditional zero given the regressors, i.e.
+$$ E(u_i\vert X_{1i}, X_{2i}, \dots, X_{ki}) = 0. $$
+3. Large outliers are unlikely, formally $X_{1i},\dots,X_{ki}$ and $Y_i$ have finite fourth moments.
+4. No perfect multicollinearity.
+
+</div>
+
+### Multicollinearity {-}
+
+If two or more regressors in a multiple regression model are *strongly* correlated we say that there is *multicollinearity*. If the correlation between two or more regressors is perfect (correlation coeficient equals $1$), we refer to the situation as *perfect multicollinearity*. Perfectly multicollinear regressors can be written as linear combinations of each other. While strong multicollinearity in general is unpleasent as it causes the variance of the OLS estimator to be large (we will discuss is in more detail later), the presence of perfect multicollinearity makes it even impossible to solve for the OLS estimator, that is the model cannot be estimated at all.  
+
+<br>
+
+The next section presents some examples of perfect multicollinearity and demonstrates how R, specifically the `lm` function deals with them.
+
+#### Examples of Perfect Multicollinearity {-}
+
+How does R react if we want it to estimate a model with perfectly correlated regressors?
+
+If we use the `lm` function to estimate a model with a set of regressors that suffer from perfect multicollinearity the system will produce a warning in the first line of the coefficient section of the output (<tt>1 not defined because of singularities</tt>) and ignore the regressor(s) which is (are) assumed to be a linear combination of the others. See the following example where we add another variable `FracEL`, the fraction of Englisch learners to `CASchools` where observations are scaled values of the observations for `english` and use it as a regressor together with `STR` and `english` in a multiple regression model. In this example `english` and `FracEL` are perfectly collinear. The R code is as follows.
+
+<div class="unfolded">
+```{r}
+# define the fraction of english learners        
+CASchools$FracEL <- CASchools$english/100
+
+# estimate the model
+mult.mod <- lm(score ~ STR + english + FracEL, data = CASchools) 
+
+# obtain a summary of the model
+summary(mult.mod)                                                 
+```
+</div>
+
+Notice that the row `FracEL` in the coefficients section of the output consists of `NA` entries since `FracEL` was excluded from the model.
+
+If we were to compute OLS by hand we would run into the problem as well but no one would be helping us out! The computation simply fails. Why is this the case? Take the following example:
+
+Assume You want to estimate a simple linear regression model with an intercept and one regressor:
+    
+\[ Y_i = \beta_0 + \beta_1 X_i + u_i\]
+    
+As mentioned above, for perfect multicollinearity to be present $X$ has to be a linear combination of the other regressors. Since the only other regressor is a constant (think of the right hand side of the model equation as $\beta_0 \times 1 + \beta_1 X_i + u_i$ so that $\beta_1$ is always multiplied by $1$ for every observation), $X$ has to be constant as well. When we recap the formula for $\hat\beta_1$ and rewrite it somewhat, we have
+
+\[ \hat{\beta_1} =  \frac{\sum_{i = 1}^n (X_i - \bar{X})(Y_i - \bar{Y})} { \sum_{i=1}^n (X_i - \bar{X})^2} = \frac{\frac{1}{n-1} \sum_{i = 1}^n (X_i - \bar{X})(Y_i - \bar{Y})} {\frac{1}{n-1} \sum_{i=1}^n (X_i - \bar{X})^2} = \frac{\widehat{cov}(X,Y)}{\widehat{Var}(X)}. \tag{6.7} \]
+
+So the variance of the regressor $X$ stands in the denominator. Since the variance of a constant is zero, we are not able to compute this fraction and $\hat{\beta}_1$ remains undefined.
+
+<font style="color:#004c93; font-weight:bold;">Note:</font> In this special case the nominator in (<a href="#mjx-eqn-6.7">6.7</a>) equal zero, too. Can You show that?
+
+Let us behold two further examples where our selection of regressors induces perfect multicollinearity. First, assume that we intend to analyse the effect of class size on test score by using a dummy variable that identifies "Not very small" classes (NVS). We define that a school has the NVS attribute when the school's average student-teacher ratio is at least $12$.
+
+$$ NVS = \begin{cases} 0 \ \ \ \text{if STR < 12} \\ 1 \ \ \ \text{otherwise} \end{cases} $$
+
+We add the corresponding column to `CASchools` and estimate a multiple regression model with covariates `computer` and `english`.
+
+<div class="unfolded">
+```{r}
+# if STR smaller 12, NVS = 0, else NVS = 1
+CASchools$NVS <- ifelse(CASchools$STR < 12, 0, 1)
+
+# estimate the model
+mult.mod <- lm(score ~ computer + english + NVS, data = CASchools)
+
+# obtain a model summary
+summary(mult.mod)                                                  
+```
+</div>
+
+Again, the output of `summary(mult.mod)` tells us that inclusion of `NVS` in the regression would render the estimation infeasible. What happened here? This is an example where we made a logical mistake when defining the regressor `NVS`: if we had taken a closer look at `NVS`, the redefined measure for class size, we would have noticed that there is not a single school with $STR<12$ hence $NVS$ equals one for all observations. We can check this by printing the contents of `CASchools$NVS` to the console or by using the function `table`, see `?table`.
+
+```{r}
+table(CASchools$NVS)
+```
+
+`CASchools$NVS` is a vector of $420$ ones and our data set includes $420$ observations. This obviously violates assumption 4 of Key Concept 6.4: remember that observations for the intercept are always $1$ so we have
+
+\begin{align}
+  intercept = \, & \lambda \cdot NVS \\
+  \\
+  \begin{pmatrix} 1 \\ \vdots \\ 1\end{pmatrix} = \, & \lambda \cdot \begin{pmatrix} 1 \\ \vdots \\ 1\end{pmatrix} \\   \Leftrightarrow \, & \lambda = 1.
+\end{align}
+
+Since both regressors can be written as a linear combination of each other, we face perfect multicollinearity and R excludes $NVS$ from the model. Thus the message to take away is: think carefully about how regressors You created Yourself could possibly interact with unrecognized features of the data set!
+
+Another example of perfect multicollinearity is known as the "dummy variable trap". This may occur when multiple dummy variables are used as regressors. A common case for this is when the dummies are used to sort the data set into mutually exclusive categories. For example, suppose we have spatial information that indicates whether a school is located in the North, West, South or East of the US which allows us to create the dummy variables
+
+\begin{align}
+  North_i =& 
+  \begin{cases}
+    1 \ \ \text{if located in the north} \\
+    0 \ \ \text{otherwise}
+  \end{cases} \\
+  \\
+    West_i =& 
+  \begin{cases}
+    1 \ \ \text{if located in the west} \\
+    0 \ \ \text{otherwise}
+  \end{cases} \\
+  \\
+    South_i =& 
+  \begin{cases}
+    1 \ \ \text{if located in the south} \\
+    0 \ \ \text{otherwise}
+  \end{cases} \\
+    \\
+    East_i =& 
+  \begin{cases}
+    1 \ \ \text{if located in the east} \\
+    0 \ \ \text{otherwise}.
+  \end{cases}
+\end{align}
+
+Since the directions are mutually exclusive, for every school $i=1,\dots,n$ we have 
+
+$$ North_i + West_i + South_i + East_i = 1. $$
+
+We run into problems when trying to estimate a model that includes a constant and *all four* direction dummies, e.g. in the model
+
+$$ TestScore = \beta_0 + \beta_1 \times STR + \beta_2 \times english + \beta_3 \times North_i + \beta_4 \times West_i + \beta_5 \times South_i + \beta_6 \times East_i + u_i \tag{6.8}$$
+since then for all observations $i=1,\dots,n$ the constant term can be written as a linear combination of the dummies:
+
+\begin{align}
+  intercept = \, & \lambda_1 \cdot (North + West + South + East) \\
+  \\
+  \begin{pmatrix} 1 \\ \vdots \\ 1\end{pmatrix} = \, & \lambda \cdot \begin{pmatrix} 1 \\ \vdots \\ 1\end{pmatrix} \\   \Leftrightarrow \, & \lambda = 1
+\end{align}
+
+and we have perfect multicollinearity. This is what is meant by the "dummy variable trap": not paying attention and erroneously including all dummies and an intercept term in a regression model.
+
+How does the `lm` function in R handle a regression like (<a href="#mjx-eqn-6.8">6.8</a>)? To answer this we first generate some artifical categorical data and append a new column named `directions` to `CASchools` and see what `lm` does when asked to estimate the model above.
+
+<div class="unfolded">
+```{r}
+# set random seed for reproducibility
+set.seed(1)
+
+# Generate artificial data on location
+CASchools$direction <- sample(c("West","North","South","East"), 420, replace = T)
+
+# estimate the model
+mult.mod <- lm(score ~ STR + english + direction, data = CASchools)
+
+# obtain a model summary
+summary(mult.mod)                                                 
+```
+</div>
+
+Notice that R solves the problem sketched above on its own by generating and including the dummies `directionNorth`, `directionSouth` and `directionWest` but ommitting `directionEast`. Of course, omission of every other dummy instead would be achieve the same. This is done by convention. Another solution would be to exclude the intercept and include all dummies instead. <br>
+Does this mean that the information on schools located in the East is discarded? Furtunately, this is not the case: exclusion of `directEast` just alters the interpretation of coefficient estimates on the remaining dummies from absolute to relative. For example, the coefficient estimate on `directionNorth` states that, on average, test scores in the North are about 1.61 points higher than in the East. 
+
+A last example considers the case where a perfect linear relationship arises from redundant regressors. Suppose we have a regressor $PctES$, the percentage of English speakers in the school where
+
+$$ PctES = 100 -  PctEL$$
+
+and both $PctES$ and $PctEL$ are included in a regression model. One regressor is redundant since the other one conveys the same information. Since this obviously is a case where the regressors can be written as linear combination, we end up with perfect multicollinearity, again. 
+
+Let us do this in R.
+
+<div class="unfolded">
+```{r}
+# Percentage of english speakers 
+CASchools$PctES <- 100 - CASchools$english
+
+# estimate the model
+mult.mod <- lm(score ~ STR + english + PctES, data = CASchools)
+
+# obtain a model summary
+summary(mult.mod)                                                 
+```
+</div>
+
+Once more, the `lm` function refuses to estimate the full model using OLS and excludes `PctES`.
+
+See chapter 18.1 of the book for an explanation of perfect multicollinearity and its consequences to the OLS estimator in general multiple regression models using matrix notation.
+
+#### Imperfect Multicollinearity {-}
+
+As opposed to perfect multicollinearity, imperfect multicollinearity is --- to a certain extend --- not a problem at all. In fact, imperfect multicollinearity is the reason why we are interested in estimating multiple regression models in the first place: the OLS estimator allows us to *isolate* influences of *correlated* regressors on the dependent variable. So if it was not for these dependencies, there would not be a reason to resort to a multiple regression approach and we could simply work with a single-regressor model. However, reality is complicated and this is rarely the case. Moreover, we already know that ignoring dependencies among regressors which influence the outcome variable has an adverse effect on estimation results (keyword: omitted variable bias!). <br>
+
+So when and why is imperfect multicollinearity a problem? Suppose You got the regression model
+
+$$ Y_i = \beta_0 + \beta_1 X_{1i} + \beta_2 X_{2i} + u_i \tag{6.9} $$
+
+and You are interested in estimating $\beta_1$, the effect on $Y_i$ of a one unit change in $X_{1i}$ while holding $X_{2i}$ constant. You do not know that the true model indeed includes $X_2$ but You follow some reasoning and add $X_2$ as a covariate to the model in order to address a potential omitted variable bias. You are confident that $E(u_i\vert X_{1i}, X_{2i})=0$ for all observations and there is no reason to suspect violation of the assumptions 2 and 3 made in Key Concept 6.4. If now $X_1$ and $X_2$ are highly correlated, OLS has its difficulties to estimate $\beta_1$ precisely. That means although $\hat\beta_1$ is a consistent and unbiased estimator for $\beta_1$, it has a large variance due to $X_2$ being included in the model. If the errors are homoskedastic, this issue can be better understood from inspecting the formula for the variance of $\hat\beta_1$ in the model (<a href="#mjx-eqn-6.9">6.9</a>) (cf. Appendix 6.2 of the book):
+
+$$ \sigma^2_{\hat\beta_1} = \frac{1}{n} \left( \frac{1}{1-\rho^2_{X_1,X_2}} \right) \frac{\sigma^2_u}{\sigma^2_{X_1}} \tag{6.10} $$
+
+Firstly, notice that if $\rho_{X_1,X_2}=0$ i.e. if there is no correlation between both regressors, including $X_2$ in the model has no influence on the variance of $\hat\beta_1$. Secondly, if $X_1$ and $X_2$ are correlated, $\sigma^2_{\hat\beta_1}$ is inversely proportional to $1-\rho^2_{X_1,X_2}$ so the stronger the correlation between $X_1$ and $X_2$, the smaller is $1-\rho^2_{X_1,X_2}$ and thus the bigger is the variance of $\hat\beta_1$. Thirdly, (<a href="#mjx-eqn-6.10">6.10</a>) reveals that, in any case, increasing the sample size helps to reduce the variance of $\hat\beta_1$. <br> Of course, this is not limited to the case with two regressors: in general multiple regression, imperfect multicollinearity inflates the variance of one or more coefficient estimators and it is an empirical question which estimators are severly affected by this and which are not. So is the decision whether one wants to hazard the consequences of adding a large number of covariates when the sample size is small. 
+
+In sum, undesirable consequences of imperfect multicollinearity are not the result of a logical error made by the researcher (as is often the case for perfect multicollinearity) but are rather a problem that is linked to the data used, the model to be estimated and the research question at hand.
+
+Let us conduct a simulation study to illustrate the issues sketched above. 
+
+1. We use (<a href="#mjx-eqn-6.8">6.9</a>) as the data generating process and choose $\beta_0 = 5$, $\beta_1 = 2.5$ and $\beta_2 = 3$ and $u_i$ is an error term distributed as $\mathcal{N}(0,5)$. In a first step, we sample the regressor data from a bivariate normal distribution: $$ X_i = (X_{1i}, X_{2i}) \overset{i.i.d.}{\sim} \mathcal{N} \left[\begin{pmatrix} 0 \\ 0  \end{pmatrix}, \begin{pmatrix} 10 & 2.5 \\ 2.5 & 10 \end{pmatrix} \right] $$ It is straightforward to see that the correlation between $X_1$ and $X_2$ in the population is rather low:
+
+$$ \rho_{X_1,X_2} = \frac{cov(X_1,X_2)}{\sqrt{Var(X_1)}\sqrt{Var{(X_2)}}} = \frac{2.5}{10} = 0.25 $$
+
+2. Next, we estimate the model (<a href="#mjx-eqn-6.9">6.9</a>) and save the estimates for $\beta_1$ and $\beta_2$. This is repeated $10000$ times with a `for` loop so we end up with a large number of estimates that allow us to describe the distributions of $\hat\beta_1$ and $\hat\beta_2$.
+
+3. We repeat steps 1 and 2 but increase the covariance between $X_1$ and $X_2$ from $2.5$ to $8.5$ such that the correlation between the regressors is high: $$ \rho_{X_1,X_2} = \frac{cov(X_1,X_2)}{\sqrt{Var(X_1)}\sqrt{Var{(X_2)}}} = \frac{8.5}{10} = 0.85 $$
+
+4. In order to assess the effect on the precision of the estimators of increasing the collinearity between $X_1$ and $X_2$ we compute estimates of the variances of $\hat\beta_1$ and $\hat\beta_2$ and compare.
+
+```{r, message=F, warning=F, fig.align='center', cache=T}
+
+# load packages
+library(MASS)
+library(mvtnorm)
+
+# set number of observations
+n <- 50
+
+# initialize vectors of coefficients
+coefs1 <- cbind("hat_beta_1" = numeric(10000), "hat_beta_2" = numeric(10000))
+coefs2 <- coefs1
+
+# set random seed
+set.seed(1)
+
+# loop sampling and estimation
+for (i in 1:10000) {
+ 
+  # for cov(X_1,X_2) = 0.25
+  X <- rmvnorm(n, c(50,100), sigma = cbind(c(10,2.5), c(2.5,10)))
+  u <- rnorm(n, sd=5)
+  Y <- 5 + 2.5*X[,1] + 3*X[,2] + u
+  coefs1[i,] <- lm(Y ~ X[,1] + X[,2])$coefficients[-1]
+  
+  # for cov(X_1,X_2) = 0.85
+  X <- rmvnorm(n, c(50,100), sigma = cbind(c(10,8.5), c(8.5,10)))
+  Y <- 5 + 2.5*X[,1] + 3*X[,2] + u
+  coefs2[i,] <- lm(Y ~ X[,1] + X[,2])$coefficients[-1]
+}
+
+# estimate the variances
+var(coefs1)
+var(coefs2)
+```
+
+Since we call `var` on matrices rather than vectors, the oucomes are variance-covariance matrices. We are interested in the variances which are the diagonal elements. We see that due to the high collinearity, the variances of $\hat\beta_1$ and $\hat\beta_2$ have more than tripled: in Econometrics lingo we say that it has become more difficult to estimate the true coefficients precisely. 
+
+## The Distribution of the OLS Estimators in Multiple Regression {-}
+
+As in simple linear regression, different samples will produce different values of the OLS estimators in the multiple regression model. Here again this variation leads to uncertainty of those estimators and we seek to describe it using their sampling distribution(s). In short, if the assumption made in Key Concept 6.4 hold, the large sample distribution of $\hat\beta_0,\hat\beta_1,\dots,\hat\beta_k$ is multivariate normal and the individual estimators themselves are also normally distributed. Key Concept 6.5 summarizes the corresponding statements made in Chapter 6.6 of the book. A more technical derivation of these results can be found in Chapter 18 of the book. 
+
+<div class="keyconcept">
+
+<h3 class = "right"> Key Concept 6.5 </h3>          
+<h3 class = "left"> Large-sample distribution of $\hat\beta_0,\hat\beta_1,\dots,\hat\beta_k$ </h3>
+
+If the least squares assumptions in the multiple regression model (see Key Concept 6.4) hold, then in large samples, the OLS estimators $\hat\beta_0,\hat\beta_1,\dots,\hat\beta_k$ are jointly normally distributed. We also say that their joint distribution is *multivariate* normal. Further, each $\hat\beta_j$ is distributed as $N(\beta_j,\sigma_{\beta_j}^2)$.
+
+</div>
+
+Essentially, Key Concept 6.5 states that, if the sample size is large, we can approximate the individual sampling distributions of the coefficient estimators by specific normal distributions and their joint sampling distribution by a multivariate normal distribution.
+
+How can we use R two get a notion of what the joint PDF of the coefficient estimators in multiple regression model looks like? When estimating some model on arbitrary data once, we would end up with a set of point estimates that do not reveal any information on the joint density of the estimators. However, with a large number of estimations using repeatedly randomly sampled data from the same population we could generate a large set of point estimates that allows us to plot an *estimate* of the joint density function.
+
+The approach we will use is a follows:
+
+- Generate $10000$ random samples of size $75$ using the DGP
+
+$$ Y_i = 5 + 2.5 \cdot X_{1i} + 3 \cdot X_{2i} + u_i  $$
+
+where the regressors $X_{1i}$ and $X_{2i}$ are sampled for each observations as
+
+$$ X_i = (X_{1i}, X_{2i}) \sim \mathcal{N} \left[\begin{pmatrix} 0 \\ 0  \end{pmatrix}, \begin{pmatrix} 10 & 2.5 \\ 2.5 & 10 \end{pmatrix} \right] $$
+
+and 
+
+$$ u_i \sim \mathcal{N}(0,5) $$
+
+is an error term.
+
+- For each of the $10000$ simulated sets of sample data, we estimate the model
+
+$$ Y_i = \beta_0 + \beta_1 X_{1i} + \beta_2 X_{2i} + u_i $$
+and save the coefficient estimates $\hat\beta_1$ and $\hat\beta_2$.
+
+- We compute a density estimate of the joint distribution of $\hat\beta_1$ and $\hat\beta_2$ in the model above using the function `kde2d` from the package `MASS`, see `?MASS`. This estimate is then plotted using the function `persp`.
+
+```{r, echo=T, message=F, warning=F, fig.align='center'}
+# load packages
+library(MASS)
+library(mvtnorm)
+
+# set sample size
+n <- 50
+
+# initialize vector of coefficients
+coefs <- cbind("hat_beta_1" = numeric(10000), "hat_beta_2" = numeric(10000))
+
+# set random seed for reproducibility
+set.seed(1)
+
+# loop sampling and estimation
+for (i in 1:10000) {
+  X <- rmvnorm(n, c(50,100), sigma = cbind(c(10,2.5), c(2.5,10)))
+  u <- rnorm(n, sd=5)
+  Y <- 5 + 2.5*X[,1] + 3*X[,2] + u
+  coefs[i,] <- lm(Y ~ X[,1] + X[,2])$coefficients[-1]
+}
+
+# Compute density estimate
+kde <- kde2d(coefs[,1], coefs[,2])
+
+# plot density estimate
+persp(kde,  theta = 310, phi = 30, xlab = "beta_1", ylab = "beta_2", zlab = "Est. Density")
+```
+
+From the plot above we can see that the density estimate has some similarity to a bivariate normal distribution (see [chapter 2](Ch2)) though it is not very pretty and probably a little rough. Furthermore, there is correlation between the estimators such that $\rho\neq0$ in (<a href="#mjx-eqn-2.1">2.1</a>). Also, the distribution's shape deviates from the symmetric bell shape of the bivariate standard normal distribution and has an eliptical surface area instead.
+
+```{r}
+# estimate correlation between estimators
+cor(coefs[,1], coefs[,2])
+```
+
+Where does this correlation come from? Notice that, due to the way we generated the data, there is correlation between the regressors $X_1$ and $X_2$. Correlation between the regressors in a multiple regression model always translates to correlation between the estimators (see Appendix 6.2 of the book). In our case, the positive correlation between $X_1$ and $X_2$ translates to negative correlation between $\hat\beta_1$ and $\hat\beta_2$. To get a better feeling You can vary the point of view in the subsequent smooth interactive 3D plot of the same density estimate used for plotting with `persp`. Here You can see that the shape of the distribution is somewhat stretched due to $\hat\rho=-0.20$ and it is also apparent that both estimators are unbiased since their joint density seems to be centered close to the true parameter vector $(\beta_1,\beta_2) = (2.5,3)$. 
+
+<center>
+```{r, echo=F, message=F, warning=F}
+library(plotly)
+
+kde <- kde2d(coefs[,1], coefs[,2], n=100)
+
+p <- plot_ly(x=kde$x, y=kde$y, z=kde$z, type = "surface", showscale = FALSE)
+
+p %>% layout(scene = list(zaxis = list(title = "Est. Density"
+                                       ),
+                          xaxis = list(title = "hat_beta_1"
+                                       ),
+                          yaxis = list(title = "hat_beta_2"
+                                       )
+                          )
+             ) %>% 
+  config(showLink = F, displayModeBar = F)
+```
+</center>
+
+
