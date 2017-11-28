@@ -1,3 +1,833 @@
 # Assessing Studies Based on Multiple Regression 
 
-t.b.d.
+```{r, echo=FALSE, message=FALSE}
+# load the AER package 
+library(AER)   
+
+# load the the data set in the workspace
+data(CASchools) 
+
+# compute STR and append it to CASchools
+CASchools$STR <- CASchools$students/CASchools$teachers 
+
+# compute TestScore and append it to CASchools
+CASchools$score <- (CASchools$read + CASchools$math)/2  
+
+# Add HiSTR to CASchools
+CASchools$HiSTR <- as.numeric(CASchools$STR >= 20)
+
+# Add HiEL to CASchools
+CASchools$HiEL <- as.numeric(CASchools$english >= 10)
+
+# model (2) for California
+TestScore_mod2 <- lm(score ~ STR + english + lunch + log(income), data = CASchools)
+```
+
+The majority of this chapter of the book is of a theoretical nature. Therefore this section briefly reviews the concepts of internal and external validity in general and discusses examples of threats to internal and external validity of multiple regression models. We will disuss consequences of
+
+- Misspecification of the functional form of the regression function
+- Measurement errors
+- Missing data and sample selection
+- Simultaneous causality
+
+as well as sources of inconsitency of OLS standard errors. We also review concerns of internal validity and external validity in the context of forecasting using regression models.
+
+The chapter closes with an application with <tt>R</tt> where we assess whether results found by multiple regression using the `CASchools` data can be generalized to school districs of another federal state of the United States.
+
+For a more detailed treatment of these topics we encourage you to work through chapter 9 of the book.
+
+## Internal and External Validity
+
+<div class = "keyconcept"> 
+<h3 class = "right"> Key Concept 9.1 </h3>
+<h3 class = "left"> Internal and External Validity </h3>
+
+We say a statistical analysis has **internal** validity if the statistical inferences made about causal effects are valid for the considered population.
+
+An analysis is said to have **external** validity if inferences and conclusion are valid for the studies population and can be generalized to other populations and settings.
+
+</div>
+
+#### Threats to Internal Validity {-}
+
+For internal validity to exist, there are two conditions:
+
+1. The estimator of the causal effect, that is the coefficient(s) of interest, needs to be unbiased and consistent. 
+
+2. Statistical Inference is valid, that is hypotheses tests should have the desired significance level and confidence intervals should have the desired confidence level.
+
+In multiple regression, we estimate the model coefficients using OLS. Thus for condition 1. to be fulfilled we need the OLS estimator to be unbiased and consistent. For the second condition to be valid, the standard errors must be valid such that hypothesis testing and computation of confidence intervals yield results that are trustworthy. Remember that a necessary condition for conditions 1. and 2. to be fulfilled is that the assumptions of Key Concept 6.4 hold. 
+
+#### Threats to External Validity {-}
+
+External validity might be invalid
+
+- if there are **differences between the considered populations**.
+
+- if there are **differences in the settings** of the considered populations, e.g. the legal framework, the time of the investigation etc.
+
+## Threats to Internal Validity of Multiple Regression Analysis
+
+This section lists five sources that cause the OLS estimator in (multiple) regression models to be biased and inconsistent for the causal effect of interest and discusses possible remedies. Note that all five sources arise from violation of the first least squares assumption in Key Concept 6.4.
+
+This sections treats:
+
+- Omitted variable Bias
+
+- Misspecification of the functional form
+
+- Measurement errors
+
+- Missing data and sample selection
+
+- Simultaneous causality bias
+
+Beside these threats for consistency of the coefficient estimation, we will also briefly discuss sources of inconsistent estimation of OLS standard errors.
+
+#### Omitted Variable Bias {-}
+
+<div class = "keyconcept"> 
+<h3 class = "right"> Key Concept 9.2 </h3>
+<h3 class = "left"> Omitted Variable Bias: Should I include More Variables in My Regression? </h3>
+
+Inclusion of additional variables reduces the risk of omitted variable bias but may increase the variance of the estimator of the coefficient of interest. 
+
+We present some guidelines that help deciding whether to include an additional variable:
+
+1. Specify the coefficient(s) of interest.
+
+2. Identify the most important potential sources of omitted variable bias by using knowlegde available *before* estimating the model. You should end up with a base specification and a set of regressors that are questionable.
+
+3. Use different model specifactions to test whether questionable regressors have coefficients different from zero.
+
+4. Use tables to provide "full disclosure" of your results i.e. present different model specifications that do both support your argument and enable the reader to see the effect of including questionable regressors.
+
+</div>
+
+By now you should be aware of omitted variable bias and its consequences. Key Concept 9.2 gives some guidelines on how to proceed if there are control variables that possibly allow to reduce an omitted variable bias. If including additional variables to mitigate the bias is not an option because there are no adequate controls, there are different approaches to solve the problem:
+
+1. Usage of Panel data (discussed in Chapter 10)
+
+2. Usage of Instrumental variables regression (discussed in Chapter 12)
+
+3. Usage of a randomized control experiment (discussed in Chapter 13)
+
+#### Misspecification of the Functional Form of the Regression Function {-}
+
+If the population regression function is nonlinear but the regression model is linear, we say that the functional form of the regression function is misspecified. This leads to a bias of the OLS estimator.
+
+<div class = "keyconcept"> 
+<h3 class = "right"> Key Concept 9.3 </h3>
+<h3 class = "left"> Functional Form Misspecification </h3>
+
+We say a regression suffers from misspecification of the functional form when the functional form of the estimated regression model differs from the functional form of the population regression function. Functional form misspecification leads to biased and inconsistent coefficient estimators. A way to detect functional form misspecification is to plot the estimated regression function and the data. This may also be helpful to choose the correct functional form.
+
+</div>
+
+It is easy to come up with an example case of misspecification of the functional form:
+
+Consider the case where the population regression function is $$ Y_i = - X_i^2 $$ but the estimated model is $$ Y_i = \beta_0 + \beta_1 X_i + u_i $$ so that the regression function is misspecified.
+
+```{r, fig.align='center'}
+# set random seed for reproducibility
+set.seed(3)
+
+# generate data set
+X <- runif(100, -5, 5)
+Y <- X^2 + rnorm(100)
+
+# plot the data
+plot(X, Y, 
+     main = "Misspecification of Functional Form",
+     pch = 20,
+     col = "steelblue"
+     )
+
+# estimate and plot the regression function
+ms_mod <- lm(Y ~ X)
+ms_mod
+
+abline(ms_mod, 
+       col = "darkred",
+       lwd = 2
+       )
+```
+
+It is evident that regression errors are relatively small for observations close to $X=-3$ and $X=3$ but increase for $X$ values closer to zero and even more for regressor values beyond $-4$ and $4$. Consequences are drastic: the intercept is estimated to be  $8.1$ and for the slope parameter we obtain an estimate close to zero which is obviously wrong. This issue does not dissapear as the number of observations is inreased because OLS is biased *and* inconsistent due to the misspecification of the regression function.
+
+#### Measurement Error and Errors-in-Variables Bias {-}
+
+<div class = "keyconcept"> 
+<h3 class = "right"> Key Concept 9.4 </h3>
+<h3 class = "left"> Errors-in-Variable Bias </h3>
+
+When independent variables are measure imprecisely, we speak of Errors-in-variables bias. This bias does not disappear if the sample size is large. If the measurement error has mean zero and is independent of the affected variable, the OLS estimator of the respective coefficient is biased towards zero.
+
+</div>
+
+Suppose you are measuring data on the single regressor $X_i$ incorrectly so that there is a measurement error and you observe $\overset{\sim}{X}_i$ instead of $X_i$. Then, instead of estimating the population the regression model $$ Y_i = \beta_0 + \beta_1 X_i + u_i $$ you end up estimating
+\begin{align*}
+  Y_i =& \, \beta_0 + \beta_1 \overset{\sim}{X}_i + \underbrace{\beta_1 (X_i - \overset{\sim}{X}_i) + u_i}_{=v_i} \\
+  Y_i =& \, \beta_0 + \beta_1 \overset{\sim}{X}_i + v_i
+\end{align*}
+where $\overset{\sim}{X}_i$ and the error term $v_i$ are correlated. Thus OLS would be biased and inconsitent for the true $\beta_1$ in this example.
+
+One can show that direction and strength of the bias depend on the correlation between the observed regressor, $\overset{\sim}{X}_i$, and the measurement error, $(X_i - \overset{\sim}{X}_i)$. The correlation depends on the type of the measurement error.
+
+The classical measurement error model assumes that the error, $w_i$, has zero mean and that the error is uncorrelated with the variable, $X_i$, and the error term of the poulation regression model, $u_i$:
+
+\begin{equation}
+  \overset{\sim}{X}_i = X_i + w_i \ \ , \ \ corr(w_i,u_i)=0 \ \ , \ \ corr(w_i,X_i)=0 
+\end{equation}
+Then it holds that 
+\begin{equation}
+  \widehat{\beta}_1 \xrightarrow{p}{\frac{\sigma_{X}^2}{\sigma_{X}^2 + \sigma_{w}^2}} (\#eq:cmembias)
+\end{equation}
+
+
+Which implies inconsistency as $\sigma_{X}^2, \sigma_{w}^2 > 0$ such that the fraction in \@ref(eq:cmembias) is smaller than $1$. Note that, there are two extreme cases: first, if there is no measurement error, $\sigma_{w}^2=0$ such that $\widehat{\beta}_1 \xrightarrow{p}{\beta_1}$. Second, if $\sigma_{w}^2 \gg \sigma_{X}^2$ we have $\widehat{\beta}_1 \xrightarrow{p}{0}$. This is the case if the measurement error is so large that there essentially is no information on $X$.
+
+The most obvious way to deal with errors-in-variables bias is to use an accurately measured $X$. If this not possible, instrumental variables regression can be an option. One might also deal with the issue by using a mathematical model of the measurement error and correct the estimates. For example, if it is plausible that the classical measurement error model applies and if there is information that can be used to estimate the ratio in equation \@ref(eq:cmembias), one could compute an estimate that corrects for the downwoard bias.
+
+For example, consider two bivariate normal distributed random variables $X,Y$. It is a well known result, that the conditional expectation function of $Y$ given $X$ has the form 
+\begin{align*}
+  E(Y\vert X) = E(Y) + \rho_{X,Y} \frac{\sigma_{Y}}{\sigma_{X}}\left[X-E(X)\right]. (\#eq:bnormexpfn) 
+\end{align*} Thus for 
+\begin{align*}
+  (X, Y) \sim \mathcal{N}\left[\begin{pmatrix}50\\ 100\end{pmatrix},\begin{pmatrix}10 & 5 \\ 5 & 10 \end{pmatrix}\right] (\#eq:bvnormd)
+\end{align*} according to \@ref(eq:bnormexpfn), the population regression function is
+\begin{align*}
+  Y_i =& \, 100 + 0.5 (X - 50) \\
+      =& \, 75 + 0.5 X.
+\end{align*}
+Suppose you gather data on $X$ and $Y$ but that can you only measure $\overset{\sim}{X_i} = X_i + w_i$ with $w_i \overset{i.i.d.}{\sim} \mathcal{N}(0,\sqrt{10})$. Since the $w_i$ are purely random, there is no correlation between the $X_i$ and the $w_i$ so that we have a case of the classical measurement error model. We can illustrate this using <tt>R</tt>.
+
+```{r, eval = T}
+# random seed
+set.seed(1)
+
+# load the mvtnorm package and simulate data
+library(mvtnorm)
+dat <- data.frame(
+  rmvnorm(1000, c(50,100), 
+          sigma = cbind(c(10,5), c(5,10))
+          )
+  )
+
+# set columns names
+colnames(dat) <- c("X","Y")
+```
+
+We now estimate a simple linear regression of $Y$ on $X$ using this sample data and run the same regression again but this time add i.i.d. $\mathcal{N}(0,\sqrt{10})$ errors to $X$.
+
+```{r, eval = T}
+# estimate the model (without measurement error)
+nme_mod <- lm(Y ~ X, data = dat)
+
+# estimate the model (measurement error in X)
+dat$X <- dat$X + rnorm(n = 1000, sd = sqrt(10))
+me_mod <- lm(Y ~ X, data = dat)
+
+# print estimated coefficients to console
+nme_mod$coefficients
+me_mod$coefficients
+```
+
+We visualize the estimation results and compare with the population regression function.
+
+```{r, fig.align='center'}
+# plot sample data
+plot(dat$X, dat$Y, 
+     pch=20, 
+     col="steelblue",
+     xlab = "X",
+     ylab = "Y"
+     )
+
+# add population regression function
+abline(coef = c(75,0.5), 
+       col = "darkgreen",
+       lwd  = 1.5
+      )
+
+# add estimated regression functions
+abline(nme_mod, 
+       col = "purple",
+       lwd  = 1.5
+       )
+abline(me_mod, 
+       col = "darkred",
+       lwd  = 1.5
+       )
+
+# add legend
+legend("topleft",
+       lty = 1, 
+       col = c("darkgreen", "purple", "darkred"), 
+       legend = c("Population", "No Errors", "Errors")
+       )
+```
+
+Notice that in the situation without measurement error, the estimated regression function is close to the population regression function. Things are different when we use the error afflicted data on $X$: both the estimate for the intercept and the estimate for the coefficient on $X$ differ considerably from results obtained using the "clean" data on $X$. In particular $\widehat{\beta}_1 = 0.255$. This is evidence for the downward bias. We are in the comfortable situation to know $\sigma_X^2$ and $\sigma^2_w$. This allows us to correct for bias using \@ref(eq:cmembias). Using this information we obtain a biased-corrected estimate $$\frac{\sigma_X^2 + \sigma_w^2}{\sigma_X^2} \widehat{\beta}_1 = \frac{10+10}{10} 0.255 = 0.51$$ which is fairly close to the true coefficient in the population regression function, $\beta_1=0.5$.
+
+#### Missing Data and Sample Selection {-}
+
+<div class = "keyconcept"> 
+<h3 class = "right"> Key Concept 9.5 </h3>
+<h3 class = "left"> Sample Selection Bias </h3>
+
+When the sampling process influences the availability of data and when there is a relation of this sampling process to the dependend variable that goes beyond the dependence on the regressors, we say that there is a sample selection bias. This bias is due to correlation between one ore more regressors and the error term. This implies both bias and inconsistency of the OLS estimator.
+
+</div>
+
+There are three cases of Sample selection but only one of which poses a threat to internal validity of a regression study. The three cases are:
+
+1. Data are missing at random. 
+
+2. Data are missing based on the value of a regressor.
+
+3. Data are missing due to a selection process that is releated to the dependent variable.
+
+Let us jump back to the example of variables $X$ and $Y$ distributed as stated in equation \@ref(eq:bvnormd) and illustrate all three cases using <tt>R</tt>. 
+
+If data are missing at random, this is nothing but loosing observations. For example, loosing $50\%$ of sample would be the same as never having seen the (randomly chosen) half of the sample observed. This does not introduce an estimation bias. 
+
+```{r, fig.align='center'}
+# random seed
+set.seed(1)
+
+# simulate data
+dat <- data.frame(
+  rmvnorm(1000, c(50,100), 
+          sigma = cbind(c(10,5), c(5,10))
+          )
+  )
+
+colnames(dat) <- c("X","Y")
+
+# mark 500 randomly selected observations
+id <- sample(1:1000, size = 500)
+
+plot(dat$X[-id], 
+     dat$Y[-id], 
+     col = "steelblue", 
+     pch = 20,
+     xlab = "X",
+     ylab = "Y")
+
+points(dat$X[id], 
+       dat$Y[id], 
+       col = "gray", 
+       pch = 20)
+
+# add population regression function
+abline(coef = c(75,0.5), 
+       col = "darkgreen",
+       lwd  = 1.5
+      )
+
+# add estimated regression function for full sample
+abline(nme_mod)
+
+# estimate model case 1, add regression line
+dat <- dat[-id,]
+
+c1_mod <- lm(dat$Y ~ dat$X, data = dat)
+abline(c1_mod, col = "purple")
+
+# add legend
+legend("topleft",
+       lty = 1, 
+       col = c("darkgreen", "black", "purple"), 
+       legend = c("Population", "Full sample", "500 obs. randomly selected")
+       )
+```
+The gray dots are the $500$ discarded observations. The estimation results when using the remaining observations deviate only marginally from the results obtained using the full sample. 
+
+Selecting data randomly based on the value of a regressor has also the effect of reducing the sample size and does not introduce estimation bias. We will now drop observations with $X > 45$, reestimate the model and compare.
+
+```{r, fig.align='center'}
+# random seed
+set.seed(1)
+
+# simulate data
+dat <- data.frame(
+  rmvnorm(1000, c(50,100), 
+          sigma = cbind(c(10,5), c(5,10))
+          )
+  )
+
+colnames(dat) <- c("X","Y")
+
+# mark observations
+id <- dat$X >= 45
+
+plot(dat$X[-id], 
+     dat$Y[-id], 
+     col = "steelblue", 
+     pch = 20,
+     xlab = "X",
+     ylab = "Y")
+
+points(dat$X[id], 
+       dat$Y[id], 
+       col = "gray", 
+       pch = 20)
+
+# add population regression function
+abline(coef = c(75,0.5), 
+       col = "darkgreen",
+       lwd  = 1.5
+      )
+
+# add estimated regression function for full sample
+abline(nme_mod)
+
+# estimate model case 1, add regression line
+dat <- dat[-id,]
+
+c2_mod <- lm(dat$Y ~ dat$X, data = dat)
+abline(c2_mod, col = "purple")
+
+# add legend
+legend("topleft",
+       lty = 1, 
+       col = c("darkgreen", "black", "purple"), 
+       legend = c("Population", "Full sample", "Obs. with X <= 45")
+       )
+```
+
+Note that although we dropped more than $90\%$ of all observations, the estimated regression function is very close to the line estimated based on the full sample.  
+
+In the third case we face sample selection bias. We can illustrate this by using the selection procedure `dat[which(dat$X <= 55 & dat$Y >= 100)]`
+
+```{r, fig.align='center'}
+# random seed
+set.seed(1)
+
+# simulate data
+dat <- data.frame(
+  rmvnorm(1000, c(50,100), 
+          sigma = cbind(c(10,5), c(5,10))
+          )
+  )
+
+colnames(dat) <- c("X","Y")
+
+# mark observations
+id <- which(dat$X <= 55 & dat$Y >= 100)
+
+plot(dat$X[-id], 
+       dat$Y[-id], 
+       col = "gray", 
+       pch = 20,
+       xlab = "X",
+       ylab = "Y")
+
+points(dat$X[id], 
+     dat$Y[id], 
+     col = "steelblue", 
+     pch = 20
+     )
+
+# add population regression function
+abline(coef = c(75,0.5), 
+       col = "darkgreen",
+       lwd  = 1.5
+      )
+
+# add estimated regression function for full sample
+abline(nme_mod)
+
+# estimate model case 1, add regression line
+dat <- dat[id,]
+
+c3_mod <- lm(dat$Y ~ dat$X, data = dat)
+abline(c3_mod, col = "purple")
+
+# add legend
+legend("topleft",
+       lty = 1, 
+       col = c("darkgreen", "black", "purple"), 
+       legend = c("Population", "Full sample", "X <= 55 & Y >= 100")
+       )
+```
+
+We see that the selection process leads to biased estimation results. There are methods that allow to correct for sample selection bias. However, these methods are beyond the scope of the book and therefore not considered here. The concept of sample selection bias is summarized in Key Concept 9.5.
+
+#### Simultaneous Causality {-}
+
+<div class = "keyconcept"> 
+<h3 class = "right"> Key Concept 9.6 </h3>
+<h3 class = "left"> Simultaneous Causality Bias </h3>
+
+So far we have assumed that the changes in the independent variable $X$ are responsible for changes in the dependent variable $Y$. When the reverse is also true, say that there is simultaneous causality between $X$ and $Y$. This reverse causality leads to correlaltion between $X$ and the error in the population regression of interest such that the coefficient on $X$ is estimated with a bias.
+
+</div>
+
+Suppose we are interested in estimating the effect of a $20\%$ increase of cigarettes prices on ciggarettes consumption in the United States using a multiple regression model. This may be investigated using the dataset `CigarettesSW` which is part of the `AER` package. `CigarettesSW` is a panel data set on cigarette consumption for all 48 continental US States from 1985-1995 and provides data on economic indicators and average local prices, taxes and per capita pack consumption. 
+
+After loading the dataset, we pick observations for the year 1995 and plot logarithmns of average federal and local excise taxes, `tax`, against pack consumtion, `packs`, and estimate a simple linear regression model.
+
+```{r}
+# load data
+library(AER)
+data("CigarettesSW")
+c1995 <- subset(CigarettesSW, year == "1995")
+
+# estimate model
+cigcon_mod <- lm(log(packs) ~ log(price), data = c1995)
+cigcon_mod
+
+# plot estimated regression line and data
+plot(log(c1995$price), log(c1995$packs),
+     xlab = "ln(Price)",
+     ylab = "ln(Consumption)",
+     main = "Demand for Cigarettes",
+     pch = 20,
+     col = "steelblue"
+     )
+
+abline(cigcon_mod, 
+       col="darkred", 
+       lwd=1.5)
+```
+
+Remember from chapter 8 that, due to the log-log specification, in the population regression the coefficient on the logarithm of price is interpreted as the price elasticity of consumption. The estimated coefficient suggest that a $1\%$ increase in cigarettes prices reduces cigarette consumption by about $1.2\%$, on average. Have we estimated a demand curve? The answer is no: this is a classic example of simultaneous causality (see Key Concept 9.6) since the observations are market equilibria which are determined by both changes in supply and changes in demand such that the price is correlated with the error term and the OLS estimator is biased. We can neither estimate a demand nor a supply curve consistently using this approach. 
+
+We will return to this issue (and the dataset) in chapter 12 which presents instrumental variables regression, an approach that allows consistent estimation when there is simultaneous causality.
+
+#### Sources of Inconsistency of OLS Standard Errors
+
+There are two central threats to computation of consistent OLS standard errors:
+
+1. Heteroskedasticity: implications of heteroskedasticiy have been discussed in chapter 5. Heteroskedasticity robust standard errors as computed by the function `vcovHC()` from the package `sandwich` produce valid standard errors unter heteroskedasticity.
+
+2. Serial correlation: if the population regression error is correlated across observations, we speak of serial correlation. This happens often in applications were repeated observations are used like in panel data studies. As for heteroskedasticity, the `vcovHC()` package can be used to obtain valid standard errors when there is serial correlation.
+
+Inconsistently computed standard errors will produce invalid hypothesis tests and wrong confidence intervals. E.g. when testing the null hypothesis that some model coefficient is zero, we cannot trust the outcome anymore because the test may fail to have the significance level of $5\%$ due to a wrongly computed standard error.
+
+Key Concept 9.7 summarizes all discussed threats to internal validity.
+
+<div class = "keyconcept"> 
+<h3 class = "right"> Key Concept 9.7 </h3>
+<h3 class = "left"> Threats to Internal Validity of a Regression Study </h3>
+
+The five primary threats to internal validity of a multiple regression study are:
+
+1. Omitted variables
+
+2. Misspecefication of functional form
+
+3. Errors in variables (due to measurement error in regressors)
+
+4. Sample selection
+
+5. Simultaneous causality
+
+All these threats lead to failure of the first least squares assumption $$E(u_i\vert X_{1i},\dots ,X_{ki}) \neq 0$$ so that the OLS estimator is biased *and* inconsistent.
+
+Furthermore, if one does not adjust for heteroskedasticity *and*/*or* serial correlation, if present, incorrect standard errors may be a threat to internal validity of the study.
+
+</div>
+
+## Internal and External Validity When the Regression is Used for Forecasting
+
+Recall the regression of test scores on the student-teacher ratio ($STR$) performed in chapter 4:
+
+```{r}
+linear_model <- lm(score ~ STR, data = CASchools)
+linear_model
+```
+
+The estimated regression function was
+
+$$ \widehat{TestScore} = 698.9 - 2.28 \times STR.$$
+
+The book gives the example of a parent moving to a metropolitan area who plans to choose where to live based on quality of local schools. A school disctrics average test score is an adequate mesaure for quality. However, the parent has information on the student-teacher ratio only such that test scores need to be predicted. Although we have established that there is omitted variable bias in this model due to omisssion of variables like student learning opportunities outside school, the share of english learners and so on, `linear_model` may in fact be useful for the parent:
+
+The parent does not care if the coefficien on $STR$ has causal interpretation, she wants $STR$ to explain as much variation in test scores as possible. Therefore, despite the fact that `linear_model` cannot be used to estimate the causal effect of a change in $STR$ on test scores, it can be considered a *reliable predictor* of test scores in general. 
+
+Thus, the threats to internal validity as summarized in Key Concept 9.7 are negligible for the parent. This is, as instanced in the book, different for a superindent who has been tasked to take measures that increase test scores: she requires a more reliable model that does not suffer from the threats listed in Key Concept 9.7. 
+
+## Example: Test Scores and Class Size
+
+This section discusses internal and external validity of results gained from analyzing the California test score data using regression models.
+
+#### External Validity of the Study {-}
+
+External validity of the California analysis means that its results can be generalized. If this is possible depends on the population and the setting. Following the book we conduct the same analysis using data for fourth graders in $220$ public school districts in Massechusetts in 1998. Just as `CASchools`, the data set `MASchools` is part of the `AER` package. Use the help function (`?MASchools`) to get info on the definitions of all variables contained.
+
+We start by loading the data set and proceed by computing some summary statistics.
+
+```{r, warning=FALSE, message=FALSE}
+data("MASchools")
+summary(MASchools)
+```
+
+It is fairly easy to replicate key components of table 9.1 of the book using \texttt{R}. To be consistent with variable names used in the `CASchools` data set, we do some formatting beforehand.
+
+```{r}
+# Customized variables in MASchools
+MASchools$score <- MASchools$score4 
+MASchools$STR <- MASchools$stratio
+
+# Reproduce Table 9.1 of the book
+vars <- c("score", "STR", "english", "lunch", "income")
+
+cbind(
+  CA_mean = sapply(CASchools[ ,vars], mean),
+  CA_sd   = sapply(CASchools[ ,vars], sd),
+  MA_mean = sapply(MASchools[ ,vars], mean),
+  MA_sd   = sapply(MASchools[ , vars], sd)
+  )
+```
+
+The summary statistics reveal that the average test score is higher for school districts in Massachusetts. Notice that the test is somewhat different from that used in California (the Massachusetts test score also includes results for the school subject 'science') so a direct comparison of test scores is not appropriate. We also see that, on average, classes are smaller in Massachusetts than in California and that the average district income, average percentage of english learners as well as the average share of students receiving subsidized lunch differ considerably from the averages computed for California. There are also notable differences in the observed dispersion of variables.
+
+Following the book we examine the relationship between district income and test scores in Massachusetts as we have done before in chapter 8 for the California data and reproduce figure 9.2 of the book.
+
+```{r}
+# estimate linear model
+Linear_model_MA <- lm(score ~ income, data = MASchools)
+Linear_model_MA
+
+# estimate linear-log model
+Linearlog_model_MA <- lm(score ~ log(income), data = MASchools) 
+Linearlog_model_MA
+
+# estimate Cubic model
+cubic_model_MA <- lm(score ~ I(income) + I(income^2) + I(income^3), data = MASchools)
+cubic_model_MA
+```
+
+```{r, fig.align='center'}
+# plot data
+plot(MASchools$income, MASchools$score,
+     pch = 20,
+     col = "steelblue",
+     xlab = "District income",
+     ylab = "Test score",
+     xlim = c(0,50),
+     ylim = c(620,780))
+
+# add estimated regression line for the linear model
+abline(Linear_model_MA, lwd = 2)
+
+# add estimated regression function for Linear-log model
+order_id  <- order(MASchools$income)
+
+lines(MASchools$income[order_id],
+      fitted(Linearlog_model_MA)[order_id], 
+      col = "darkgreen", 
+      lwd = 2)
+
+# add estimated cubic regression function
+lines(x = MASchools$income[order_id], 
+      y = fitted(cubic_model_MA)[order_id],
+      col = "orange", 
+      lwd = 2) 
+
+# add a legend
+legend("topleft",
+       legend = c("Linear","Linear-Log","Cubic"),
+       lty = 1,
+       col = c("Black","darkgreen","orange")
+       )
+```
+
+The plot indicates that the cubic specification fits the data best. Interstingly, this is different from the `CASchools` data where the pattern of nonlinearity is better described by the linear-log specification.
+
+We continue by estimating the most of the model specifications used for analysis of the `CASchools` data set in chapter 8 and use `stargazer()` to generate a tabular representation of the regression results.
+
+```{r, eval=FALSE, tidy=TRUE}
+# Add HiEL to 'MASchools'
+MASchools$HiEL <- as.numeric(MASchools$english > median(MASchools$english))
+
+# estimate model specifications from table 9.2 of the book
+TestScore_MA_mod1 <- lm(score ~ STR, data = MASchools)
+
+TestScore_MA_mod2 <- lm(score ~ STR + english + lunch + log(income), data = MASchools)
+
+TestScore_MA_mod3 <- lm(score ~ STR + english + lunch + income + I(income^2) + I(income^3), data = MASchools)
+
+TestScore_MA_mod4 <- lm(score ~ STR + I(STR^2) + I(STR^3) + english + lunch + income + I(income^2) + I(income^3), 
+    data = MASchools)
+
+TestScore_MA_mod5 <- lm(score ~ STR + I(income^2) + I(income^3) + HiEL:STR + lunch + income, 
+    data = MASchools)
+
+TestScore_MA_mod6 <- lm(score ~ STR + I(income^2) + I(income^3) + HiEL + HiEL:STR + lunch + income, data = MASchools)
+
+# robust estimation of variance-covariance matrices
+library(sandwich)
+
+rob_se <- list(
+  sqrt(diag(vcovHC(TestScore_MA_mod1, type="HC1"))),
+  sqrt(diag(vcovHC(TestScore_MA_mod2, type="HC1"))),
+  sqrt(diag(vcovHC(TestScore_MA_mod3, type="HC1"))),
+  sqrt(diag(vcovHC(TestScore_MA_mod4, type="HC1"))),
+  sqrt(diag(vcovHC(TestScore_MA_mod5, type="HC1"))),
+  sqrt(diag(vcovHC(TestScore_MA_mod6, type="HC1")))
+)
+
+# generate table with stargazer()
+
+library(stargazer)
+
+stargazer(Linear_model_MA, TestScore_MA_mod2, TestScore_MA_mod3, TestScore_MA_mod4, TestScore_MA_mod5, TestScore_MA_mod6 
+          type = "latex",
+          se = rob_se,
+          object.names = TRUE,
+          model.numbers = FALSE,
+          column.labels = c("(I)", "(II)", "(III)", "(IV)", "(V)", "(VI)")
+          )
+```
+
+<!--html_preserve-->
+
+```{r, results='asis', echo=F, cache=T}
+library(stargazer)
+library(sandwich)
+MASchools$HiEL <- as.numeric(MASchools$english > median(MASchools$english))
+TestScore_MA_mod1 <- lm(score ~ STR, data = MASchools)
+TestScore_MA_mod2 <- lm(score ~ STR + english + lunch + log(income), data = MASchools)
+TestScore_MA_mod3 <- lm(score ~ STR + english + lunch + income + I(income^2) + I(income^3), data = MASchools)
+TestScore_MA_mod4 <- lm(score ~ STR + I(STR^2) + I(STR^3) + english + lunch + income + I(income^2) + I(income^3), data = MASchools)
+TestScore_MA_mod5 <- lm(score ~ STR + HiEL + HiEL:STR + lunch + income + I(income^2) + I(income^3), 
+    data = MASchools)
+TestScore_MA_mod6 <- lm(score ~ STR + lunch + income + I(income^2) + I(income^3), data = MASchools)
+
+rob_se <- list(
+  sqrt(diag(vcovHC(TestScore_MA_mod1, type="HC1"))),
+  sqrt(diag(vcovHC(TestScore_MA_mod2, type="HC1"))),
+  sqrt(diag(vcovHC(TestScore_MA_mod3, type="HC1"))),
+  sqrt(diag(vcovHC(TestScore_MA_mod4, type="HC1"))),
+  sqrt(diag(vcovHC(TestScore_MA_mod5, type="HC1"))),
+  sqrt(diag(vcovHC(TestScore_MA_mod6, type="HC1")))
+)
+
+if(knitr:::is_latex_output()) {
+  sgtype <- "latex"
+} else {
+  sgtype <- "html"
+}
+
+stargazer(TestScore_MA_mod1, TestScore_MA_mod2, TestScore_MA_mod3, TestScore_MA_mod4, TestScore_MA_mod5, TestScore_MA_mod6, 
+          se = rob_se,
+          type = sgtype,
+          float.env = "sidewaystable",
+          model.numbers = FALSE,
+          column.labels = c("(I)", "(II)", "(III)", "(IV)", "(V)", "(VI)")
+          )
+```
+
+<!--/html_preserve-->
+
+We continue by reproducing the $F$-statistics and $p$-values testing exclusion of groups of variables.
+
+```{r}
+# F-test model (3)
+linearHypothesis(TestScore_MA_mod3, 
+                 c("I(income^2)=0","I(income^3)=0"), 
+                 vcov. = vcovHC(TestScore_MA_mod3, type="HC1")
+                 )
+
+# F-tests model (4)
+linearHypothesis(TestScore_MA_mod4, 
+                 c("STR=0","I(STR^2)=0", "I(STR^3)=0"), 
+                 vcov. = vcovHC(TestScore_MA_mod4, type="HC1")
+                 )
+
+linearHypothesis(TestScore_MA_mod4, 
+                 c("I(STR^2)=0", "I(STR^3)=0"), 
+                 vcov. = vcovHC(TestScore_MA_mod4, type="HC1")
+                 )
+
+linearHypothesis(TestScore_MA_mod4, 
+                 c("I(income^2)=0","I(income^3)=0"), 
+                 vcov. = vcovHC(TestScore_MA_mod4, type="HC1")
+                 )
+
+# F-tests model (5)
+linearHypothesis(TestScore_MA_mod5, 
+                 c("STR=0","STR:HiEL=0"), 
+                 vcov. = vcovHC(TestScore_MA_mod5, type="HC1")
+                 )
+
+linearHypothesis(TestScore_MA_mod5, 
+                 c("I(income^2)=0","I(income^3)=0"), 
+                 vcov. = vcovHC(TestScore_MA_mod5, type="HC1")
+                 )
+
+linearHypothesis(TestScore_MA_mod5, 
+                 c("HiEL=0","STR:HiEL=0"), 
+                 vcov. = vcovHC(TestScore_MA_mod5, type="HC1")
+                 )
+
+# F-test Model (6)
+linearHypothesis(TestScore_MA_mod6, 
+                 c("I(income^2)=0","I(income^3)=0"), 
+                 vcov. = vcovHC(TestScore_MA_mod6, type="HC1")
+                 )
+```
+
+We see that, in terms of $\overline{R^2}$, specification (3) which uses a cubic to model the relationship between district income and test scores indeed does perform better the the linear-log specification (2). Using different $F$-tests on models (4) and (5), we cannot reject the hypothesis that there is no nonlinear relationship between student teacher ratio and test score and also that the share of english learners has an influence on the relationship of interest. Furthermore, regression (6) shows that percentage of english learners can be omitted as a regressor. Because changes in specification made in regressions (4) to (6) do not lead to substantially different results than those of regression (3), we choose model (3) as the most suitable specification.
+
+In compariosn to the California data, we observe the following results:
+
+1. Controlling for the students background characteristics in model specification (2) reduces the coefficient of interest (student-teacher ratio) by roughly $60\%$. The estimated coefficients are close.
+
+2. The coefficient on student-teacher ratio is always significantly different from zero at the level of $1\%$ for both data sets. This holds for all model specifications under consideration in both studies.
+
+3. The share of english learners in the school district has no important influence on the impact on test score of a change in the student-teacher ratio in both studies.
+
+The biggest difference is that, in contrast to the California results, we do not find evience of a nonlinear relationship between test scores and the student teacher ratio for the Massachusetts data since the correspoding $F$-tests on model (4) do not reject.
+
+As pointed out by the authors, the test scores for California and Massachusetts have different units because the tests are different. Thus the estimated coefficients on the student-teacher ratio in both regressions cannot be compared before standardizing test scores to the same units as $$\frac{Testscore - \overline{TestScore}}{\sigma_{TestScore}}$$ for all observations in both datasets and reruning the regressions of interest using the standardized data. One can show that the coefficient on student-teacher ratio in the regression using standardized test scores is the coefficient of the original regression devided by the standard deviation of test scores.
+
+For model (3) of the Massachusetts data, the estimated coeffiecient on the student-teacher ratio is $-0.64$. A reduction of the student-teacher ratio by two students is predicted to increase test scores by $-2 \cdot (-0.64) = 1.28$ points. Thus we can compute the effect of a reduction of student-teacher ratio by two students on the standardized test scores as follows:
+
+```{r}
+TestScore_MA_mod3$coefficients[2] / sd(MASchools$score) * (-2)
+```
+
+Thus for Massachussetts, the predicted increase of test scores due to a reduction of the student-teacher ratio by two students is $0.085$ standard deviation of the distribution of the observed distribution of test scores. 
+
+Beholding the linear specification (2) for California, the estimated coefficient on the student-teacher ratio is $-0.73$ so the predicted increase of test scores induced by a reduction of the student-teacher ratio by two students is $-0.73 * (-2) = 1.46$. We use \texttt{R} to compute the predicted change in standard deviation units:
+
+```{r}
+TestScore_mod2$coefficients[2] / sd(CASchools$score) * (-2)
+```
+
+This shows that the the predicted increase of test scores due to a reduction of the student-teacher ratio by two students is $0.077$ standard deviation of the distribution of the observed distribution of test scores for the California data.
+
+In terms of standardized test scores, the predicted change is essentially the same for school districts in California and Massachusetts.
+
+Altogether, the results are in favour of the presumption that inference made using data on Californian elementary school districts is externally valid.
+
+#### Internal Validity of the Study {-}
+
+External validity of the study **does not** ensure their internal validity. Though the model specification choosen improves upon a simple linear regression model, internal validity may still be violated due to some of the threats listed in Key Concept 9.7 threats. These threats are:
+ 
+- Omitted variable bias
+
+- Misspecification of functional form
+
+- Errors in variables
+
+- Sample selection issues
+
+- Simultaneous causality
+
+- Heteroskedasticity
+
+- Correlation of errors across observations
+
+Consult the book for a in depth discussion of these threats in view of the test score studies.
+
+#### Summary {-}
+
+We have found that there *is* a statistically significant effect of the student-teacher ratio on test scores though it is quite small. However, it remains unclear if we have indeed estimated the causal effect of inerest since --- although our approach includes control variables, takes into account nonlinearities in the population regression function and statistical inference is made using robust standard errors --- the results might still be biased for example if there are omitted factors which we have not considered. Thus *internal validity* of the study remains questionable. As we have concluded from comparison with the analysis of the Massachusetts dataset, this result is *externally valid*.   
+
+The following chapters adress techniques that can be remedies to all the threats to internal validity named in Key Concept 9.7 if multiple regression alone is insufficient. This includes regression using panel data and approaches that employ instrumental variables.
