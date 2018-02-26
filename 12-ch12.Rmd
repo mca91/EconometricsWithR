@@ -1,0 +1,521 @@
+# Instrumental Variables Regression
+
+As discussed in Chapter 9, regression models may suffer from problems like omitted variables, measurement errors and simultaneous causality. If so, the error term is correlated with the regressor of interest and there is a bias in estimation of the corresponding coefficients. 
+If data is available, what we have assumed up till now, omitted varibales can be included in the regression to mitigate the risk of biased estimation of the causal effect of interest. However, if omitted factors cannot be measured, multiple regression cannot solve the problem. 
+The same issue arises if there is simultaneous causality. When causality runs from $X$ to $Y$ and vice versa, there will be an estimation bias that cannot be corrected for by multiple regression.
+
+A general technique for obtaining a consistent estimator of the coefficient of interest is instrumental variables (IV) regression. In this chapter we focus on a powerful IV regression tool called two stage least squares (TSLS). The first sections briefly recap the general mechanics and assumptions of IV regression and show how to apply TSLS estimation using \texttt{R}. Next, IV regression is used for estimating the elasticity of demand for cigarettes --- a classical example where multiple regression fails to do the job because of simultaneous causality. 
+
+## The IV Estimator with a Single Regressor and a Single Instrument {#TIVEWASRAASI}
+
+Cosider the simple regression model 
+
+\begin{align}
+  Y_i = \beta_0 + \beta_1 X_i + u_i \ \ , \ \ i=1,\dots,n  (\#eq:srm12)
+\end{align}
+
+where the error term $u_i$ is correlated with the regressor $X_i$ (we say that $X$ is *endogenous*) such that OLS is inconsistent for the true $\beta_1$. In the most simple case, IV regression uses a single instrumental variable $Z$ to obtain a consistent estimator for $\beta_1$.
+
+$Z$ must satisfy two condictions to be a valid instrument:
+
+**1. Instrument relevance condition**:
+
+<center>$X$ and its instrument $Z$ *must be* correlated: $corr(Z_i,X_i) \neq 0$.</center>
+
+**2. Instrument exogeneity condition**:
+
+<center>The instrument $Z$ *must not be* correlated with the error term $u$: $corr(Z_i,u_i) = 0$.</center>
+
+#### The Two Stage Least Squares Estimator {-}
+
+As can be guessed from its name, TSLS has to stages. In the first stage, the variation in the endogenous regressor $X$ is decomposed into a problem-free component that is explained by the instrument $Z$ and a problematic component that is correlated with the error $u_i$. The second stage uses the problem-free component of the variation in $X$ to estimate $\beta_1$.
+
+The first stage regression model is $$X_i = \pi_0 + \pi_1 Z_i + \nu_i$$ where $\pi_0 + \pi_1 Z_i$ is the component of $X_i$ that is explained by $Z_i$ while $\nu_i$ is the component that cannot be explained by $Z_i$ and exhibits correlation with $u_i$. 
+
+Using OLS estimates $\widehat{\pi}_0$ and $\widehat{\pi}_1$ we obtain predicted values $\widehat{X}_i \ \ , \ \ i=1,\dots,n$. If $Z$ is a valid instrument, the $\widehat{X}_i$ are problem-free in the sense that $\widehat{X}$ is exogeneous in a regression of $Y$ on $\widehat{X}$ what is done in the second stage regression. The second stage produces $\widehat{\beta}_0^{TSLS}$ and $\widehat{\beta}_1^{TSLS}$, the TSLS estimates of $\beta_0$ and $\beta_1$.
+
+For the case of a single instrument one can show that the TSLS estimator of $\beta_1$ is
+
+\begin{align}
+\widehat{\beta}_1^{TSLS} = \frac{s_{ZY}}{s_{ZX}} = \frac{\frac{1}{n-1}\sum_{i=1}^n(Y_i - \overline{Y})(Z_i - \overline{Z})}{\frac{1}{n-1}\sum_{i=1}^n(X_i - \overline{X})(Z_i - \overline{Z})} (\#eq:simpletsls)
+\end{align}
+
+which is nothing but the ratio of the sample covariance between $Z$ and $Y$ to the sample covariance between $Z$ and $X$.
+
+As shown in Appendix 12.3 of the book, \@ref(eq:simpletsls) is a consistent estimator for $\beta_1$ in \@ref(eq:srm12) under the assumption that $Z$ is a valid instrument. Furthermore, as for every other OLS estimator that we have considered so far, the central limit theorem implies that $\widehat{\beta}_1^{TSLS}$ can be approximated by a normal distribution if the sample size is large. This allows us to use $t$-statistics and confidence intervals which are also computed by \texttt{R} functions relevant to us. A more detailed argument on the large-sample distribution of the TSLS estimator is sketched out in Appendix 12.3, too.
+
+#### Application to the Demand For Cigarettes {-}
+
+The relation between demand and price of commodities is a simple yet widespread problem in many branches of economics. The field of health economics is inter alia concernced with the study of how health-affecting behaviour of individuals is influenced by the health-care system and regulation policy. The probably most prominent example in public policy debates is smoking as it is related to numerous illnesses and negative externalities.
+
+It is plausible that cigarette consumption can be reduced by taxing cigarettes more heavily. The question is how much taxes must be increase to reach a noticeable reduction in cigarette consumption, e.g. $20$ percentage points. Economists use elasticities to answer this kind of question. Since the price elasticity for demand of cigarettes is unknown, it must be estimated. As discussed in the box <it>Who Invented Instrumental Variables Regression</it> presented in Chapter 12.1 of the book, an OLS regression of log quantity on log price cannot be used to estimate the effect of interest since there is simultaneous causality between demand and supply. Instead, IV regression can be used.
+
+We use the data `CigarettesSW` which comes with the package `AER`. It is a panel data set that contains observations on cigarette consumption and several economic indicators for all 48 continental US States from 1985 to 1995. Following the book, in what follows we consider data for the cross section of states in 1995 only.
+
+We start by loading the package, attaching the data set and getting an overview.
+
+```{r, warning=FALSE, message=FALSE}
+library(AER)
+data("CigarettesSW")
+summary(CigarettesSW)
+```
+
+See `?CigarettesSW` for a detailed description of variables.
+
+We are interested in estimating $\beta_1$ in 
+
+\begin{align*}
+  \log(Q_i^{cigarettes}) = \beta_0 + \beta_1 \log(P_i^{cigarettes}) + u_i (\#eq:cigstsls)
+\end{align*}
+
+where $Q_i^{cigarettes}$ is the number of cigarette packs per capita sold and $P_i^{cigarettes}$ is the after tax average real price per pack of cigarettes in state $i$.
+
+The instrumental variable we are going to use is $SalesTax$, the portion of taxes on cigarettes arising from the general sales tax. $SalesTax$ is measured in dollars per pack. The idea is that $SalesTax$ is a relevant instrument as it is included in the after tax average price per pack. Also it is plausible that $SalesTax$ is exogeneous since the sales tax does not influence to quantity sold directly but indirectly through the price.
+
+Before computing the TSLS estimate for $\beta_1$ we have to do some transformations in order to obtain deflated cross section data for the year 1995. 
+
+We also compute the sample correlation between the sales tax and price per pack. Notice that the sample correlation is a consistent estimator of the pupulation. The estimate of approximately $0.614$ indicates that $SalesTax$ and $P_i^{cigarettes}$ exhibit moderately positive correlation which is in accordance with our expectations: higher sales taxes lead to higher prices. However, a correlation analysis like this is not sufficient for checking whether the instrument is relevant. We will later come back to the issue of checking weather an instrument is relevant and exogenous. 
+
+```{r}
+# compute real per capita prices
+CigarettesSW$rprice <- with(CigarettesSW, price/cpi)
+
+# SalesTax
+CigarettesSW$salestax <- with(CigarettesSW, (taxs - tax)/cpi)
+
+# check correlation between sales tax and price
+cor(CigarettesSW$salestax, CigarettesSW$price)
+
+# generate a subset for the year 1995
+c1995 <- subset(CigarettesSW, year == "1995")
+```
+
+The first stage regression is $$\log(P_i^{cigarettes}) = \pi_0 + \pi_1 SalesTax_i + \nu_i.$$ We estimate this model in \texttt{R} using `lm()`. In the second stage we run a regression of $\log(Q_i^{cigarettes})$ on $\widehat{\log(P_i^{cigarettes})}$ to obtain $\widehat{\beta}_0^{TSLS}$ and $\widehat{\beta}_1^{TSLS}$.
+
+```{r}
+# load the sandwich package for robust standard errors
+library(sandwich)
+
+# Stage 1 regression
+cig_s1 <- lm(log(rprice) ~ salestax, data = c1995)
+coeftest(cig_s1, vcov = vcovHC(cig_s1, type = "HC1"))
+```
+
+For the first stage regression we obtain $$\widehat{\log(P_i^{cigarettes})} = \underset{(0.03)}{4.62} + \underset{(0.005)}{0.031} SalesTax_i$$ which also predicts the relation between sales tax price per cigarettes to be postive. How much of the observed variation in $\log(P^{cigarettes})$ is explained by the instrumental variable $SalesTax$? This can be answered by looking at the regression's $R^2$ which states that about $47\%$ of the variation in after tax prices is explained by the variation of the sales tax across states.
+
+```{r}
+summary(cig_s1)$r.squared
+```
+
+We continue by saving $\widehat{\log(P_i^{cigarettes})}$, the fitted values predicted by the first stage regression `cig_s1`, to the variable `lcigp_pred`.
+
+```{r}
+# Save predicted values
+lcigp_pred <- cig_s1$fitted.values
+```
+
+Next, we run the second stage regression which gives the TSLS estimates we seek.
+
+```{r}
+# Stage 2 regression
+cig_s2 <- lm(log(c1995$packs) ~ lcigp_pred)
+coeftest(cig_s2, vcov = vcovHC(cig_s2))
+```
+
+Thus estimating the model equation \@ref(eq:cigstsls) using TSLS yields 
+
+\begin{align*}
+  \widehat{\log(Q_i^{cigarettes})} = \underset{(1.70)}{9.72} + \underset{(0.36)}{1.08} \log(P_i^{cigarettes}) (\#eq:ecigstsls)
+\end{align*}
+
+where we write $\log(P_i^{cigarettes})$ instead of $\widehat{\log(P_i^{cigarettes})}$ for convenience.
+
+The function `ivreg()` from the package `AER` carries out TSLS automatically. It is used similarly as `lm()`. Instruments can be added to the usual specification of the regression using a $|$ seperating the model equation from the instruments. Thus, for the regression and hand the correct formula is `log(packs) ~ log(rprice) | salestax`.
+
+```{r}
+# TSLS using ivreg()
+cig_ivreg <- ivreg(log(packs) ~ log(rprice) | salestax, data = c1995)
+
+coeftest(cig_ivreg, vcov = vcovHC(cig_ivreg, type = "HC1"))
+```
+
+We find that the coefficient estimates obtain coincide for both approaches.
+
+```{block2, ivse, type='rmdknit'}
+**Two notes on calculation of TSLS standard errors**
+
+1. We have demonstrated that running the individual regressions for each stage of TSLS using <tt>lm()</tt> leads to the same coefficient estimates as when using <tt>ivreg()</tt>. However, the standard errors reported for the second-stage regression, e.g. by <tt>coeftest()</tt> or <tt>summary()</tt>, are *invalid*: they *do not* adjust for using predictions from the first-stage regression as regressors in the second-stage regression! Fortunately, <tt>ivreg()</tt> performs the necessary adjustment automatically. This is another advantage over manual step-by-step estimation.
+  
+2. Just as in mutliple regression, it is important to compute heteroskedasticity-robust standard errors as we have done above using <tt>vcovHC()</tt>.
+```
+
+The TSLS estimate for $\beta_1$ in \@ref(eq:ecigstsls) means that an increase in cigarette prices by one percent reduces cigarette consumption by roughly $1.08$ percentage points which is fairly elastic. However, we know that this estimate might not be trusworthy although we used IV estimation: there still might be a bias due to omitted variables. Thus a multiple IV regression approach is needed.
+
+## The General IV Regression Model {#TGIVRM}
+
+
+The simple IV regression model is easily extended to a multiple regression model which we refer to as the general IV regression model. In this model we distinguish between four types of variables: the dependent variable, included exogenous variables, included endogenous variables and instrumental variables. Key Concept 12.1 summarizes the model and the common terminology. See Chapter 12.2 of the book for a more comprehensive discussion of the individual components of the general model.
+
+<div class = "keyconcept"> 
+<h3 class = "right"> Key Concept 12.1 </h3>
+<h3 class = "left"> The General Instrumental Variables Regression Model and Terminology </h3>
+
+\begin{align*}
+  Y_i = \beta_0 + \beta_1 X_{1i} + \dots + \beta_k X_{ki} + \beta_{k+1} W_{1i} + \beta_{k+r} W_{ri} + u_i, (\#eq:givmodel)
+\end{align*}
+
+$i=1,\dots,n$ is the general intrumental variables regression model where
+
+- $Y_i$ is the dependent variable
+
+- $\beta_1,\dots,\beta_k$ are $k$ unknown regression coefficients
+
+- $X_{1i},\dots,X_{ki}$ are $k$ endogenous regressors which are potentially correlated with $u_i$
+
+- $W_{1i},\dots,W_{ri}$ are $r$ exogenous regressors which are uncorrelated with $u_i$
+
+- $u_i$ is the error term
+
+- $Z_{1i},\dots,Z_{mi}$ are $m$ instrumental variables
+
+We say that the coefficients are overidentified if $m>k$ thats is if there are more instruments than regressors. If $m<k$, the coefficients are underidentified and when $m=k$ they are exactly identified. For estimation of the IV regression model exact identification or overidentification is required.
+
+</div>
+
+While computing both stages of TSLS individually is not a big deal in the simple regression model with a single endogenous regressor \@ref(eq:srm12), Key Concept 12.2 clarifies why resorting to TSLS estimation functions like `ivreg()` is much more convenient when the set of potentially endogenous regressors (and instruments) is large.
+
+Estimating regression models with TSLS using multiple instruments by means of `ivreg()` is straightforward. There are, however, some subtleties when it comes to correct specification of the regression formula that should be mentioned. 
+
+Assume that you want to estimate the model $$Y = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + W_1 + u$$ where $X_1$ and $X_2$ are endogenous regressors that shall be instrumented by $Z_1$, $Z_2$ and $Z_3$ and $W_1$ is an exogenous regressor. The corresponding data is available in a `data.frame` with coloumn names `y`, `x1`, `x1`, `w1`, `z1`, `z2` and `z3`. It might be tempting to specify the argument `formula` in your call of `ivreg()` as `y ~ x1 + x2 + w1 | z1 + z2 + z3` which is wrong. As explained in the documentation of `ivreg()` (see `?ivreg`), it is necessary to list *all* exogenous variables as instruments, that is joining them by `+`'s on the right of `|`: `y ~ x1 + x2 + w1 | w1 + z1 + z2 + z3` where `w1` is instrumenting itself. 
+
+If there is a large number of exogenous variables it may be convenient to provide an update formula with a `.` (this includes all variables except for the dependent variable) right after the `|` and to exclude all endogenous variables using `-`. 
+
+<div class = "keyconcept"> 
+<h3 class = "right"> Key Concept 12.2 </h3>
+<h3 class = "left"> Two Stage Least Squares </h3>
+
+Similarly to the simple IV regression model, the gerneral IV model \@ref(eq:givmodel) can be estimated using the TSLS estimator which is computed in two stages:
+
+1. **First-stage regression(s)**: Run an OLS regression for each of the endogenous variables ($X_{1i},\dots,X_{ki}$) on all instrumental variables ($Z_{1i},\dots,Z_{mi}$) and all exogenous variables ($W_{1i},\dots,W_{ri}$) and an intercept. Compute the fitted values ($\widehat{X}_{1i},\dots,\widehat{X}_{ki}$). 
+
+2. **Second-stage regression**: OLS regression of the dependent variable on predicted values of all endogenous regressors and all exogenous variables and an intercept. This delivers $\widehat{\beta}_{0}^{TSLS},\dots,\widehat{\beta}_{k+r}^{TSLS}$ which are called the TSLS estimates.
+</div>
+
+In the general IV regression model the instrument relevance and exogeneity assumptions are just as in the simple regression model with a single endogenous regressor and only one instrument. See Key Concept 12.3 for a recap using terminology of gerneral IV regression.
+
+<div class = "keyconcept"> 
+<h3 class = "right"> Key Concept 12.3 </h3>
+<h3 class = "left"> Two Conditions for Valid Instruments </h3>
+
+For $Z_{1i},\dots,Z_{mi}$ to be a set of valid instruments, the following two conditions must be fulfilled:
+
+1. **Instrument Relevance**: If there are $k$ endogenous variables, $r$ exogenous variables and $m\geq k$ instruments $Z$ and the $\widehat{X}_{1i}^*,\dots,\widehat{X}_{ki}^*$ are the predicted values from the $k$ population stage one regressions, it *must hold that* $$(\widehat{X}_{1i}^*,\dots,\widehat{X}_{ki}^*, W_{1i}, \dots, W_{ri},1)$$ are not perfectly multicollinear. $1$ denotes the constant regressor which equals $1$ for all observations.
+
+  *Note*: If there is only one endogenous regressor $X_i$, there must be at least one non-zero coefficient on the $Z$'s and the $W$'s in the population regression for this condition to be valid: If all of these coefficients are zero, all the $\widehat{X}^*_i$ are just the mean of $X$ such that there is perfect multicollinearity.
+
+2. **Instrument Exogeneity**:
+
+All the $m$ instruments are uncorrelated with the error term: 
+
+$$corr(Z_{1i},u_i) = 0,\dots,corr(Z_{mi},u_i) = 0$$
+
+</div>
+
+One can show that if the IV regression assumptions presented in Key Concept 12.4 hold, the TSLS estimator in the general IV model \@ref(eq:givmodel) is consistent and normally distributed when the sample size is large. To get an idea of the proof for this statement, see Appendix 12.3 of the book for a disussion of the special case with a single regressor, a single instrument and no exogenous variables. The reasoning behind this carries over to the general IV model. A more complicated explanation for the general case can be found in Chapter 18 of the book.
+
+For the purpose of this book it is sufficient to bear in mind that validity of the assumptions stated in Key Concept 12.4 allows us to obtain valid statistical inference using \texttt{R} functions used to compute $t$-Tests, $F$-Tests and confidence intervals for model coefficients.
+
+<div class = "keyconcept"> 
+<h3 class = "right"> Key Concept 12.4 </h3>
+<h3 class = "left"> The IV Regression Assumptions </h3>
+
+For the general IV regression model in Key Concept 12.1 we assume that
+
+1. $E(u_i\vert W_{1i}, \dots, W_{ri}) = 0$
+
+2. $(X_{1i},\dots,X_{ki},W_{1i},\dots,W_{ri},Z_{1i},\dots,Z_{mi})$ are i.i.d. draws from their joint distribution
+
+3. All $X$'s, $W$'s, $Z$'s and $Y$'s have nonzero finite fourth moments i.e. outliers are unlikely
+
+4. The $Z$'s are valid instruments (see Key Concept 12.3)
+
+</div>
+
+#### Application to the Demand for Cigarettes {-}
+
+The estimated elasticity of demand for cigarettes in \@ref(eq:srm12) is $1.08$. Although \@ref(eq:srm12) was estimated using IV regression it is plausible that this IV estimate is biased: in this model, the TSLS estimator is inconsistent for the true $\beta_1$ if the instrument (the real sales tax per pack) correlates with the error term. This is likely to be the case since there are economic facors like state income which impact the demand for cigarettes and correlate with the sales tax. States with high personal income tend to generate tax revenues more by income taxes and less by sales taxes. Consequently, state income needs to be included in the regression model.
+
+\begin{align*}
+  \log(Q_i^{cigarettes}) = \beta_0 + \beta_1 \log(P_i^{cigarettes}) + \beta_2 \log(Income_i) + u_i (\#eq:mcigstsls1)
+\end{align*}
+
+Before estimating \@ref(eq:mcigstsls1) using `ivreg()` we define $Income$ as real per capita income `rincome` and add it to the data set.
+
+```{r}
+# add rincome to the data set
+CigarettesSW$rincome <- with(CigarettesSW, income/population/cpi)
+c1995 <- subset(CigarettesSW, year == "1995")
+```
+
+```{r}
+# estimate the model
+cig_ivreg2 <- ivreg(log(packs) ~ log(rprice) + log(rincome) | log(rincome) + salestax,
+  data = c1995)
+
+coeftest(cig_ivreg2, vcov = vcovHC(cig_ivreg2, type = "HC1"))
+```
+
+We obtain
+
+\begin{align*}
+  \widehat{\log(Q_i^{cigarettes})} = \underset{(1.26)}{9.42} - \underset{(0.37)}{1.14} \log(P_i^{cigarettes}) + \underset{(0.31)}{0.21} \log(Income_i). (\#eq:emcigstsls2)
+\end{align*}
+
+Following the book we add the cigarette-specific taxes ($cigtax_i$) as a further instrumental variable and estimate again using TSLS.
+
+```{r}
+# add cigtax to the data set
+CigarettesSW$cigtax <- with(CigarettesSW, tax/cpi)
+c1995 <- subset(CigarettesSW, year == "1995")
+```
+
+```{r}
+cig_ivreg3 <- ivreg(log(packs) ~ log(rprice) + log(rincome) | 
+                      log(rincome) + salestax + cigtax, data = c1995)
+
+coeftest(cig_ivreg3, vcov = vcovHC(cig_ivreg3, type = "HC1"))
+```
+
+Using the two instrumental variables $salestax_i$ and $cigtax_i$ we have $m=2$ and $k=1$ so the coefficient on the endogenous regressor $\log(P_i^{cigarettes})$ is *overidentified*. The TSLS estimate of the regression function \@ref(eq:mcigstsls1) is
+
+\begin{align*}
+  \widehat{\log(Q_i^{cigarettes})} = \underset{(0.96)}{9.89} - \underset{(0.25)}{1.28} \log(P_i^{cigarettes}) + \underset{(0.25)}{0.28} \log(Income_i). (\#eq:emcigstsls3)
+\end{align*}
+
+Should we trust the estimates presented in \@ref(eq:emcigstsls2) or rather rely on \@ref(eq:emcigstsls3)? Comparing both equations we find that the estimation based on both instruments is more precise since in \@ref(eq:emcigstsls3) all standard errors reported are smaller than in \@ref(eq:emcigstsls2). In fact, the standard error for the estimator of the demand elasticity is only two thirds of the standard error when the sales tax is the only instrument used. This is due to more information being used in estimation \@ref(eq:emcigstsls3). *If* the instruments are *valid*, \@ref(eq:emcigstsls3) can be considered more reliable. 
+
+Without any inference on validity of both instruments it is not sensible to make a statement like that. This stresses why checking instrument validity is essential. Chapter 12.3 briefly disscusses guidelines in checking instrument validity and presents approaches that allow to test for instrument relevance and exogeneity under certain conditions. These are then used in an application to the demand for cigarettes in Chapter 12.4.
+
+## Checking Instrument Validity
+
+#### Instrument Relevance {-}
+
+Instruments that explain little variation in the endogenous regressor $X$ are called **weak instrument**. Weak instruments provide little information about the variation in $X$ that is exploited by IV regression to estimate the effect of interest: the estimate of the coefficient on the endogenous regressor is estimated inaccurately. Moreover, weak instruments cause the distribution of the estimator to deviate considerably from a normal distribution even in large samples such that known methods for obtaining inference about the true coefficient on $X$ may be invalid. See Chapter 12.3 and Appendix 12.4 of the book for a more detailed argument on the undesirable consequences of using weak instruments in IV regression.
+
+<div class = "keyconcept"> 
+<h3 class = "right"> Key Concept 12.5 </h3>
+<h3 class = "left"> A Rule of Thumb for Checking for Weak Instruments </h3>
+
+Consider the case of a *single* endogenous regressor $X$ and $m$ exogenous instruments $Z_1,\dots,Z_m$. If the coefficients on all instruments in the population first-stage regression of a TSLS estimation are zero, the instruments do not explain any of the variation in the $X$ which clearly violates assumption 1 of Key Concept 12.2. Though the latter case is unlikely to be encountered in practice, we should ask ourselves to what extend the assumption of instrument relevance should be fulfilled. 
+
+While this is hard to answer for general IV reggression, in the case of a *single* endogenous regressor $X$ one may use the following rule of thumb:
+
+Compute the $F$-statistic which corresponds to the hypothesis that the coefficients on $Z_1,\dots,Z_m$ are all zero in the first-stage regression. If the $F$-statistic is less than $10$ the instruments are weak such that the TSLS estimate of the coefficient on $X$ is biased and no valid statistical inference about its true value can be made. See also Appendix 12.5 of the book.
+
+</div>
+
+The rule of thumb stated in Key Concept 12.5 is easily implemented in <tt>R</tt>. One simply has to run the first stage regression using `lm()` and subsequently compute the heteroskedasticity-robust $F$-statistic by means of `linearHypothesis()`. This is part of the application to the demand for cigarettes discussed in Chapter 12.4.
+
+#### If instruments are weak {-}
+
+There are two options if instruments are weak:
+
+1. Discard the weak instruments and/or find stronger instruments. While the former is only an option if the unknown coefficients remain identified when the weak instruments are discarded, the latter can be very difficult and even may require a redesign of the whole study.
+
+2. Stick with the weak instruments but use methods that improve upon TSLS in this scenario, for example limited information maximum likelihood estimation, see Appendix 12.5 of the book.
+
+#### When the Assumption of Instrument Exogeneity is Violated {-}
+
+If there is correlation between an instrument and the error term IV regression is not consistent estimator (this is shown in Appendix 12.4 of the book). As econometricians we wish to use the available information for gaining statistical inference whether an instrument is exogenous or not. The overidentifying restrictions test (also called the $J$-test) is an approach to test the hypothesis that *additional* instruments are exogenous under the assumption that the set of instruments consists of enough valid instruments to identify the coefficients of interest. For the $J$-test to be applicable we there need to be more instruments than endogenous regressors. The idea is summarized in Key Concept 12.5.
+
+<div class = "keyconcept"> 
+<h3 class = "right"> Key Concept 12.5 </h3>
+<h3 class = "left"> $J$-Statistic / Overidentifying Restriction Test </h3>
+
+Take $\widehat{u}_i^{TSLS} \ , \ i = 1,\dots,n$, the residuals of the TSLS estimation of the general IV regression model \@ref(eq:givmodel). Run the OLS regression
+
+\begin{align*}
+  \widehat{u}_i^{TSLS} =& \, \delta_0 + \delta_1 Z_{1i} + \dots + \delta_m Z_{mi} + \delta_{m+1} W_{1i} + \dots + \delta_{m+r} W_{ri} + e_i (\#eq:jstatreg)
+\end{align*}
+
+and test the hypothesis $$H_0: \delta_1 = 0, \dots, \delta_{m} = 0$$ which states that all instruments are exogenous. This can be done using the corresponding $F$-statistic by computing $$J = m  F.$$ This test is the overidentifying restrictions test and the statistic is called the $J$-statistic with $$J \sim \chi^2_{m-k}$$ in large samples and the assumption of homoskedasticity. The degress of freedom $m-k$ state the degree of overidentification since this is the number of instruments $m$ minus the number of endogenous regressors $k$.
+
+</div>
+
+It is important to note that the $J$-statistic discussed in Key Concept 12.5 is only $\chi^2_{m-k}$ distributed when the error term $e_i$ in the regression \@ref(eq:jstatreg) is homoskedastic.  Discussion of the heteroskedasticity-robust $J$-statistic is beyond the scope of this chapter the reader is refered to Section 18.7 for a theoretical argument. 
+
+As for the procedure shown in Key Concept 12.5, further interest lies in applying the $J$-test using the function `linearHypothesis()` in <tt>R</tt> which will be shown in context of estimation of the demand elasticity for cigarettes discussed in the next chapter. 
+
+## Application to the Demand for Cigarettes
+
+Are the general sales tax and the cigarette-specific tax valid instruments? If not the TSLS attempt to estimate the demand elasticity for cigarettes discussed in [Chapter 12.2](#TGIVRM) is not meaningful and we need to rethink the design of the study. As discussed in [Chapter 12.1](#TIVEWASRAASI) both variables are likely do be relevant but whether they are exogenous is a different question.
+
+In the book it is advocated that cigarette-specific taxes could be endogenous because there might be state specific historical factors like economic importance of the tabacco farming and cigarette production industry that enforces its interest in low cigarette specific taxes. Since it is plausible that tabacco growing states have higher rates of smoking than others this would lead to endogeneity of cigarette specific taxes. If data about the size on the tabacco and cigarette industry would be available we could solve this potential issue by including the information in the regression which is not the case.
+
+However, since the role of the influence of the tabacco and cigarette industry is a factor that can be assumed to differ across states but not over time we may exploit the panel structure of `CigarettesSW` instead: as shown in [Chapter 10.2](#PDWTTP), regression using data on *changes*  between two time periods eliminates such state specific and time invariant effects. Following the book we consider changes in variables between 1985 and 1995 that is we are interested in estimating the *long-run elasticity* of the demand for cigarettes.
+
+The model to be estimated by TSLS using the general sales tax and the cigarette-specific sals tax as instruments hence is
+
+\begin{align*}
+  \log(Q_{i,1995}^{cigarettes}) - \log(Q_{i,1995}^{cigarettes}) =& \, \beta_0 + \beta_1 \left[\log(P_{i,1995}^{cigarettes}) - \log(P_{i,1985}^{cigarettes}) \right] \\ & \, + \beta_2 \left[\log(Income_{i,1995}) - \log(Income_{i,1985})\right] + u_i (\#eq:diffivreg).
+\end{align*}
+
+Prior to the estimation using `ivreg()` we define changes from 1985 to 1995 for the dependent variable, the regressors and both instruments. 
+
+```{r}
+# subset data for year 1985
+c1985 <- subset(CigarettesSW, year == "1985")
+
+# define changes in variables
+packsdiff <- log(c1995$packs) - log(c1985$packs)
+
+pricediff <- log(c1995$price/c1995$cpi) - log(c1985$price/c1985$cpi)
+
+incomediff <- log(c1995$income/c1995$population/c1995$cpi) -
+log(c1985$income/c1985$population/c1985$cpi)
+
+salestaxdiff <- (c1995$taxs - c1995$tax)/c1995$cpi - (c1985$taxs - c1985$tax)/c1985$cpi
+
+cigtaxdiff <- c1995$tax/c1995$cpi - c1985$tax/c1985$cpi
+```
+
+We perform three estimations of \@ref(eq:diffivreg) using `ivreg()`:
+
+1. 2SLS using only the difference in the sales taxes between 1985 and 1995 as the instrument.
+
+2. 2SLS using only the dfference in the cigarette-specific sales taxes 1985 and 1995 as the instrument.  
+
+3. 2SLS using both the difference in the sales taxes 1985 and 1995 and the dfference in the cigarette-specific sales taxes 1985 and 1995 as instruments.
+
+```{r}
+# estimate models
+cig_ivreg_diff1 <- ivreg(packsdiff ~ pricediff + incomediff | incomediff + salestaxdiff)
+
+cig_ivreg_diff2 <- ivreg(packsdiff ~ pricediff + incomediff | incomediff + cigtaxdiff)
+
+cig_ivreg_diff3 <- ivreg(packsdiff ~ pricediff + incomediff | incomediff + salestaxdiff + cigtaxdiff)
+```
+
+As usual we use `coeftest()` in conjunction with `vcovHC()` to obtain robust coefficient summaries for all three models.
+
+```{r}
+# robust coefficient summary 1
+coeftest(cig_ivreg_diff1, vcov = vcovHC(cig_ivreg_diff1, type = "HC1"))
+
+# robust coefficient summary 2
+coeftest(cig_ivreg_diff2, vcov = vcovHC(cig_ivreg_diff2, type = "HC1"))
+
+# robust coefficient summary 3
+coeftest(cig_ivreg_diff3, vcov = vcovHC(cig_ivreg_diff3, type = "HC1"))
+```
+
+We proceed by generating a tabulated summary of the estimation results using `stargazer()`.
+
+```{r}
+# gather robust standard errors in a list
+rob_se <- list(
+  sqrt(diag(vcovHC(cig_ivreg_diff1, type = "HC1"))),
+  sqrt(diag(vcovHC(cig_ivreg_diff2, type = "HC1"))),
+  sqrt(diag(vcovHC(cig_ivreg_diff3, type = "HC1")))
+)
+```
+
+<!--html_preserve-->
+
+```{r, message=F, warning=F, results='asis', echo=F}
+library(stargazer)
+
+stargazer(cig_ivreg_diff1, cig_ivreg_diff2,cig_ivreg_diff3,
+  title = "2SLS Estimates of the Long-Term Elasticity of the Demand for Cigarettes using Panel Data",
+  header = FALSE, 
+  type = "html",
+  omit.table.layout = "n",
+  digits = 2, 
+  column.labels = c("IV: salestax", "IV: cigtax", "IVs: salestax, cigtax"),
+  dep.var.labels.include = FALSE,
+  dep.var.caption = "Dependent variable: 1985-1995 difference in log per pack price",
+  se = rob_se)
+```
+
+<!--/html_preserve-->
+
+We observe negative estimates of the coefficient on `pricediff` that are quite different in magnitude. Which one should we trust most? This hinges only on the validity of instruments used. To assess this we compute $F$-statistics for the first-stage regression of all three models to check instrument relevance. 
+
+```{r}
+# First-stage regressions
+mod_relevance1 <- lm(pricediff ~ salestaxdiff + incomediff)
+mod_relevance2 <- lm(pricediff ~ cigtaxdiff + incomediff)
+mod_relevance3 <- lm(pricediff ~ incomediff + salestaxdiff + cigtaxdiff)
+```
+
+```{r}
+# check instrument relevance for model 1
+linearHypothesis(mod_relevance1, 
+                 "salestaxdiff = 0", 
+                 vcov = vcovHC(mod_relevance1, type = "HC1"))
+```
+
+```{r}
+# check instrument relevance for model 2
+linearHypothesis(mod_relevance2, 
+                 "cigtaxdiff = 0", 
+                 vcov = vcovHC(mod_relevance2, type = "HC1"))
+```
+
+```{r}
+# check instrument relevance for model 3
+linearHypothesis(mod_relevance3, 
+                 c("salestaxdiff = 0", "cigtaxdiff = 0"), 
+                 vcov = vcovHC(mod_relevance3, type = "HC1"))
+```
+
+We also conduct the overidentifying restrictions test for model three which is the only model where the coefficient on the difference in log prices is overidentified ($m=2$, $k=1$) such that the $J$-statistic can be computed. To do this we take the residuals stored in `cig_ivreg_diff3` and regress them on
+both instruments and the presumably exogenous regressor `incomediff`. Yet again use `linearHypothesis()` to test jointly whether the coefficients on both instruments are zero which is necessary for the exogeneity assumption to be fulfilled. Note that with `test = "Chisq"` we obtain a chi-squared distributed test statistic instead of a $F$-statistic.
+
+```{r}
+# compute J-statistic
+
+cig_iv_OR <- lm(residuals(cig_ivreg_diff3) ~ incomediff + salestaxdiff + cigtaxdiff)
+
+cig_OR_test <- linearHypothesis(cig_iv_OR, 
+                               c("salestaxdiff = 0", "cigtaxdiff = 0"), 
+                               test = "Chisq")
+cig_OR_test
+```
+
+**Caution**: In this case the $p$-Value reported by `linearHypothesis()` is wrong because the degrees of freedom are set to $2$. This differs from the degree of overidetification ($m-k=2-1=1$) so the $J$-statistic is $\chi^2_1$ distributed instead of following a $\chi^2_2$ distribution as assumed defaultly `linearHypothesis()`. We may compute the correct $p$-Value using `pchisq()`. 
+
+```{r}
+# compute correct p-value for J-statistic
+pchisq(cig_OR_test[2,5], df = 1, lower.tail = FALSE)
+```
+
+Since this value is smaller than $0.05$ we reject the hypothesis that both instruments are exogenous at the level of $5\%$. This means one the following: 
+
+1. The sales tax is an invalid instrument.
+2. The cigarettes-specific sales tax is an invalid instrument.
+3. Both instruments are invaild.
+
+In the book it is argued that the assumption of instrument exogeneity is more likely to hold for the gerneral sales tax (see Chapter 12.4 of the book) such that the IV estimate of the long-run elasticity of demand for cigarettes we consider the most trustworthy is $-0.94$, the estimate obtained using 2SLS with only the general sales tax as an instrument. 
+
+The interpretation of this estimate is that over a 10-year period, an increase in the average price per package by one percent is expected to decrease consumption by about $0.94$ percentage points. This suggests that, in the long run, price increases can reduce cigarette consumption considerably.
+
+## Where Do Valid Instruments Come From?
+
+Chapter 12.5 of the books presents a comprehensive discussion of approaches to find valid instruments in practice by the example of three research questions:
+
+1. Does putting criminals in jail reduce crime?
+2. Does cutting class sizes invrease test scores?
+3. Does aggressive treatment of heart attacks prolong lives?
+
+This section is not directly related to applications in <tt>R</tt> which is why we do not discuss the contents here. We encourage you to work through this on your own.
+
+#### Summary {-}
+
+`ivreg()` from the package <tt>AER</tt> provides convenient functionalities to estimate IV regression models in <tt>R</tt>. It is an implementation of the 2SLS estimation approach.
+
+Besides treating IV estimation, we have also discussed how to test for weak instruments and how to conduct an overidentifying restrictions test when there are more instrumental variables than endogenous regressors using <tt>R</tt>. 
+
+In an empirical application we have shown how `ivreg()` can be used to estimate the long-run elasticity of demand for cigarettes based on `CigarettesSW`, a panel data set on cigarette consumption and economic indicators for all 48 continental US states for time periods 1985 and 1995. Different sets of instruments were used in the process and it has been argued why using the general sales tax as the only instrument is the prefered choice here. The estimate of the demand elasticity deemed the most trustworthy is $-0.94$. This estimate suggests that there is a remarkable negative long-run effect on cigarette consumption of increasing the average price per pack.
+
+

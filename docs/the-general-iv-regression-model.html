@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html >
+
+<head>
+
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Using R for Introduction to Econometrics</title>
+  <meta name="description" content="Using R for Introduction to Econometrics">
+  <meta name="generator" content="bookdown 0.5 and GitBook 2.6.7">
+
+  <meta property="og:title" content="Using R for Introduction to Econometrics" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+  <meta name="github-repo" content="Emwikts1970/URFITE-Bookdown" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Using R for Introduction to Econometrics" />
+  
+  
+  
+
+<meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber and Martin Schmelzer">
+
+
+<meta name="date" content="2018-01-02">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  
+  
+<link rel="prev" href="the-iv-estimator-with-a-single-regressor-and-a-single-instrument.html">
+<link rel="next" href="checking-instrument-validity.html">
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+
+
+
+
+
+
+
+<script src="js/hideOutput.js"></script>
+<script type="text/javascript" src="MathJax-2.7.2/MathJax.js?config=default"></script>
+
+ <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        extensions: ["tex2jax.js", "TeX/AMSmath.js"],
+        tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+        jax: ["input/TeX","output/CommonHTML"]
+      });
+      MathJax.Hub.processSectionDelay = 0;
+  </script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-110299877-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-110299877-1');
+</script>
+
+<!-- open review block -->
+
+<script async defer src="https://hypothes.is/embed.js"></script>
+
+
+<!-- <script src="js/d3.v3.min.js"></script>
+<script src="js/leastsquares.js"></script>
+<script src="js/d3functions.js"></script>
+<script src="d3.slider.js"></script>
+<script src="slrm.js"></script> -->
+
+
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; background-color: #f8f8f8; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+pre, code { background-color: #f8f8f8; }
+code > span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code > span.dt { color: #204a87; } /* DataType */
+code > span.dv { color: #0000cf; } /* DecVal */
+code > span.bn { color: #0000cf; } /* BaseN */
+code > span.fl { color: #0000cf; } /* Float */
+code > span.ch { color: #4e9a06; } /* Char */
+code > span.st { color: #4e9a06; } /* String */
+code > span.co { color: #8f5902; font-style: italic; } /* Comment */
+code > span.ot { color: #8f5902; } /* Other */
+code > span.al { color: #ef2929; } /* Alert */
+code > span.fu { color: #000000; } /* Function */
+code > span.er { color: #a40000; font-weight: bold; } /* Error */
+code > span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #000000; } /* Constant */
+code > span.sc { color: #000000; } /* SpecialChar */
+code > span.vs { color: #4e9a06; } /* VerbatimString */
+code > span.ss { color: #4e9a06; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #000000; } /* Variable */
+code > span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code > span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code > span.ex { } /* Extension */
+code > span.at { color: #c4a000; } /* Attribute */
+code > span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code > span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">URFITE</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Preface</a></li>
+<li class="chapter" data-level="2" data-path="probability-theory.html"><a href="probability-theory.html"><i class="fa fa-check"></i><b>2</b> Probability Theory</a><ul>
+<li class="chapter" data-level="2.1" data-path="random-variables-and-probability-distributions.html"><a href="random-variables-and-probability-distributions.html"><i class="fa fa-check"></i><b>2.1</b> Random Variables and Probability Distributions</a><ul>
+<li class="chapter" data-level="" data-path="random-variables-and-probability-distributions.html"><a href="random-variables-and-probability-distributions.html#probability-distributions-of-discrete-random-variables"><i class="fa fa-check"></i>Probability Distributions of Discrete Random Variables</a></li>
+<li class="chapter" data-level="" data-path="random-variables-and-probability-distributions.html"><a href="random-variables-and-probability-distributions.html#bernoulli-trials"><i class="fa fa-check"></i>Bernoulli Trials</a></li>
+<li class="chapter" data-level="" data-path="random-variables-and-probability-distributions.html"><a href="random-variables-and-probability-distributions.html#expected-values-mean-and-variance"><i class="fa fa-check"></i>Expected Values, Mean and Variance</a></li>
+</ul></li>
+<li class="chapter" data-level="2.2" data-path="probability-distributions-of-continuous-random-variables.html"><a href="probability-distributions-of-continuous-random-variables.html"><i class="fa fa-check"></i><b>2.2</b> Probability Distributions of Continuous Random Variables</a><ul>
+<li class="chapter" data-level="" data-path="probability-distributions-of-continuous-random-variables.html"><a href="probability-distributions-of-continuous-random-variables.html#the-normal-distribution"><i class="fa fa-check"></i>The Normal Distribution</a></li>
+<li class="chapter" data-level="" data-path="probability-distributions-of-continuous-random-variables.html"><a href="probability-distributions-of-continuous-random-variables.html#the-chi-squared-distribution"><i class="fa fa-check"></i>The Chi-Squared Distribution</a></li>
+<li><a href="probability-distributions-of-continuous-random-variables.html#thetdist">The Student <span class="math inline">\(t\)</span> Distribution</a></li>
+<li><a href="probability-distributions-of-continuous-random-variables.html#the-f-distribution">The <span class="math inline">\(F\)</span> Distribution</a></li>
+</ul></li>
+<li class="chapter" data-level="2.3" data-path="random-sampling-and-the-distribution-of-sample-averages.html"><a href="random-sampling-and-the-distribution-of-sample-averages.html"><i class="fa fa-check"></i><b>2.3</b> Random Sampling and the Distribution of Sample Averages</a><ul>
+<li class="chapter" data-level="" data-path="random-sampling-and-the-distribution-of-sample-averages.html"><a href="random-sampling-and-the-distribution-of-sample-averages.html#mean-and-variance-of-the-sample-mean"><i class="fa fa-check"></i>Mean and Variance of the Sample Mean</a></li>
+<li class="chapter" data-level="" data-path="random-sampling-and-the-distribution-of-sample-averages.html"><a href="random-sampling-and-the-distribution-of-sample-averages.html#large-sample-approximations-to-sampling-distributions"><i class="fa fa-check"></i>Large Sample Approximations to Sampling Distributions</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="a-review-of-statistics-using-r.html"><a href="a-review-of-statistics-using-r.html"><i class="fa fa-check"></i><b>3</b> A Review of Statistics using R</a><ul>
+<li class="chapter" data-level="3.1" data-path="estimation-of-the-population-mean.html"><a href="estimation-of-the-population-mean.html"><i class="fa fa-check"></i><b>3.1</b> Estimation of the Population Mean</a></li>
+<li class="chapter" data-level="3.2" data-path="properties-of-the-sample-mean.html"><a href="properties-of-the-sample-mean.html"><i class="fa fa-check"></i><b>3.2</b> Properties of the Sample Mean</a></li>
+<li class="chapter" data-level="3.3" data-path="hypothesis-tests-concerning-the-population-mean.html"><a href="hypothesis-tests-concerning-the-population-mean.html"><i class="fa fa-check"></i><b>3.3</b> Hypothesis Tests Concerning the Population Mean</a><ul>
+<li><a href="hypothesis-tests-concerning-the-population-mean.html#p-value"><span class="math inline">\(p\)</span>-Value</a></li>
+<li><a href="hypothesis-tests-concerning-the-population-mean.html#calculating-the-p-value-when-sigma_y-is-known">Calculating the <span class="math inline">\(p\)</span>-Value When <span class="math inline">\(\sigma_Y\)</span> Is Known</a></li>
+</ul></li>
+<li class="chapter" data-level="3.4" data-path="shade-p-value2-region-in-right-tail.html"><a href="shade-p-value2-region-in-right-tail.html"><i class="fa fa-check"></i><b>3.4</b> shade p-value/2 region in right tail</a><ul>
+<li class="chapter" data-level="" data-path="shade-p-value2-region-in-right-tail.html"><a href="shade-p-value2-region-in-right-tail.html#sample-variance-sample-standard-deviation-and-standard-error"><i class="fa fa-check"></i>Sample Variance, Sample Standard Deviation and Standard Error</a></li>
+<li><a href="shade-p-value2-region-in-right-tail.html#calculating-the-p-value-when-sigma_y-is-unknown">Calculating the <span class="math inline">\(p\)</span>-value When <span class="math inline">\(\sigma_Y\)</span> is Unknown</a></li>
+<li><a href="shade-p-value2-region-in-right-tail.html#the-t-statistic">The <span class="math inline">\(t\)</span>-statistic</a></li>
+<li class="chapter" data-level="" data-path="shade-p-value2-region-in-right-tail.html"><a href="shade-p-value2-region-in-right-tail.html#hypothesis-testing-with-a-prespecified-significance-level"><i class="fa fa-check"></i>Hypothesis Testing with a Prespecified Significance Level</a></li>
+<li class="chapter" data-level="" data-path="shade-p-value2-region-in-right-tail.html"><a href="shade-p-value2-region-in-right-tail.html#one-sided-alternatives"><i class="fa fa-check"></i>One-sided Alternatives</a></li>
+</ul></li>
+<li class="chapter" data-level="3.5" data-path="confidence-intervals-for-the-population-mean.html"><a href="confidence-intervals-for-the-population-mean.html"><i class="fa fa-check"></i><b>3.5</b> Confidence intervals for the Population Mean</a></li>
+<li class="chapter" data-level="3.6" data-path="comparing-means-from-different-populations.html"><a href="comparing-means-from-different-populations.html"><i class="fa fa-check"></i><b>3.6</b> Comparing Means from Different Populations</a></li>
+<li class="chapter" data-level="3.7" data-path="an-application-to-the-gender-gap-of-earnings.html"><a href="an-application-to-the-gender-gap-of-earnings.html"><i class="fa fa-check"></i><b>3.7</b> An Application to the Gender Gap of Earnings</a></li>
+<li class="chapter" data-level="3.8" data-path="scatterplots-sample-covariance-and-sample-correlation.html"><a href="scatterplots-sample-covariance-and-sample-correlation.html"><i class="fa fa-check"></i><b>3.8</b> Scatterplots, Sample Covariance and Sample Correlation</a></li>
+<li class="chapter" data-level="3.9" data-path="plots.html"><a href="plots.html"><i class="fa fa-check"></i><b>3.9</b> Plots</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="lrwor.html"><a href="lrwor.html"><i class="fa fa-check"></i><b>4</b> Linear Regression with One Regressor</a><ul>
+<li class="chapter" data-level="4.1" data-path="estimating-the-coefficients-of-the-linear-regression-model.html"><a href="estimating-the-coefficients-of-the-linear-regression-model.html"><i class="fa fa-check"></i><b>4.1</b> Estimating the Coefficients of the Linear Regression Model</a><ul>
+<li class="chapter" data-level="" data-path="estimating-the-coefficients-of-the-linear-regression-model.html"><a href="estimating-the-coefficients-of-the-linear-regression-model.html#the-ordinary-least-squares-estimator"><i class="fa fa-check"></i>The Ordinary Least Squares Estimator</a></li>
+</ul></li>
+<li class="chapter" data-level="4.2" data-path="measures-of-fit.html"><a href="measures-of-fit.html"><i class="fa fa-check"></i><b>4.2</b> Measures of Fit</a><ul>
+<li><a href="measures-of-fit.html#the-r2">The <span class="math inline">\(R^2\)</span></a></li>
+<li class="chapter" data-level="" data-path="measures-of-fit.html"><a href="measures-of-fit.html#standard-error-of-the-regression"><i class="fa fa-check"></i>Standard Error of the Regression</a></li>
+<li class="chapter" data-level="" data-path="measures-of-fit.html"><a href="measures-of-fit.html#application-to-the-test-score-data"><i class="fa fa-check"></i>Application to the Test Score Data</a></li>
+</ul></li>
+<li class="chapter" data-level="4.3" data-path="the-least-squares-assumptions.html"><a href="the-least-squares-assumptions.html"><i class="fa fa-check"></i><b>4.3</b> The Least Squares Assumptions</a><ul>
+<li class="chapter" data-level="" data-path="the-least-squares-assumptions.html"><a href="the-least-squares-assumptions.html#assumption-1-the-error-term-has-conditional-mean-of-zero"><i class="fa fa-check"></i>Assumption #1: The Error Term has Conditional Mean of Zero</a></li>
+</ul></li>
+<li class="chapter" data-level="4.4" data-path="the-true-relation.html"><a href="the-true-relation.html"><i class="fa fa-check"></i><b>4.4</b> the true relation</a><ul>
+<li><a href="the-true-relation.html#assumption-2-all-x_i-y_i-are-independently-and-identically-distributed">Assumption #2: All <span class="math inline">\((X_i, Y_i)\)</span> are Independently and Identically Distributed</a></li>
+<li class="chapter" data-level="" data-path="the-true-relation.html"><a href="the-true-relation.html#assumption-3-large-outliers-are-unlikely"><i class="fa fa-check"></i>Assumption #3: Large outliers are unlikely</a></li>
+</ul></li>
+<li class="chapter" data-level="4.5" data-path="tsdotoe.html"><a href="tsdotoe.html"><i class="fa fa-check"></i><b>4.5</b> The Sampling Distribution of the OLS Estimator</a><ul>
+<li class="chapter" data-level="" data-path="tsdotoe.html"><a href="tsdotoe.html#r-simulation-study-1"><i class="fa fa-check"></i>R Simulation Study 1</a></li>
+<li class="chapter" data-level="" data-path="tsdotoe.html"><a href="tsdotoe.html#r-simulation-study-2"><i class="fa fa-check"></i>R Simulation Study 2</a></li>
+<li class="chapter" data-level="" data-path="tsdotoe.html"><a href="tsdotoe.html#r-simulation-study-3"><i class="fa fa-check"></i>R Simulation Study 3</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="hypothesis-tests-and-confidence-intervals-in-the-simple-linear-regression-model.html"><a href="hypothesis-tests-and-confidence-intervals-in-the-simple-linear-regression-model.html"><i class="fa fa-check"></i><b>5</b> Hypothesis Tests and Confidence Intervals in the Simple Linear Regression Model</a><ul>
+<li class="chapter" data-level="5.1" data-path="testing-two-sided-hypotheses-concerning-beta-1.html"><a href="testing-two-sided-hypotheses-concerning-beta-1.html"><i class="fa fa-check"></i><b>5.1</b> Testing Two-Sided Hypotheses Concerning <span class="math inline">\(\beta_1\)</span></a></li>
+<li class="chapter" data-level="5.2" data-path="critical-region-in-left-tail.html"><a href="critical-region-in-left-tail.html"><i class="fa fa-check"></i><b>5.2</b> critical region in left tail</a></li>
+<li class="chapter" data-level="5.3" data-path="critical-region-in-right-tail.html"><a href="critical-region-in-right-tail.html"><i class="fa fa-check"></i><b>5.3</b> critical region in right tail</a></li>
+<li class="chapter" data-level="5.4" data-path="confidence-intervals-for-regression-coefficients.html"><a href="confidence-intervals-for-regression-coefficients.html"><i class="fa fa-check"></i><b>5.4</b> Confidence Intervals for Regression Coefficients</a><ul>
+<li class="chapter" data-level="" data-path="confidence-intervals-for-regression-coefficients.html"><a href="confidence-intervals-for-regression-coefficients.html#r-simulation-study-5.1"><i class="fa fa-check"></i>R Simulation Study 5.1</a></li>
+</ul></li>
+<li class="chapter" data-level="5.5" data-path="regression-when-x-is-a-binary-variable.html"><a href="regression-when-x-is-a-binary-variable.html"><i class="fa fa-check"></i><b>5.5</b> Regression when <span class="math inline">\(X\)</span> is a Binary Variable</a></li>
+<li class="chapter" data-level="5.6" data-path="heteroskedasticity-and-homoskedasticity.html"><a href="heteroskedasticity-and-homoskedasticity.html"><i class="fa fa-check"></i><b>5.6</b> Heteroskedasticity and Homoskedasticity</a><ul>
+<li class="chapter" data-level="" data-path="heteroskedasticity-and-homoskedasticity.html"><a href="heteroskedasticity-and-homoskedasticity.html#a-real-world-example-for-heteroskedasticity"><i class="fa fa-check"></i>A Real-World Example for Heteroskedasticity</a></li>
+<li class="chapter" data-level="" data-path="heteroskedasticity-and-homoskedasticity.html"><a href="heteroskedasticity-and-homoskedasticity.html#should-we-care-about-heteroskedasticity"><i class="fa fa-check"></i>Should We Care About Heteroskedasticity?</a></li>
+<li class="chapter" data-level="" data-path="heteroskedasticity-and-homoskedasticity.html"><a href="heteroskedasticity-and-homoskedasticity.html#computation-of-heteroskedasticity-robust-standard-errors"><i class="fa fa-check"></i>Computation of Heteroskedasticity-Robust Standard Errors</a></li>
+</ul></li>
+<li class="chapter" data-level="5.7" data-path="the-gauss-markov-theorem.html"><a href="the-gauss-markov-theorem.html"><i class="fa fa-check"></i><b>5.7</b> The Gauss-Markov Theorem</a><ul>
+<li class="chapter" data-level="" data-path="the-gauss-markov-theorem.html"><a href="the-gauss-markov-theorem.html#r-simulation-study-blue-estimator"><i class="fa fa-check"></i>R Simulation Study: BLUE Estimator</a></li>
+</ul></li>
+<li class="chapter" data-level="5.8" data-path="ols.html"><a href="ols.html"><i class="fa fa-check"></i><b>5.8</b> OLS</a></li>
+<li class="chapter" data-level="5.9" data-path="weighted.html"><a href="weighted.html"><i class="fa fa-check"></i><b>5.9</b> Weighted</a></li>
+<li class="chapter" data-level="5.10" data-path="add-a-dashed-line-at-0-and-a-legend-to-the-plot.html"><a href="add-a-dashed-line-at-0-and-a-legend-to-the-plot.html"><i class="fa fa-check"></i><b>5.10</b> Add a dashed line at 0 and a legend to the plot</a></li>
+<li class="chapter" data-level="5.11" data-path="using-the-t-statistic-in-regression-when-the-sample-size-is-small.html"><a href="using-the-t-statistic-in-regression-when-the-sample-size-is-small.html"><i class="fa fa-check"></i><b>5.11</b> Using the <span class="math inline">\(t\)</span>-Statistic in Regression When the Sample Size Is Small</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="regression-models-with-multiple-regressors.html"><a href="regression-models-with-multiple-regressors.html"><i class="fa fa-check"></i><b>6</b> Regression Models with Multiple Regressors</a><ul>
+<li class="chapter" data-level="6.1" data-path="omitted-variable-bias.html"><a href="omitted-variable-bias.html"><i class="fa fa-check"></i><b>6.1</b> Omitted Variable Bias</a></li>
+<li class="chapter" data-level="6.2" data-path="the-multiple-regression-model.html"><a href="the-multiple-regression-model.html"><i class="fa fa-check"></i><b>6.2</b> The Multiple Regression Model</a></li>
+<li class="chapter" data-level="6.3" data-path="measures-of-fit-in-multiple-regression.html"><a href="measures-of-fit-in-multiple-regression.html"><i class="fa fa-check"></i><b>6.3</b> Measures of Fit in Multiple Regression</a></li>
+<li class="chapter" data-level="6.4" data-path="ols-assumptions-in-multiple-regression.html"><a href="ols-assumptions-in-multiple-regression.html"><i class="fa fa-check"></i><b>6.4</b> OLS Assumptions in Multiple Regression</a><ul>
+<li class="chapter" data-level="" data-path="ols-assumptions-in-multiple-regression.html"><a href="ols-assumptions-in-multiple-regression.html#multicollinearity"><i class="fa fa-check"></i>Multicollinearity</a></li>
+</ul></li>
+<li class="chapter" data-level="6.5" data-path="the-distribution-of-the-ols-estimators-in-multiple-regression.html"><a href="the-distribution-of-the-ols-estimators-in-multiple-regression.html"><i class="fa fa-check"></i><b>6.5</b> The Distribution of the OLS Estimators in Multiple Regression</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="hypothesis-tests-and-confidence-intervals-in-multiple-regression.html"><a href="hypothesis-tests-and-confidence-intervals-in-multiple-regression.html"><i class="fa fa-check"></i><b>7</b> Hypothesis Tests and Confidence intervals in Multiple Regression</a><ul>
+<li class="chapter" data-level="7.1" data-path="hypothesis-tests-and-confidence-intervals-for-a-single-coefficient.html"><a href="hypothesis-tests-and-confidence-intervals-for-a-single-coefficient.html"><i class="fa fa-check"></i><b>7.1</b> Hypothesis Tests and Confidence Intervals for a Single Coefficient</a></li>
+<li class="chapter" data-level="7.2" data-path="an-application-to-test-scores-and-the-student-teacher-ratio.html"><a href="an-application-to-test-scores-and-the-student-teacher-ratio.html"><i class="fa fa-check"></i><b>7.2</b> An Application to Test Scores and the Student-Teacher Ratio</a><ul>
+<li class="chapter" data-level="" data-path="an-application-to-test-scores-and-the-student-teacher-ratio.html"><a href="an-application-to-test-scores-and-the-student-teacher-ratio.html#another-augmentation-of-the-model"><i class="fa fa-check"></i>Another Augmentation of the Model</a></li>
+</ul></li>
+<li class="chapter" data-level="7.3" data-path="joint-hypothesis-testing-using-the-f-statistic.html"><a href="joint-hypothesis-testing-using-the-f-statistic.html"><i class="fa fa-check"></i><b>7.3</b> Joint Hypothesis Testing Using the <span class="math inline">\(F\)</span>-Statistic</a></li>
+<li class="chapter" data-level="7.4" data-path="confidence-sets-for-multiple-coefficients.html"><a href="confidence-sets-for-multiple-coefficients.html"><i class="fa fa-check"></i><b>7.4</b> Confidence Sets for Multiple Coefficients</a></li>
+<li class="chapter" data-level="7.5" data-path="model-specification-for-multiple-regression.html"><a href="model-specification-for-multiple-regression.html"><i class="fa fa-check"></i><b>7.5</b> Model Specification for Multiple Regression</a><ul>
+<li class="chapter" data-level="" data-path="model-specification-for-multiple-regression.html"><a href="model-specification-for-multiple-regression.html#model-specification-in-theory-and-in-practice"><i class="fa fa-check"></i>Model Specification in Theory and in Practice</a></li>
+</ul></li>
+<li class="chapter" data-level="7.6" data-path="analysis-of-the-test-score-data-set.html"><a href="analysis-of-the-test-score-data-set.html"><i class="fa fa-check"></i><b>7.6</b> Analysis of the Test Score Data Set</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="nonlinear-regression-functions.html"><a href="nonlinear-regression-functions.html"><i class="fa fa-check"></i><b>8</b> Nonlinear Regression Functions</a><ul>
+<li class="chapter" data-level="8.1" data-path="a-general-strategy-for-modeling-nonlinear-regression-functions.html"><a href="a-general-strategy-for-modeling-nonlinear-regression-functions.html"><i class="fa fa-check"></i><b>8.1</b> A General Strategy for Modeling Nonlinear Regression Functions</a></li>
+<li class="chapter" data-level="8.2" data-path="nonlinear-functions-of-a-single-independent-variable.html"><a href="nonlinear-functions-of-a-single-independent-variable.html"><i class="fa fa-check"></i><b>8.2</b> Nonlinear Functions of a Single Independent Variable</a><ul>
+<li class="chapter" data-level="" data-path="nonlinear-functions-of-a-single-independent-variable.html"><a href="nonlinear-functions-of-a-single-independent-variable.html#polynomials"><i class="fa fa-check"></i>Polynomials</a></li>
+<li class="chapter" data-level="" data-path="nonlinear-functions-of-a-single-independent-variable.html"><a href="nonlinear-functions-of-a-single-independent-variable.html#logarithms"><i class="fa fa-check"></i>Logarithms</a></li>
+</ul></li>
+<li class="chapter" data-level="8.3" data-path="interactions-between-independent-variables.html"><a href="interactions-between-independent-variables.html"><i class="fa fa-check"></i><b>8.3</b> Interactions Between Independent Variables</a></li>
+<li class="chapter" data-level="8.4" data-path="nonlinear-effects-on-test-scores-of-the-student-teacher-ratio.html"><a href="nonlinear-effects-on-test-scores-of-the-student-teacher-ratio.html"><i class="fa fa-check"></i><b>8.4</b> Nonlinear Effects on Test Scores of the Student-Teacher Ratio</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="assessing-studies-based-on-multiple-regression.html"><a href="assessing-studies-based-on-multiple-regression.html"><i class="fa fa-check"></i><b>9</b> Assessing Studies Based on Multiple Regression</a><ul>
+<li class="chapter" data-level="9.1" data-path="internal-and-external-validity.html"><a href="internal-and-external-validity.html"><i class="fa fa-check"></i><b>9.1</b> Internal and External Validity</a></li>
+<li class="chapter" data-level="9.2" data-path="threats-to-internal-validity-of-multiple-regression-analysis.html"><a href="threats-to-internal-validity-of-multiple-regression-analysis.html"><i class="fa fa-check"></i><b>9.2</b> Threats to Internal Validity of Multiple Regression Analysis</a></li>
+<li class="chapter" data-level="9.3" data-path="internal-and-external-validity-when-the-regression-is-used-for-forecasting.html"><a href="internal-and-external-validity-when-the-regression-is-used-for-forecasting.html"><i class="fa fa-check"></i><b>9.3</b> Internal and External Validity When the Regression is Used for Forecasting</a></li>
+<li class="chapter" data-level="9.4" data-path="example-test-scores-and-class-size.html"><a href="example-test-scores-and-class-size.html"><i class="fa fa-check"></i><b>9.4</b> Example: Test Scores and Class Size</a></li>
+</ul></li>
+<li class="chapter" data-level="10" data-path="regression-with-panel-data.html"><a href="regression-with-panel-data.html"><i class="fa fa-check"></i><b>10</b> Regression with Panel Data</a><ul>
+<li class="chapter" data-level="10.1" data-path="panel-data.html"><a href="panel-data.html"><i class="fa fa-check"></i><b>10.1</b> Panel Data</a></li>
+<li class="chapter" data-level="10.2" data-path="panel-data-with-two-time-periods-before-and-afer-comparisons.html"><a href="panel-data-with-two-time-periods-before-and-afer-comparisons.html"><i class="fa fa-check"></i><b>10.2</b> Panel Data with Two Time Periods: “Before and Afer” Comparisons</a></li>
+<li class="chapter" data-level="10.3" data-path="fixed-effects-regression.html"><a href="fixed-effects-regression.html"><i class="fa fa-check"></i><b>10.3</b> Fixed Effects Regression</a><ul>
+<li class="chapter" data-level="" data-path="fixed-effects-regression.html"><a href="fixed-effects-regression.html#estimation-and-inference"><i class="fa fa-check"></i>Estimation and Inference</a></li>
+<li class="chapter" data-level="" data-path="fixed-effects-regression.html"><a href="fixed-effects-regression.html#application-to-traffic-deaths"><i class="fa fa-check"></i>Application to Traffic Deaths</a></li>
+</ul></li>
+<li class="chapter" data-level="10.4" data-path="regression-with-time-fixed-effects.html"><a href="regression-with-time-fixed-effects.html"><i class="fa fa-check"></i><b>10.4</b> Regression with Time Fixed Effects</a></li>
+<li class="chapter" data-level="10.5" data-path="the-fixed-effects-regression-assumptions-and-standard-errors-for-fixed-effects-regression.html"><a href="the-fixed-effects-regression-assumptions-and-standard-errors-for-fixed-effects-regression.html"><i class="fa fa-check"></i><b>10.5</b> The Fixed Effects Regression Assumptions and Standard Errors for Fixed Effects Regression</a></li>
+<li class="chapter" data-level="10.6" data-path="drunk-driving-laws-and-traffic-deaths.html"><a href="drunk-driving-laws-and-traffic-deaths.html"><i class="fa fa-check"></i><b>10.6</b> Drunk Driving Laws and Traffic Deaths</a></li>
+</ul></li>
+<li class="chapter" data-level="11" data-path="regression-with-a-binary-dependent-variable.html"><a href="regression-with-a-binary-dependent-variable.html"><i class="fa fa-check"></i><b>11</b> Regression with a Binary Dependent Variable</a><ul>
+<li class="chapter" data-level="11.1" data-path="binary-dependent-variables-and-the-linear-probability-model.html"><a href="binary-dependent-variables-and-the-linear-probability-model.html"><i class="fa fa-check"></i><b>11.1</b> Binary Dependent Variables and the Linear Probability Model</a></li>
+<li class="chapter" data-level="11.2" data-path="probit-and-logit-regression.html"><a href="probit-and-logit-regression.html"><i class="fa fa-check"></i><b>11.2</b> Probit and Logit Regression</a><ul>
+<li class="chapter" data-level="" data-path="probit-and-logit-regression.html"><a href="probit-and-logit-regression.html#probit-regression"><i class="fa fa-check"></i>Probit Regression</a></li>
+<li class="chapter" data-level="" data-path="probit-and-logit-regression.html"><a href="probit-and-logit-regression.html#logit-regression"><i class="fa fa-check"></i>Logit Regression</a></li>
+</ul></li>
+<li class="chapter" data-level="11.3" data-path="estimation-and-inference-in-the-logit-and-probit-models.html"><a href="estimation-and-inference-in-the-logit-and-probit-models.html"><i class="fa fa-check"></i><b>11.3</b> Estimation and Inference in the Logit and Probit Models</a></li>
+<li class="chapter" data-level="11.4" data-path="application-to-the-boston-hmda-data.html"><a href="application-to-the-boston-hmda-data.html"><i class="fa fa-check"></i><b>11.4</b> Application to the Boston HMDA Data</a></li>
+</ul></li>
+<li class="chapter" data-level="12" data-path="instrumental-variables-regression.html"><a href="instrumental-variables-regression.html"><i class="fa fa-check"></i><b>12</b> Instrumental Variables Regression</a><ul>
+<li class="chapter" data-level="12.1" data-path="the-iv-estimator-with-a-single-regressor-and-a-single-instrument.html"><a href="the-iv-estimator-with-a-single-regressor-and-a-single-instrument.html"><i class="fa fa-check"></i><b>12.1</b> The IV Estimator with a Single Regressor and a Single Instrument</a></li>
+<li class="chapter" data-level="12.2" data-path="the-general-iv-regression-model.html"><a href="the-general-iv-regression-model.html"><i class="fa fa-check"></i><b>12.2</b> The General IV Regression Model</a></li>
+<li class="chapter" data-level="12.3" data-path="checking-instrument-validity.html"><a href="checking-instrument-validity.html"><i class="fa fa-check"></i><b>12.3</b> Checking Instrument Validity</a></li>
+<li class="chapter" data-level="12.4" data-path="application-to-the-demand-for-cigarettes-2.html"><a href="application-to-the-demand-for-cigarettes-2.html"><i class="fa fa-check"></i><b>12.4</b> Application to the Demand for Cigarettes</a></li>
+<li class="chapter" data-level="12.5" data-path="where-do-valid-instruments-come-from.html"><a href="where-do-valid-instruments-come-from.html"><i class="fa fa-check"></i><b>12.5</b> Where Do Valid Instruments Come From?</a></li>
+<li class="chapter" data-level="12.6" data-path="table-12-1-p-448.html"><a href="table-12-1-p-448.html"><i class="fa fa-check"></i><b>12.6</b> Table 12.1, p. 448</a></li>
+<li class="chapter" data-level="12.7" data-path="checking-instrument-relevance.html"><a href="checking-instrument-relevance.html"><i class="fa fa-check"></i><b>12.7</b> checking instrument relevance</a></li>
+<li class="chapter" data-level="12.8" data-path="testing-overidentifying-restrictions-j-test.html"><a href="testing-overidentifying-restrictions-j-test.html"><i class="fa fa-check"></i><b>12.8</b> testing overidentifying restrictions (J test)</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Using R for Introduction to Econometrics</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div class = rmdreview>
+This book is in <b>Open Review</b>. We want your feedback to make the book better for you and other students. You may annotate some text by <span style="background-color: #3297FD; color: white">selecting it with the cursor</span> and then click the <i class="h-icon-annotate"></i> on the pop-up menu. You can also see the annotations of others: click the <i class="h-icon-chevron-left"></i> in the upper right hand corner of the page <i class="fa fa-arrow-circle-right  fa-rotate-315" aria-hidden="true"></i>
+</div>
+<div id="the-general-iv-regression-model" class="section level2">
+<h2><span class="header-section-number">12.2</span> The General IV Regression Model</h2>
+<p>#ch:TGIVRM</p>
+<p>The simple IV regression model is easily extended to a multiple regression model which we refer to as the general IV regression model. In this model we distinguish between four types of variables: the dependent variable, included exogenous variables, included endogenous variables and instrumental variables. Key Concept 12.1 summarizes the model and the common terminology. See Chapter 12.2 of the book for a more comprehensive discussion of the individual components of the general model.</p>
+<div class="keyconcept">
+<h3 class="right">
+Key Concept 12.1
+</h3>
+<h3 class="left">
+The General Instrumental Variables Regression Model and Terminology
+</h3>
+<span class="math display" id="eq:givmodel">\[\begin{align*}
+  Y_i = \beta_0 + \beta_1 X_{1i} + \dots + \beta_k X_{ki} + \beta_{k+1} W_{1i} + \beta_{k+r} W_{ri} + u_i, \tag{12.5}
+\end{align*}\]</span>
+<p><span class="math inline">\(i=1,\dots,n\)</span> is the general intrumental variables regression model where</p>
+<ul>
+<li><p><span class="math inline">\(Y_i\)</span> is the dependent variable</p></li>
+<li><p><span class="math inline">\(\beta_1,\dots,\beta_k\)</span> are <span class="math inline">\(k\)</span> unknown regression coefficients</p></li>
+<li><p><span class="math inline">\(X_{1i},\dots,X_{ki}\)</span> are <span class="math inline">\(k\)</span> endogenous regressors which are potentially correlated with <span class="math inline">\(u_i\)</span></p></li>
+<li><p><span class="math inline">\(W_{1i},\dots,W_{ri}\)</span> are <span class="math inline">\(r\)</span> exogenous regressors which are uncorrelated with <span class="math inline">\(u_i\)</span></p></li>
+<li><p><span class="math inline">\(u_i\)</span> is the error term</p></li>
+<li><p><span class="math inline">\(Z_{1i},\dots,Z_{mi}\)</span> are <span class="math inline">\(m\)</span> instrumental variables</p></li>
+</ul>
+<p>We say that the coefficients are overidentified if <span class="math inline">\(m&gt;k\)</span> thats is if there are more instruments than regressors. If <span class="math inline">\(m&lt;k\)</span>, the coefficients are underidentified and when <span class="math inline">\(m=k\)</span> they are exactly identified. For estimation of the IV regression model exact identification or overidentification is required.</p>
+</div>
+<p>While computing both stages of TSLS individually is not a big deal in the simple regression model with a single endogenous regressor <a href="the-iv-estimator-with-a-single-regressor-and-a-single-instrument.html#eq:srm12">(12.1)</a>, Key Concept 12.2 clarifies why resorting to TSLS estimation functions like <code>ivreg()</code> is much more convenient when the set of potentially endogenous regressors (and instruments) is large.</p>
+<p>Estimating regression models with TSLS using multiple instruments by means of <code>ivreg()</code> is straightforward. There are, however, some subtleties when it comes to correct specification of the regression formula that should be mentioned.</p>
+<p>Assume that you want to estimate the model <span class="math display">\[Y = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + W_1 + u\]</span> where <span class="math inline">\(X_1\)</span> and <span class="math inline">\(X_2\)</span> are endogenous regressors that shall be instrumented by <span class="math inline">\(Z_1\)</span>, <span class="math inline">\(Z_2\)</span> and <span class="math inline">\(Z_3\)</span> and <span class="math inline">\(W_1\)</span> is an exogenous regressor. The corresponding data is available in a <code>data.frame</code> with coloumn names <code>y</code>, <code>x1</code>, <code>x1</code>, <code>w1</code>, <code>z1</code>, <code>z2</code> and <code>z3</code>. It might be tempting to specify the argument <code>formula</code> in your call of <code>ivreg()</code> as <code>y ~ x1 + x2 + w1 | z1 + z2 + z3</code> which is wrong. As explained in the documentation of <code>ivreg()</code> (see <code>?ivreg</code>), it is necessary to list <em>all</em> exogenous variables as instruments, that is joining them by <code>+</code>’s on the right of <code>|</code>: <code>y ~ x1 + x2 + w1 | w1 + z1 + z2 + z3</code> where <code>w1</code> is instrumenting itself.</p>
+<p>If there is a large number of exogenous variables it may be convenient to provide an update formula with a <code>.</code> (this includes all variables except for the dependent variable) right after the <code>|</code> and to exclude all endogenous variables using <code>-</code>.</p>
+<div class="keyconcept">
+<h3 class="right">
+Key Concept 12.2
+</h3>
+<h3 class="left">
+Two Stage Least Squares
+</h3>
+<p>Similarly to the simple IV regression model, the gerneral IV model <a href="the-general-iv-regression-model.html#eq:givmodel">(12.5)</a> can be estimated using the TSLS estimator which is computed in two stages:</p>
+<ol style="list-style-type: decimal">
+<li><p><strong>First-stage regression(s)</strong>: Run an OLS regression for each of the endogenous variables (<span class="math inline">\(X_{1i},\dots,X_{ki}\)</span>) on all instrumental variables (<span class="math inline">\(Z_{1i},\dots,Z_{mi}\)</span>) and all exogenous variables (<span class="math inline">\(W_{1i},\dots,W_{ri}\)</span>) and an intercept. Compute the fitted values (<span class="math inline">\(\widehat{X}_{1i},\dots,\widehat{X}_{ki}\)</span>).</p></li>
+<li><strong>Second-stage regression</strong>: OLS regression of the dependent variable on predicted values of all endogenous regressors and all exogenous variables and an intercept. This delivers <span class="math inline">\(\widehat{\beta}_{0}^{TSLS},\dots,\widehat{\beta}_{k+r}^{TSLS}\)</span> which are called the TSLS estimates.</li>
+</ol>
+</div>
+<p>In the general IV regression model the instrument relevance and exogeneity assumptions are just as in the simple regression model with a single endogenous regressor and only one instrument. See Key Concept 12.3 for a recap using terminology of gerneral IV regression.</p>
+<div class="keyconcept">
+<h3 class="right">
+Key Concept 12.3
+</h3>
+<h3 class="left">
+Two Conditions for Valid Instruments
+</h3>
+<p>For <span class="math inline">\(Z_{1i},\dots,Z_{mi}\)</span> to be a set of valid instruments, the following two conditions must be fulfilled:</p>
+<ol style="list-style-type: decimal">
+<li><strong>Instrument Relevance</strong>: If there are <span class="math inline">\(k\)</span> endogenous variables, <span class="math inline">\(r\)</span> exogenous variables and <span class="math inline">\(m\geq k\)</span> instruments <span class="math inline">\(Z\)</span> and the <span class="math inline">\(\widehat{X}_{1i}^*,\dots,\widehat{X}_{ki}^*\)</span> are the predicted values from the <span class="math inline">\(k\)</span> population stage one regressions, it <em>must hold that</em> <span class="math display">\[(\widehat{X}_{1i}^*,\dots,\widehat{X}_{ki}^*, W_{1i}, \dots, W_{ri},1)\]</span> are not perfectly multicollinear. <span class="math inline">\(1\)</span> denotes the constant regressor which equals <span class="math inline">\(1\)</span> for all observations.</li>
+</ol>
+<p><em>Note</em>: If there is only one endogenous regressor <span class="math inline">\(X_i\)</span>, there must be at least one non-zero coefficient on the <span class="math inline">\(Z\)</span>’s and the <span class="math inline">\(W\)</span>’s in the population regression for this condition to be valid: If all of these coefficients are zero, all the <span class="math inline">\(\widehat{X}^*_i\)</span> are just the mean of <span class="math inline">\(X\)</span> such that there is perfect multicollinearity.</p>
+<ol start="2" style="list-style-type: decimal">
+<li><strong>Instrument Exogeneity</strong>:</li>
+</ol>
+<p>All the <span class="math inline">\(m\)</span> instruments are uncorrelated with the error term:</p>
+<p><span class="math display">\[corr(Z_{1i},u_i) = 0,\dots,corr(Z_{mi},u_i) = 0\]</span></p>
+</div>
+<p>One can show that if the IV regression assumptions presented in Key Concept 12.4 hold, the TSLS estimator in the general IV model <a href="the-general-iv-regression-model.html#eq:givmodel">(12.5)</a> is consistent and normally distributed when the sample size is large. To get an idea of the proof for this statement, see Appendix 12.3 of the book for a disussion of the special case with a single regressor, a single instrument and no exogenous variables. The reasoning behind this carries over to the general IV model. A more complicated explanation for the general case can be found in Chapter 18 of the book.</p>
+<p>For the purpose of this book it is sufficient to bear in mind that validity of the assumptions stated in Key Concept 12.4 allows us to obtain valid statistical inference using  functions used to compute <span class="math inline">\(t\)</span>-Tests, <span class="math inline">\(F\)</span>-Tests and confidence intervals for model coefficients.</p>
+<div class="keyconcept">
+<h3 class="right">
+Key Concept 12.4
+</h3>
+<h3 class="left">
+The IV Regression Assumptions
+</h3>
+<p>For the general IV regression model in Key Concept 12.1 we assume that</p>
+<ol style="list-style-type: decimal">
+<li><p><span class="math inline">\(E(u_i\vert W_{1i}, \dots, W_{ri}) = 0\)</span></p></li>
+<li><p><span class="math inline">\((X_{1i},\dots,X_{ki},W_{1i},\dots,W_{ri},Z_{1i},\dots,Z_{mi})\)</span> are i.i.d. draws from their joint distribution</p></li>
+<li><p>All <span class="math inline">\(X\)</span>’s, <span class="math inline">\(W\)</span>’s, <span class="math inline">\(Z\)</span>’s and <span class="math inline">\(Y\)</span>’s have nonzero finite fourth moments i.e. outliers are unlikely</p></li>
+<li><p>The <span class="math inline">\(Z\)</span>’s are valid instruments (see Key Concept 12.3)</p></li>
+</ol>
+</div>
+<div id="application-to-the-demand-for-cigarettes-1" class="section level4 unnumbered">
+<h4>Application to the Demand for Cigarettes</h4>
+<p>The estimated elasticity of demand for cigarettes in <a href="the-iv-estimator-with-a-single-regressor-and-a-single-instrument.html#eq:srm12">(12.1)</a> is <span class="math inline">\(1.08\)</span>. Although <a href="the-iv-estimator-with-a-single-regressor-and-a-single-instrument.html#eq:srm12">(12.1)</a> was estimated using IV regression it is plausible that this IV estimate is biased: in this model, the TSLS estimator is inconsistent for the true <span class="math inline">\(\beta_1\)</span> if the instrument (the real sales tax per pack) correlates with the error term. This is likely to be the case since there are economic facors like state income which impact the demand for cigarettes and correlate with the sales tax. States with high personal income tend to generate tax revenues more by income taxes and less by sales taxes. Consequently, state income needs to be included in the regression model.</p>
+<span class="math display" id="eq:mcigstsls1">\[\begin{align*}
+  \log(Q_i^{cigarettes}) = \beta_0 + \beta_1 \log(P_i^{cigarettes}) + \beta_2 \log(Income_i) + u_i \tag{12.6}
+\end{align*}\]</span>
+<p>Before estimating <a href="the-general-iv-regression-model.html#eq:mcigstsls1">(12.6)</a> using <code>ivreg()</code> we define <span class="math inline">\(Income\)</span> as real per capita income <code>rincome</code> and add it to the data set.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># add rincome to the data set</span>
+CigarettesSW<span class="op">$</span>rincome &lt;-<span class="st"> </span><span class="kw">with</span>(CigarettesSW, income<span class="op">/</span>population<span class="op">/</span>cpi)
+c1995 &lt;-<span class="st"> </span><span class="kw">subset</span>(CigarettesSW, year <span class="op">==</span><span class="st"> &quot;1995&quot;</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># estimate the model</span>
+cig_ivreg2 &lt;-<span class="st"> </span><span class="kw">ivreg</span>(<span class="kw">log</span>(packs) <span class="op">~</span><span class="st"> </span><span class="kw">log</span>(rprice) <span class="op">+</span><span class="st"> </span><span class="kw">log</span>(rincome) <span class="op">|</span><span class="st"> </span><span class="kw">log</span>(rincome) <span class="op">+</span><span class="st"> </span>salestax,
+  <span class="dt">data =</span> c1995)
+
+<span class="kw">coeftest</span>(cig_ivreg2, <span class="dt">vcov =</span> <span class="kw">vcovHC</span>(cig_ivreg2, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>))</code></pre></div>
+<pre><code>## 
+## t test of coefficients:
+## 
+##              Estimate Std. Error t value  Pr(&gt;|t|)    
+## (Intercept)   9.43066    1.25939  7.4883 1.935e-09 ***
+## log(rprice)  -1.14338    0.37230 -3.0711  0.003611 ** 
+## log(rincome)  0.21452    0.31175  0.6881  0.494917    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>We obtain</p>
+<span class="math display" id="eq:emcigstsls2">\[\begin{align*}
+  \widehat{\log(Q_i^{cigarettes})} = \underset{(1.26)}{9.42} - \underset{(0.37)}{1.14} \log(P_i^{cigarettes}) + \underset{(0.31)}{0.21} \log(Income_i). \tag{12.7}
+\end{align*}\]</span>
+<p>Following the book we add the cigarette-specific taxes (<span class="math inline">\(cigtax_i\)</span>) as a further instrumental variable and estimate again using TSLS.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># add cigtax to the data set</span>
+CigarettesSW<span class="op">$</span>cigtax &lt;-<span class="st"> </span><span class="kw">with</span>(CigarettesSW, tax<span class="op">/</span>cpi)
+c1995 &lt;-<span class="st"> </span><span class="kw">subset</span>(CigarettesSW, year <span class="op">==</span><span class="st"> &quot;1995&quot;</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">cig_ivreg3 &lt;-<span class="st"> </span><span class="kw">ivreg</span>(<span class="kw">log</span>(packs) <span class="op">~</span><span class="st"> </span><span class="kw">log</span>(rprice) <span class="op">+</span><span class="st"> </span><span class="kw">log</span>(rincome) <span class="op">|</span><span class="st"> </span>
+<span class="st">                      </span><span class="kw">log</span>(rincome) <span class="op">+</span><span class="st"> </span>salestax <span class="op">+</span><span class="st"> </span>cigtax, <span class="dt">data =</span> c1995)
+
+<span class="kw">coeftest</span>(cig_ivreg3, <span class="dt">vcov =</span> <span class="kw">vcovHC</span>(cig_ivreg3, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>))</code></pre></div>
+<pre><code>## 
+## t test of coefficients:
+## 
+##              Estimate Std. Error t value  Pr(&gt;|t|)    
+## (Intercept)   9.89496    0.95922 10.3157 1.947e-13 ***
+## log(rprice)  -1.27742    0.24961 -5.1177 6.211e-06 ***
+## log(rincome)  0.28040    0.25389  1.1044    0.2753    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>Using the two instrumental variables <span class="math inline">\(salestax_i\)</span> and <span class="math inline">\(cigtax_i\)</span> we have <span class="math inline">\(m=2\)</span> and <span class="math inline">\(k=1\)</span> so the coefficient on the endogenous regressor <span class="math inline">\(\log(P_i^{cigarettes})\)</span> is <em>overidentified</em>. The TSLS estimate of the regression function <a href="the-general-iv-regression-model.html#eq:mcigstsls1">(12.6)</a> is</p>
+<span class="math display" id="eq:emcigstsls3">\[\begin{align*}
+  \widehat{\log(Q_i^{cigarettes})} = \underset{(0.96)}{9.89} - \underset{(0.25)}{1.28} \log(P_i^{cigarettes}) + \underset{(0.25)}{0.28} \log(Income_i). \tag{12.8}
+\end{align*}\]</span>
+<p>Should we trust the estimates presented in <a href="the-general-iv-regression-model.html#eq:emcigstsls2">(12.7)</a> or rather rely on <a href="the-general-iv-regression-model.html#eq:emcigstsls3">(12.8)</a>? Comparing both equations we find that the estimation based on both instruments is more precise since in <a href="the-general-iv-regression-model.html#eq:emcigstsls3">(12.8)</a> all standard errors reported are smaller than in <a href="the-general-iv-regression-model.html#eq:emcigstsls2">(12.7)</a>. In fact, the standard error for the estimator of the demand elasticity is only two thirds of the standard error when the sales tax is the only instrument used. This is due to more information being used in estimation <a href="the-general-iv-regression-model.html#eq:emcigstsls3">(12.8)</a>. <em>If</em> the instruments are <em>valid</em>, <a href="the-general-iv-regression-model.html#eq:emcigstsls3">(12.8)</a> can be considered more reliable.</p>
+<p>Without any inference on validity of both instruments it is not sensible to make a statement like that. This stresses why checking instrument validity is essential. Chapter 12.3 briefly disscusses guidelines in checking instrument validity and presents approaches that allow to test for instrument relevance and exogeneity under certain conditions. These are then used in an application to the demand for cigarettes in Chapter 12.4.</p>
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="the-iv-estimator-with-a-single-regressor-and-a-single-instrument.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="checking-instrument-validity.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"google": false,
+"weibo": false,
+"instapper": false,
+"vk": false,
+"all": ["facebook", "google", "twitter", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 1
+},
+"edit": {
+"link": "https://github.com/rstudio/bookdown-demo/edit/master/12-ch12.Rmd",
+"text": "Edit"
+},
+"download": ["URFITE.pdf"],
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.bootcss.com/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:" && /^https?:/.test(script.src))
+      script.src  = script.src.replace(/^https?:/, '');
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+<!-- </html> -->

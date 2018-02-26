@@ -1,0 +1,666 @@
+# Regression with a Binary Dependent Variable
+
+In this chapter, we discuss a special case of regression models that aim to explain a limited dependent variable --- a dependent variable with a limit range --- by multiple regressors. 
+
+In particulat we consider models where the dependent variable is binary. We will see that in such models, the regression function can be interpreted as a conditional probability function. 
+
+We review the following concepts:
+
+- The linear probability model
+- Probit models
+- Logit model
+- Maximum likelihood estimation of nonlinear regression models
+
+Of course, we will also see how to estimate abovementioned models using `R` and discuss an application where we explore the question whether there is racial discrimination in the US mortgage market.
+
+## Binary Dependent Variables and the Linear Probability Model
+
+<div class = "keyconcept"> 
+<h3 class = "right"> Key Concept 11.1 </h3>
+<h3 class = "left"> The Linear Probabilty Model </h3>
+
+The linear regression model 
+
+$$Y_i = \beta_0 + \beta_1 + X_{1i} + \beta_2 X_{2i} + \dots + \beta_k X_{ki} + u_i$$
+with a binary depnendent variable $Y_i$ is called the linear probability model as $$E(Y\vert X_1,X_2,\dots,X_k) = P(Y=1\vert X_1, X_2,\dots, X_3)$$ such that $$ P(Y = 1 \vert X_1, X_2, \dots, X_k) = \beta_0 + \beta_1 + X_{1i} + \beta_2 X_{2i} + \dots + \beta_k X_{ki}.$$
+
+Thus, the coefficient $\beta_j$ can be interpreted as the change in the probability that $Y=1$, holding constant the other $k-1$ regressors. Just as in common multiple regression, the $\beta_j$ can be estimated using OLS and the robust standard error formulas can be used for hypothesis testing and computation of confidence intervals. 
+
+In most linear probability models, $R^2$ has no meaningful interpretation since the regression line can never fit the data perfectly if the depdent variable is binary and the regressors are continuous. This can be seen in the application below.
+
+We emphasize that it is *essential* to use robust standard errors since the $u_i$ in a linear probability model are always heteroskedastic.
+
+</div>
+
+Following the book, we start by loading the dataset `HMDA` which provides data that relate to mortgage applications filed in Boston in the year of 1990. 
+
+```{r, warning=FALSE, message=FALSE}
+# load AER package and attach data
+library(AER)
+data(HMDA)
+```
+
+We continue by inspecting the first few observations and compute summary statistics afterwards.
+
+```{r}
+# Inspect data
+head(HMDA)
+summary(HMDA)
+```
+
+The variable we are interesting in modelling is `deny`, an indicator for whether an applicants mortgage application has been accepted (`deny = no`) or denied (`deny = yes`). A regressors that can be presumed to have power in explaining whether a mortgage application has been denied or accepted is `pirat`, the size of the anticipated total monthly loan payments relative to the the applicant's income. It is straightforward to translate this into the simple regression approach 
+
+\begin{align*}
+  deny = \beta_0 + \beta_1 P/I\ ratio + u. (\#eq:denymod1)
+\end{align*}
+
+We can estimate this model just as any other linear regression model using `lm()`. Before we do, `deny` must be converted to a numeric variable using `as.numeric()`. Note that `as.numeric(HMDA$deny)` will turn `deny = no` into `deny = 1` and `deny = yes` into `deny = 2`, so using `as.numeric(HMDA$deny)-1` we obtain levels `0` and `1`.
+
+```{r}
+# convert 'deny' to numeric
+HMDA$deny <- as.numeric(HMDA$deny) - 1
+
+# estimate a simple linear probabilty model
+denymod1 <- lm(deny ~ pirat, data = HMDA)
+denymod1
+```
+
+We plot the data and the regression line to reproduce Figure 11.1 of the book.
+
+```{r}
+# plot data
+plot(x = HMDA$pirat, 
+     HMDA$deny,
+     main = "Scatterplot Mortgage Application Denial and the Payment-to-Income Ratio",
+     xlab = "P/I ratio",
+     ylab = "Deny",
+     pch = 20,
+     ylim = c(-0.4,1.4),
+     cex.main = 0.8
+)
+
+# add horizontal dashed lines and text
+abline(h = 1, lty = 2, col = "darkred")
+abline(h = 0, lty = 2, col = "darkred")
+text(2.5, 0.9, cex = 0.8, "Mortgage denied")
+text(2.5, -0.1, cex= 0.8, "Mortgage approved")
+
+# add estimated regression line
+abline(denymod1, 
+       lwd=1.8, 
+       col = "steelblue")
+```
+
+We observe that, according to the estimated model equation, a $P/I ratio$ of $1$ is associated with an expected probability of mortgage application denial of roughly $50\%$. The model indicates that there is a postive relation between $P/I \ ratio$ and the probabilty of a denied mortgage application i.e. individuals with a high ratio of loan payments to income are more likely to be rejected.
+
+We may use `coeftest` to obtain robust standard errors for both coefficient estimators.
+
+```{r}
+# model coefficient summary
+coeftest(denymod1, vcov. = vcovHC(denymod1, type = "HC1"))
+```
+
+The estimated regression line is $$\widehat{deny} = \underset{(0.032)}{-0.080} + \underset{(0.098)}{0.604} P/I \ ratio.$$ The true coefficient on $P/I \ ratio$ is statistically different from $0$ at the $1\%$ level. Its estimate can be interpreted as follows: a $1\%$ increase in $P/I \ ratio$ leads to an increase in the probability of a loan denial by $0.604 * 0.01 = 0.00604 \approx 0.6\%$.
+
+Following the book we augment the approach \@ref(eq:denymod1) by an additional regressor $black$ which equals $1$ if the applicant is an African American and equals $0$ if the applicant is white. Such a specification is the baseline for investigation of the question whether there is racial discrimination in the mortgage market: if being black has a significant (positive) influence on the probability of a loan denial when we control for factors that allow for objective assessment of an applicants credit worthyness, this is an indicator for discrimination.
+
+```{r}
+# rename variable 'afam'
+colnames(HMDA)[colnames(HMDA) == "afam"] <- "black"
+
+# estimate the model
+denymod2 <- lm(deny ~ pirat + black, data = HMDA)
+coeftest(denymod2, vcov. = vcovHC(denymod2))
+```
+
+So the estimated regression function is
+\begin{align*}
+  \widehat{deny} =& \, \underset{(0.029)}{-0.091} + \underset{(0.089)}{0.559} P/I \ ratio + \underset{(0.025)}{0.177} afam. (\#eq:denymod2)
+\end{align*}
+
+The coefficient on $black$ is positive and significantly different from zero at the $0.01\%$ level. The interpretation is that, holding constant the $P/I \ ratio$, being black increases the probability of a mortgage application denial by about $17.7\%$. This suggests racial discrimination. However, the estimation might suffer from omitted variable bias so this could be a premature conclusion.
+
+## Probit and Logit Regression
+
+The linear probability model has a major flaw: it assumes the conditional probability function to be linear. This does not allow the probability of observing $Y=1$ conditional on some regressor to lie between $0$ and $1$. We can easily see this in our reproduction of Figure 11.1 of the book: for $P/I \ ratio \geq 1.75$, model \@ref(eq:denymod1) predicts the probability of a mortgage application denial to be bigger than $1$. For applications with $P/I \ ratio$ close to $0$, the predicted probability of denial is even negative so the model has no meaningful interpretation here.
+
+This circumstance demands for approaches that use a *nonlinear* function to model the conditional probability function of a binary dependent variable: probit and logit regression models.
+
+### Probit Regression {-}
+
+In probit regression, the cumulative standard normal distribution function $\Phi$ is used to model the regression function when the dependent variable is binary:
+
+\begin{align*}
+  E(Y\vert X) = P(Y=1\vert X) = \Phi(\beta_0 + \beta_1 X) (\#eq:probitmodel)
+\end{align*}
+
+$\beta_0 + \beta_1 X$ in \@ref(eq:probitmodel) plays the role of a quantile $z$. Remember that $$\Phi(z) = P(Z \leq z) \ , \ Z \sim \mathcal{N}(0,1)$$ such that the probit coefficient $\beta_1$ in \@ref(eq:probitmodel) is the change in $z$ associated with a one unit change in $X$. Note that, although the effect on $z$ of a change in $X$ is linear, the link between $z$ and the dependent variable $Y$ is nonlinear since $\Phi$ is a nonlinear function.
+
+Since in a probit models the dependent variable is a nonlinear function of the regressors, the coefficient on $X$ has no easy interpretation. According to Key Concept 8.1, the expected change in the probability that $Y=1$ due to a change in $P/I \ ratio$ can be computed in the following manner:
+
+1. Compute the predicted probability that $Y=1$ for the original value of $X$.
+2. Compute the predicted probability that $Y=1$ for $X + \Delta X$.
+3. Compute the difference between both predicted probabilities.
+
+Of course we can generalize \@ref(eq:probitmodel) to a probit regression with multiple regressors to mitigate the risk of facing omitted variable bias. The core knowledge on probit regression is summarized in Key Concept 11.2
+
+<div class = "keyconcept"> 
+<h3 class = "right"> Key Concept 11.2 </h3>
+<h3 class = "left"> Probit Model, Predicted Probabilities and Estimated Effects</h3>
+
+$$P(Y = 1 \vert X_1, X_2, \dots ,X_k) = \Phi(\beta_0 + \beta_1 + X_1 + \beta_2 X_2 + \dots + \beta_k X_k)$$
+is the population probit model with multiple regressors where $Y$ is a binary varible, $X_1, X_2, \dots, X_k$ are regressors and $\Phi$ is the cumulative standard normal distribution function.
+
+The predicted probability that $Y=1$ given $X_1, X_2, \dots, X_k$ can be calculated in two steps:
+
+1. Compute $z = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + \dots + \beta_k X_k$
+
+2. Look up $\Phi(z)$ using a normal distribution table or by calling `pnorm()`.
+
+$\beta_j$ is the effect on $z$ of a one unit change in regressor $X_j$, holding constant all other $k-1$ regressors.
+
+The effect on the predicted probability of a change in a regressor can be computed as shown in Key Concept 8.1.
+
+</div>
+
+In <tt>R</tt>, probit models can be estimated using the function `glm()` from package `stats`. Using the argument `family` we specify that we want to use a probit link function.
+
+```{r}
+# estimate the simple probit model
+denyprobit <- glm(deny ~ pirat, 
+                family = binomial(link = "probit"), 
+                data = HMDA)
+
+coeftest(denyprobit, vcov. = vcovHC(denyprobit, type = "HC1"))
+```
+
+The estimated model equation is
+
+\begin{align*}
+  \widehat{P(deny\vert P/I \ ratio}) = \Phi(\underset{(0.19)}{-2.19} + \underset{(0.54)}{2.97} P/I \ ratio). (\#eq:denyprobit)
+\end{align*}
+
+Just as in the linear probability model we find that the relation between the probability of denial and the payments-to-income ratio is positive and that corresponding coefficient is highly significant.
+
+The following code chunk reproduces Figure 11.2 of the book.
+
+```{r}
+# plot data
+plot(x = HMDA$pirat, 
+     HMDA$deny,
+     main = "Probit Model of the Probability of Denial, Given P/I Ratio",
+     xlab = "P/I ratio",
+     ylab = "Deny",
+     pch = 20,
+     ylim = c(-0.4,1.4),
+     cex.main = 0.85
+)
+
+# add horizontal dashed lines and text
+abline(h = 1, lty = 2, col = "darkred")
+abline(h = 0, lty = 2, col = "darkred")
+text(2.5, 0.9, cex = 0.8, "Mortgage denied")
+text(2.5, -0.1, cex= 0.8, "Mortgage approved")
+
+# add estimated regression line
+x <- seq(0, 3, 0.01)
+y <- predict(denyprobit, list(pirat = x), type="response")
+
+lines(x, y, lwd = 1.5, col = "steelblue")
+```
+
+Notice that the estimated regression function has a stretched "S" shape which typical for the c.d.f. of a of continuous random variable with symmetric p.d.f. like a normal distributed random variable. The function is clearly nonlinear and flattens out for large and small values of $P/I \ ratio$. More important, it ensures that predicted conditional probabilities of a denial lie between $0$ and $1$. 
+
+We may use `predict()` to compute the predicted change in the denial probability when $P/I \ ratio$ is increased from $0.3$ to $0.4$.
+
+```{r}
+# 1. compute predictions for P/I ratio = 0.3,0.4
+predictions <- predict(denyprobit, 
+                       newdata = data.frame("pirat" = c(0.3, 0.4)),
+                       type = "response"
+                       )
+
+# 2. Compute difference in probabilities
+diff(predictions)
+```
+
+We find that an increase in the payment-to-income ratio from $0.3$ to $0.4$ is predicted to increase the probability of denial by approximately $6.2$ percentage points.
+
+We continue by using a probit model to estimate the effect of race on the probability of a mortgage application denial.
+
+```{r}
+denyprobit2 <- glm(deny ~ pirat + black, 
+                family = binomial(link = "probit"), 
+                data = HMDA)
+
+coeftest(denyprobit2, vcov. = vcovHC(denyprobit2, type = "HC1"))
+```
+
+The estimated model equation is
+
+\begin{align*}
+  \widehat{P(deny\vert P/I \ ratio, black)} = \Phi (\underset{(0.18)}{-2.26} + \underset{(0.50)}{2.74} P/I \ ratio + \underset{(0.08)}{0.71} black). (\#eq:denyprobit2) 
+\end{align*}
+
+While all coefficients are highly significant, both the estimated coefficients on the payments-to-income ratio and the indicator for African American descent are positive. Again, the coefficients are difficult to interpret but they indicate that first, being black applicants have a higher higher probability of denial than white applicants, holding constant the payments-to-income ratio and second, applicants with a high payments-to-income ratio face a higher risk of being rejected.
+
+How big is the predicted difference in denial probility between two hypothetical applicants with the same payments-to-income ratio? As before, we may use `predict()` to compute this difference.
+
+```{r}
+# 1. compute predictions for P/I ratio = 0.3,0.4
+predictions <- predict(denyprobit2, 
+                       newdata = data.frame("black" = c("no", "yes"), "pirat" = c(0.3,0.3)),
+                       type = "response"
+                       )
+
+# 2. Compute difference in probabilities
+diff(predictions)
+```
+
+In this case, the difference in denial probabilities is $15.8\%$.
+
+### Logit Regression {-}
+
+<div class = "keyconcept"> 
+<h3 class = "right"> Key Concept 11.3 </h3>
+<h3 class = "left"> Logit Regression </h3>
+
+The logit regression population function is
+
+\begin{align*}
+  P(Y=1\vert X_1, X_2, \dots, X_k) =& \, F(\beta_0 + \beta_1 X_1 + \beta_2 X_2 + \dots + \beta_k X_k) \\
+  =& \, \frac{1}{1+e^{-(\beta_0 + \beta_1 X_1 + \beta_2 X_2 + \dots + \beta_k X_k)}}.
+\end{align*}
+
+The idea is similar do probit regression except that a different c.d.f. is used: $$F(x) = \frac{1}{1+e^{-x}}$$ is the c.d.f. of a standard logistically distributed random variable.
+
+</div>
+
+Key Concept  11.3 summarizes the main differences between logit and probit regression. As for probit regression, there is no simple interpretation of coefficients and it is best to consider predicted probabilitites or differences in predicted probabilities. Here again, $t$-statitics and confidence intervals based on large sample normal approximation can be computed as usual. 
+
+It is fairly easy to estimate a logit regression model using <tt>R</tt>.
+
+```{r}
+denylogit <- glm(deny ~ pirat, 
+                family = binomial(link = "logit"), 
+                data = HMDA)
+
+coeftest(denylogit, vcov. = vcovHC(denylogit, type = "HC1"))
+```
+
+The subsequent code chunk reproduces figure 11.3 of the book. 
+
+```{r, fig.align='center'}
+# plot data
+plot(x = HMDA$pirat, 
+     HMDA$deny,
+     main = "Probit and Logit Models Model of the Probability of Denial, Given P/I Ratio",
+     xlab = "P/I ratio",
+     ylab = "Deny",
+     pch = 20,
+     ylim = c(-0.4, 1.4),
+     cex.main = 0.9
+)
+
+# add horizontal dashed lines and text
+abline(h = 1, lty = 2, col = "darkred")
+abline(h = 0, lty = 2, col = "darkred")
+text(2.5, 0.9, cex = 0.8, "Mortgage denied")
+text(2.5, -0.1, cex= 0.8, "Mortgage approved")
+
+# add estimated regression line of probit and logit models
+x <- seq(0, 3, 0.01)
+y_probit <- predict(denyprobit, list(pirat = x), type="response")
+y_logit <- predict(denylogit, list(pirat = x), type="response")
+
+lines(x, y_probit, lwd = 1.5, col = "steelblue")
+lines(x, y_logit, lwd = 1.5, col = "black", lty = 2)
+
+# add a legend
+legend("topleft",
+       horiz = TRUE,
+       legend = c("Probit", "Logit"),
+       col = c("steelblue", "black"), 
+       lty = c(1, 2))
+```
+
+Notice that both models produce very similar estimates of the probability that a mortgage application will be denied depending on the applicants payment-to-income ratio.
+
+Following the book we expand the simple logit model of mortage denial with the additional regressor $black$ and estimate the model.
+
+```{r}
+denylogit2 <- glm(deny ~ pirat + black, 
+                family = binomial(link = "logit"), 
+                data = HMDA)
+
+coeftest(denylogit2, vcov. = vcovHC(denylogit2, type = "HC1"))
+```
+
+We obtain
+
+\begin{align*}
+  \widehat{P(deny=1 \vert P/I ratio, black)} = F(\underset{(0.35)}{-4.13} + \underset{(0.96)}{5.37} P/I \ ratio + \underset{(0.15)}{1.27} black). (\#eq:denylogit2)
+\end{align*}
+
+As for the probit model \@ref(eq:denyprobit2) all model coefficients are highly significant and we obtain postive estimate for the coefficients on $P/I \ ratio$ and $black$. For comparison purposes we compute the predicted probability of denial for two hypothetical applicants that differ in race and have a $P/I \ ratio$ of $0.3$.
+
+```{r}
+# 1. compute predictions for P/I ratio = 0.3
+predictions <- predict(denylogit2, 
+                       newdata = data.frame("black" = c("no", "yes"), "pirat" = c(0.3,0.3)),
+                       type = "response"
+                      )
+
+# 2. Compute difference in probabilities
+diff(predictions)
+```
+
+We find that the white applicant faces a denial probability of only $7.5\%$ percent while the African American is rejected with a probability of $22.4\%$ with makes a difference of $14.9\%$.
+
+#### Comparison of Models {-}
+
+The linear probability model, the probit model and the logit model deliver only approximations to the unknown population regression function $E(Y\vert X)$. It is not unabigious to decide which model one should use in practice. The linear probability model has the clear drawbacks of not beeing able to capture the nonlinear nature of the population regression function and predicting probabilities outside the interval of $[0,1]$ for extreme regressor values. Probit and logit models are hard to interpret but can capture nonlinearities. Both models produce predictions of probabilities that lie inside $[0,1]$. Predictions of probit and logit models are often close to each other. The book suggests to use the method that is easiest to use in the statistical software of choice. As we have seen, it is equally easy to estimate probit and logit model using <tt>R</tt>. We can therefore give no general guide which method to use.  
+
+## Estimation and Inference in the Logit and Probit Models
+
+So far nothing has been said about *how* logit and probit models are estimated by statistical software. The reason why this is interesting is that both models are *nonlinear in the parameters* and thus cannot be estimated using OLS. Instead one uses a concept called *Maximum Liklihood Estimation*. Another approach is nonlinear least squares (NLS) estimation.
+
+#### Nonlinear Least Squares {-}
+
+Consider the multiple regression probit model 
+
+\begin{align*}
+  E(Y\vert X_1, \dots, X_k) = P(Y=1\vert X_1, \dots, X_k) = \Phi(\beta_0 + \beta_1 X_1 + \dots + \beta_k X_k). (\#eq:multprobit)
+\end{align*}
+
+Similarly to OLS, NLS estimates the parameters $\beta_0,\beta_1,\dots,\beta_k$ by minimizing the sum of squared mistakes
+$$\sum_{i=1}^n\left[ Y_i - \Phi(b_0 + b_1 X_{1i} + \dots + b_k X_{ki}) \right]^2.$$
+NLS estimation is a consistent approach that produces estimates which are normally distributed in large samples. In <tt>R</tt> there are functions like `nls()` from package `stats` that provide algorithms for solving nonlinear least squares problems.
+However, NLS is inefficient, meaning that there are estimation techniques that have a smaller variance which is why we will not dwell any further on this topic. 
+
+#### Maximum Likelihood Estimation {-}
+
+In maximum likelihood estimation (MLE) we seek to estimate unknown parameters choosing them such that the likelihood of drawing the sample observed is maximized. This probability is given by the likelihood function, the joint probability distribution of the data treated as a function of the unknown parameters. Put differently maximum likelihood of unkown parameters are values that are the most likely one to have produced the data observed. MLE is more efficient than NLS.
+
+As the MLE is normally distributed in large samples, statistical inference for coefficients in nonlinear models like logit and probit regression can be made using the same tools that are used for linear regression models: we can compute $t$-statistics and confidence intervals.
+
+Many software packages use an MLE algorithm for estimation of nonlinear models. The function `glm()` uses an algorithm named *Iteratively Reweighted Least Squares*. 
+
+#### Measures of Fit {-}
+
+It is important to be aware that the usual $R^2$ and $\overline{R^2}$ are **invalid** for nonlinear regression models. The reason for this is simple: both measure are derived under the assumption that the relation between the dependent and the explanatory variable(s) is linear. This obviously does not hold for probit and logit models such that $R^2$ does not fall between $0$ and $1$ and there is no meaningful interpretation. However, statistical softare often reports these measures anyhow.
+
+For example, consider the summary of the model object `denyprobit` produced by `summary()` for \@ref(eq:denyprobit), the probit regression of $deny$ on $P/I \ rat$.
+
+```{r}
+summary(denyprobit)
+```
+
+Besides reporting wrong standard errors (remember that it is inevitable to use heteroskedasticity robust standard errors for probit and logit models), the output also reports $R^2$ and $\overline{R^2}$ although neither of these are valid for this model.
+
+The take away message is that one should be aware which measures are reported by functions like `summary()` and whether these measures are adequate for the model at hand.
+
+There are many measures of fit for nonlinear regression models and there is no consensus which one should be reported. The situation is even more complicated because not there is no measure of fit that generally applicable. For models with a binary response variable like $deny$ one could use the following rule: \newline If $Y_i = 1$ and $\widehat{P(Y_i|X_{i1}, \dots, X_{ik})} > 0.5$ or if $Y_i = 0$ and $\widehat{P(Y_i|X_{i1}, \dots, X_{ik})} < 0.5$, consider the $Y_i$ as correctly predicted. Otherwise $Y_i$ is said to be incorrectly predicted. The measure of fit is the share of correctly predicted observations. The downside of such an approach is that it does not yield information on the quality of the prediction.  
+
+An alternative are so called pseudo-$R^2$ measures. In order to measure quality of fit, these measures compare the value of the maximized (log-)likelihood of the model with all regressors (the *full model*) to the likelihood of a model with no regressors (*null model*, regression on a constant). 
+
+Consider a probit regression. The $\text{pseudo-}R^2$ is given by $$\text{pseudo-}R^2 = 1 - \frac{\ln(f^{max}_{full})}{\ln(f^{max}_{null})}$$ where $f^{max}_j \in [0,1]$ denotes the maximized likelihood for model $j$.
+
+The reasoning behind this is that the maximized likelihood increases as additional regressors are added to the model, similarly to thr decrease in $SSR$ when regressors are added in a linear regression model. If the full model has a similar maximized likelihood than the null model, the full model does not really improve upon on a model that uses only the information in the dependent variable and $\text{pseudo-}R^2 \approx 0$. If the full model fits the data very good, the maximized likelihood shoud be close $1$ such that $\ln(f^{max}_{full}) \approx 0$ and $\text{pseudo-}R^2 \approx 1$. See Appendix 11.2 of the book for more on MLE and pseudo-$R^2$ measures.
+
+`summary()` does not report $\text{pseudo-}R^2$ for models estimated by `glm()` but we can use the entries *residual deviance* (`deviance`) and *null deviance* (`null.deviance`). These are computed as
+$$\text{deviance} = -2 \times \left[\ln(f^{max}_{saturated}) - \ln(f^{max}_{full}) \right]$$
+and
+
+$$\text{null deviance} = -2 \times \left[\ln(f^{max}_{saturated}) - \ln(f^{max}_{null}) \right]$$
+where $f^{max}_{saturated}$ is the maximized likelihood for a model that assumes each observations has its own parameter ($n+1$ parameters to be estimated which leads to a perfect fit). For models with binrary dependent variables, it holds that $$\text{pseudo-}R^2 = 1 - \frac{\text{deviance}}{\text{null deviance}} = 1- \frac{\ln(f^{max}_{full})}{\ln(f^{max}_{null})} $$
+
+```{r}
+pseudoR2 <- 1 - (denyprobit2$deviance) / (denyprobit2$null.deviance)
+pseudoR2
+```
+
+Another way to obtain the $\text{pseudo-}R^2$ is to estimate the null model using `glm()` and extract maximized log-likelihoods for both the null and the full model using the function `logLik()` 
+
+```{r}
+# compute null model
+denyprobit_null <- glm(formula = deny ~ 1, family = binomial(link = "probit"), data = HMDA)
+
+1 - logLik(denyprobit2)[1]/logLik(denyprobit_null)[1]
+```
+
+## Application to the Boston HMDA Data
+
+Models \@ref(eq:denyprobit2) and \@ref(eq:denylogit2) indicate that denial rates are higher for African American applicants holding constant payment-to-income ratio. Both results could be wrong due to omitted variable bias. In order to obtain a more trustworthy estimate of the effect of being black on the probability of a mortgage application denial we estimate a linear probability model as well as several logit and probit models that control for financial variables and additional applicant characteristics which are likely to determine the probability of denial and differ between black and white applicants.
+
+Sample averages as shown in table 11.1 of the book can be easily reproduced using the functions `mean()` (as usual for numeric variables) and `prop.table()` (for factor variables).
+
+```{r}
+# Mean P/I ratio
+mean(HMDA$pirat)
+
+# inhouse expense-to-total-income ratio
+mean(HMDA$hirat)
+
+# loan-to-value ratio
+mean(HMDA$lvrat)
+
+# consumer credit score
+mean(as.numeric(HMDA$chist))
+
+# mortgage credit score
+mean(as.numeric(HMDA$mhist))
+
+# public bad credit record
+mean(as.numeric(HMDA$phist)-1)
+
+# denied mortgage insurance
+prop.table(table(HMDA$insurance))
+
+# self-employed
+prop.table(table(HMDA$selfemp))
+
+# single
+prop.table(table(HMDA$single))
+
+# high school dimploma
+prop.table(table(HMDA$hschool))
+
+# unemployment rate
+mean(HMDA$unemp)
+
+# condominium
+prop.table(table(HMDA$condomin))
+
+# black
+prop.table(table(HMDA$black))
+
+# deny
+prop.table(table(HMDA$deny))
+```
+
+See Chapter 11.4 of the book or use the <tt>R</tt>'s help function for more info on variables contained in the `HMDA` dataset.
+
+We transform loan-to-value ratio (`lvrat`) into a factor variable where
+
+\begin{align*}
+  lvrat = 
+  \begin{cases}
+    \text{low} & \text{if} \ \ lvrat < 0.8, \\
+    \text{medium} & \text{if} \ \ 0.8 \leq lvrat \leq 0.95, \\
+    \text{high} & \text{if} \ \ lvrat > 0.95.
+  \end{cases}
+\end{align*}
+
+```{r}
+# define low, medium and high loan-to-value ratio
+HMDA$lvrat <- factor(
+  ifelse(HMDA$lvrat < 0.8, "low",
+  ifelse(HMDA$lvrat >= 0.8 & HMDA$lvrat <= 0.95, "medium", "high")),
+  levels = c("low", "medium", "high")
+  )
+
+# convert credit scores to numeric
+HMDA$mhist <- as.numeric(HMDA$mhist)
+HMDA$chist <- as.numeric(HMDA$chist)
+```
+
+In the next step we reproduce the estimation results presented in table 11.2 of the book.
+
+```{r}
+# estimate all 6 models for the denial probability
+lpm_HMDA <- lm(deny ~ black + pirat + hirat + lvrat + chist + mhist + phist 
+               + insurance + selfemp, data = HMDA)
+
+logit_HMDA <- glm(deny ~ black + pirat + hirat + lvrat + chist + mhist + phist 
+                  + insurance + selfemp, 
+                  family = binomial(link = "logit"), data = HMDA)
+
+probit_HMDA_1 <- glm(deny ~ black + pirat + hirat + lvrat + chist + mhist + phist 
+                     + insurance + selfemp, 
+                     family = binomial(link = "probit"), data = HMDA)
+
+probit_HMDA_2 <- glm(deny ~ black + pirat + hirat + lvrat + chist + mhist + phist 
+                     + insurance + selfemp + single + hschool + unemp, 
+                     family = binomial(link = "probit"), data = HMDA)
+
+probit_HMDA_3 <- glm(deny ~ black + pirat + hirat + lvrat + chist + mhist 
+                     + phist + insurance + selfemp + single + hschool + unemp + condomin 
+                     + I(mhist==3) + I(mhist==4) + I(chist==3) + I(chist==4) + I(chist==5) 
+                     + I(chist==6), 
+                     family = binomial(link = "probit"), data = HMDA)
+
+probit_HMDA_4 <- glm(deny ~ black * (pirat + hirat) + lvrat + chist + mhist + phist 
+                     + insurance + selfemp + single + hschool + unemp, 
+                     family = binomial(link = "probit"), data = HMDA)
+```
+
+Just as in previous chapters, we use the package `sandwich` for computation of heteroskedasticity-robust standard errors of the coefficient estimators in all models and store these in a a list which is then supplied as the argument `se` in `stargazer()`.
+
+```{r, eval=FALSE}
+library(stargazer)
+library(sandwich)
+
+rob_se <- list(
+  sqrt(diag(vcovHC(lpm_HMDA, type = "HC1"))),
+  sqrt(diag(vcovHC(logit_HMDA, type = "HC1"))),
+  sqrt(diag(vcovHC(probit_HMDA_1, type = "HC1"))),
+  sqrt(diag(vcovHC(probit_HMDA_2, type = "HC1"))),
+  sqrt(diag(vcovHC(probit_HMDA_3, type = "HC1"))),
+  sqrt(diag(vcovHC(probit_HMDA_4, type = "HC1")))
+)
+
+stargazer(lpm_HMDA, logit_HMDA, probit_HMDA_1, probit_HMDA_2, probit_HMDA_3, probit_HMDA_4, 
+          digits = 3,
+          type = "latex", 
+          se = rob_se,
+          model.numbers = FALSE,
+          column.labels = c("(1)", "(2)", "(3)", "(4)", "(5)", "(6)")
+          )
+```
+
+<!--html_preserve-->
+
+```{r, message=F, warning=F, results='asis', echo=F}
+library(stargazer)
+library(sandwich)
+
+rob_se <- list(
+  sqrt(diag(vcovHC(lpm_HMDA, type = "HC1"))),
+  sqrt(diag(vcovHC(logit_HMDA, type = "HC1"))),
+  sqrt(diag(vcovHC(probit_HMDA_1, type = "HC1"))),
+  sqrt(diag(vcovHC(probit_HMDA_2, type = "HC1"))),
+  sqrt(diag(vcovHC(probit_HMDA_3, type = "HC1"))),
+  sqrt(diag(vcovHC(probit_HMDA_4, type = "HC1")))
+)
+
+stargazer(lpm_HMDA, logit_HMDA, probit_HMDA_1, probit_HMDA_2, probit_HMDA_3, probit_HMDA_4, 
+          digits = 3,
+          type = "html", 
+          se = rob_se,
+          model.numbers = FALSE,
+          column.labels = c("(1)", "(2)", "(3)", "(4)", "(5)", "(6)")
+          )
+```
+
+<!--/html_preserve-->
+
+Models (1), (2) and (3) are base specifications that include several financial control variables. They differ only in the way they model the denial probability. (1) is linear probability model, (2) is a logistic regression and (3) uses the probit approach.
+
+Since model (1) is a linear model, the coefficients have direct interpretation. For example, an increase in the consumer credit score by $1$ unit is estimated to increase the probability of a loan denial by about $0.031$ percentage points. We also find that having a high loan-to-value ratio is predicted to be not conductive for credit approval: the coefficient for a loan-to-value ratio higher than $0.95$ is $0.189$ so clients with this property ceteris paribus are estimated to face an almost $19\%$ larger risk of denial than those with a low loan-to-value ratio. For the linear probability model, the coefficient on black is estimated to be $0.084$ which indicates the denial probability for African Americans is $8.4\%$ larger than for white applicants with the same characteristics except for race. Apart from housing expense-to-income ratio and the mortgage credit score, all coefficients are significant.
+
+Models (2) and (3) provide similar evidence that there is racial discrimination in the US mortgage market. All coefficients except for housing expense-to-income ratio (which is not significantly different from zero) are signiicant at $1\%$ level. As discussed above, the nonlinearity makes interpretation of coefficient estimates more difficult than for model (1). In order to make a statement about the effect of beeing black, we need to compute the estimated denial probability for two individuals that differ only in race. For the comparison we consider two individuals that share mean values for all numeric regressors. For all qualitative variables we assign the property that is the most representative for the data at hand. As an example, consider self-employment: we have seen that about $88\%$ of all individuals in the sample are not self-employed such that we set `selfemp = no`. Using this approach, the estimate for the effect on the denial probability of being African American obtained when using the logit model (2) is about $4\%$. The next code chunk shows how to apply this approach for models (1) to (7) using `R`.
+
+```{r}
+# regressor values for average person, black = "yes"
+new <- data.frame(
+  "pirat" = mean(HMDA$pirat),
+  "hirat" = mean(HMDA$hirat),
+  "lvrat" = "low",
+  "chist" = mean(HMDA$chist),
+  "mhist" = mean(HMDA$mhist),
+  "phist" = "no",
+  "insurance" = "no",
+  "selfemp" = "no",
+  "black" = c("no","yes"),
+  "single" = "no",
+  "hschool" = "yes",
+  "unemp" = mean(HMDA$unemp),
+  "condomin" = "no"
+)
+
+# differnce predicted by the LPM
+predictions <- predict(lpm_HMDA, newdata = new)
+diff(predictions)
+
+# differnce predicted by the logit model
+predictions <- predict(logit_HMDA, newdata = new, type = "response")
+diff(predictions)
+
+# difference predicted by probit model (3)
+predictions <- predict(probit_HMDA_1, newdata = new, type = "response")
+diff(predictions)
+
+# difference predicted by probit model (4)
+predictions <- predict(probit_HMDA_2, newdata = new, type = "response")
+diff(predictions)
+
+# difference predicted by probit model (5)
+predictions <- predict(probit_HMDA_3, newdata = new, type = "response")
+diff(predictions)
+
+# difference predicted by probit model (6)
+predictions <- predict(probit_HMDA_4, newdata = new, type = "response")
+diff(predictions)
+```
+
+The estimates of the impact on the denial probability of being black are similar for models (2) and (3). In particular, it is interesting that the magnitude of the estimated effects is much smaller than for probit and logit models that do not control for financial characteristics (see section 11.2). This indicates that these simple models produce biased estimates due to the omitted variables.
+
+Regressions (4) to (6) use regression specifications that include different sets of applicant characteristics and credit rating indicator variables as well as interactions. However, most of the corresponding coefficients are not significant and the estimates of the coefficient on `black` obtained for these models as well as the estimated difference in denial probabilities do not deviate much from those obtained for the similar specifications (2) and (3).
+
+An intersting question related to racial discrimination can be investigated using the probit model (6) where the interactions `blackyes:pirat` and `blackyes:hirat` are added to the the specification of model (4). If the coefficient on `blackyes:pirat` was different  from zero, the effect of the payment-to-income ratio on the denial probability would be different for black and white applicants. Similarly, a non-zero coefficient on `blackyes:hirat` would indicate that loan officers weight the risk of bankrupt associated with a high loan-to-value ratio differently for black and white mortgage applicants. We can test whether these coefficients are jointly significant at the $5\%$ level using an $F$-Test.
+
+```{r}
+linearHypothesis(probit_HMDA_4,
+                 test = "F",
+                 c("blackyes:pirat=0","blackyes:hirat=0"),
+                 vcov = vcovHC(probit_HMDA_4, type = "HC1"))
+```
+
+Since $p\text{-value} \approx 0.77$ for this test, the null cannot be rejected. Nonetheless we cannot reject the hypothesis that there is no racial discrimination at all since the corresponding $F$-test has a $p\text{-value}$ of about $0.002$.
+
+```{r}
+linearHypothesis(probit_HMDA_4,
+                 test = "F",
+                 c("blackyes=0","blackyes:pirat=0","blackyes:hirat=0"),
+                 vcov = vcovHC(probit_HMDA_4, type = "HC1"))
+```
+
+#### Summary {-}
+
+Models (1) to (6) provide evidence that there is an effect of being African American on the probability of a mortgage application denial: in all specifications, the effect is estimated to be positive (ranging from $4\%$ to $5\%$ for the fictive individuals considered) and significantly different from zero at the $1\%$ level. While the linear probability model seems to overestimate this effect slightly, it still can be used as an approximation to an intrinsic nonlinear relationship.
+
+See Chapters 11.4 and 11.5 of the book for a discussion of external and internal validity of this study and some concluding remarks on regression models where the dependent variable is binary.
+ 
+
+
