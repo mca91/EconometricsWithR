@@ -324,10 +324,13 @@ This book is in <b>Open Review</b>. We want your feedback to make the book bette
 </div>
 <div id="exercises" class="section level2">
 <h2><span class="header-section-number">2.4</span> Exercises</h2>
+<div id="probability-density-function" class="section level4 unnumbered">
+<h4>Probability density function</h4>
 <p>Consider a random variable <span class="math inline">\(X\)</span> with probability density function (pdf)</p>
-<p><span class="math display">\[f\_X(x)=\frac{x}{4}e^{-\frac{x^2}{8}},\quad x\geq 0.\]</span></p>
+<p><span class="math display">\[f_X(x)=\frac{x}{4}e^{-\frac{x^2}{8}},\quad x\geq 0.\]</span></p>
+<p><strong>Instructions:</strong></p>
 <ul>
-<li><p>Define the PDF from above as a function <code>f()</code>. <strong>Hint:</strong> For the natural exponential function you can use <code>exp()</code>.</p></li>
+<li><p>Define the pdf from above as a function <code>f()</code>. <strong>Hint:</strong> For the natural exponential function you can use <code>exp()</code>.</p></li>
 <li><p>Check whether the defined function is indeed a pdf.</p></li>
 </ul>
 
@@ -364,13 +367,168 @@ This book is in <b>Open Review</b>. We want your feedback to make the book bette
   test_output_contains('1', incorrect_msg = 'Did you access the value of the integral?')
 	</code>
 	
-	<div data-type="hint">
-	</div>
 
 </div>
 
 
+<p><strong>Hints:</strong></p>
+<ul>
+<li><p>You can use <code>function()</code> to define a function.</p></li>
+<li><p>In order to be a pdf the integral of <code>f()</code> over the whole domain has to be equal to 1. That is, <span class="math inline">\(\int_0^\infty f_X(x)dx=1\)</span>.</p></li>
+<li><p><code>integrate()</code> performs integration in R and with <code>$value</code> you can access the numerical value of the computed integral.</p></li>
+</ul>
+</div>
+<div id="expected-value-and-variance" class="section level4 unnumbered">
+<h4>Expected value and variance</h4>
+<p>In this exercise we want to compute the expected value and variance of the random variable <span class="math inline">\(X\)</span> considered in the previous exercise.</p>
+<p>The pdf <code>f()</code> from the previous exercise is available in your working environment.</p>
+<p><strong>Instructions:</strong></p>
+<ul>
+<li><p>Define a suitable function <code>ex()</code>.</p></li>
+<li><p>Compute the expected value of <span class="math inline">\(X\)</span>. Store the result in <code>expected_value</code>.</p></li>
+<li><p>Define a suitable function <code>ex2()</code>.</p></li>
+<li><p>Compute the variance of <span class="math inline">\(X\)</span>. Store the result in <code>variance</code>.</p></li>
+</ul>
 
+
+<div data-datacamp-exercise data-lang="r">
+
+	<code data-type="pre-exercise-code">
+    f <- function(x){(x/4)*exp(-x^2/8)}
+	</code>
+	
+	<code data-type="sample-code">
+  # Define the function ex
+
+
+  # Compute the expected value of X
+
+
+  # Define the function ex2
+
+
+  # Compute the variance of X
+
+
+	</code>
+	
+	<code data-type="solution">
+  # Define the function ex
+  ex <- function(x){x*f(x)}
+
+  # Compute the expected value of X
+  expected_value <- integrate(ex, 0, Inf)$value
+
+  # Define the function ex2
+  ex2 <- function(x){x^2*f(x)}
+
+  # Compute the variance of X
+  variance <- integrate(ex2, 0, Inf)$value - expected_value^2
+	</code>
+	
+	<code data-type="sct">
+  test_function_definition("ex",
+                         function_test = {
+                           test_expression_result("ex(1)")
+                           test_expression_result("ex(4)")
+                           test_expression_result("ex(10)")
+                           test_expression_result("ex(100)")
+                         })
+  test_function('integrate', args = c('f', 'lower', 'upper'), eval = c(F, T, T)) 
+  test_object('expected_value')
+  test_function_definition("ex2",
+                         function_test = {
+                           test_expression_result("ex2(1)")
+                           test_expression_result("ex2(4)")
+                           test_expression_result("ex2(10)")
+                           test_expression_result("ex2(100)")
+                         })
+  test_function('integrate', args = c('f', 'lower', 'upper'), eval = c(F, T, T))
+  test_object('variance')
+	</code>
+
+</div>
+
+
+<p><strong>Hints:</strong></p>
+<ul>
+<li><p>The expected value of <span class="math inline">\(X\)</span> is defined as <span class="math inline">\(\mathbb{E}[X]=\int_0^\infty xf_X(x)dx\)</span>.</p></li>
+<li><p>The variance of <span class="math inline">\(X\)</span> is defined as <span class="math inline">\(Var[X]=\mathbb{E}[X^2]-\mathbb{E}[X]^2\)</span>, where <span class="math inline">\(\mathbb{E}[X^2]=\int_0^\infty x^2f_X(x)dx\)</span>.</p></li>
+</ul>
+</div>
+<div id="standard-normal-distribution-i" class="section level4 unnumbered">
+<h4>Standard normal distribution I</h4>
+<p>Let <span class="math inline">\(Z\sim\mathcal{N}(0, 1)\)</span>.</p>
+<p><strong>Instructions:</strong></p>
+<ul>
+<li>Compute <span class="math inline">\(\phi(3)\)</span>, that is, the value of the standard normal density at <span class="math inline">\(c=3\)</span>.</li>
+</ul>
+
+
+<div data-datacamp-exercise data-lang="r">
+
+	
+	<code data-type="sample-code">
+  # Compute the value of the standard normal density at c=3
+
+
+	</code>
+	
+	<code data-type="solution">
+  # Compute the value of the standard normal density at c=3
+  dnorm(3)
+
+	</code>
+	
+	<code data-type="sct">
+  test_function_result('dnorm')
+	</code>
+
+</div>
+
+
+<p><strong>Hint:</strong></p>
+<ul>
+<li>To compute values of <span class="math inline">\(\phi(\cdot)\)</span> you can use <code>dnorm()</code>.</li>
+</ul>
+</div>
+<div id="chi-squared-distribution-ii" class="section level4 unnumbered">
+<h4>Chi-squared distribution II</h4>
+<p>Let <span class="math inline">\(X_1,X_2\)</span> be two independent normally distributed random variables with <span class="math inline">\(\mu=0\)</span> and <span class="math inline">\(\sigma^2=15\)</span>.</p>
+<p><strong>Instructions:</strong></p>
+<ul>
+<li>Compute <span class="math inline">\(P(X_1^2+X_2^2&gt;10)\)</span>.</li>
+</ul>
+
+
+<div data-datacamp-exercise data-lang="r">
+
+	
+	<code data-type="sample-code">
+  # Compute the probability
+
+
+	</code>
+	
+	<code data-type="solution">
+  # Compute the probability
+  1 - pchisq(10/15, df = 2)
+  
+	</code>
+	
+	<code data-type="sct">
+  test_output_contains("1 - pchisq(10/15, df = 2)", times = 1, incorrect_msg = "Not correct!")
+	</code>
+
+</div>
+
+
+<p><strong>Hint:</strong></p>
+<ul>
+<li>Note that both random variables are not <span class="math inline">\(\mathcal{N}(0,1)\)</span>- but <span class="math inline">\(\mathcal{N}(0,\sigma^2)\)</span>-distributed. Hence you have to scale appropriately. Afterwards you can use <code>pchisq()</code> to compute the probability.</li>
+</ul>
+
+</div>
 </div>
 <!-- </div> -->
             </section>

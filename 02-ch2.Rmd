@@ -1169,11 +1169,15 @@ We see that the simulated sampling distribution of the standardized average tend
 
 ## Exercises
 
+#### Probability density function {-}
+
 Consider a random variable $X$ with probability density function (pdf)
 
-$$f\_X(x)=\frac{x}{4}e^{-\frac{x^2}{8}},\quad x\geq 0.$$
+$$f_X(x)=\frac{x}{4}e^{-\frac{x^2}{8}},\quad x\geq 0.$$
 
-+ Define the PDF from above as a function `f()`. **Hint:** For the natural exponential function you can use `exp()`. 
+**Instructions:**
+
++ Define the pdf from above as a function `f()`. **Hint:** For the natural exponential function you can use `exp()`. 
 
 + Check whether the defined function is indeed a pdf.
 
@@ -1211,9 +1215,173 @@ $$f\_X(x)=\frac{x}{4}e^{-\frac{x^2}{8}},\quad x\geq 0.$$
   test_output_contains('1', incorrect_msg = 'Did you access the value of the integral?')
 	</code>
 	
-	<div data-type="hint">
-	</div>
 
 </div>
 
 <!--/html_preserve-->
+
+**Hints:**
+
+  + You can use `function()` to define a function.
+
+  + In order to be a pdf the integral of `f()` over the whole domain has to be equal to 1. That is, $\int_0^\infty f_X(x)dx=1$.
+
+  + `integrate()` performs integration in R and with `$value` you can access the numerical value of the computed integral.
+
+#### Expected value and variance {-}
+
+In this exercise we want to compute the expected value and variance of the random variable $X$ considered in the previous exercise. 
+
+The pdf `f()` from the previous exercise is available in your working environment. 
+
+**Instructions:**
+
+  + Define a suitable function `ex()`.
+
+  + Compute the expected value of $X$. Store the result in `expected_value`.
+
+  + Define a suitable function `ex2()`.
+
+  + Compute the variance of $X$. Store the result in `variance`.
+
+<!--html_preserve-->
+
+<div data-datacamp-exercise data-lang="r">
+
+	<code data-type="pre-exercise-code">
+    f <- function(x){(x/4)*exp(-x^2/8)}
+	</code>
+	
+	<code data-type="sample-code">
+  # Define the function ex
+
+
+  # Compute the expected value of X
+
+
+  # Define the function ex2
+
+
+  # Compute the variance of X
+
+
+	</code>
+	
+	<code data-type="solution">
+  # Define the function ex
+  ex <- function(x){x*f(x)}
+
+  # Compute the expected value of X
+  expected_value <- integrate(ex, 0, Inf)$value
+
+  # Define the function ex2
+  ex2 <- function(x){x^2*f(x)}
+
+  # Compute the variance of X
+  variance <- integrate(ex2, 0, Inf)$value - expected_value^2
+	</code>
+	
+	<code data-type="sct">
+  test_function_definition("ex",
+                         function_test = {
+                           test_expression_result("ex(1)")
+                           test_expression_result("ex(4)")
+                           test_expression_result("ex(10)")
+                           test_expression_result("ex(100)")
+                         })
+  test_function('integrate', args = c('f', 'lower', 'upper'), eval = c(F, T, T)) 
+  test_object('expected_value')
+  test_function_definition("ex2",
+                         function_test = {
+                           test_expression_result("ex2(1)")
+                           test_expression_result("ex2(4)")
+                           test_expression_result("ex2(10)")
+                           test_expression_result("ex2(100)")
+                         })
+  test_function('integrate', args = c('f', 'lower', 'upper'), eval = c(F, T, T))
+  test_object('variance')
+	</code>
+
+</div>
+
+<!--/html_preserve-->
+
+**Hints:**
+
+  + The expected value of $X$ is defined as $\mathbb{E}[X]=\int_0^\infty xf_X(x)dx$.
+
+  + The variance of $X$ is defined as $Var[X]=\mathbb{E}[X^2]-\mathbb{E}[X]^2$, where $\mathbb{E}[X^2]=\int_0^\infty x^2f_X(x)dx$.
+  
+#### Standard normal distribution I {-}
+
+Let $Z\sim\mathcal{N}(0, 1)$.
+
+**Instructions:**
+
+  + Compute $\phi(3)$, that is, the value of the standard normal density at $c=3$.
+  
+<!--html_preserve-->
+
+<div data-datacamp-exercise data-lang="r">
+
+	
+	<code data-type="sample-code">
+  # Compute the value of the standard normal density at c=3
+
+
+	</code>
+	
+	<code data-type="solution">
+  # Compute the value of the standard normal density at c=3
+  dnorm(3)
+
+	</code>
+	
+	<code data-type="sct">
+  test_function_result('dnorm')
+	</code>
+
+</div>
+
+<!--/html_preserve-->
+
+**Hint:**
+
+  + To compute values of $\phi(\cdot)$ you can use `dnorm()`.
+  
+#### Chi-squared distribution II {-}
+
+Let $X_1,X_2$ be two independent normally distributed random variables with $\mu=0$ and $\sigma^2=15$.
+
+**Instructions:**
+
+  + Compute $P(X_1^2+X_2^2>10)$.
+  
+<!--html_preserve-->
+
+<div data-datacamp-exercise data-lang="r">
+
+	
+	<code data-type="sample-code">
+  # Compute the probability
+
+
+	</code>
+	
+	<code data-type="solution">
+  # Compute the probability
+  1 - pchisq(10/15, df = 2)
+  
+	</code>
+	
+	<code data-type="sct">
+  test_output_contains("1 - pchisq(10/15, df = 2)", times = 1, incorrect_msg = "Not correct!")
+	</code>
+
+</div>
+
+<!--/html_preserve-->
+
+**Hint:**
+
+  + Note that both random variables are not $\mathcal{N}(0,1)$- but $\mathcal{N}(0,\sigma^2)$-distributed. Hence you have to scale appropriately. Afterwards you can use `pchisq()` to compute the probability. 
