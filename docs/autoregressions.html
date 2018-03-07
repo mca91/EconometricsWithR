@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html >
+
+<head>
+
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Using R for Introduction to Econometrics</title>
+  <meta name="description" content="Using R for Introduction to Econometrics">
+  <meta name="generator" content="bookdown 0.5 and GitBook 2.6.7">
+
+  <meta property="og:title" content="Using R for Introduction to Econometrics" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+  <meta name="github-repo" content="Emwikts1970/URFITE-Bookdown" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Using R for Introduction to Econometrics" />
+  
+  
+  
+
+<meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber and Martin Schmelzer">
+
+
+<meta name="date" content="2018-03-07">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  
+  
+<link rel="prev" href="time-series-data-and-serial-correlation.html">
+<link rel="next" href="can-you-beat-the-market-part-i.html">
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+
+
+
+
+
+
+
+<script src="js/hideOutput.js"></script>
+<script type="text/javascript" src="MathJax-2.7.2/MathJax.js?config=default"></script>
+
+ <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        extensions: ["tex2jax.js", "TeX/AMSmath.js"],
+        tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+        jax: ["input/TeX","output/CommonHTML"]
+      });
+      MathJax.Hub.processSectionDelay = 0;
+  </script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-110299877-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-110299877-1');
+</script>
+
+<!-- open review block -->
+
+<script async defer src="https://hypothes.is/embed.js"></script>
+
+<!-- datacamp-light-latest -->
+
+<script src="https://cdn.datacamp.com/datacamp-light-latest.min.js"></script>
+
+
+<!-- <script src="js/d3.v3.min.js"></script>
+<script src="js/leastsquares.js"></script>
+<script src="js/d3functions.js"></script>
+<script src="d3.slider.js"></script>
+<script src="slrm.js"></script> -->
+
+
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; background-color: #f8f8f8; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+pre, code { background-color: #f8f8f8; }
+code > span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code > span.dt { color: #204a87; } /* DataType */
+code > span.dv { color: #0000cf; } /* DecVal */
+code > span.bn { color: #0000cf; } /* BaseN */
+code > span.fl { color: #0000cf; } /* Float */
+code > span.ch { color: #4e9a06; } /* Char */
+code > span.st { color: #4e9a06; } /* String */
+code > span.co { color: #8f5902; font-style: italic; } /* Comment */
+code > span.ot { color: #8f5902; } /* Other */
+code > span.al { color: #ef2929; } /* Alert */
+code > span.fu { color: #000000; } /* Function */
+code > span.er { color: #a40000; font-weight: bold; } /* Error */
+code > span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #000000; } /* Constant */
+code > span.sc { color: #000000; } /* SpecialChar */
+code > span.vs { color: #4e9a06; } /* VerbatimString */
+code > span.ss { color: #4e9a06; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #000000; } /* Variable */
+code > span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code > span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code > span.ex { } /* Extension */
+code > span.at { color: #c4a000; } /* Attribute */
+code > span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code > span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">URFITE</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Preface</a></li>
+<li class="chapter" data-level="2" data-path="probability-theory.html"><a href="probability-theory.html"><i class="fa fa-check"></i><b>2</b> Probability Theory</a><ul>
+<li class="chapter" data-level="2.1" data-path="random-variables-and-probability-distributions.html"><a href="random-variables-and-probability-distributions.html"><i class="fa fa-check"></i><b>2.1</b> Random Variables and Probability Distributions</a><ul>
+<li class="chapter" data-level="" data-path="random-variables-and-probability-distributions.html"><a href="random-variables-and-probability-distributions.html#probability-distributions-of-discrete-random-variables"><i class="fa fa-check"></i>Probability Distributions of Discrete Random Variables</a></li>
+<li class="chapter" data-level="" data-path="random-variables-and-probability-distributions.html"><a href="random-variables-and-probability-distributions.html#bernoulli-trials"><i class="fa fa-check"></i>Bernoulli Trials</a></li>
+<li class="chapter" data-level="" data-path="random-variables-and-probability-distributions.html"><a href="random-variables-and-probability-distributions.html#expected-values-mean-and-variance"><i class="fa fa-check"></i>Expected Values, Mean and Variance</a></li>
+</ul></li>
+<li class="chapter" data-level="2.2" data-path="probability-distributions-of-continuous-random-variables.html"><a href="probability-distributions-of-continuous-random-variables.html"><i class="fa fa-check"></i><b>2.2</b> Probability Distributions of Continuous Random Variables</a><ul>
+<li class="chapter" data-level="" data-path="probability-distributions-of-continuous-random-variables.html"><a href="probability-distributions-of-continuous-random-variables.html#the-normal-distribution"><i class="fa fa-check"></i>The Normal Distribution</a></li>
+<li class="chapter" data-level="" data-path="probability-distributions-of-continuous-random-variables.html"><a href="probability-distributions-of-continuous-random-variables.html#the-chi-squared-distribution"><i class="fa fa-check"></i>The Chi-Squared Distribution</a></li>
+<li><a href="probability-distributions-of-continuous-random-variables.html#thetdist">The Student <span class="math inline">\(t\)</span> Distribution</a></li>
+<li><a href="probability-distributions-of-continuous-random-variables.html#the-f-distribution">The <span class="math inline">\(F\)</span> Distribution</a></li>
+</ul></li>
+<li class="chapter" data-level="2.3" data-path="random-sampling-and-the-distribution-of-sample-averages.html"><a href="random-sampling-and-the-distribution-of-sample-averages.html"><i class="fa fa-check"></i><b>2.3</b> Random Sampling and the Distribution of Sample Averages</a><ul>
+<li class="chapter" data-level="" data-path="random-sampling-and-the-distribution-of-sample-averages.html"><a href="random-sampling-and-the-distribution-of-sample-averages.html#mean-and-variance-of-the-sample-mean"><i class="fa fa-check"></i>Mean and Variance of the Sample Mean</a></li>
+<li class="chapter" data-level="" data-path="random-sampling-and-the-distribution-of-sample-averages.html"><a href="random-sampling-and-the-distribution-of-sample-averages.html#large-sample-approximations-to-sampling-distributions"><i class="fa fa-check"></i>Large Sample Approximations to Sampling Distributions</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="a-review-of-statistics-using-r.html"><a href="a-review-of-statistics-using-r.html"><i class="fa fa-check"></i><b>3</b> A Review of Statistics using R</a><ul>
+<li class="chapter" data-level="3.1" data-path="estimation-of-the-population-mean.html"><a href="estimation-of-the-population-mean.html"><i class="fa fa-check"></i><b>3.1</b> Estimation of the Population Mean</a></li>
+<li class="chapter" data-level="3.2" data-path="properties-of-the-sample-mean.html"><a href="properties-of-the-sample-mean.html"><i class="fa fa-check"></i><b>3.2</b> Properties of the Sample Mean</a></li>
+<li class="chapter" data-level="3.3" data-path="hypothesis-tests-concerning-the-population-mean.html"><a href="hypothesis-tests-concerning-the-population-mean.html"><i class="fa fa-check"></i><b>3.3</b> Hypothesis Tests Concerning the Population Mean</a><ul>
+<li><a href="hypothesis-tests-concerning-the-population-mean.html#p-value"><span class="math inline">\(p\)</span>-Value</a></li>
+<li><a href="hypothesis-tests-concerning-the-population-mean.html#calculating-the-p-value-when-sigma_y-is-known">Calculating the <span class="math inline">\(p\)</span>-Value When <span class="math inline">\(\sigma_Y\)</span> Is Known</a></li>
+</ul></li>
+<li class="chapter" data-level="3.4" data-path="shade-p-value2-region-in-right-tail.html"><a href="shade-p-value2-region-in-right-tail.html"><i class="fa fa-check"></i><b>3.4</b> shade p-value/2 region in right tail</a><ul>
+<li class="chapter" data-level="" data-path="shade-p-value2-region-in-right-tail.html"><a href="shade-p-value2-region-in-right-tail.html#sample-variance-sample-standard-deviation-and-standard-error"><i class="fa fa-check"></i>Sample Variance, Sample Standard Deviation and Standard Error</a></li>
+<li><a href="shade-p-value2-region-in-right-tail.html#calculating-the-p-value-when-sigma_y-is-unknown">Calculating the <span class="math inline">\(p\)</span>-value When <span class="math inline">\(\sigma_Y\)</span> is Unknown</a></li>
+<li><a href="shade-p-value2-region-in-right-tail.html#the-t-statistic">The <span class="math inline">\(t\)</span>-statistic</a></li>
+<li class="chapter" data-level="" data-path="shade-p-value2-region-in-right-tail.html"><a href="shade-p-value2-region-in-right-tail.html#hypothesis-testing-with-a-prespecified-significance-level"><i class="fa fa-check"></i>Hypothesis Testing with a Prespecified Significance Level</a></li>
+<li class="chapter" data-level="" data-path="shade-p-value2-region-in-right-tail.html"><a href="shade-p-value2-region-in-right-tail.html#one-sided-alternatives"><i class="fa fa-check"></i>One-sided Alternatives</a></li>
+</ul></li>
+<li class="chapter" data-level="3.5" data-path="confidence-intervals-for-the-population-mean.html"><a href="confidence-intervals-for-the-population-mean.html"><i class="fa fa-check"></i><b>3.5</b> Confidence intervals for the Population Mean</a></li>
+<li class="chapter" data-level="3.6" data-path="comparing-means-from-different-populations.html"><a href="comparing-means-from-different-populations.html"><i class="fa fa-check"></i><b>3.6</b> Comparing Means from Different Populations</a></li>
+<li class="chapter" data-level="3.7" data-path="an-application-to-the-gender-gap-of-earnings.html"><a href="an-application-to-the-gender-gap-of-earnings.html"><i class="fa fa-check"></i><b>3.7</b> An Application to the Gender Gap of Earnings</a></li>
+<li class="chapter" data-level="3.8" data-path="scatterplots-sample-covariance-and-sample-correlation.html"><a href="scatterplots-sample-covariance-and-sample-correlation.html"><i class="fa fa-check"></i><b>3.8</b> Scatterplots, Sample Covariance and Sample Correlation</a></li>
+<li class="chapter" data-level="3.9" data-path="plots.html"><a href="plots.html"><i class="fa fa-check"></i><b>3.9</b> Plots</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="lrwor.html"><a href="lrwor.html"><i class="fa fa-check"></i><b>4</b> Linear Regression with One Regressor</a><ul>
+<li class="chapter" data-level="4.1" data-path="estimating-the-coefficients-of-the-linear-regression-model.html"><a href="estimating-the-coefficients-of-the-linear-regression-model.html"><i class="fa fa-check"></i><b>4.1</b> Estimating the Coefficients of the Linear Regression Model</a><ul>
+<li class="chapter" data-level="" data-path="estimating-the-coefficients-of-the-linear-regression-model.html"><a href="estimating-the-coefficients-of-the-linear-regression-model.html#the-ordinary-least-squares-estimator"><i class="fa fa-check"></i>The Ordinary Least Squares Estimator</a></li>
+</ul></li>
+<li class="chapter" data-level="4.2" data-path="measures-of-fit.html"><a href="measures-of-fit.html"><i class="fa fa-check"></i><b>4.2</b> Measures of Fit</a><ul>
+<li><a href="measures-of-fit.html#the-r2">The <span class="math inline">\(R^2\)</span></a></li>
+<li class="chapter" data-level="" data-path="measures-of-fit.html"><a href="measures-of-fit.html#standard-error-of-the-regression"><i class="fa fa-check"></i>Standard Error of the Regression</a></li>
+<li class="chapter" data-level="" data-path="measures-of-fit.html"><a href="measures-of-fit.html#application-to-the-test-score-data"><i class="fa fa-check"></i>Application to the Test Score Data</a></li>
+</ul></li>
+<li class="chapter" data-level="4.3" data-path="the-least-squares-assumptions.html"><a href="the-least-squares-assumptions.html"><i class="fa fa-check"></i><b>4.3</b> The Least Squares Assumptions</a><ul>
+<li class="chapter" data-level="" data-path="the-least-squares-assumptions.html"><a href="the-least-squares-assumptions.html#assumption-1-the-error-term-has-conditional-mean-of-zero"><i class="fa fa-check"></i>Assumption #1: The Error Term has Conditional Mean of Zero</a></li>
+</ul></li>
+<li class="chapter" data-level="4.4" data-path="the-true-relation.html"><a href="the-true-relation.html"><i class="fa fa-check"></i><b>4.4</b> the true relation</a><ul>
+<li><a href="the-true-relation.html#assumption-2-all-x_i-y_i-are-independently-and-identically-distributed">Assumption #2: All <span class="math inline">\((X_i, Y_i)\)</span> are Independently and Identically Distributed</a></li>
+<li class="chapter" data-level="" data-path="the-true-relation.html"><a href="the-true-relation.html#assumption-3-large-outliers-are-unlikely"><i class="fa fa-check"></i>Assumption #3: Large outliers are unlikely</a></li>
+</ul></li>
+<li class="chapter" data-level="4.5" data-path="tsdotoe.html"><a href="tsdotoe.html"><i class="fa fa-check"></i><b>4.5</b> The Sampling Distribution of the OLS Estimator</a><ul>
+<li class="chapter" data-level="" data-path="tsdotoe.html"><a href="tsdotoe.html#r-simulation-study-1"><i class="fa fa-check"></i>R Simulation Study 1</a></li>
+<li class="chapter" data-level="" data-path="tsdotoe.html"><a href="tsdotoe.html#r-simulation-study-2"><i class="fa fa-check"></i>R Simulation Study 2</a></li>
+<li class="chapter" data-level="" data-path="tsdotoe.html"><a href="tsdotoe.html#r-simulation-study-3"><i class="fa fa-check"></i>R Simulation Study 3</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="hypothesis-tests-and-confidence-intervals-in-the-simple-linear-regression-model.html"><a href="hypothesis-tests-and-confidence-intervals-in-the-simple-linear-regression-model.html"><i class="fa fa-check"></i><b>5</b> Hypothesis Tests and Confidence Intervals in the Simple Linear Regression Model</a><ul>
+<li class="chapter" data-level="5.1" data-path="testing-two-sided-hypotheses-concerning-beta-1.html"><a href="testing-two-sided-hypotheses-concerning-beta-1.html"><i class="fa fa-check"></i><b>5.1</b> Testing Two-Sided Hypotheses Concerning <span class="math inline">\(\beta_1\)</span></a></li>
+<li class="chapter" data-level="5.2" data-path="critical-region-in-left-tail.html"><a href="critical-region-in-left-tail.html"><i class="fa fa-check"></i><b>5.2</b> critical region in left tail</a></li>
+<li class="chapter" data-level="5.3" data-path="critical-region-in-right-tail.html"><a href="critical-region-in-right-tail.html"><i class="fa fa-check"></i><b>5.3</b> critical region in right tail</a></li>
+<li class="chapter" data-level="5.4" data-path="confidence-intervals-for-regression-coefficients.html"><a href="confidence-intervals-for-regression-coefficients.html"><i class="fa fa-check"></i><b>5.4</b> Confidence Intervals for Regression Coefficients</a><ul>
+<li class="chapter" data-level="" data-path="confidence-intervals-for-regression-coefficients.html"><a href="confidence-intervals-for-regression-coefficients.html#r-simulation-study-5.1"><i class="fa fa-check"></i>R Simulation Study 5.1</a></li>
+</ul></li>
+<li class="chapter" data-level="5.5" data-path="regression-when-x-is-a-binary-variable.html"><a href="regression-when-x-is-a-binary-variable.html"><i class="fa fa-check"></i><b>5.5</b> Regression when <span class="math inline">\(X\)</span> is a Binary Variable</a></li>
+<li class="chapter" data-level="5.6" data-path="heteroskedasticity-and-homoskedasticity.html"><a href="heteroskedasticity-and-homoskedasticity.html"><i class="fa fa-check"></i><b>5.6</b> Heteroskedasticity and Homoskedasticity</a><ul>
+<li class="chapter" data-level="" data-path="heteroskedasticity-and-homoskedasticity.html"><a href="heteroskedasticity-and-homoskedasticity.html#a-real-world-example-for-heteroskedasticity"><i class="fa fa-check"></i>A Real-World Example for Heteroskedasticity</a></li>
+<li class="chapter" data-level="" data-path="heteroskedasticity-and-homoskedasticity.html"><a href="heteroskedasticity-and-homoskedasticity.html#should-we-care-about-heteroskedasticity"><i class="fa fa-check"></i>Should We Care About Heteroskedasticity?</a></li>
+<li class="chapter" data-level="" data-path="heteroskedasticity-and-homoskedasticity.html"><a href="heteroskedasticity-and-homoskedasticity.html#computation-of-heteroskedasticity-robust-standard-errors"><i class="fa fa-check"></i>Computation of Heteroskedasticity-Robust Standard Errors</a></li>
+</ul></li>
+<li class="chapter" data-level="5.7" data-path="the-gauss-markov-theorem.html"><a href="the-gauss-markov-theorem.html"><i class="fa fa-check"></i><b>5.7</b> The Gauss-Markov Theorem</a><ul>
+<li class="chapter" data-level="" data-path="the-gauss-markov-theorem.html"><a href="the-gauss-markov-theorem.html#r-simulation-study-blue-estimator"><i class="fa fa-check"></i>R Simulation Study: BLUE Estimator</a></li>
+</ul></li>
+<li class="chapter" data-level="5.8" data-path="ols.html"><a href="ols.html"><i class="fa fa-check"></i><b>5.8</b> OLS</a></li>
+<li class="chapter" data-level="5.9" data-path="weighted.html"><a href="weighted.html"><i class="fa fa-check"></i><b>5.9</b> Weighted</a></li>
+<li class="chapter" data-level="5.10" data-path="add-a-dashed-line-at-0-and-a-legend-to-the-plot.html"><a href="add-a-dashed-line-at-0-and-a-legend-to-the-plot.html"><i class="fa fa-check"></i><b>5.10</b> Add a dashed line at 0 and a legend to the plot</a></li>
+<li class="chapter" data-level="5.11" data-path="using-the-t-statistic-in-regression-when-the-sample-size-is-small.html"><a href="using-the-t-statistic-in-regression-when-the-sample-size-is-small.html"><i class="fa fa-check"></i><b>5.11</b> Using the <span class="math inline">\(t\)</span>-Statistic in Regression When the Sample Size Is Small</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="regression-models-with-multiple-regressors.html"><a href="regression-models-with-multiple-regressors.html"><i class="fa fa-check"></i><b>6</b> Regression Models with Multiple Regressors</a><ul>
+<li class="chapter" data-level="6.1" data-path="omitted-variable-bias.html"><a href="omitted-variable-bias.html"><i class="fa fa-check"></i><b>6.1</b> Omitted Variable Bias</a></li>
+<li class="chapter" data-level="6.2" data-path="the-multiple-regression-model.html"><a href="the-multiple-regression-model.html"><i class="fa fa-check"></i><b>6.2</b> The Multiple Regression Model</a></li>
+<li class="chapter" data-level="6.3" data-path="measures-of-fit-in-multiple-regression.html"><a href="measures-of-fit-in-multiple-regression.html"><i class="fa fa-check"></i><b>6.3</b> Measures of Fit in Multiple Regression</a></li>
+<li class="chapter" data-level="6.4" data-path="ols-assumptions-in-multiple-regression.html"><a href="ols-assumptions-in-multiple-regression.html"><i class="fa fa-check"></i><b>6.4</b> OLS Assumptions in Multiple Regression</a><ul>
+<li class="chapter" data-level="" data-path="ols-assumptions-in-multiple-regression.html"><a href="ols-assumptions-in-multiple-regression.html#multicollinearity"><i class="fa fa-check"></i>Multicollinearity</a></li>
+</ul></li>
+<li class="chapter" data-level="6.5" data-path="the-distribution-of-the-ols-estimators-in-multiple-regression.html"><a href="the-distribution-of-the-ols-estimators-in-multiple-regression.html"><i class="fa fa-check"></i><b>6.5</b> The Distribution of the OLS Estimators in Multiple Regression</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="hypothesis-tests-and-confidence-intervals-in-multiple-regression.html"><a href="hypothesis-tests-and-confidence-intervals-in-multiple-regression.html"><i class="fa fa-check"></i><b>7</b> Hypothesis Tests and Confidence intervals in Multiple Regression</a><ul>
+<li class="chapter" data-level="7.1" data-path="hypothesis-tests-and-confidence-intervals-for-a-single-coefficient.html"><a href="hypothesis-tests-and-confidence-intervals-for-a-single-coefficient.html"><i class="fa fa-check"></i><b>7.1</b> Hypothesis Tests and Confidence Intervals for a Single Coefficient</a></li>
+<li class="chapter" data-level="7.2" data-path="an-application-to-test-scores-and-the-student-teacher-ratio.html"><a href="an-application-to-test-scores-and-the-student-teacher-ratio.html"><i class="fa fa-check"></i><b>7.2</b> An Application to Test Scores and the Student-Teacher Ratio</a><ul>
+<li class="chapter" data-level="" data-path="an-application-to-test-scores-and-the-student-teacher-ratio.html"><a href="an-application-to-test-scores-and-the-student-teacher-ratio.html#another-augmentation-of-the-model"><i class="fa fa-check"></i>Another Augmentation of the Model</a></li>
+</ul></li>
+<li class="chapter" data-level="7.3" data-path="joint-hypothesis-testing-using-the-f-statistic.html"><a href="joint-hypothesis-testing-using-the-f-statistic.html"><i class="fa fa-check"></i><b>7.3</b> Joint Hypothesis Testing Using the <span class="math inline">\(F\)</span>-Statistic</a></li>
+<li class="chapter" data-level="7.4" data-path="confidence-sets-for-multiple-coefficients.html"><a href="confidence-sets-for-multiple-coefficients.html"><i class="fa fa-check"></i><b>7.4</b> Confidence Sets for Multiple Coefficients</a></li>
+<li class="chapter" data-level="7.5" data-path="model-specification-for-multiple-regression.html"><a href="model-specification-for-multiple-regression.html"><i class="fa fa-check"></i><b>7.5</b> Model Specification for Multiple Regression</a><ul>
+<li class="chapter" data-level="" data-path="model-specification-for-multiple-regression.html"><a href="model-specification-for-multiple-regression.html#model-specification-in-theory-and-in-practice"><i class="fa fa-check"></i>Model Specification in Theory and in Practice</a></li>
+</ul></li>
+<li class="chapter" data-level="7.6" data-path="analysis-of-the-test-score-data-set.html"><a href="analysis-of-the-test-score-data-set.html"><i class="fa fa-check"></i><b>7.6</b> Analysis of the Test Score Data Set</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="nonlinear-regression-functions.html"><a href="nonlinear-regression-functions.html"><i class="fa fa-check"></i><b>8</b> Nonlinear Regression Functions</a><ul>
+<li class="chapter" data-level="8.1" data-path="a-general-strategy-for-modeling-nonlinear-regression-functions.html"><a href="a-general-strategy-for-modeling-nonlinear-regression-functions.html"><i class="fa fa-check"></i><b>8.1</b> A General Strategy for Modeling Nonlinear Regression Functions</a></li>
+<li class="chapter" data-level="8.2" data-path="nonlinear-functions-of-a-single-independent-variable.html"><a href="nonlinear-functions-of-a-single-independent-variable.html"><i class="fa fa-check"></i><b>8.2</b> Nonlinear Functions of a Single Independent Variable</a><ul>
+<li class="chapter" data-level="" data-path="nonlinear-functions-of-a-single-independent-variable.html"><a href="nonlinear-functions-of-a-single-independent-variable.html#polynomials"><i class="fa fa-check"></i>Polynomials</a></li>
+<li class="chapter" data-level="" data-path="nonlinear-functions-of-a-single-independent-variable.html"><a href="nonlinear-functions-of-a-single-independent-variable.html#logarithms"><i class="fa fa-check"></i>Logarithms</a></li>
+</ul></li>
+<li class="chapter" data-level="8.3" data-path="interactions-between-independent-variables.html"><a href="interactions-between-independent-variables.html"><i class="fa fa-check"></i><b>8.3</b> Interactions Between Independent Variables</a></li>
+<li class="chapter" data-level="8.4" data-path="nonlinear-effects-on-test-scores-of-the-student-teacher-ratio.html"><a href="nonlinear-effects-on-test-scores-of-the-student-teacher-ratio.html"><i class="fa fa-check"></i><b>8.4</b> Nonlinear Effects on Test Scores of the Student-Teacher Ratio</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="assessing-studies-based-on-multiple-regression.html"><a href="assessing-studies-based-on-multiple-regression.html"><i class="fa fa-check"></i><b>9</b> Assessing Studies Based on Multiple Regression</a><ul>
+<li class="chapter" data-level="9.1" data-path="internal-and-external-validity.html"><a href="internal-and-external-validity.html"><i class="fa fa-check"></i><b>9.1</b> Internal and External Validity</a></li>
+<li class="chapter" data-level="9.2" data-path="threats-to-internal-validity-of-multiple-regression-analysis.html"><a href="threats-to-internal-validity-of-multiple-regression-analysis.html"><i class="fa fa-check"></i><b>9.2</b> Threats to Internal Validity of Multiple Regression Analysis</a></li>
+<li class="chapter" data-level="9.3" data-path="internal-and-external-validity-when-the-regression-is-used-for-forecasting.html"><a href="internal-and-external-validity-when-the-regression-is-used-for-forecasting.html"><i class="fa fa-check"></i><b>9.3</b> Internal and External Validity When the Regression is Used for Forecasting</a></li>
+<li class="chapter" data-level="9.4" data-path="example-test-scores-and-class-size.html"><a href="example-test-scores-and-class-size.html"><i class="fa fa-check"></i><b>9.4</b> Example: Test Scores and Class Size</a></li>
+</ul></li>
+<li class="chapter" data-level="10" data-path="regression-with-panel-data.html"><a href="regression-with-panel-data.html"><i class="fa fa-check"></i><b>10</b> Regression with Panel Data</a><ul>
+<li class="chapter" data-level="10.1" data-path="panel-data.html"><a href="panel-data.html"><i class="fa fa-check"></i><b>10.1</b> Panel Data</a></li>
+<li class="chapter" data-level="10.2" data-path="PDWTTP.html"><a href="PDWTTP.html"><i class="fa fa-check"></i><b>10.2</b> Panel Data with Two Time Periods: “Before and Afer” Comparisons</a></li>
+<li class="chapter" data-level="10.3" data-path="fixed-effects-regression.html"><a href="fixed-effects-regression.html"><i class="fa fa-check"></i><b>10.3</b> Fixed Effects Regression</a><ul>
+<li class="chapter" data-level="" data-path="fixed-effects-regression.html"><a href="fixed-effects-regression.html#estimation-and-inference"><i class="fa fa-check"></i>Estimation and Inference</a></li>
+<li class="chapter" data-level="" data-path="fixed-effects-regression.html"><a href="fixed-effects-regression.html#application-to-traffic-deaths"><i class="fa fa-check"></i>Application to Traffic Deaths</a></li>
+</ul></li>
+<li class="chapter" data-level="10.4" data-path="regression-with-time-fixed-effects.html"><a href="regression-with-time-fixed-effects.html"><i class="fa fa-check"></i><b>10.4</b> Regression with Time Fixed Effects</a></li>
+<li class="chapter" data-level="10.5" data-path="the-fixed-effects-regression-assumptions-and-standard-errors-for-fixed-effects-regression.html"><a href="the-fixed-effects-regression-assumptions-and-standard-errors-for-fixed-effects-regression.html"><i class="fa fa-check"></i><b>10.5</b> The Fixed Effects Regression Assumptions and Standard Errors for Fixed Effects Regression</a></li>
+<li class="chapter" data-level="10.6" data-path="drunk-driving-laws-and-traffic-deaths.html"><a href="drunk-driving-laws-and-traffic-deaths.html"><i class="fa fa-check"></i><b>10.6</b> Drunk Driving Laws and Traffic Deaths</a></li>
+</ul></li>
+<li class="chapter" data-level="11" data-path="regression-with-a-binary-dependent-variable.html"><a href="regression-with-a-binary-dependent-variable.html"><i class="fa fa-check"></i><b>11</b> Regression with a Binary Dependent Variable</a><ul>
+<li class="chapter" data-level="11.1" data-path="binary-dependent-variables-and-the-linear-probability-model.html"><a href="binary-dependent-variables-and-the-linear-probability-model.html"><i class="fa fa-check"></i><b>11.1</b> Binary Dependent Variables and the Linear Probability Model</a></li>
+<li class="chapter" data-level="11.2" data-path="probit-and-logit-regression.html"><a href="probit-and-logit-regression.html"><i class="fa fa-check"></i><b>11.2</b> Probit and Logit Regression</a><ul>
+<li class="chapter" data-level="" data-path="probit-and-logit-regression.html"><a href="probit-and-logit-regression.html#probit-regression"><i class="fa fa-check"></i>Probit Regression</a></li>
+<li class="chapter" data-level="" data-path="probit-and-logit-regression.html"><a href="probit-and-logit-regression.html#logit-regression"><i class="fa fa-check"></i>Logit Regression</a></li>
+</ul></li>
+<li class="chapter" data-level="11.3" data-path="estimation-and-inference-in-the-logit-and-probit-models.html"><a href="estimation-and-inference-in-the-logit-and-probit-models.html"><i class="fa fa-check"></i><b>11.3</b> Estimation and Inference in the Logit and Probit Models</a></li>
+<li class="chapter" data-level="11.4" data-path="application-to-the-boston-hmda-data.html"><a href="application-to-the-boston-hmda-data.html"><i class="fa fa-check"></i><b>11.4</b> Application to the Boston HMDA Data</a></li>
+</ul></li>
+<li class="chapter" data-level="12" data-path="instrumental-variables-regression.html"><a href="instrumental-variables-regression.html"><i class="fa fa-check"></i><b>12</b> Instrumental Variables Regression</a><ul>
+<li class="chapter" data-level="12.1" data-path="TIVEWASRAASI.html"><a href="TIVEWASRAASI.html"><i class="fa fa-check"></i><b>12.1</b> The IV Estimator with a Single Regressor and a Single Instrument</a></li>
+<li class="chapter" data-level="12.2" data-path="TGIVRM.html"><a href="TGIVRM.html"><i class="fa fa-check"></i><b>12.2</b> The General IV Regression Model</a></li>
+<li class="chapter" data-level="12.3" data-path="checking-instrument-validity.html"><a href="checking-instrument-validity.html"><i class="fa fa-check"></i><b>12.3</b> Checking Instrument Validity</a></li>
+<li class="chapter" data-level="12.4" data-path="application-to-the-demand-for-cigarettes-2.html"><a href="application-to-the-demand-for-cigarettes-2.html"><i class="fa fa-check"></i><b>12.4</b> Application to the Demand for Cigarettes</a></li>
+<li class="chapter" data-level="12.5" data-path="where-do-valid-instruments-come-from.html"><a href="where-do-valid-instruments-come-from.html"><i class="fa fa-check"></i><b>12.5</b> Where Do Valid Instruments Come From?</a></li>
+</ul></li>
+<li class="chapter" data-level="13" data-path="experiments-and-quasi-experiments.html"><a href="experiments-and-quasi-experiments.html"><i class="fa fa-check"></i><b>13</b> Experiments and Quasi-Experiments</a><ul>
+<li class="chapter" data-level="13.1" data-path="potential-outcomes-causal-effects-and-idealized-experiments.html"><a href="potential-outcomes-causal-effects-and-idealized-experiments.html"><i class="fa fa-check"></i><b>13.1</b> Potential Outcomes, Causal Effects and Idealized Experiments</a></li>
+<li class="chapter" data-level="13.2" data-path="threats-to-validity-of-experiments.html"><a href="threats-to-validity-of-experiments.html"><i class="fa fa-check"></i><b>13.2</b> Threats to Validity of Experiments</a></li>
+<li class="chapter" data-level="13.3" data-path="experimental-estimates-of-the-effect-of-class-size-reductions.html"><a href="experimental-estimates-of-the-effect-of-class-size-reductions.html"><i class="fa fa-check"></i><b>13.3</b> Experimental Estimates of the Effect of Class Size Reductions</a><ul>
+<li class="chapter" data-level="" data-path="experimental-estimates-of-the-effect-of-class-size-reductions.html"><a href="experimental-estimates-of-the-effect-of-class-size-reductions.html#experimental-design-and-the-data-set"><i class="fa fa-check"></i>Experimental Design and the Data Set</a></li>
+<li class="chapter" data-level="" data-path="experimental-estimates-of-the-effect-of-class-size-reductions.html"><a href="experimental-estimates-of-the-effect-of-class-size-reductions.html#analysis-of-the-star-data"><i class="fa fa-check"></i>Analysis of the STAR Data</a></li>
+</ul></li>
+<li class="chapter" data-level="13.4" data-path="quasi-experiments.html"><a href="quasi-experiments.html"><i class="fa fa-check"></i><b>13.4</b> Quasi Experiments</a><ul>
+<li class="chapter" data-level="" data-path="quasi-experiments.html"><a href="quasi-experiments.html#the-differences-in-differences-estimator"><i class="fa fa-check"></i>The Differences-in-Differences Estimator</a></li>
+<li class="chapter" data-level="" data-path="quasi-experiments.html"><a href="quasi-experiments.html#regression-discontinuity-estimators"><i class="fa fa-check"></i>Regression Discontinuity Estimators</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="14" data-path="introduction-to-time-series-regression-and-forecasting.html"><a href="introduction-to-time-series-regression-and-forecasting.html"><i class="fa fa-check"></i><b>14</b> Introduction to Time Series Regression and Forecasting</a><ul>
+<li class="chapter" data-level="14.1" data-path="using-regression-models-for-forecasting.html"><a href="using-regression-models-for-forecasting.html"><i class="fa fa-check"></i><b>14.1</b> Using Regression Models for Forecasting</a></li>
+<li class="chapter" data-level="14.2" data-path="time-series-data-and-serial-correlation.html"><a href="time-series-data-and-serial-correlation.html"><i class="fa fa-check"></i><b>14.2</b> Time Series Data and Serial Correlation</a><ul>
+<li class="chapter" data-level="" data-path="time-series-data-and-serial-correlation.html"><a href="time-series-data-and-serial-correlation.html#notation-lags-differences-logarithms-and-growth-rates"><i class="fa fa-check"></i>Notation, Lags, Differences, Logarithms and Growth Rates</a></li>
+</ul></li>
+<li class="chapter" data-level="14.3" data-path="autoregressions.html"><a href="autoregressions.html"><i class="fa fa-check"></i><b>14.3</b> Autoregressions</a><ul>
+<li><a href="autoregressions.html#the-pth-order-autoregressive-model">The <span class="math inline">\(p^{th}\)</span>-Order Autoregressive Model</a></li>
+</ul></li>
+<li class="chapter" data-level="14.4" data-path="can-you-beat-the-market-part-i.html"><a href="can-you-beat-the-market-part-i.html"><i class="fa fa-check"></i><b>14.4</b> Can You Beat the Market? (Part I)</a></li>
+<li class="chapter" data-level="14.5" data-path="additional-predictors-and-the-adl-model.html"><a href="additional-predictors-and-the-adl-model.html"><i class="fa fa-check"></i><b>14.5</b> Additional Predictors and The ADL Model</a><ul>
+<li class="chapter" data-level="" data-path="additional-predictors-and-the-adl-model.html"><a href="additional-predictors-and-the-adl-model.html#forecast-uncertainty-and-forecast-intervals"><i class="fa fa-check"></i>Forecast Uncertainty and Forecast Intervals</a></li>
+</ul></li>
+<li class="chapter" data-level="14.6" data-path="lag-length-selection-using-information-criteria.html"><a href="lag-length-selection-using-information-criteria.html"><i class="fa fa-check"></i><b>14.6</b> Lag Length Selection Using Information Criteria</a></li>
+<li class="chapter" data-level="14.7" data-path="nonstationarity-i-trends.html"><a href="nonstationarity-i-trends.html"><i class="fa fa-check"></i><b>14.7</b> Nonstationarity I: Trends</a></li>
+<li class="chapter" data-level="14.8" data-path="nonstationarity-ii-breaks.html"><a href="nonstationarity-ii-breaks.html"><i class="fa fa-check"></i><b>14.8</b> Nonstationarity II: Breaks</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Using R for Introduction to Econometrics</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div class = rmdreview>
+This book is in <b>Open Review</b>. We want your feedback to make the book better for you and other students. You may annotate some text by <span style="background-color: #3297FD; color: white">selecting it with the cursor</span> and then click the <i class="h-icon-annotate"></i> on the pop-up menu. You can also see the annotations of others: click the <i class="h-icon-chevron-left"></i> in the upper right hand corner of the page <i class="fa fa-arrow-circle-right  fa-rotate-315" aria-hidden="true"></i>
+</div>
+<div id="autoregressions" class="section level2">
+<h2><span class="header-section-number">14.3</span> Autoregressions</h2>
+<p>Growth forecasts are important for many economic entitites. For example, the production industry relies forecasts of GDP growth published by the central bank when deciding on future budgets and production plans. Autoregressive models are heavily used in economic forecasting. An autoregressive model relates a time series variable to its past values. Autoregressive models are heavily used in forecasting. This chapter discusses the basic ideas of autoregressions models, shows how they are estimated and discusses an application to forecasting of GDP growth using <tt>R</tt>.</p>
+<div id="the-first-order-autoregressive-model" class="section level4">
+<h4><span class="header-section-number">14.3.0.1</span> The First-Order Autoregressive Model</h4>
+It is intuitive that the immediate past of a time series should have power to predict its near future. The simplest autoregressive model uses only the most recent outcome of the time series observed to predict future value. Such a model is called a first-order autoregressive model which is often abbriviated AR(1) where the 1 indicates that the order is one.
+<span class="math display">\[\begin{align*}
+  Y_t = \beta_0 + \beta_1 Y_{t-1} + u_t
+\end{align*}\]</span>
+<p>is the AR(1) population model of a time series <span class="math inline">\(Y_t\)</span>.</p>
+For the GDP growth series, an autoregressive model of order one uses only the information on GDP growth observed in the last quarter to predict a future growth rate. The first-order autoregression model of the GDP growth rate can be estimated by computing OLS estimates in the regression of <span class="math inline">\(GDPGR_t\)</span> on <span class="math inline">\(GDPGR_{t-1}\)</span>,
+<span class="math display" id="eq:GDPGRAR1">\[\begin{align*}
+  \widehat{GDPGR}_t = \beta_0 + \beta_1 GDPGR_{t-1} + u_t. \tag{14.1}
+\end{align*}\]</span>
+<p>Following the book we use data from 1962 to 2012 to estimate <a href="autoregressions.html#eq:GDPGRAR1">(14.1)</a>. This is easily done with the function <code>ar.ols()</code> from package <tt>stats</tt>.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Subset data</span>
+GDPGRSub &lt;-<span class="st"> </span>GDPGrowth[<span class="st">&quot;1962::2012&quot;</span>]
+
+<span class="co"># estimate the model</span>
+<span class="kw">ar.ols</span>(GDPGRSub, 
+       <span class="dt">order.max =</span> <span class="dv">1</span>, 
+       <span class="dt">demean =</span> F, 
+       <span class="dt">intercept =</span> T)</code></pre></div>
+<pre><code>## 
+## Call:
+## ar.ols(x = GDPGRSub, order.max = 1, demean = F, intercept = T)
+## 
+## Coefficients:
+##      1  
+## 0.3384  
+## 
+## Intercept: 1.995 (0.2993) 
+## 
+## Order selected 1  sigma^2 estimated as  9.886</code></pre>
+<p>We can check that the computations done by <code>ar.ols()</code> are the same as done by <code>lm()</code>.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># length of data set</span>
+N &lt;-<span class="kw">length</span>(GDPGRSub)
+
+GDPGR_leads &lt;-<span class="st"> </span><span class="kw">as.numeric</span>(GDPGRSub[<span class="op">-</span><span class="dv">1</span>])
+GDPGR_lags &lt;-<span class="st"> </span><span class="kw">as.numeric</span>(GDPGRSub[<span class="op">-</span>N])
+
+<span class="co"># estimate the model</span>
+armod &lt;-<span class="st"> </span><span class="kw">lm</span>(GDPGR_leads <span class="op">~</span><span class="st"> </span>GDPGR_lags)
+armod</code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = GDPGR_leads ~ GDPGR_lags)
+## 
+## Coefficients:
+## (Intercept)   GDPGR_lags  
+##      1.9950       0.3384</code></pre>
+<p>As usual, we may use <code>coeftest()</code> to obtain a robust summary on the estimated regression coefficients.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># robust summary</span>
+<span class="kw">coeftest</span>(armod, <span class="dt">vcov. =</span> <span class="kw">vcovHC</span>(armod, <span class="dt">type =</span> <span class="st">&quot;HC0&quot;</span>))</code></pre></div>
+<pre><code>## 
+## t test of coefficients:
+## 
+##             Estimate Std. Error t value  Pr(&gt;|t|)    
+## (Intercept) 1.994986   0.349539  5.7075 4.070e-08 ***
+## GDPGR_lags  0.338436   0.075812  4.4641 1.339e-05 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+Thus the estimated model is
+<span class="math display" id="eq:gdpgrar1">\[\begin{align*}
+  \widehat{GDPGR}_t = \underset{(0.350)}{1.995} + \underset{(0.076)}{0.338} GDPGR_{t-1} \tag{14.2}.
+\end{align*}\]</span>
+<p>Notice that we omit the first observation for <span class="math inline">\(GDPGR_{1962 \ Q1}\)</span> from the dependent variable vector since <span class="math inline">\(GDPGR_{1962 \ Q1 - 1} = GDPGR_{1961 \ Q4}\)</span>, is not included in the sample. Similarly, the last observation, <span class="math inline">\(GDPGR_{2012 \ Q4}\)</span>, is excluded from the predictor vector since the data set does not include <span class="math inline">\(GDPGR_{2012 \ Q4 + 1} = GDPGR_{2013 \ Q1}\)</span>. Put differently, when estimation the model, one observation is lost because of the time series structure of the data.</p>
+</div>
+<div id="forecasts-and-forecast-errors" class="section level4 unnumbered">
+<h4>Forecasts and Forecast Errors</h4>
+Suppose a random variable <span class="math inline">\(Y_t\)</span> follows an AR(1) model with an intercept and that you have an OLS estimate of the model on the basis of observations for <span class="math inline">\(T\)</span> periods. Then you may use the AR(1) model to obtain <span class="math inline">\(Y_{T+1\vert T}\)</span>, a forecast for <span class="math inline">\(Y_{T+1}\)</span> where
+<span class="math display">\[\begin{align*}
+  \widehat{Y}_{T+1\vert T} = \widehat{\beta}_0 + \widehat{\beta}_1 Y_T.
+\end{align*}\]</span>
+The forecast error is
+<span class="math display">\[\begin{align*}
+  \text{Forecast error} = Y_{T+1} - \widehat{Y}_{T+1\vert T}.
+\end{align*}\]</span>
+</div>
+<div id="forecasts-versus-predicted-values" class="section level4 unnumbered">
+<h4>Forecasts versus predicted values</h4>
+<p>Note that <em>forecasted values</em> of <span class="math inline">\(Y_t\)</span> are <em>not</em> what we refer to as <em>OLS predicted values</em> of <span class="math inline">\(Y_t\)</span>. Also, the forecast error is <em>not</em> an OLS residual. Forecasts and forecast errors are obtained using <em>out-of-sample</em> values while predicted values and residuals are computed for actually <em>in-sample</em> values that were actually observed and used in estimation of the model.</p>
+The root mean squared forecast error (RMSFE) measures the typical size of the forecast error and is defined as
+<span class="math display">\[\begin{align*}
+  RMSFE = \sqrt{E\left[\left(Y_{T+1} - \widehat{Y}_{T+1\vert T}\right)^2\right]}.
+\end{align*}\]</span>
+</div>
+<div id="application-to-gdp-growth" class="section level4 unnumbered">
+<h4>Application to GDP Growth</h4>
+<p>Using <a href="autoregressions.html#eq:gdpgrar1">(14.2)</a>, the estimated AR(1) model of GDP growth, we may perform the forecast for GDP growth in 2013:Q1 (remember that the model was estimated using data for periods 1962:Q1 - 2012:Q4 so 2013:Q1 is an out of sample period). This is done by plugging <span class="math inline">\(GDPGR_{2012:Q4} \approx 0.15\)</span> in <a href="autoregressions.html#eq:gdpgrar1">(14.2)</a>,</p>
+<span class="math display">\[\begin{align*}
+  \widehat{GDPGR}_{2013:Q1} = 1.995 + 0.348 \cdot 0.15 = 2.047.
+\end{align*}\]</span>
+<p><code>forecast()</code> from the <tt>forecast</tt> package has some useful features for forecasting of time series data.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(forecast)
+
+<span class="co"># GDP growth rate 2012:Q4</span>
+new &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="st">&quot;GDPGR_lags&quot;</span> =<span class="st"> </span>GDPGR_leads[N<span class="op">-</span><span class="dv">1</span>])
+
+<span class="co"># predict GDP growth rate 2013:Q1</span>
+<span class="kw">forecast</span>(armod, <span class="dt">newdata =</span> new)</code></pre></div>
+<pre><code>##   Point Forecast     Lo 80    Hi 80     Lo 95    Hi 95
+## 1       2.044155 -2.036225 6.124534 -4.213414 8.301723</code></pre>
+<p>Using <code>forecast()</code> we obtain the same point forecast of about 2.0, along with <span class="math inline">\(80\%\)</span> and <span class="math inline">\(95\%\)</span> forecast intervals. We conclude that our AR(1) model forecasts GDP growth to be <span class="math inline">\(2\%\)</span> in 2013:Q1.</p>
+<p>How accurate is this forecast? First, notice that the forecast error is pretty big: <span class="math inline">\(GDPGR_{2013:Q1} \approx 1.1\%\)</span> while our forecast is <span class="math inline">\(2\%\)</span>. Second, by calling <code>summary()</code> on <code>armod</code> we find that the model explains only little of the variation in the growth rate of GDP and the <span class="math inline">\(SER\)</span> is about <span class="math inline">\(3.16\)</span>. Leaving aside forecast uncertainty due to estimation of <span class="math inline">\(\beta_0\)</span> and <span class="math inline">\(\beta_1\)</span>, the <span class="math inline">\(RMSFE\)</span> must be at least <span class="math inline">\(3.16\%\)</span> which is pretty inaccuarate.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># compute the forecast error</span>
+<span class="kw">forecast</span>(armod, <span class="dt">newdata =</span> new)<span class="op">$</span>mean <span class="op">-</span><span class="st"> </span>GDPGrowth[<span class="st">&quot;2013&quot;</span>][<span class="dv">1</span>]</code></pre></div>
+<pre><code>##              [,1]
+## 2013 Q1 0.9049532</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># R^2</span>
+<span class="kw">summary</span>(armod)<span class="op">$</span>r.squared</code></pre></div>
+<pre><code>## [1] 0.1149576</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># SER</span>
+<span class="kw">summary</span>(armod)<span class="op">$</span>sigma</code></pre></div>
+<pre><code>## [1] 3.15979</code></pre>
+</div>
+<div id="the-pth-order-autoregressive-model" class="section level3 unnumbered">
+<h3>The <span class="math inline">\(p^{th}\)</span>-Order Autoregressive Model</h3>
+<p>For forecasting GPD growth in period <span class="math inline">\(t\)</span>, the AR(<span class="math inline">\(1\)</span>) model <a href="autoregressions.html#eq:gdpgrar1">(14.2)</a> disregards any information in the past of the series that is more distant than one period. An AR(<span class="math inline">\(p\)</span>) model incorporates the information of <span class="math inline">\(p\)</span> lags of the series. The idea is explained in Key Concept 14.3.</p>
+<div class="keyconcept">
+<h3 class="right">
+Key Concept 14.3
+</h3>
+<h3 class="left">
+Autoregressions
+</h3>
+<p>An AR(<span class="math inline">\(p\)</span>) model assumes that a time series <span class="math inline">\(Y_t\)</span> can be represented by a linear function of <span class="math inline">\(p\)</span> of its lagged values. We say that</p>
+<span class="math display">\[\begin{align*}
+  Y_t = \beta_0 + \beta_1 Y_{t-1} + \beta_2 Y_{t-2} + \dots + \beta_p Y_{t-p} + u_t.
+\end{align*}\]</span>
+<p>is an autoregressive model of order <span class="math inline">\(p\)</span> where <span class="math inline">\(E(u_t\vert Y_{t-1}, Y_{t-2}, \dots)=0\)</span>.</p>
+</div>
+<p>Following the book, we estimate an AR(<span class="math inline">\(2\)</span>) model of the GDP growth series from 1962:Q1 to 2012:Q4.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># estimate AR2 model</span>
+GDPGR_AR2 &lt;-<span class="st"> </span><span class="kw">dynlm</span>(<span class="kw">ts</span>(GDPGR_leads) <span class="op">~</span><span class="st"> </span><span class="kw">L</span>(<span class="kw">ts</span>(GDPGR_leads)) <span class="op">+</span><span class="st"> </span><span class="kw">L</span>(<span class="kw">ts</span>(GDPGR_leads), <span class="dv">2</span>))
+
+<span class="kw">coeftest</span>(GDPGR_AR2, <span class="dt">vcov. =</span> sandwich)</code></pre></div>
+<pre><code>## 
+## t test of coefficients:
+## 
+##                       Estimate Std. Error t value  Pr(&gt;|t|)    
+## (Intercept)           1.631747   0.402023  4.0588 7.096e-05 ***
+## L(ts(GDPGR_leads))    0.277787   0.079250  3.5052 0.0005643 ***
+## L(ts(GDPGR_leads), 2) 0.179269   0.079951  2.2422 0.0260560 *  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>The estimation yields</p>
+<span class="math display" id="eq:GDPGRAR2">\[\begin{align}
+  \widehat{GDPGR}_t = \underset{(0.40)}{1.63} + \underset{(0.08)}{0.28} GDPGR_{t-1} + \underset{(0.08)}{0.18} GDPGR_{t-1}. \tag{14.3}
+\end{align}\]</span>
+<p>We see that the coefficient on the second lag is significantly different from zero. Note that the fit improves slightly: <span class="math inline">\(\overline{R^2}\)</span> grows from <span class="math inline">\(0.11\)</span> for the AR(<span class="math inline">\(1\)</span>) model to about <span class="math inline">\(0.14\)</span> and the <span class="math inline">\(SER\)</span> reduces to <span class="math inline">\(3.13\)</span>.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># R^2</span>
+<span class="kw">summary</span>(GDPGR_AR2)<span class="op">$</span>r.squared</code></pre></div>
+<pre><code>## [1] 0.1425484</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># SER</span>
+<span class="kw">summary</span>(GDPGR_AR2)<span class="op">$</span>sigma</code></pre></div>
+<pre><code>## [1] 3.132122</code></pre>
+<p>We may use the AR(<span class="math inline">\(2\)</span>) model to obtain a forecast for GDP growth in 2013:Q1 in the same manner as for the AR(1) model.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># AR(2) forecast of GDP growth in 2013:Q1 </span>
+<span class="st">&quot;Forecast&quot;</span> &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;2013:Q1&quot;</span> =<span class="st"> </span><span class="kw">coef</span>(GDPGR_AR2) <span class="op">%*%</span><span class="st"> </span><span class="kw">c</span>(<span class="dv">1</span>, GDPGR_leads[N<span class="op">-</span><span class="dv">1</span>], GDPGR_leads[N<span class="op">-</span><span class="dv">2</span>]))</code></pre></div>
+<p>This leads to a forecast error of roughly <span class="math inline">\(-1\%\)</span>.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># compute AR(2) forecast error </span>
+GDPGrowth[<span class="st">&quot;2013&quot;</span>][<span class="dv">1</span>] <span class="op">-</span><span class="st"> </span>Forecast</code></pre></div>
+<pre><code>##              [,1]
+## 2013 Q1 -1.025358</code></pre>
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="time-series-data-and-serial-correlation.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="can-you-beat-the-market-part-i.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"google": false,
+"weibo": false,
+"instapper": false,
+"vk": false,
+"all": ["facebook", "google", "twitter", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "FontAwesome",
+"size": 1
+},
+"edit": {
+"link": "https://github.com/rstudio/bookdown-demo/edit/master/14-ch14.Rmd",
+"text": "Edit"
+},
+"download": ["URFITE.pdf"],
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.bootcss.com/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:" && /^https?:/.test(script.src))
+      script.src  = script.src.replace(/^https?:/, '');
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+<!-- </html> -->
