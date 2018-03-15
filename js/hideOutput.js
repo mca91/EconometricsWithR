@@ -28,6 +28,22 @@ $(document).ready(function() {
     }
       $(this).parent().find('code, img').slideToggle('fast', 'swing');
   });
+  
+  
+  // Copy Button
+  $chunks = $('pre.sourceCode > code.sourceCode');
+  $chunks.each(function(i, val) {
+    $(this).prepend("<button type=\"button\" class=\"copy\"><i class=\"fa fa-copy fa-2x\"></i></div>").click(function() {
+      var $temp = $("<textarea>");
+      $("body").append($temp);
+      var content = $(this).clone().children("button").remove().end().text();
+      $temp.val(content).select();
+      document.execCommand("copy");
+      $temp.remove();
+    });
+  });
+  
+  
 });
 
 
