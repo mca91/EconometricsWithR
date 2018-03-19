@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html >
+
+<head>
+
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Using R for Introduction to Econometrics</title>
+  <meta name="description" content="Using R for Introduction to Econometrics">
+  <meta name="generator" content="bookdown 0.7 and GitBook 2.6.7">
+
+  <meta property="og:title" content="Using R for Introduction to Econometrics" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+  <meta name="github-repo" content="Emwikts1970/URFITE-Bookdown" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Using R for Introduction to Econometrics" />
+  
+  
+  
+
+<meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber and Martin Schmelzer">
+
+
+<meta name="date" content="2018-03-18">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  
+  
+<link rel="prev" href="nonlinear-functions-of-a-single-independent-variable.html">
+<link rel="next" href="nonlinear-effects-on-test-scores-of-the-student-teacher-ratio.html">
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+
+
+
+
+
+
+
+<script src="libs/htmlwidgets-1.0/htmlwidgets.js"></script>
+<script src="libs/plotly-binding-4.7.1/plotly.js"></script>
+<script src="libs/typedarray-0.1/typedarray.min.js"></script>
+<link href="libs/crosstalk-1.0.0/css/crosstalk.css" rel="stylesheet" />
+<script src="libs/crosstalk-1.0.0/js/crosstalk.min.js"></script>
+<link href="libs/plotlyjs-1.29.2/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="libs/plotlyjs-1.29.2/plotly-latest.min.js"></script>
+<script src="js/hideOutput.js"></script>
+<script type="text/javascript" src="MathJax-2.7.2/MathJax.js?config=default"></script>
+
+ <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        extensions: ["tex2jax.js", "TeX/AMSmath.js"],
+        tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+        jax: ["input/TeX","output/CommonHTML"]
+      });
+      MathJax.Hub.processSectionDelay = 0;
+  </script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-110299877-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-110299877-1');
+</script>
+
+<!-- open review block -->
+
+<script async defer src="https://hypothes.is/embed.js"></script>
+
+<!-- datacamp-light-latest -->
+
+<script src="https://cdn.datacamp.com/datacamp-light-latest.min.js"></script>
+
+
+<!-- <script src="js/d3.v3.min.js"></script>
+<script src="js/leastsquares.js"></script>
+<script src="js/d3functions.js"></script>
+<script src="d3.slider.js"></script>
+<script src="slrm.js"></script> -->
+
+
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; background-color: #f8f8f8; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+pre, code { background-color: #f8f8f8; }
+code > span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code > span.dt { color: #204a87; } /* DataType */
+code > span.dv { color: #0000cf; } /* DecVal */
+code > span.bn { color: #0000cf; } /* BaseN */
+code > span.fl { color: #0000cf; } /* Float */
+code > span.ch { color: #4e9a06; } /* Char */
+code > span.st { color: #4e9a06; } /* String */
+code > span.co { color: #8f5902; font-style: italic; } /* Comment */
+code > span.ot { color: #8f5902; } /* Other */
+code > span.al { color: #ef2929; } /* Alert */
+code > span.fu { color: #000000; } /* Function */
+code > span.er { color: #a40000; font-weight: bold; } /* Error */
+code > span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #000000; } /* Constant */
+code > span.sc { color: #000000; } /* SpecialChar */
+code > span.vs { color: #4e9a06; } /* VerbatimString */
+code > span.ss { color: #4e9a06; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #000000; } /* Variable */
+code > span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code > span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code > span.ex { } /* Extension */
+code > span.at { color: #c4a000; } /* Attribute */
+code > span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code > span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">URFITE</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Introduction</a></li>
+<li class="chapter" data-level="2" data-path="probability-theory.html"><a href="probability-theory.html"><i class="fa fa-check"></i><b>2</b> Probability Theory</a><ul>
+<li class="chapter" data-level="2.1" data-path="random-variables-and-probability-distributions.html"><a href="random-variables-and-probability-distributions.html"><i class="fa fa-check"></i><b>2.1</b> Random Variables and Probability Distributions</a><ul>
+<li class="chapter" data-level="" data-path="random-variables-and-probability-distributions.html"><a href="random-variables-and-probability-distributions.html#probability-distributions-of-discrete-random-variables"><i class="fa fa-check"></i>Probability Distributions of Discrete Random Variables</a></li>
+<li class="chapter" data-level="" data-path="random-variables-and-probability-distributions.html"><a href="random-variables-and-probability-distributions.html#bernoulli-trials"><i class="fa fa-check"></i>Bernoulli Trials</a></li>
+<li class="chapter" data-level="" data-path="random-variables-and-probability-distributions.html"><a href="random-variables-and-probability-distributions.html#expected-values-mean-and-variance"><i class="fa fa-check"></i>Expected Values, Mean and Variance</a></li>
+</ul></li>
+<li class="chapter" data-level="2.2" data-path="probability-distributions-of-continuous-random-variables.html"><a href="probability-distributions-of-continuous-random-variables.html"><i class="fa fa-check"></i><b>2.2</b> Probability Distributions of Continuous Random Variables</a><ul>
+<li class="chapter" data-level="" data-path="probability-distributions-of-continuous-random-variables.html"><a href="probability-distributions-of-continuous-random-variables.html#the-normal-distribution"><i class="fa fa-check"></i>The Normal Distribution</a></li>
+<li class="chapter" data-level="" data-path="probability-distributions-of-continuous-random-variables.html"><a href="probability-distributions-of-continuous-random-variables.html#the-chi-squared-distribution"><i class="fa fa-check"></i>The Chi-Squared Distribution</a></li>
+<li><a href="probability-distributions-of-continuous-random-variables.html#thetdist">The Student <span class="math inline">\(t\)</span> Distribution</a></li>
+<li><a href="probability-distributions-of-continuous-random-variables.html#the-f-distribution">The <span class="math inline">\(F\)</span> Distribution</a></li>
+</ul></li>
+<li class="chapter" data-level="2.3" data-path="random-sampling-and-the-distribution-of-sample-averages.html"><a href="random-sampling-and-the-distribution-of-sample-averages.html"><i class="fa fa-check"></i><b>2.3</b> Random Sampling and the Distribution of Sample Averages</a><ul>
+<li class="chapter" data-level="" data-path="random-sampling-and-the-distribution-of-sample-averages.html"><a href="random-sampling-and-the-distribution-of-sample-averages.html#mean-and-variance-of-the-sample-mean"><i class="fa fa-check"></i>Mean and Variance of the Sample Mean</a></li>
+<li class="chapter" data-level="" data-path="random-sampling-and-the-distribution-of-sample-averages.html"><a href="random-sampling-and-the-distribution-of-sample-averages.html#large-sample-approximations-to-sampling-distributions"><i class="fa fa-check"></i>Large Sample Approximations to Sampling Distributions</a></li>
+</ul></li>
+<li class="chapter" data-level="2.4" data-path="exercises.html"><a href="exercises.html"><i class="fa fa-check"></i><b>2.4</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="a-review-of-statistics-using-r.html"><a href="a-review-of-statistics-using-r.html"><i class="fa fa-check"></i><b>3</b> A Review of Statistics using R</a><ul>
+<li class="chapter" data-level="3.1" data-path="estimation-of-the-population-mean.html"><a href="estimation-of-the-population-mean.html"><i class="fa fa-check"></i><b>3.1</b> Estimation of the Population Mean</a></li>
+<li class="chapter" data-level="3.2" data-path="properties-of-the-sample-mean.html"><a href="properties-of-the-sample-mean.html"><i class="fa fa-check"></i><b>3.2</b> Properties of the Sample Mean</a></li>
+<li class="chapter" data-level="3.3" data-path="hypothesis-tests-concerning-the-population-mean.html"><a href="hypothesis-tests-concerning-the-population-mean.html"><i class="fa fa-check"></i><b>3.3</b> Hypothesis Tests Concerning the Population Mean</a><ul>
+<li><a href="hypothesis-tests-concerning-the-population-mean.html#p-value"><span class="math inline">\(p\)</span>-Value</a></li>
+<li><a href="hypothesis-tests-concerning-the-population-mean.html#calculating-the-p-value-when-sigma_y-is-known">Calculating the <span class="math inline">\(p\)</span>-Value When <span class="math inline">\(\sigma_Y\)</span> Is Known</a></li>
+<li class="chapter" data-level="" data-path="hypothesis-tests-concerning-the-population-mean.html"><a href="hypothesis-tests-concerning-the-population-mean.html#sample-variance-sample-standard-deviation-and-standard-error"><i class="fa fa-check"></i>Sample Variance, Sample Standard Deviation and Standard Error</a></li>
+<li><a href="hypothesis-tests-concerning-the-population-mean.html#calculating-the-p-value-when-sigma_y-is-unknown">Calculating the <span class="math inline">\(p\)</span>-value When <span class="math inline">\(\sigma_Y\)</span> is Unknown</a></li>
+<li><a href="hypothesis-tests-concerning-the-population-mean.html#the-t-statistic">The <span class="math inline">\(t\)</span>-statistic</a></li>
+<li class="chapter" data-level="" data-path="hypothesis-tests-concerning-the-population-mean.html"><a href="hypothesis-tests-concerning-the-population-mean.html#hypothesis-testing-with-a-prespecified-significance-level"><i class="fa fa-check"></i>Hypothesis Testing with a Prespecified Significance Level</a></li>
+<li class="chapter" data-level="" data-path="hypothesis-tests-concerning-the-population-mean.html"><a href="hypothesis-tests-concerning-the-population-mean.html#one-sided-alternatives"><i class="fa fa-check"></i>One-sided Alternatives</a></li>
+</ul></li>
+<li class="chapter" data-level="3.4" data-path="confidence-intervals-for-the-population-mean.html"><a href="confidence-intervals-for-the-population-mean.html"><i class="fa fa-check"></i><b>3.4</b> Confidence intervals for the Population Mean</a></li>
+<li class="chapter" data-level="3.5" data-path="comparing-means-from-different-populations.html"><a href="comparing-means-from-different-populations.html"><i class="fa fa-check"></i><b>3.5</b> Comparing Means from Different Populations</a></li>
+<li class="chapter" data-level="3.6" data-path="an-application-to-the-gender-gap-of-earnings.html"><a href="an-application-to-the-gender-gap-of-earnings.html"><i class="fa fa-check"></i><b>3.6</b> An Application to the Gender Gap of Earnings</a></li>
+<li class="chapter" data-level="3.7" data-path="scatterplots-sample-covariance-and-sample-correlation.html"><a href="scatterplots-sample-covariance-and-sample-correlation.html"><i class="fa fa-check"></i><b>3.7</b> Scatterplots, Sample Covariance and Sample Correlation</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="lrwor.html"><a href="lrwor.html"><i class="fa fa-check"></i><b>4</b> Linear Regression with One Regressor</a><ul>
+<li class="chapter" data-level="4.1" data-path="estimating-the-coefficients-of-the-linear-regression-model.html"><a href="estimating-the-coefficients-of-the-linear-regression-model.html"><i class="fa fa-check"></i><b>4.1</b> Estimating the Coefficients of the Linear Regression Model</a><ul>
+<li class="chapter" data-level="" data-path="estimating-the-coefficients-of-the-linear-regression-model.html"><a href="estimating-the-coefficients-of-the-linear-regression-model.html#the-ordinary-least-squares-estimator"><i class="fa fa-check"></i>The Ordinary Least Squares Estimator</a></li>
+</ul></li>
+<li class="chapter" data-level="4.2" data-path="measures-of-fit.html"><a href="measures-of-fit.html"><i class="fa fa-check"></i><b>4.2</b> Measures of Fit</a><ul>
+<li><a href="measures-of-fit.html#the-r2">The <span class="math inline">\(R^2\)</span></a></li>
+<li class="chapter" data-level="" data-path="measures-of-fit.html"><a href="measures-of-fit.html#standard-error-of-the-regression"><i class="fa fa-check"></i>Standard Error of the Regression</a></li>
+<li class="chapter" data-level="" data-path="measures-of-fit.html"><a href="measures-of-fit.html#application-to-the-test-score-data"><i class="fa fa-check"></i>Application to the Test Score Data</a></li>
+</ul></li>
+<li class="chapter" data-level="4.3" data-path="the-least-squares-assumptions.html"><a href="the-least-squares-assumptions.html"><i class="fa fa-check"></i><b>4.3</b> The Least Squares Assumptions</a><ul>
+<li class="chapter" data-level="" data-path="the-least-squares-assumptions.html"><a href="the-least-squares-assumptions.html#assumption-1-the-error-term-has-conditional-mean-of-zero"><i class="fa fa-check"></i>Assumption #1: The Error Term has Conditional Mean of Zero</a></li>
+<li><a href="the-least-squares-assumptions.html#assumption-2-all-x_i-y_i-are-independently-and-identically-distributed">Assumption #2: All <span class="math inline">\((X_i, Y_i)\)</span> are Independently and Identically Distributed</a></li>
+<li class="chapter" data-level="" data-path="the-least-squares-assumptions.html"><a href="the-least-squares-assumptions.html#assumption-3-large-outliers-are-unlikely"><i class="fa fa-check"></i>Assumption #3: Large outliers are unlikely</a></li>
+</ul></li>
+<li class="chapter" data-level="4.4" data-path="tsdotoe.html"><a href="tsdotoe.html"><i class="fa fa-check"></i><b>4.4</b> The Sampling Distribution of the OLS Estimator</a><ul>
+<li class="chapter" data-level="" data-path="tsdotoe.html"><a href="tsdotoe.html#r-simulation-study-1"><i class="fa fa-check"></i>R Simulation Study 1</a></li>
+<li class="chapter" data-level="" data-path="tsdotoe.html"><a href="tsdotoe.html#r-simulation-study-2"><i class="fa fa-check"></i>R Simulation Study 2</a></li>
+<li class="chapter" data-level="" data-path="tsdotoe.html"><a href="tsdotoe.html#r-simulation-study-3"><i class="fa fa-check"></i>R Simulation Study 3</a></li>
+</ul></li>
+<li class="chapter" data-level="4.5" data-path="exercises-1.html"><a href="exercises-1.html"><i class="fa fa-check"></i><b>4.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="hypothesis-tests-and-confidence-intervals-in-the-simple-linear-regression-model.html"><a href="hypothesis-tests-and-confidence-intervals-in-the-simple-linear-regression-model.html"><i class="fa fa-check"></i><b>5</b> Hypothesis Tests and Confidence Intervals in the Simple Linear Regression Model</a><ul>
+<li class="chapter" data-level="5.1" data-path="testing-two-sided-hypotheses-concerning-beta-1.html"><a href="testing-two-sided-hypotheses-concerning-beta-1.html"><i class="fa fa-check"></i><b>5.1</b> Testing Two-Sided Hypotheses Concerning <span class="math inline">\(\beta_1\)</span></a></li>
+<li class="chapter" data-level="5.2" data-path="confidence-intervals-for-regression-coefficients.html"><a href="confidence-intervals-for-regression-coefficients.html"><i class="fa fa-check"></i><b>5.2</b> Confidence Intervals for Regression Coefficients</a><ul>
+<li class="chapter" data-level="" data-path="confidence-intervals-for-regression-coefficients.html"><a href="confidence-intervals-for-regression-coefficients.html#r-simulation-study-5.1"><i class="fa fa-check"></i>R Simulation Study 5.1</a></li>
+</ul></li>
+<li class="chapter" data-level="5.3" data-path="regression-when-x-is-a-binary-variable.html"><a href="regression-when-x-is-a-binary-variable.html"><i class="fa fa-check"></i><b>5.3</b> Regression when <span class="math inline">\(X\)</span> is a Binary Variable</a></li>
+<li class="chapter" data-level="5.4" data-path="heteroskedasticity-and-homoskedasticity.html"><a href="heteroskedasticity-and-homoskedasticity.html"><i class="fa fa-check"></i><b>5.4</b> Heteroskedasticity and Homoskedasticity</a><ul>
+<li class="chapter" data-level="" data-path="heteroskedasticity-and-homoskedasticity.html"><a href="heteroskedasticity-and-homoskedasticity.html#a-real-world-example-for-heteroskedasticity"><i class="fa fa-check"></i>A Real-World Example for Heteroskedasticity</a></li>
+<li class="chapter" data-level="" data-path="heteroskedasticity-and-homoskedasticity.html"><a href="heteroskedasticity-and-homoskedasticity.html#should-we-care-about-heteroskedasticity"><i class="fa fa-check"></i>Should We Care About Heteroskedasticity?</a></li>
+<li class="chapter" data-level="" data-path="heteroskedasticity-and-homoskedasticity.html"><a href="heteroskedasticity-and-homoskedasticity.html#computation-of-heteroskedasticity-robust-standard-errors"><i class="fa fa-check"></i>Computation of Heteroskedasticity-Robust Standard Errors</a></li>
+</ul></li>
+<li class="chapter" data-level="5.5" data-path="the-gauss-markov-theorem.html"><a href="the-gauss-markov-theorem.html"><i class="fa fa-check"></i><b>5.5</b> The Gauss-Markov Theorem</a><ul>
+<li class="chapter" data-level="" data-path="the-gauss-markov-theorem.html"><a href="the-gauss-markov-theorem.html#r-simulation-study-blue-estimator"><i class="fa fa-check"></i>R Simulation Study: BLUE Estimator</a></li>
+</ul></li>
+<li class="chapter" data-level="5.6" data-path="using-the-t-statistic-in-regression-when-the-sample-size-is-small.html"><a href="using-the-t-statistic-in-regression-when-the-sample-size-is-small.html"><i class="fa fa-check"></i><b>5.6</b> Using the <span class="math inline">\(t\)</span>-Statistic in Regression When the Sample Size Is Small</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="regression-models-with-multiple-regressors.html"><a href="regression-models-with-multiple-regressors.html"><i class="fa fa-check"></i><b>6</b> Regression Models with Multiple Regressors</a><ul>
+<li class="chapter" data-level="6.1" data-path="omitted-variable-bias.html"><a href="omitted-variable-bias.html"><i class="fa fa-check"></i><b>6.1</b> Omitted Variable Bias</a></li>
+<li class="chapter" data-level="6.2" data-path="the-multiple-regression-model.html"><a href="the-multiple-regression-model.html"><i class="fa fa-check"></i><b>6.2</b> The Multiple Regression Model</a></li>
+<li class="chapter" data-level="6.3" data-path="measures-of-fit-in-multiple-regression.html"><a href="measures-of-fit-in-multiple-regression.html"><i class="fa fa-check"></i><b>6.3</b> Measures of Fit in Multiple Regression</a></li>
+<li class="chapter" data-level="6.4" data-path="ols-assumptions-in-multiple-regression.html"><a href="ols-assumptions-in-multiple-regression.html"><i class="fa fa-check"></i><b>6.4</b> OLS Assumptions in Multiple Regression</a><ul>
+<li class="chapter" data-level="" data-path="ols-assumptions-in-multiple-regression.html"><a href="ols-assumptions-in-multiple-regression.html#multicollinearity"><i class="fa fa-check"></i>Multicollinearity</a></li>
+</ul></li>
+<li class="chapter" data-level="6.5" data-path="the-distribution-of-the-ols-estimators-in-multiple-regression.html"><a href="the-distribution-of-the-ols-estimators-in-multiple-regression.html"><i class="fa fa-check"></i><b>6.5</b> The Distribution of the OLS Estimators in Multiple Regression</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="hypothesis-tests-and-confidence-intervals-in-multiple-regression.html"><a href="hypothesis-tests-and-confidence-intervals-in-multiple-regression.html"><i class="fa fa-check"></i><b>7</b> Hypothesis Tests and Confidence intervals in Multiple Regression</a><ul>
+<li class="chapter" data-level="7.1" data-path="hypothesis-tests-and-confidence-intervals-for-a-single-coefficient.html"><a href="hypothesis-tests-and-confidence-intervals-for-a-single-coefficient.html"><i class="fa fa-check"></i><b>7.1</b> Hypothesis Tests and Confidence Intervals for a Single Coefficient</a></li>
+<li class="chapter" data-level="7.2" data-path="an-application-to-test-scores-and-the-student-teacher-ratio.html"><a href="an-application-to-test-scores-and-the-student-teacher-ratio.html"><i class="fa fa-check"></i><b>7.2</b> An Application to Test Scores and the Student-Teacher Ratio</a><ul>
+<li class="chapter" data-level="" data-path="an-application-to-test-scores-and-the-student-teacher-ratio.html"><a href="an-application-to-test-scores-and-the-student-teacher-ratio.html#another-augmentation-of-the-model"><i class="fa fa-check"></i>Another Augmentation of the Model</a></li>
+</ul></li>
+<li class="chapter" data-level="7.3" data-path="joint-hypothesis-testing-using-the-f-statistic.html"><a href="joint-hypothesis-testing-using-the-f-statistic.html"><i class="fa fa-check"></i><b>7.3</b> Joint Hypothesis Testing Using the <span class="math inline">\(F\)</span>-Statistic</a></li>
+<li class="chapter" data-level="7.4" data-path="confidence-sets-for-multiple-coefficients.html"><a href="confidence-sets-for-multiple-coefficients.html"><i class="fa fa-check"></i><b>7.4</b> Confidence Sets for Multiple Coefficients</a></li>
+<li class="chapter" data-level="7.5" data-path="model-specification-for-multiple-regression.html"><a href="model-specification-for-multiple-regression.html"><i class="fa fa-check"></i><b>7.5</b> Model Specification for Multiple Regression</a><ul>
+<li class="chapter" data-level="" data-path="model-specification-for-multiple-regression.html"><a href="model-specification-for-multiple-regression.html#model-specification-in-theory-and-in-practice"><i class="fa fa-check"></i>Model Specification in Theory and in Practice</a></li>
+</ul></li>
+<li class="chapter" data-level="7.6" data-path="analysis-of-the-test-score-data-set.html"><a href="analysis-of-the-test-score-data-set.html"><i class="fa fa-check"></i><b>7.6</b> Analysis of the Test Score Data Set</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="nonlinear-regression-functions.html"><a href="nonlinear-regression-functions.html"><i class="fa fa-check"></i><b>8</b> Nonlinear Regression Functions</a><ul>
+<li class="chapter" data-level="8.1" data-path="a-general-strategy-for-modeling-nonlinear-regression-functions.html"><a href="a-general-strategy-for-modeling-nonlinear-regression-functions.html"><i class="fa fa-check"></i><b>8.1</b> A General Strategy for Modeling Nonlinear Regression Functions</a></li>
+<li class="chapter" data-level="8.2" data-path="nonlinear-functions-of-a-single-independent-variable.html"><a href="nonlinear-functions-of-a-single-independent-variable.html"><i class="fa fa-check"></i><b>8.2</b> Nonlinear Functions of a Single Independent Variable</a><ul>
+<li class="chapter" data-level="" data-path="nonlinear-functions-of-a-single-independent-variable.html"><a href="nonlinear-functions-of-a-single-independent-variable.html#polynomials"><i class="fa fa-check"></i>Polynomials</a></li>
+<li class="chapter" data-level="" data-path="nonlinear-functions-of-a-single-independent-variable.html"><a href="nonlinear-functions-of-a-single-independent-variable.html#logarithms"><i class="fa fa-check"></i>Logarithms</a></li>
+</ul></li>
+<li class="chapter" data-level="8.3" data-path="interactions-between-independent-variables.html"><a href="interactions-between-independent-variables.html"><i class="fa fa-check"></i><b>8.3</b> Interactions Between Independent Variables</a></li>
+<li class="chapter" data-level="8.4" data-path="nonlinear-effects-on-test-scores-of-the-student-teacher-ratio.html"><a href="nonlinear-effects-on-test-scores-of-the-student-teacher-ratio.html"><i class="fa fa-check"></i><b>8.4</b> Nonlinear Effects on Test Scores of the Student-Teacher Ratio</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="assessing-studies-based-on-multiple-regression.html"><a href="assessing-studies-based-on-multiple-regression.html"><i class="fa fa-check"></i><b>9</b> Assessing Studies Based on Multiple Regression</a><ul>
+<li class="chapter" data-level="9.1" data-path="internal-and-external-validity.html"><a href="internal-and-external-validity.html"><i class="fa fa-check"></i><b>9.1</b> Internal and External Validity</a></li>
+<li class="chapter" data-level="9.2" data-path="threats-to-internal-validity-of-multiple-regression-analysis.html"><a href="threats-to-internal-validity-of-multiple-regression-analysis.html"><i class="fa fa-check"></i><b>9.2</b> Threats to Internal Validity of Multiple Regression Analysis</a></li>
+<li class="chapter" data-level="9.3" data-path="internal-and-external-validity-when-the-regression-is-used-for-forecasting.html"><a href="internal-and-external-validity-when-the-regression-is-used-for-forecasting.html"><i class="fa fa-check"></i><b>9.3</b> Internal and External Validity When the Regression is Used for Forecasting</a></li>
+<li class="chapter" data-level="9.4" data-path="example-test-scores-and-class-size.html"><a href="example-test-scores-and-class-size.html"><i class="fa fa-check"></i><b>9.4</b> Example: Test Scores and Class Size</a></li>
+</ul></li>
+<li class="chapter" data-level="10" data-path="regression-with-panel-data.html"><a href="regression-with-panel-data.html"><i class="fa fa-check"></i><b>10</b> Regression with Panel Data</a><ul>
+<li class="chapter" data-level="10.1" data-path="panel-data.html"><a href="panel-data.html"><i class="fa fa-check"></i><b>10.1</b> Panel Data</a></li>
+<li class="chapter" data-level="10.2" data-path="PDWTTP.html"><a href="PDWTTP.html"><i class="fa fa-check"></i><b>10.2</b> Panel Data with Two Time Periods: “Before and Afer” Comparisons</a></li>
+<li class="chapter" data-level="10.3" data-path="fixed-effects-regression.html"><a href="fixed-effects-regression.html"><i class="fa fa-check"></i><b>10.3</b> Fixed Effects Regression</a><ul>
+<li class="chapter" data-level="" data-path="fixed-effects-regression.html"><a href="fixed-effects-regression.html#estimation-and-inference"><i class="fa fa-check"></i>Estimation and Inference</a></li>
+<li class="chapter" data-level="" data-path="fixed-effects-regression.html"><a href="fixed-effects-regression.html#application-to-traffic-deaths"><i class="fa fa-check"></i>Application to Traffic Deaths</a></li>
+</ul></li>
+<li class="chapter" data-level="10.4" data-path="regression-with-time-fixed-effects.html"><a href="regression-with-time-fixed-effects.html"><i class="fa fa-check"></i><b>10.4</b> Regression with Time Fixed Effects</a></li>
+<li class="chapter" data-level="10.5" data-path="the-fixed-effects-regression-assumptions-and-standard-errors-for-fixed-effects-regression.html"><a href="the-fixed-effects-regression-assumptions-and-standard-errors-for-fixed-effects-regression.html"><i class="fa fa-check"></i><b>10.5</b> The Fixed Effects Regression Assumptions and Standard Errors for Fixed Effects Regression</a></li>
+<li class="chapter" data-level="10.6" data-path="drunk-driving-laws-and-traffic-deaths.html"><a href="drunk-driving-laws-and-traffic-deaths.html"><i class="fa fa-check"></i><b>10.6</b> Drunk Driving Laws and Traffic Deaths</a></li>
+</ul></li>
+<li class="chapter" data-level="11" data-path="regression-with-a-binary-dependent-variable.html"><a href="regression-with-a-binary-dependent-variable.html"><i class="fa fa-check"></i><b>11</b> Regression with a Binary Dependent Variable</a><ul>
+<li class="chapter" data-level="11.1" data-path="binary-dependent-variables-and-the-linear-probability-model.html"><a href="binary-dependent-variables-and-the-linear-probability-model.html"><i class="fa fa-check"></i><b>11.1</b> Binary Dependent Variables and the Linear Probability Model</a></li>
+<li class="chapter" data-level="11.2" data-path="probit-and-logit-regression.html"><a href="probit-and-logit-regression.html"><i class="fa fa-check"></i><b>11.2</b> Probit and Logit Regression</a><ul>
+<li class="chapter" data-level="" data-path="probit-and-logit-regression.html"><a href="probit-and-logit-regression.html#probit-regression"><i class="fa fa-check"></i>Probit Regression</a></li>
+<li class="chapter" data-level="" data-path="probit-and-logit-regression.html"><a href="probit-and-logit-regression.html#logit-regression"><i class="fa fa-check"></i>Logit Regression</a></li>
+</ul></li>
+<li class="chapter" data-level="11.3" data-path="estimation-and-inference-in-the-logit-and-probit-models.html"><a href="estimation-and-inference-in-the-logit-and-probit-models.html"><i class="fa fa-check"></i><b>11.3</b> Estimation and Inference in the Logit and Probit Models</a></li>
+<li class="chapter" data-level="11.4" data-path="application-to-the-boston-hmda-data.html"><a href="application-to-the-boston-hmda-data.html"><i class="fa fa-check"></i><b>11.4</b> Application to the Boston HMDA Data</a></li>
+</ul></li>
+<li class="chapter" data-level="12" data-path="instrumental-variables-regression.html"><a href="instrumental-variables-regression.html"><i class="fa fa-check"></i><b>12</b> Instrumental Variables Regression</a><ul>
+<li class="chapter" data-level="12.1" data-path="TIVEWASRAASI.html"><a href="TIVEWASRAASI.html"><i class="fa fa-check"></i><b>12.1</b> The IV Estimator with a Single Regressor and a Single Instrument</a></li>
+<li class="chapter" data-level="12.2" data-path="TGIVRM.html"><a href="TGIVRM.html"><i class="fa fa-check"></i><b>12.2</b> The General IV Regression Model</a></li>
+<li class="chapter" data-level="12.3" data-path="checking-instrument-validity.html"><a href="checking-instrument-validity.html"><i class="fa fa-check"></i><b>12.3</b> Checking Instrument Validity</a></li>
+<li class="chapter" data-level="12.4" data-path="application-to-the-demand-for-cigarettes-2.html"><a href="application-to-the-demand-for-cigarettes-2.html"><i class="fa fa-check"></i><b>12.4</b> Application to the Demand for Cigarettes</a></li>
+<li class="chapter" data-level="12.5" data-path="where-do-valid-instruments-come-from.html"><a href="where-do-valid-instruments-come-from.html"><i class="fa fa-check"></i><b>12.5</b> Where Do Valid Instruments Come From?</a></li>
+</ul></li>
+<li class="chapter" data-level="13" data-path="experiments-and-quasi-experiments.html"><a href="experiments-and-quasi-experiments.html"><i class="fa fa-check"></i><b>13</b> Experiments and Quasi-Experiments</a><ul>
+<li class="chapter" data-level="13.1" data-path="potential-outcomes-causal-effects-and-idealized-experiments.html"><a href="potential-outcomes-causal-effects-and-idealized-experiments.html"><i class="fa fa-check"></i><b>13.1</b> Potential Outcomes, Causal Effects and Idealized Experiments</a></li>
+<li class="chapter" data-level="13.2" data-path="threats-to-validity-of-experiments.html"><a href="threats-to-validity-of-experiments.html"><i class="fa fa-check"></i><b>13.2</b> Threats to Validity of Experiments</a></li>
+<li class="chapter" data-level="13.3" data-path="experimental-estimates-of-the-effect-of-class-size-reductions.html"><a href="experimental-estimates-of-the-effect-of-class-size-reductions.html"><i class="fa fa-check"></i><b>13.3</b> Experimental Estimates of the Effect of Class Size Reductions</a><ul>
+<li class="chapter" data-level="" data-path="experimental-estimates-of-the-effect-of-class-size-reductions.html"><a href="experimental-estimates-of-the-effect-of-class-size-reductions.html#experimental-design-and-the-data-set"><i class="fa fa-check"></i>Experimental Design and the Data Set</a></li>
+<li class="chapter" data-level="" data-path="experimental-estimates-of-the-effect-of-class-size-reductions.html"><a href="experimental-estimates-of-the-effect-of-class-size-reductions.html#analysis-of-the-star-data"><i class="fa fa-check"></i>Analysis of the STAR Data</a></li>
+</ul></li>
+<li class="chapter" data-level="13.4" data-path="quasi-experiments.html"><a href="quasi-experiments.html"><i class="fa fa-check"></i><b>13.4</b> Quasi Experiments</a><ul>
+<li class="chapter" data-level="" data-path="quasi-experiments.html"><a href="quasi-experiments.html#the-differences-in-differences-estimator"><i class="fa fa-check"></i>The Differences-in-Differences Estimator</a></li>
+<li class="chapter" data-level="" data-path="quasi-experiments.html"><a href="quasi-experiments.html#regression-discontinuity-estimators"><i class="fa fa-check"></i>Regression Discontinuity Estimators</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="14" data-path="introduction-to-time-series-regression-and-forecasting.html"><a href="introduction-to-time-series-regression-and-forecasting.html"><i class="fa fa-check"></i><b>14</b> Introduction to Time Series Regression and Forecasting</a><ul>
+<li class="chapter" data-level="14.1" data-path="using-regression-models-for-forecasting.html"><a href="using-regression-models-for-forecasting.html"><i class="fa fa-check"></i><b>14.1</b> Using Regression Models for Forecasting</a></li>
+<li class="chapter" data-level="14.2" data-path="time-series-data-and-serial-correlation.html"><a href="time-series-data-and-serial-correlation.html"><i class="fa fa-check"></i><b>14.2</b> Time Series Data and Serial Correlation</a><ul>
+<li class="chapter" data-level="" data-path="time-series-data-and-serial-correlation.html"><a href="time-series-data-and-serial-correlation.html#notation-lags-differences-logarithms-and-growth-rates"><i class="fa fa-check"></i>Notation, Lags, Differences, Logarithms and Growth Rates</a></li>
+</ul></li>
+<li class="chapter" data-level="14.3" data-path="autoregressions.html"><a href="autoregressions.html"><i class="fa fa-check"></i><b>14.3</b> Autoregressions</a><ul>
+<li><a href="autoregressions.html#the-pth-order-autoregressive-model">The <span class="math inline">\(p^{th}\)</span>-Order Autoregressive Model</a></li>
+</ul></li>
+<li class="chapter" data-level="14.4" data-path="can-you-beat-the-market-part-i.html"><a href="can-you-beat-the-market-part-i.html"><i class="fa fa-check"></i><b>14.4</b> Can You Beat the Market? (Part I)</a></li>
+<li class="chapter" data-level="14.5" data-path="additional-predictors-and-the-adl-model.html"><a href="additional-predictors-and-the-adl-model.html"><i class="fa fa-check"></i><b>14.5</b> Additional Predictors and The ADL Model</a><ul>
+<li class="chapter" data-level="" data-path="additional-predictors-and-the-adl-model.html"><a href="additional-predictors-and-the-adl-model.html#forecast-uncertainty-and-forecast-intervals"><i class="fa fa-check"></i>Forecast Uncertainty and Forecast Intervals</a></li>
+</ul></li>
+<li class="chapter" data-level="14.6" data-path="lag-length-selection-using-information-criteria.html"><a href="lag-length-selection-using-information-criteria.html"><i class="fa fa-check"></i><b>14.6</b> Lag Length Selection Using Information Criteria</a></li>
+<li class="chapter" data-level="14.7" data-path="nonstationarity-i-trends.html"><a href="nonstationarity-i-trends.html"><i class="fa fa-check"></i><b>14.7</b> Nonstationarity I: Trends</a></li>
+<li class="chapter" data-level="14.8" data-path="nonstationarity-ii-breaks.html"><a href="nonstationarity-ii-breaks.html"><i class="fa fa-check"></i><b>14.8</b> Nonstationarity II: Breaks</a></li>
+<li class="chapter" data-level="14.9" data-path="can-you-beat-the-market-part-ii.html"><a href="can-you-beat-the-market-part-ii.html"><i class="fa fa-check"></i><b>14.9</b> Can You Beat the Market? Part II</a></li>
+</ul></li>
+<li class="chapter" data-level="15" data-path="estimation-of-dynamic-causal-effects.html"><a href="estimation-of-dynamic-causal-effects.html"><i class="fa fa-check"></i><b>15</b> Estimation of Dynamic Causal Effects</a><ul>
+<li class="chapter" data-level="15.1" data-path="the-orange-juice-data.html"><a href="the-orange-juice-data.html"><i class="fa fa-check"></i><b>15.1</b> The Orange Juice Data</a></li>
+<li class="chapter" data-level="15.2" data-path="dynamic-causal-effects.html"><a href="dynamic-causal-effects.html"><i class="fa fa-check"></i><b>15.2</b> Dynamic Causal Effects</a></li>
+<li class="chapter" data-level="15.3" data-path="dynamic-multipliers-and-cumulative-dynamic-multipliers.html"><a href="dynamic-multipliers-and-cumulative-dynamic-multipliers.html"><i class="fa fa-check"></i><b>15.3</b> Dynamic Multipliers and Cumulative Dynamic Multipliers</a></li>
+<li class="chapter" data-level="15.4" data-path="hac-standard-errors.html"><a href="hac-standard-errors.html"><i class="fa fa-check"></i><b>15.4</b> HAC Standard Errors</a></li>
+<li class="chapter" data-level="15.5" data-path="estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html"><a href="estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html"><i class="fa fa-check"></i><b>15.5</b> Estimation of Dynamic Causal Effects with Strictly Exogeneous Regressors</a></li>
+<li class="chapter" data-level="15.6" data-path="orange-juice-prices-and-cold-weather.html"><a href="orange-juice-prices-and-cold-weather.html"><i class="fa fa-check"></i><b>15.6</b> Orange Juice Prices and Cold Weather</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Using R for Introduction to Econometrics</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div class = rmdreview>
+This book is in <b>Open Review</b>. We want your feedback to make the book better for you and other students. You may annotate some text by <span style="background-color: #3297FD; color: white">selecting it with the cursor</span> and then click the <i class="h-icon-annotate"></i> on the pop-up menu. You can also see the annotations of others: click the <i class="h-icon-chevron-left"></i> in the upper right hand corner of the page <i class="fa fa-arrow-circle-right  fa-rotate-315" aria-hidden="true"></i>
+</div>
+<div id="interactions-between-independent-variables" class="section level2">
+<h2><span class="header-section-number">8.3</span> Interactions Between Independent Variables</h2>
+<p>There are research questions where it is interesting to know how the effect on <span class="math inline">\(Y\)</span> of a change in one independent variables dependends on the value of another independent variable. For example, we could ask if districts with many english learners benefit differentially from a decrease in class sizes than those with few english learning students. To answer this, we need to include an interaction term into a multiple regression model. We will consider three cases:</p>
+<ol style="list-style-type: decimal">
+<li><p>Interactions between two binary variables</p></li>
+<li><p>Interactions between a binary and a continuous variable</p></li>
+<li><p>Interactions between two continuous variables</p></li>
+</ol>
+<p>The following subsections discuss those cases briefly and demonstrate how to perform such regressions using <tt>R</tt>.</p>
+<div id="interactions-between-two-binary-variables" class="section level4 unnumbered">
+<h4>Interactions Between Two Binary Variables</h4>
+<p>Take two binary variables <span class="math inline">\(D_1\)</span> and <span class="math inline">\(D_2\)</span> and the population regression</p>
+<p><span class="math display">\[ Y_i = \beta_0 + \beta_1 \times D_{1i} + \beta_2 \times D_{2i} + u_i. \]</span></p>
+<p>Now assume</p>
+<span class="math display">\[\begin{align}
+  Y_i=&amp; \, \ln(Earnings_i),\\
+  \\
+  D_{1i} =&amp; \,
+   \begin{cases}
+      1 &amp; \text{if $i^{th}$ person has a college degree} \\
+      0 &amp; \text{else},
+    \end{cases} \\
+    \\
+  D_{2i} =&amp; \, 
+    \begin{cases}
+      1 &amp; \text{if $i^{th}$ person is female} \\
+      0 &amp; \text{if $i^{th}$ person is male}.
+    \end{cases}\\
+\end{align}\]</span>
+<p>By now You should know that <span class="math inline">\(\beta_1\)</span> measures the average difference in <span class="math inline">\(\ln(Earnings)\)</span> between individuals with and without a college degree and <span class="math inline">\(\beta_2\)</span> is the gender differential in <span class="math inline">\(\ln(Earnings)\)</span>, ceteris paribus. This model <it>does not</it> allow us to determine if there is a geneder specific effect of heaving a college degree and, if so, how strong this is. Luckily it is easy to come up with a model specification that allows to investigate this:</p>
+<p><span class="math display">\[ Y_i = \beta_0 + \beta_1 \times D_{1i} + \beta_2 \times D_{2i} + \beta_3 \times (D_{1i} \times D_{2i}) + u_i \]</span></p>
+<p><span class="math inline">\((D_{1i} \times D_{2i})\)</span> is called an interaction term and <span class="math inline">\(\beta_3\)</span> measures the difference in the effect of having a college degree for women versus men.</p>
+<div class="keyconcept">
+<h3 class="right">
+Key Concept 8.3
+</h3>
+<h3 class="left">
+A Method for Interpreting Coefficients in Regression with Binary Variables
+</h3>
+<p>Compute expected values of <span class="math inline">\(Y\)</span> for each possible set described by the set of binary variables. Compare the expected values. The coefficients can be expressed either as expected values or as the difference between at least two expected values.</p>
+</div>
+<p>Following Key Concepts 8.1 we have</p>
+<span class="math display">\[\begin{align*}
+  E(Y_i\vert D_{1i}=0, D_{2i} = d_2) =&amp; \, \beta_0 + \beta_1 \times 0 + \beta_2 \times d_2 + \beta_3 \times (0 \times d_2) \\
+  =&amp; \, \beta_0 + \beta_2 \times d_2.
+\end{align*}\]</span>
+<p>Changing <span class="math inline">\(D_{1i}\)</span> from <span class="math inline">\(0\)</span> to <span class="math inline">\(1\)</span> we obtain</p>
+<span class="math display">\[\begin{align*}
+  E(Y_i\vert D_{1i}=1, D_{2i} = d_2) =&amp; \, \beta_0 + \beta_1 \times 1 + \beta_2 \times d_2 + \beta_3 \times (1 \times d_2) \\
+  =&amp; \, \beta_0 + \beta_1 + \beta_2 \times d_2 + \beta_3 d_2
+\end{align*}\]</span>
+<p>and hence the overall effect is</p>
+<p><span class="math display">\[ E(Y_i\vert D_{1i}=1, D_{2i} = d_2) - E(Y_i\vert D_{1i}=0, D_{2i} = d_2) = \beta_1 + \beta_3 d_2 \]</span> so the effect is a difference of expected values.</p>
+<div id="application-to-the-student-teacher-ratio-and-the-percentage-of-english-learners" class="section level5 unnumbered">
+<h5>Application to the student-teacher ratio and the percentage of English learners</h5>
+<p>Now let</p>
+<span class="math display">\[\begin{align*}
+  HiSTR =&amp; \, 
+    \begin{cases}
+      1, &amp; \text{if $STR \geq 20$} \\
+      0, &amp; \text{else},
+    \end{cases} \\
+  \\
+  HiEL =&amp; \,
+    \begin{cases}
+      1, &amp; \text{if $PctEL \geq 10\%$} \\
+      0, &amp; \text{else}.
+    \end{cases}
+\end{align*}\]</span>
+<p>We may use <tt>R</tt> construct the variables above.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Add HiSTR to CASchools</span>
+CASchools<span class="op">$</span>HiSTR &lt;-<span class="st"> </span><span class="kw">as.numeric</span>(CASchools<span class="op">$</span>size <span class="op">&gt;=</span><span class="st"> </span><span class="dv">20</span>)
+
+<span class="co"># Add HiEL to CASchools</span>
+CASchools<span class="op">$</span>HiEL &lt;-<span class="st"> </span><span class="kw">as.numeric</span>(CASchools<span class="op">$</span>english <span class="op">&gt;=</span><span class="st"> </span><span class="dv">10</span>)</code></pre></div>
+<p>We proceed by estimating the model</p>
+<p><span class="math display">\[ TestScore_i = \beta_0 + \beta_1 \times HiSTR + \beta_2 \times HiEL + \beta_3 \times (HiSTR \times HiEL) + u_i \]</span></p>
+<p>using <code>lm()</code>. There are several ways to add an interaction term to the model <code>formula</code> argument of <code>lm()</code> but the most intuitive is to use the product of both variables <code>HiEL * HiSTR</code>.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># estimate the model with binary interaction term</span>
+bi_model &lt;-<span class="st"> </span><span class="kw">lm</span>(score <span class="op">~</span><span class="st"> </span>HiSTR <span class="op">+</span><span class="st"> </span>HiEL <span class="op">+</span><span class="st"> </span>HiSTR <span class="op">*</span><span class="st"> </span>HiEL, <span class="dt">data =</span> CASchools)
+
+<span class="co"># print summary</span>
+<span class="kw">summary</span>(bi_model)</code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = score ~ HiSTR + HiEL + HiSTR * HiEL, data = CASchools)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -39.078 -10.679  -1.282   9.665  45.522 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  664.143      1.316 504.852  &lt; 2e-16 ***
+## HiSTR         -1.908      2.235  -0.854    0.394    
+## HiEL         -18.316      2.144  -8.544 2.49e-16 ***
+## HiSTR:HiEL    -3.260      3.223  -1.012    0.312    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 16.06 on 416 degrees of freedom
+## Multiple R-squared:  0.2948, Adjusted R-squared:  0.2897 
+## F-statistic: 57.97 on 3 and 416 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p>The estimated regression model is</p>
+<p><span class="math display">\[ \widehat{TestScore} = 664.1 - 1.9 \times HiSTR - 18.3 \times HiEL - 3.3 \times (HiSTR \times HiEL) \]</span></p>
+<p>and it predicts that the effect of moving from a school district with a low student-teacher ratio to a district with a high student-teacher ratio, depending on high or low percentage of english learners is <span class="math inline">\(-1.9-3.3\times HiEL\)</span>. So for districts with a low share of english learners (<span class="math inline">\(HiEL = 0\)</span>), the estimated effect is a decrease of <span class="math inline">\(1.9\)</span> points in test scores while for districts with a big fraction of english learner (<span class="math inline">\(HiEL = 1\)</span>), the predicted decrease in test scores amounts to <span class="math inline">\(1.9 + 3.3 = 5.2\)</span> points.</p>
+<p>We can also use the model to estimate the mean test score for each combination of binary variables.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># estimate means for all combinations of HiSTR and HiEL</span>
+<span class="kw">predict</span>(bi_model, <span class="dt">newdata =</span> <span class="kw">data.frame</span>(<span class="st">&quot;HiSTR&quot;</span>=<span class="dv">0</span>, <span class="st">&quot;HiEL&quot;</span>=<span class="dv">0</span>))</code></pre></div>
+<pre><code>##        1 
+## 664.1433</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">predict</span>(bi_model, <span class="dt">newdata =</span> <span class="kw">data.frame</span>(<span class="st">&quot;HiSTR&quot;</span>=<span class="dv">0</span>, <span class="st">&quot;HiEL&quot;</span>=<span class="dv">1</span>))</code></pre></div>
+<pre><code>##        1 
+## 645.8278</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">predict</span>(bi_model, <span class="dt">newdata =</span> <span class="kw">data.frame</span>(<span class="st">&quot;HiSTR&quot;</span>=<span class="dv">1</span>, <span class="st">&quot;HiEL&quot;</span>=<span class="dv">0</span>))</code></pre></div>
+<pre><code>##        1 
+## 662.2354</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">predict</span>(bi_model, <span class="dt">newdata =</span> <span class="kw">data.frame</span>(<span class="st">&quot;HiSTR&quot;</span>=<span class="dv">1</span>, <span class="st">&quot;HiEL&quot;</span>=<span class="dv">1</span>))</code></pre></div>
+<pre><code>##        1 
+## 640.6598</code></pre>
+</div>
+</div>
+<div id="interactions-between-a-continuous-and-a-binary-variable" class="section level4 unnumbered">
+<h4>Interactions Between a Continuous and a Binary Variable</h4>
+<p>Now consider a continuous variable <span class="math inline">\(X_i\)</span>, the years of working experience of person <span class="math inline">\(i\)</span> instead of the gender. We than have</p>
+<span class="math display">\[\begin{align*}
+  Y_i =&amp; \, \ln(Earnings_i) \\
+  \\
+  X_i =&amp; \, \text{working experience of person }i \\
+  \\
+  D_i =&amp; \,  
+    \begin{cases}
+      1, &amp; \text{if $i^{th}$ person has a college degree} \\
+      0, &amp; \text{else}.
+    \end{cases}
+\end{align*}\]</span>
+<p>The base model thus is</p>
+<p><span class="math display">\[ Y_i = \beta_0 + \beta_1 \times X_i + \beta_2 \times D_i + u_i, \]</span></p>
+<p>a simple multiple regression model that allows us to estimate the average benefit of having a college degree holding working experience constant and the average effect on earnings of a change in working experience holding college degree constant.</p>
+<p>By adding the interaction term <span class="math inline">\(X_i \times D_i\)</span> we allow the effect of an additional year of work experience to differ for person with and without college degree.</p>
+<p><span class="math display">\[ Y_i = \beta_0 + \beta_1 \times X_i + \beta_2 \times D_i + \beta_3 \times (X_i \times D_i) + u_i  \]</span></p>
+<p>Here, <span class="math inline">\(\beta_3\)</span> measures the difference in the effect of an additional year of work experience for college graduates versus nongraduates. A further possible specifications is</p>
+<p><span class="math display">\[ Y_i = \beta_0 + \beta_1 X_i + \beta_2 (X_i \times D_i) + u_i. \]</span></p>
+<p>This model states that the expected impact of an additional year of work experience on earnings is the same for individuals without college degree but differs for college graduates. All three population regression functions can be visualized by straight lines. Key Concept 8.4 summarizes the differences.</p>
+<div class="keyconcept">
+<h3 class="right">
+Key Concept 8.4
+</h3>
+<h3 class="left">
+Interactions Between Binary and Continuous Variables
+</h3>
+<p>An interaction term like <span class="math inline">\(X_i \times D_i\)</span> (where <span class="math inline">\(X\)</span> is continuous and <span class="math inline">\(D\)</span> is binary) allows for the slope to depend on the binary variable <span class="math inline">\(D\)</span>. There are three possibilities:</p>
+<ol style="list-style-type: decimal">
+<li>Different intercept and same slope: <span class="math display">\[ Y_i = \beta_0 + \beta_1 X_i + \beta_2 D_i + u_i \]</span></li>
+<li><p>Different intercept and different slope: <span class="math display">\[ Y_i = \beta_0 + \beta_1 X_i + \beta_2 D_i + \beta_3 \times (X_i \times D_i) + u_i \]</span></p></li>
+<li>Same intercept and different slope: <span class="math display">\[ Y_i = \beta_0 + \beta_1 X_i + \beta_2 (X_i \times D_i) + u_i \]</span></li>
+</ol>
+</div>
+<p>The following code chunk shows how replicate the results shown in Figure 8.8 using fictional data.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># generate fictional data</span>
+<span class="kw">set.seed</span>(<span class="dv">1</span>)
+
+X &lt;-<span class="st"> </span><span class="kw">runif</span>(<span class="dv">200</span>,<span class="dv">0</span>, <span class="dv">15</span>)
+D &lt;-<span class="st"> </span><span class="kw">sample</span>(<span class="dv">0</span><span class="op">:</span><span class="dv">1</span>, <span class="dv">200</span>, <span class="dt">replace =</span> T)
+Y &lt;-<span class="st"> </span><span class="dv">450</span> <span class="op">+</span><span class="st">  </span><span class="dv">150</span> <span class="op">*</span><span class="st"> </span>X <span class="op">+</span><span class="st"> </span><span class="dv">500</span> <span class="op">*</span><span class="st"> </span>D <span class="op">+</span><span class="st"> </span><span class="dv">50</span> <span class="op">*</span><span class="st"> </span>(X <span class="op">*</span><span class="st"> </span>D) <span class="op">+</span><span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">200</span>, <span class="dt">sd=</span><span class="dv">300</span>)
+
+<span class="co"># divide plotting area</span>
+m &lt;-<span class="st"> </span><span class="kw">rbind</span>(<span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">2</span>), <span class="kw">c</span>(<span class="dv">3</span>, <span class="dv">0</span>))
+<span class="kw">layout</span>(m)
+
+<span class="co"># Estimate models and plot regression lines</span>
+
+<span class="co"># 1.(base model)</span>
+<span class="kw">plot</span>(X,<span class="kw">log</span>(Y),
+     <span class="dt">pch =</span> <span class="dv">20</span>,
+     <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>,
+     <span class="dt">main =</span> <span class="st">&quot;Different Intercepts, Same Slope&quot;</span>
+)
+mod1_coef &lt;-<span class="st"> </span><span class="kw">lm</span>(<span class="kw">log</span>(Y) <span class="op">~</span><span class="st"> </span>X <span class="op">+</span><span class="st"> </span>D)<span class="op">$</span>coefficients
+
+<span class="kw">abline</span>(<span class="dt">coef =</span> <span class="kw">c</span>(mod1_coef[<span class="dv">1</span>], mod1_coef[<span class="dv">2</span>]), 
+       <span class="dt">col =</span> <span class="st">&quot;red&quot;</span>,
+       <span class="dt">lwd =</span> <span class="fl">1.5</span>
+       )
+
+<span class="kw">abline</span>(<span class="dt">coef =</span> <span class="kw">c</span>(mod1_coef[<span class="dv">1</span>] <span class="op">+</span><span class="st"> </span>mod1_coef[<span class="dv">3</span>], mod1_coef[<span class="dv">2</span>]), 
+       <span class="dt">col =</span> <span class="st">&quot;green&quot;</span>,
+       <span class="dt">lwd =</span> <span class="fl">1.5</span>
+       )
+              
+       
+<span class="co"># 2. (base model + interaction term)</span>
+<span class="kw">plot</span>(X,<span class="kw">log</span>(Y),
+     <span class="dt">pch =</span> <span class="dv">20</span>,
+     <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>,
+     <span class="dt">main =</span> <span class="st">&quot;Different Intercepts, Different Slopes&quot;</span>
+)
+
+mod2_coef &lt;-<span class="st"> </span><span class="kw">lm</span>(<span class="kw">log</span>(Y) <span class="op">~</span><span class="st"> </span>X <span class="op">+</span><span class="st"> </span>D <span class="op">+</span><span class="st"> </span>X<span class="op">:</span>D)<span class="op">$</span>coefficients
+
+<span class="kw">abline</span>(<span class="dt">coef =</span> <span class="kw">c</span>(mod2_coef[<span class="dv">1</span>], mod2_coef[<span class="dv">2</span>]), 
+       <span class="dt">col =</span> <span class="st">&quot;red&quot;</span>,
+       <span class="dt">lwd =</span> <span class="fl">1.5</span>
+)
+
+<span class="kw">abline</span>(<span class="dt">coef =</span> <span class="kw">c</span>(mod2_coef[<span class="dv">1</span>] <span class="op">+</span><span class="st"> </span>mod2_coef[<span class="dv">3</span>], mod2_coef[<span class="dv">2</span>] <span class="op">+</span><span class="st"> </span>mod2_coef[<span class="dv">4</span>]), 
+       <span class="dt">col =</span> <span class="st">&quot;green&quot;</span>,
+       <span class="dt">lwd =</span> <span class="fl">1.5</span>
+)
+
+<span class="co"># 3. (omission of D as regressor + interaction term)</span>
+<span class="kw">plot</span>(X,<span class="kw">log</span>(Y),
+     <span class="dt">pch =</span> <span class="dv">20</span>,
+     <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>,
+     <span class="dt">main =</span> <span class="st">&quot;Same Intercept, Different Slopes&quot;</span>
+)
+
+mod3_coef &lt;-<span class="st"> </span><span class="kw">lm</span>(<span class="kw">log</span>(Y) <span class="op">~</span><span class="st"> </span>X <span class="op">+</span><span class="st"> </span>X<span class="op">:</span>D)<span class="op">$</span>coefficients
+
+<span class="kw">abline</span>(<span class="dt">coef =</span> <span class="kw">c</span>(mod3_coef[<span class="dv">1</span>], mod3_coef[<span class="dv">2</span>]), 
+       <span class="dt">col =</span> <span class="st">&quot;red&quot;</span>,
+       <span class="dt">lwd =</span> <span class="fl">1.5</span>
+)
+
+<span class="kw">abline</span>(<span class="dt">coef =</span> <span class="kw">c</span>(mod3_coef[<span class="dv">1</span>], mod3_coef[<span class="dv">2</span>] <span class="op">+</span><span class="st"> </span>mod3_coef[<span class="dv">3</span>]), 
+       <span class="dt">col =</span> <span class="st">&quot;green&quot;</span>,
+       <span class="dt">lwd =</span> <span class="fl">1.5</span>
+)</code></pre></div>
+<p><img src="URFITE_files/figure-html/unnamed-chunk-178-1.png" width="672" style="display: block; margin: auto;" /></p>
+<div id="application-to-the-student-teacher-ratio-and-the-percentage-of-english-learners-1" class="section level5 unnumbered">
+<h5>Application to the student-teacher ratio and the percentage of English learners</h5>
+<p>Using a model specification like 2. in Key Concept 8.3 we may answer the question whether the effect on test scores of decreasing the student-teacher ratio depends on the whether there are many or few English learners. We estimate the regression model</p>
+<p><span class="math display">\[ \widehat{TestScore_i} = \beta_0 + \beta_1 \times size_i + \beta_2 \times HiEL_i + \beta_2 (size_i \times HiEL_i) + u_i. \]</span></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># estimate the model</span>
+bci_model &lt;-<span class="st"> </span><span class="kw">lm</span>(score <span class="op">~</span><span class="st"> </span>size <span class="op">+</span><span class="st"> </span>HiEL <span class="op">+</span><span class="st"> </span>size <span class="op">*</span><span class="st"> </span>HiEL, <span class="dt">data =</span> CASchools)
+
+<span class="co"># print summary to console</span>
+<span class="kw">summary</span>(bci_model)</code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = score ~ size + HiEL + size * HiEL, data = CASchools)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -37.356 -10.790  -0.841   9.911  46.457 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) 682.2458    10.5109  64.908   &lt;2e-16 ***
+## size         -0.9685     0.5398  -1.794   0.0735 .  
+## HiEL          5.6391    16.7177   0.337   0.7360    
+## size:HiEL    -1.2766     0.8441  -1.512   0.1312    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 15.88 on 416 degrees of freedom
+## Multiple R-squared:  0.3103, Adjusted R-squared:  0.3054 
+## F-statistic:  62.4 on 3 and 416 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p>The estimated regression model is</p>
+<p><span class="math display">\[ \widehat{TestScore} = 682.2 - 0.97 \times size + 5.6 \times HiEL - 1.28 \times (size \times HiEL). \]</span></p>
+<p>We find that the estimated regression line for districts with a low fraction of English learners (<span class="math inline">\(HiEL_i=0\)</span>) is</p>
+<p><span class="math display">\[ \widehat{TestScore} = 682.2 - 0.97\times size_i. \]</span></p>
+<p>For districts with a high fraction of English learners we have</p>
+<span class="math display">\[\begin{align} 
+  \widehat{TestScore} =&amp; \, 682.2 + 5.6 - 0.97\times size_i - 1.28 \times size_i \\
+   =&amp; \, 687.8 - 2.25 \times size_i
+\end{align}\]</span>
+<p>so the predicted increase in test scores following a reduction of the student-teacher ratio by <span class="math inline">\(1\)</span> is about <span class="math inline">\(0.97\)</span> points in districts where the fraction of English learners is low but <span class="math inline">\(2.25\)</span> in districts with a high share of English learners. The difference between these effects is <span class="math inline">\(1.28\)</span>, the magnitude of the coefficient on the interaction term <span class="math inline">\(size \times HiEL\)</span>.</p>
+<p>The next code chunk draws both lines belonging to the model. In order to make observations with <span class="math inline">\(HiEL = 0\)</span> distinguishable from those with <span class="math inline">\(HiEL = 0\)</span>, we assign different colors.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># identify observations PctEL &gt;= 10</span>
+id &lt;-<span class="st"> </span>CASchools<span class="op">$</span>english <span class="op">&gt;=</span><span class="st"> </span><span class="dv">10</span>
+
+<span class="co"># plot observations with HiEL = 0 as red dots</span>
+<span class="kw">plot</span>(CASchools<span class="op">$</span>size[<span class="op">!</span>id], CASchools<span class="op">$</span>score[<span class="op">!</span>id],
+     <span class="dt">pch =</span> <span class="dv">20</span>,
+     <span class="dt">col =</span> <span class="st">&quot;red&quot;</span>,
+     <span class="dt">main =</span> <span class="st">&quot;&quot;</span>,
+     <span class="dt">xlab =</span> <span class="st">&quot;class size (student-teacher ratio)&quot;</span>,
+     <span class="dt">ylab =</span> <span class="st">&quot;test score&quot;</span>
+     )
+
+<span class="co"># plot observations with HiEL = 1 as green dots</span>
+<span class="kw">points</span>(CASchools<span class="op">$</span>size[id], CASchools<span class="op">$</span>score[id],
+     <span class="dt">pch =</span> <span class="dv">20</span>,
+     <span class="dt">col =</span> <span class="st">&quot;green&quot;</span>
+     )
+
+<span class="co"># read out estimated coefficients of bci_model</span>
+coefs &lt;-<span class="st"> </span>bci_model<span class="op">$</span>coefficients
+
+<span class="co"># Draw the estimated regression line for HiEL = 0</span>
+<span class="kw">abline</span>(<span class="dt">coef =</span> <span class="kw">c</span>(coefs[<span class="dv">1</span>], coefs[<span class="dv">2</span>]),
+       <span class="dt">col =</span> <span class="st">&quot;red&quot;</span>,
+       <span class="dt">lwd =</span> <span class="fl">1.5</span>
+       )
+
+<span class="co"># Draw the estimated regression line for HiEL = 1</span>
+<span class="kw">abline</span>(<span class="dt">coef =</span> <span class="kw">c</span>(coefs[<span class="dv">1</span>]<span class="op">+</span>coefs[<span class="dv">3</span>], coefs[<span class="dv">2</span>]<span class="op">+</span>coefs[<span class="dv">4</span>]),
+       <span class="dt">col =</span> <span class="st">&quot;green&quot;</span>, 
+       <span class="dt">lwd =</span> <span class="fl">1.5</span> 
+       )
+
+<span class="co"># Add a legend to the plot</span>
+<span class="kw">legend</span>(<span class="st">&quot;topright&quot;</span>, 
+       <span class="dt">pch=</span><span class="kw">c</span>(<span class="dv">20</span>,<span class="dv">20</span>), 
+       <span class="dt">col =</span> <span class="kw">c</span>(<span class="st">&quot;red&quot;</span>,<span class="st">&quot;green&quot;</span>), 
+       <span class="dt">legend =</span> <span class="kw">c</span>(<span class="st">&quot;HiEL = 0&quot;</span>, <span class="st">&quot;HiEL = 1&quot;</span>)
+       )</code></pre></div>
+<p><img src="URFITE_files/figure-html/unnamed-chunk-180-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="interactions-between-two-continuous-variables" class="section level4 unnumbered">
+<h4>Interactions Between Two Continuous Variables</h4>
+<p>If we have a regression model with <span class="math inline">\(Y\)</span> the log earnings and two continuous regressors <span class="math inline">\(X_1\)</span>, the years of work experience, and <span class="math inline">\(X_2\)</span>, the years of schooling, a simple multiple regression model cannot be used to estimate the effect on wages of an additional year of work experience depending on a given level of schooling. This effect can be assessed by including the interaction term <span class="math inline">\((X_{1i} \times X_{2i})\)</span> in the model:</p>
+<p><span class="math display">\[ Y_i = \beta_0 + \beta_1 X_{1i} + \beta_2 X_{2i} + \beta_3 \times (X_{1i} \times X_{2i}) + u_i \]</span></p>
+<p>Following Key Concept 8.1 we find that the effect on <span class="math inline">\(Y\)</span> of a change on <span class="math inline">\(X_1\)</span> given <span class="math inline">\(X_2\)</span> is <span class="math display">\[ \frac{\Delta Y}{\Delta X_1} = \beta_1 + \beta_3 X_2. \]</span></p>
+<p>In the earnings example, a positive <span class="math inline">\(\beta_3\)</span> implies that the effect on log earnings of an additional year of work experience grows linearly with years of schooling.</p>
+<p>Vice versa we have <span class="math display">\[ \frac{\Delta Y}{\Delta X_2} = \beta_2 + \beta_3 X_1. \]</span> as the effect on log earnings of an additional year of schooling holding work experience constant.</p>
+<p>Altogether we find that <span class="math inline">\(\beta_3\)</span> measures the effect of a unit increase in <span class="math inline">\(X_1\)</span> and <span class="math inline">\(X_2\)</span> <it>beyond</it> the effects of increasing <span class="math inline">\(X_1\)</span> alone and <span class="math inline">\(X_2\)</span> alone by one unit. The overall change in <span class="math inline">\(Y\)</span> is thus</p>
+<span class="math display" id="eq:generalinteraction">\[\begin{align}
+Y_i = (\beta_1 + \beta_3 X_2) \Delta X_1 + (\beta_2 + \beta_3 X_1) \Delta X_2 + \beta_3\Delta X_1 \Delta X_2. \tag{8.1}
+\end{align}\]</span>
+<p>Key Concept 8.5 summarizes interactions between two regressors in multiple regression.</p>
+<div class="keyconcept">
+<h3 class="right">
+Key Concept 8.5
+</h3>
+<h3 class="left">
+Interactions in Multiple Regression
+</h3>
+<p>The interaction term between the two regressors <span class="math inline">\(X_1\)</span> and <span class="math inline">\(X_2\)</span> is given by their product <span class="math inline">\(X_1 \times X_2\)</span>. Adding this interaction term as a regressor to the model <span class="math display">\[ Y_i = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + u_i \]</span> allows the effect of change on <span class="math inline">\(X_2\)</span> to depend on the value of <span class="math inline">\(X_1\)</span> and vice versa. Thus the coefficient <span class="math inline">\(\beta_3\)</span> in the model <span class="math display">\[ Y_i = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + \beta_3 (X_1 \times X_2) + u_i \]</span> measures the effect of a one-unit increase in both <span class="math inline">\(X_1\)</span> <it>and</it> <span class="math inline">\(X_2\)</span> above and beyond the sum of both individual effects. This holds for continuous and binary regressors.</p>
+</div>
+<div id="application-to-the-student-teacher-ratio-and-the-percentage-of-english-learners-2" class="section level5">
+<h5><span class="header-section-number">8.3.0.0.1</span> Application to the student-teacher ratio and the percentage of English learners</h5>
+<p>We will now examine the interaction between student-teacher ratio and the percentage of english learners which both are continuous variables.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># estimate regression model including the interaction between &#39;PctEL&#39; and &#39;size&#39;</span>
+cci_model &lt;-<span class="st"> </span><span class="kw">lm</span>(score <span class="op">~</span><span class="st"> </span>size <span class="op">+</span><span class="st"> </span>english <span class="op">+</span><span class="st"> </span>english<span class="op">:</span>size, <span class="dt">data =</span> CASchools) 
+
+<span class="co"># print a summary to the console</span>
+<span class="kw">summary</span>(cci_model)</code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = score ~ size + english + english:size, data = CASchools)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -48.836 -10.226  -0.343   9.796  43.447 
+## 
+## Coefficients:
+##                Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  686.338527   9.402603  72.995   &lt;2e-16 ***
+## size          -1.117018   0.482537  -2.315   0.0211 *  
+## english       -0.672912   0.437985  -1.536   0.1252    
+## size:english   0.001162   0.021905   0.053   0.9577    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 14.48 on 416 degrees of freedom
+## Multiple R-squared:  0.4264, Adjusted R-squared:  0.4223 
+## F-statistic: 103.1 on 3 and 416 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p>The estimated model equation is <span class="math display">\[ \widehat{TestScore} = 686.3 - 1.12 \times STR - 0.67 \times PctEL + 0.0012(STR\times PctEL). \]</span></p>
+<p>For the interpretation, let us consider some quartiles of <span class="math inline">\(PctEL\)</span>.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(CASchools<span class="op">$</span>english)</code></pre></div>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   0.000   1.941   8.778  15.768  22.970  85.540</code></pre>
+<p>According to <a href="interactions-between-independent-variables.html#eq:generalinteraction">(8.1)</a>, if <span class="math inline">\(PctEL\)</span> is at its median <span class="math inline">\(8.78\)</span> the slope of the regression function relating test scores and the student teacher ratio is predicted to be <span class="math inline">\(-1.12 + 0.0012 \times 8.78 = -1.11\)</span>. This means that increasing <span class="math inline">\(STR\)</span> by one unit deteriorates test scores by estimated <span class="math inline">\(1.11\)</span> points. For the <span class="math inline">\(75\%\)</span> quantile the estimated change on <span class="math inline">\(TestScore\)</span> of a one-unit increase in <span class="math inline">\(STR\)</span> is estimated by <span class="math inline">\(-1.12 + 0.0012 \times 23.0 = -1.09\)</span> so the slope is somewhat lower. The interpretation is that for a school district with <span class="math inline">\(23\%\)</span> english learners, a reduction of the studtent-teacher ratio by one unit is expected to increase the test scores by only <span class="math inline">\(1.09\)</span> points.</p>
+<p>Note, however, that the output produced by summary indicates that the difference of the effect for the median and the <span class="math inline">\(75\%\)</span> quantile is not statistically significant. The <span class="math inline">\(p\)</span>-value for the test <span class="math inline">\(H_0: \beta_3 = 0\)</span> cannot be rejected at the <span class="math inline">\(5\%\)</span> level of significance. Using robust standard errors, one can show that <span class="math inline">\(\beta_3\)</span> is not significantly different from zero even at the level of <span class="math inline">\(10\%\)</span> (verify this using <tt>R</tt>!).</p>
+</div>
+</div>
+<div id="example-the-demand-for-economic-journals" class="section level4 unnumbered">
+<h4>Example: The Demand for Economic Journals</h4>
+<p>In this section we replicate the empirical example  presented at pages 336 - 337 of the book. The central question is: how elastic is the demand by libraries for economic journals? The idea here is to analyze the relationship between the number of subscription to a journal at U.S. libraries and the journal’s subscription price. The study uses the dataset <code>Journals</code> wich is provided with the <code>AER</code> package and contains observations for <span class="math inline">\(180\)</span> economic journals for the year <span class="math inline">\(2000\)</span>. You can use the help function (<code>?Journals</code>) to get more information on the data after loading the package.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># load package and the dataset</span>
+<span class="kw">library</span>(AER)
+<span class="kw">data</span>(<span class="st">&quot;Journals&quot;</span>)</code></pre></div>
+<p>We measure the price as “price per citation” and have to compute journal age and the number of character manually. For consistency with the book we also rename the variables.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># define and rename variables</span>
+Journals<span class="op">$</span>PricePerCitation &lt;-<span class="st"> </span>Journals<span class="op">$</span>price<span class="op">/</span>Journals<span class="op">$</span>citations
+Journals<span class="op">$</span>Age &lt;-<span class="st"> </span><span class="dv">2000</span> <span class="op">-</span><span class="st"> </span>Journals<span class="op">$</span>foundingyear
+Journals<span class="op">$</span>Characters &lt;-<span class="st"> </span>Journals<span class="op">$</span>charpp <span class="op">*</span><span class="st"> </span>Journals<span class="op">$</span>pages<span class="op">/</span><span class="dv">10</span><span class="op">^</span><span class="dv">6</span>
+Journals<span class="op">$</span>Subscriptions &lt;-<span class="st"> </span>Journals<span class="op">$</span>subs</code></pre></div>
+<p>Note that the range of “price per citation” is quite large:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># compute summary statistics for price per citation</span>
+<span class="kw">summary</span>(Journals<span class="op">$</span>PricePerCitation)</code></pre></div>
+<pre><code>##      Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
+##  0.005223  0.464495  1.320513  2.548455  3.440171 24.459459</code></pre>
+<p>The lowest price observed is a mere <span class="math inline">\(0.5\)</span>¢ per citation while the highest price is more than <span class="math inline">\(20\)</span>¢ per citation.</p>
+<p>After loading and preparing the data, we estimate the four different model specifications. All models are log-log models. This is useful because it allows us to directly interpret the ceofficients as elasticities, see Key Concept 8.2. <span class="math inline">\((I)\)</span> is a simple linear model. To aleviate a possible omitted variable bias, <span class="math inline">\((II)\)</span> augments <span class="math inline">\((I)\)</span> by the covariates <span class="math inline">\(\ln(Age)\)</span> and <span class="math inline">\(\ln(Characters)\)</span>. The largest model <span class="math inline">\((III)\)</span> attempts to capture nonlinearities in the relationship of <span class="math inline">\(\ln(Subscriptions)\)</span> and <span class="math inline">\(\ln(PricePerCitation)\)</span> using a cubic regression function of <span class="math inline">\(\ln(PricePerCitation)\)</span> and also adds the interaction term <span class="math inline">\((PricePerCitation \times Age)\)</span> while specfication <span class="math inline">\((IV)\)</span> does not include the cubic term.</p>
+<span class="math display">\[\begin{align*}
+  (I)\quad \ln(Subscriptions_i) =&amp; \, \beta_0 + \beta_1 \ln(PricePerCitation_i) + u_i \\
+  \\
+  (II)\quad \ln(Subscriptions_i) =&amp; \, \beta_0 + \beta_1 \ln(PricePerCitation_i) + \beta_4 \ln(Age_i) + \beta_6 \ln(Characters_i) + u_i \\
+  \\
+  (III)\quad \ln(Subscriptions_i) =&amp; \, \beta_0 + \beta_1 \ln(PricePerCitation_i) + \beta_2 \ln(PricePerCitation_i)^2 \\
+  +&amp; \, \beta_3 \ln(PricePerCitation_i)^3 + \beta_4 \ln(Age_i) + \beta_5 \left[\ln(Age_i) \times \ln(PricePerCitation_i)\right] \\ +&amp; \, \beta_6 \ln(Characters_i) + u_i \\
+  \\
+  (IV)\quad \ln(Subscriptions_i) =&amp; \, \beta_0 + \beta_1 \ln(PricePerCitation_i) + \beta_4 \ln(Age_i) + \beta_5 + \beta_6 \ln(Characters_i) + u_i
+\end{align*}\]</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Estimate models (I) - (IV)</span>
+Journals_mod1 &lt;-<span class="st"> </span><span class="kw">lm</span>(<span class="kw">log</span>(Subscriptions) <span class="op">~</span><span class="st"> </span><span class="kw">log</span>(PricePerCitation), <span class="dt">data =</span> Journals)
+
+Journals_mod2 &lt;-<span class="st"> </span><span class="kw">lm</span>(<span class="kw">log</span>(Subscriptions) <span class="op">~</span><span class="st"> </span><span class="kw">log</span>(PricePerCitation) <span class="op">+</span><span class="st"> </span><span class="kw">log</span>(Age) <span class="op">+</span><span class="st"> </span>
+<span class="st">    </span><span class="kw">log</span>(Characters), <span class="dt">data =</span> Journals)
+
+Journals_mod3 &lt;-<span class="st"> </span><span class="kw">lm</span>(<span class="kw">log</span>(Subscriptions) <span class="op">~</span><span class="st"> </span><span class="kw">log</span>(PricePerCitation) <span class="op">+</span><span class="st"> </span><span class="kw">I</span>(<span class="kw">log</span>(PricePerCitation)<span class="op">^</span><span class="dv">2</span>) <span class="op">+</span><span class="st"> </span>
+<span class="st">    </span><span class="kw">I</span>(<span class="kw">log</span>(PricePerCitation)<span class="op">^</span><span class="dv">3</span>) <span class="op">+</span><span class="st"> </span><span class="kw">log</span>(Age) <span class="op">+</span><span class="st"> </span><span class="kw">log</span>(Age)<span class="op">:</span><span class="kw">log</span>(PricePerCitation) <span class="op">+</span><span class="st"> </span>
+<span class="st">    </span><span class="kw">log</span>(Characters), <span class="dt">data =</span> Journals)
+
+Journals_mod4 &lt;-<span class="st"> </span><span class="kw">lm</span>(<span class="kw">log</span>(Subscriptions) <span class="op">~</span><span class="st"> </span><span class="kw">log</span>(PricePerCitation) <span class="op">+</span><span class="st"> </span><span class="kw">log</span>(Age) <span class="op">+</span><span class="st"> </span>
+<span class="st">    </span><span class="kw">log</span>(Age)<span class="op">:</span><span class="kw">log</span>(PricePerCitation) <span class="op">+</span><span class="st"> </span><span class="kw">log</span>(Characters), <span class="dt">data =</span> Journals)</code></pre></div>
+<p>Using <code>summary()</code>, we obtain the following estimated model equations:</p>
+<span class="math display">\[\begin{align*}
+  (I)\quad \widehat{\ln(Subscriptions_i)} =&amp; \, 4.77 - 0.53 \ln(PricePerCitation_i) \\
+  \\
+  (II)\quad \widehat{\ln(Subscriptions_i)} =&amp; \, 3.21 - 0.41 \ln(PricePerCitation_i) + 0.42 \ln(Age_i) + 0.21 \ln(Characters_i) \\
+  \\
+  (III)\quad \widehat{\ln(Subscriptions_i)} =&amp; \, 3.41 - 0.96 \ln(PricePerCitation_i) + 0.02 \ln(PricePerCitation_i)^2 \\
+  +&amp; \, 0.004 \ln(PricePerCitation_i)^3 + 0.37 \ln(Age_i) \\
+  +&amp; \, 0.16 \left[\ln(Age_i) \times \ln(PricePerCitation_i)\right] \\ +&amp; \, 0.23 \ln(Characters_i) \\
+  \\
+  (IV)\quad \widehat{\ln(Subscriptions_i)} =&amp; \, 3.43 - 0.90 \ln(PricePerCitation_i) + 0.37 \ln(Age_i) \\ 
+  +&amp;  \, 0.14 \left[\ln(Age_i) \times \ln(PricePerCitation_i)\right] + 0.23 \ln(Characters_i)
+\end{align*}\]</span>
+<p>It is of interest whether the coefficients the nonlinear transformations of <span class="math inline">\(\ln(PricePerCitation)\)</span> in Model <span class="math inline">\((III)\)</span> are statistically significant. To answer this, we use a <span class="math inline">\(F\)</span>-Test:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># F-Test for significance of cubic terms</span>
+<span class="kw">linearHypothesis</span>(Journals_mod3, 
+                 <span class="kw">c</span>(<span class="st">&quot;I(log(PricePerCitation)^2)=0&quot;</span>,<span class="st">&quot;I(log(PricePerCitation)^3)=0&quot;</span>)
+                 )</code></pre></div>
+<pre><code>## Linear hypothesis test
+## 
+## Hypothesis:
+## I(log(PricePerCitation)^2) = 0
+## I(log(PricePerCitation)^3) = 0
+## 
+## Model 1: restricted model
+## Model 2: log(Subscriptions) ~ log(PricePerCitation) + I(log(PricePerCitation)^2) + 
+##     I(log(PricePerCitation)^3) + log(Age) + log(Age):log(PricePerCitation) + 
+##     log(Characters)
+## 
+##   Res.Df    RSS Df Sum of Sq      F Pr(&gt;F)
+## 1    175 82.738                           
+## 2    173 82.500  2    0.2379 0.2494 0.7795</code></pre>
+<p>We cannot reject the null hypothesis <span class="math inline">\(H_0: \beta_3=\beta_4=0\)</span> in model <span class="math inline">\((III)\)</span>.</p>
+<p>We will now use the <code>stargazer()</code> function to generate a verbose tabular representation of all four estimated models.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># load the stargazer package</span>
+<span class="kw">library</span>(stargazer)
+
+<span class="co"># generate a Latex table using stargazer</span>
+<span class="kw">stargazer</span>(Journals_mod1, Journals_mod2, Journals_mod3, Journals_mod4,
+          <span class="dt">column.labels =</span> <span class="kw">c</span>(<span class="st">&quot;(I)&quot;</span>, <span class="st">&quot;(II)&quot;</span>, <span class="st">&quot;(III)&quot;</span>, <span class="st">&quot;(IV)&quot;</span>)
+          )</code></pre></div>
+
+
+
+<table style="text-align:center"><tr><td colspan="5" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left"></td><td colspan="4"><em>Dependent variable:</em></td></tr>
+<tr><td></td><td colspan="4" style="border-bottom: 1px solid black"></td></tr>
+<tr><td style="text-align:left"></td><td colspan="4">log(Subscriptions)</td></tr>
+<tr><td style="text-align:left"></td><td>(I)</td><td>(II)</td><td>(III)</td><td>(IV)</td></tr>
+<tr><td colspan="5" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left">log(PricePerCitation)</td><td>-0.533<sup>***</sup></td><td>-0.408<sup>***</sup></td><td>-0.961<sup>***</sup></td><td>-0.899<sup>***</sup></td></tr>
+<tr><td style="text-align:left"></td><td>(0.036)</td><td>(0.042)</td><td>(0.189)</td><td>(0.162)</td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">I(log(PricePerCitation)2)</td><td></td><td></td><td>0.017</td><td></td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td>(0.024)</td><td></td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">I(log(PricePerCitation)3)</td><td></td><td></td><td>0.004</td><td></td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td>(0.007)</td><td></td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">log(Age)</td><td></td><td>0.424<sup>***</sup></td><td>0.373<sup>***</sup></td><td>0.374<sup>***</sup></td></tr>
+<tr><td style="text-align:left"></td><td></td><td>(0.090)</td><td>(0.089)</td><td>(0.089)</td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">log(Characters)</td><td></td><td>0.206<sup>*</sup></td><td>0.235<sup>**</sup></td><td>0.229<sup>**</sup></td></tr>
+<tr><td style="text-align:left"></td><td></td><td>(0.107)</td><td>(0.106)</td><td>(0.105)</td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">log(PricePerCitation):log(Age)</td><td></td><td></td><td>0.156<sup>***</sup></td><td>0.141<sup>***</sup></td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td>(0.055)</td><td>(0.045)</td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">Constant</td><td>4.766<sup>***</sup></td><td>3.207<sup>***</sup></td><td>3.408<sup>***</sup></td><td>3.434<sup>***</sup></td></tr>
+<tr><td style="text-align:left"></td><td>(0.056)</td><td>(0.314)</td><td>(0.318)</td><td>(0.315)</td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td colspan="5" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left">Observations</td><td>180</td><td>180</td><td>180</td><td>180</td></tr>
+<tr><td style="text-align:left">R<sup>2</sup></td><td>0.557</td><td>0.613</td><td>0.635</td><td>0.634</td></tr>
+<tr><td style="text-align:left">Adjusted R<sup>2</sup></td><td>0.555</td><td>0.607</td><td>0.622</td><td>0.626</td></tr>
+<tr><td style="text-align:left">Residual Std. Error</td><td>0.750 (df = 178)</td><td>0.705 (df = 176)</td><td>0.691 (df = 173)</td><td>0.688 (df = 175)</td></tr>
+<tr><td style="text-align:left">F Statistic</td><td>224.037<sup>***</sup> (df = 1; 178)</td><td>93.009<sup>***</sup> (df = 3; 176)</td><td>50.149<sup>***</sup> (df = 6; 173)</td><td>75.749<sup>***</sup> (df = 4; 175)</td></tr>
+<tr><td colspan="5" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left"><em>Note:</em></td><td colspan="4" style="text-align:right"><sup>*</sup>p<0.1; <sup>**</sup>p<0.05; <sup>***</sup>p<0.01</td></tr>
+</table>
+
+
+<p>The subsequent code chunk reproduces figure 8.9 of the book:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># divide plotting area</span>
+m &lt;-<span class="st"> </span><span class="kw">rbind</span>(<span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">2</span>), <span class="kw">c</span>(<span class="dv">3</span>, <span class="dv">0</span>))
+<span class="kw">layout</span>(m)
+
+<span class="co"># scatterplot</span>
+<span class="kw">plot</span>(Journals<span class="op">$</span>PricePerCitation, 
+     Journals<span class="op">$</span>Subscriptions, 
+     <span class="dt">pch =</span> <span class="dv">20</span>, 
+     <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>,
+     <span class="dt">ylab =</span> <span class="st">&quot;Subscriptions&quot;</span>,
+     <span class="dt">xlab =</span> <span class="st">&quot;ln(Price per ciation)&quot;</span>,
+     <span class="dt">main =</span> <span class="st">&quot;(a)&quot;</span>
+     )
+
+<span class="co"># log-log scatterplot and estimated regression line (I)</span>
+<span class="kw">plot</span>(<span class="kw">log</span>(Journals<span class="op">$</span>PricePerCitation), 
+     <span class="kw">log</span>(Journals<span class="op">$</span>Subscriptions), 
+     <span class="dt">pch =</span> <span class="dv">20</span>, 
+     <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>,
+     <span class="dt">ylab =</span> <span class="st">&quot;ln(Subscriptions)&quot;</span>,
+     <span class="dt">xlab =</span> <span class="st">&quot;ln(Price per ciation)&quot;</span>,
+     <span class="dt">main =</span> <span class="st">&quot;(b)&quot;</span>
+     )
+
+<span class="kw">abline</span>(Journals_mod1,
+       <span class="dt">lwd =</span> <span class="fl">1.5</span>
+       )
+
+<span class="co"># log-log scatterplot and regression lines (IV) for Age = 5 and Age = 80</span>
+<span class="kw">plot</span>(<span class="kw">log</span>(Journals<span class="op">$</span>PricePerCitation), 
+     <span class="kw">log</span>(Journals<span class="op">$</span>Subscriptions), 
+     <span class="dt">pch =</span> <span class="dv">20</span>, 
+     <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>,
+     <span class="dt">ylab =</span> <span class="st">&quot;ln(Subscriptions)&quot;</span>,
+     <span class="dt">xlab =</span> <span class="st">&quot;ln(Price per ciation)&quot;</span>,
+     <span class="dt">main =</span> <span class="st">&quot;(c)&quot;</span>
+     )
+
+JM4C &lt;-Journals_mod4<span class="op">$</span>coefficients
+
+<span class="co"># Age = 80</span>
+<span class="kw">abline</span>(<span class="dt">coef =</span> <span class="kw">c</span>(JM4C[<span class="dv">1</span>] <span class="op">+</span><span class="st"> </span>JM4C[<span class="dv">3</span>] <span class="op">*</span><span class="st"> </span><span class="kw">log</span>(<span class="dv">80</span>), 
+                JM4C[<span class="dv">2</span>] <span class="op">+</span><span class="st"> </span>JM4C[<span class="dv">5</span>] <span class="op">*</span><span class="st"> </span><span class="kw">log</span>(<span class="dv">80</span>)
+                ),
+       <span class="dt">col =</span> <span class="st">&quot;darkred&quot;</span>,
+       <span class="dt">lwd =</span> <span class="fl">1.5</span>
+)
+
+<span class="co"># Age = 5</span>
+<span class="kw">abline</span>(<span class="dt">coef =</span> <span class="kw">c</span>(JM4C[<span class="dv">1</span>] <span class="op">+</span><span class="st"> </span>JM4C[<span class="dv">3</span>] <span class="op">*</span><span class="st"> </span><span class="kw">log</span>(<span class="dv">5</span>), 
+                JM4C[<span class="dv">2</span>] <span class="op">+</span><span class="st"> </span>JM4C[<span class="dv">5</span>] <span class="op">*</span><span class="st"> </span><span class="kw">log</span>(<span class="dv">5</span>)
+                ),
+       <span class="dt">col =</span> <span class="st">&quot;darkgreen&quot;</span>,
+       <span class="dt">lwd =</span> <span class="fl">1.5</span>
+)</code></pre></div>
+<p><img src="URFITE_files/figure-html/unnamed-chunk-190-1.png" width="672" /></p>
+<p>As can be seen from plots (a) and (b), the relation between subscriptions and the citation price is inverse and nonlinear and log-transforming both variables makes it approximately linear. Plot (c) shows that the price elasticity of journal subscriptions depends on the journal’s age: the red line shows the estimated relationship for <span class="math inline">\(Age=80\)</span> while the green line represents the prediction from model <span class="math inline">\((IV)\)</span> for <span class="math inline">\(Age=5\)</span>.</p>
+<p>Which conclusion can be made?</p>
+<ol style="list-style-type: decimal">
+<li><p>We conclude that the demand for journals is more elastic for young journals than for old journals.</p></li>
+<li><p>For model <span class="math inline">\((III)\)</span> we cannot reject the null hypothesis that the coefficients on <span class="math inline">\(\ln(PricePerCitation)^2\)</span> and <span class="math inline">\(\ln(PricePerCitation)^3\)</span> are both zero using an <span class="math inline">\(F\)</span>-test. This is evidence supporting a linear relation between log-subscriptions and log-price.</p></li>
+<li><p>Demand is greater for Journals with more characters, holding price and age constant.</p></li>
+</ol>
+<p>Hence we have found evidence, that the price elasticity of demand for economic journals depends on the age of the journal. Altogether our estimates suggest that the demand is very inelastic, i.e. the librararies’ demand for economic journals is quite insensitve to the price: using model <span class="math inline">\((IV)\)</span>, even for a young journal (<span class="math inline">\(Age=5\)</span>) we estimate the price elasticity to be <span class="math inline">\(-0,899+0,374\times\ln(5)+0,141\times\left[\ln(1)\times\ln(5)\right] \approx -0.3\)</span> so that a one percent increase in price is predicted to reduce the demand by only <span class="math inline">\(0.3\)</span> percent.</p>
+<p>This finding comes at no surprise since providing the most recent research is a necessity for libraries.</p>
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="nonlinear-functions-of-a-single-independent-variable.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="nonlinear-effects-on-test-scores-of-the-student-teacher-ratio.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"google": false,
+"linkedin": false,
+"weibo": false,
+"instapper": false,
+"vk": false,
+"all": ["facebook", "google", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "FontAwesome",
+"size": 1
+},
+"edit": {
+"link": "https://github.com/rstudio/bookdown-demo/edit/master/08-ch8.Rmd",
+"text": "Edit"
+},
+"download": ["URFITE.pdf"],
+"toc": {
+"collapse": "section",
+"scroll_highlight": true
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "";
+    if (src === "" || src === "true") src = "https://cdn.bootcss.com/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:" && /^https?:/.test(src))
+      src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>
