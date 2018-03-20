@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html >
+
+<head>
+
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Using R for Introduction to Econometrics</title>
+  <meta name="description" content="Using R for Introduction to Econometrics">
+  <meta name="generator" content="bookdown 0.7 and GitBook 2.6.7">
+
+  <meta property="og:title" content="Using R for Introduction to Econometrics" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+  <meta name="github-repo" content="Emwikts1970/URFITE-Bookdown" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Using R for Introduction to Econometrics" />
+  
+  
+  
+
+<meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber and Martin Schmelzer">
+
+
+<meta name="date" content="2018-03-18">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  
+  
+<link rel="prev" href="properties-of-the-sample-mean.html">
+<link rel="next" href="confidence-intervals-for-the-population-mean.html">
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+
+
+
+
+
+
+
+<script src="libs/htmlwidgets-1.0/htmlwidgets.js"></script>
+<script src="libs/plotly-binding-4.7.1/plotly.js"></script>
+<script src="libs/typedarray-0.1/typedarray.min.js"></script>
+<link href="libs/crosstalk-1.0.0/css/crosstalk.css" rel="stylesheet" />
+<script src="libs/crosstalk-1.0.0/js/crosstalk.min.js"></script>
+<link href="libs/plotlyjs-1.29.2/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="libs/plotlyjs-1.29.2/plotly-latest.min.js"></script>
+<script src="js/hideOutput.js"></script>
+<script type="text/javascript" src="MathJax-2.7.2/MathJax.js?config=default"></script>
+
+ <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        extensions: ["tex2jax.js", "TeX/AMSmath.js"],
+        tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+        jax: ["input/TeX","output/CommonHTML"]
+      });
+      MathJax.Hub.processSectionDelay = 0;
+  </script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-110299877-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-110299877-1');
+</script>
+
+<!-- open review block -->
+
+<script async defer src="https://hypothes.is/embed.js"></script>
+
+<!-- datacamp-light-latest -->
+
+<script src="https://cdn.datacamp.com/datacamp-light-latest.min.js"></script>
+
+
+<!-- <script src="js/d3.v3.min.js"></script>
+<script src="js/leastsquares.js"></script>
+<script src="js/d3functions.js"></script>
+<script src="d3.slider.js"></script>
+<script src="slrm.js"></script> -->
+
+
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; background-color: #f8f8f8; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+pre, code { background-color: #f8f8f8; }
+code > span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code > span.dt { color: #204a87; } /* DataType */
+code > span.dv { color: #0000cf; } /* DecVal */
+code > span.bn { color: #0000cf; } /* BaseN */
+code > span.fl { color: #0000cf; } /* Float */
+code > span.ch { color: #4e9a06; } /* Char */
+code > span.st { color: #4e9a06; } /* String */
+code > span.co { color: #8f5902; font-style: italic; } /* Comment */
+code > span.ot { color: #8f5902; } /* Other */
+code > span.al { color: #ef2929; } /* Alert */
+code > span.fu { color: #000000; } /* Function */
+code > span.er { color: #a40000; font-weight: bold; } /* Error */
+code > span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #000000; } /* Constant */
+code > span.sc { color: #000000; } /* SpecialChar */
+code > span.vs { color: #4e9a06; } /* VerbatimString */
+code > span.ss { color: #4e9a06; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #000000; } /* Variable */
+code > span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code > span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code > span.ex { } /* Extension */
+code > span.at { color: #c4a000; } /* Attribute */
+code > span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code > span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">URFITE</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Introduction</a></li>
+<li class="chapter" data-level="2" data-path="probability-theory.html"><a href="probability-theory.html"><i class="fa fa-check"></i><b>2</b> Probability Theory</a><ul>
+<li class="chapter" data-level="2.1" data-path="random-variables-and-probability-distributions.html"><a href="random-variables-and-probability-distributions.html"><i class="fa fa-check"></i><b>2.1</b> Random Variables and Probability Distributions</a><ul>
+<li class="chapter" data-level="" data-path="random-variables-and-probability-distributions.html"><a href="random-variables-and-probability-distributions.html#probability-distributions-of-discrete-random-variables"><i class="fa fa-check"></i>Probability Distributions of Discrete Random Variables</a></li>
+<li class="chapter" data-level="" data-path="random-variables-and-probability-distributions.html"><a href="random-variables-and-probability-distributions.html#bernoulli-trials"><i class="fa fa-check"></i>Bernoulli Trials</a></li>
+<li class="chapter" data-level="" data-path="random-variables-and-probability-distributions.html"><a href="random-variables-and-probability-distributions.html#expected-values-mean-and-variance"><i class="fa fa-check"></i>Expected Values, Mean and Variance</a></li>
+</ul></li>
+<li class="chapter" data-level="2.2" data-path="probability-distributions-of-continuous-random-variables.html"><a href="probability-distributions-of-continuous-random-variables.html"><i class="fa fa-check"></i><b>2.2</b> Probability Distributions of Continuous Random Variables</a><ul>
+<li class="chapter" data-level="" data-path="probability-distributions-of-continuous-random-variables.html"><a href="probability-distributions-of-continuous-random-variables.html#the-normal-distribution"><i class="fa fa-check"></i>The Normal Distribution</a></li>
+<li class="chapter" data-level="" data-path="probability-distributions-of-continuous-random-variables.html"><a href="probability-distributions-of-continuous-random-variables.html#the-chi-squared-distribution"><i class="fa fa-check"></i>The Chi-Squared Distribution</a></li>
+<li><a href="probability-distributions-of-continuous-random-variables.html#thetdist">The Student <span class="math inline">\(t\)</span> Distribution</a></li>
+<li><a href="probability-distributions-of-continuous-random-variables.html#the-f-distribution">The <span class="math inline">\(F\)</span> Distribution</a></li>
+</ul></li>
+<li class="chapter" data-level="2.3" data-path="random-sampling-and-the-distribution-of-sample-averages.html"><a href="random-sampling-and-the-distribution-of-sample-averages.html"><i class="fa fa-check"></i><b>2.3</b> Random Sampling and the Distribution of Sample Averages</a><ul>
+<li class="chapter" data-level="" data-path="random-sampling-and-the-distribution-of-sample-averages.html"><a href="random-sampling-and-the-distribution-of-sample-averages.html#mean-and-variance-of-the-sample-mean"><i class="fa fa-check"></i>Mean and Variance of the Sample Mean</a></li>
+<li class="chapter" data-level="" data-path="random-sampling-and-the-distribution-of-sample-averages.html"><a href="random-sampling-and-the-distribution-of-sample-averages.html#large-sample-approximations-to-sampling-distributions"><i class="fa fa-check"></i>Large Sample Approximations to Sampling Distributions</a></li>
+</ul></li>
+<li class="chapter" data-level="2.4" data-path="exercises.html"><a href="exercises.html"><i class="fa fa-check"></i><b>2.4</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="a-review-of-statistics-using-r.html"><a href="a-review-of-statistics-using-r.html"><i class="fa fa-check"></i><b>3</b> A Review of Statistics using R</a><ul>
+<li class="chapter" data-level="3.1" data-path="estimation-of-the-population-mean.html"><a href="estimation-of-the-population-mean.html"><i class="fa fa-check"></i><b>3.1</b> Estimation of the Population Mean</a></li>
+<li class="chapter" data-level="3.2" data-path="properties-of-the-sample-mean.html"><a href="properties-of-the-sample-mean.html"><i class="fa fa-check"></i><b>3.2</b> Properties of the Sample Mean</a></li>
+<li class="chapter" data-level="3.3" data-path="hypothesis-tests-concerning-the-population-mean.html"><a href="hypothesis-tests-concerning-the-population-mean.html"><i class="fa fa-check"></i><b>3.3</b> Hypothesis Tests Concerning the Population Mean</a><ul>
+<li><a href="hypothesis-tests-concerning-the-population-mean.html#p-value"><span class="math inline">\(p\)</span>-Value</a></li>
+<li><a href="hypothesis-tests-concerning-the-population-mean.html#calculating-the-p-value-when-sigma_y-is-known">Calculating the <span class="math inline">\(p\)</span>-Value When <span class="math inline">\(\sigma_Y\)</span> Is Known</a></li>
+<li class="chapter" data-level="" data-path="hypothesis-tests-concerning-the-population-mean.html"><a href="hypothesis-tests-concerning-the-population-mean.html#sample-variance-sample-standard-deviation-and-standard-error"><i class="fa fa-check"></i>Sample Variance, Sample Standard Deviation and Standard Error</a></li>
+<li><a href="hypothesis-tests-concerning-the-population-mean.html#calculating-the-p-value-when-sigma_y-is-unknown">Calculating the <span class="math inline">\(p\)</span>-value When <span class="math inline">\(\sigma_Y\)</span> is Unknown</a></li>
+<li><a href="hypothesis-tests-concerning-the-population-mean.html#the-t-statistic">The <span class="math inline">\(t\)</span>-statistic</a></li>
+<li class="chapter" data-level="" data-path="hypothesis-tests-concerning-the-population-mean.html"><a href="hypothesis-tests-concerning-the-population-mean.html#hypothesis-testing-with-a-prespecified-significance-level"><i class="fa fa-check"></i>Hypothesis Testing with a Prespecified Significance Level</a></li>
+<li class="chapter" data-level="" data-path="hypothesis-tests-concerning-the-population-mean.html"><a href="hypothesis-tests-concerning-the-population-mean.html#one-sided-alternatives"><i class="fa fa-check"></i>One-sided Alternatives</a></li>
+</ul></li>
+<li class="chapter" data-level="3.4" data-path="confidence-intervals-for-the-population-mean.html"><a href="confidence-intervals-for-the-population-mean.html"><i class="fa fa-check"></i><b>3.4</b> Confidence intervals for the Population Mean</a></li>
+<li class="chapter" data-level="3.5" data-path="comparing-means-from-different-populations.html"><a href="comparing-means-from-different-populations.html"><i class="fa fa-check"></i><b>3.5</b> Comparing Means from Different Populations</a></li>
+<li class="chapter" data-level="3.6" data-path="an-application-to-the-gender-gap-of-earnings.html"><a href="an-application-to-the-gender-gap-of-earnings.html"><i class="fa fa-check"></i><b>3.6</b> An Application to the Gender Gap of Earnings</a></li>
+<li class="chapter" data-level="3.7" data-path="scatterplots-sample-covariance-and-sample-correlation.html"><a href="scatterplots-sample-covariance-and-sample-correlation.html"><i class="fa fa-check"></i><b>3.7</b> Scatterplots, Sample Covariance and Sample Correlation</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="lrwor.html"><a href="lrwor.html"><i class="fa fa-check"></i><b>4</b> Linear Regression with One Regressor</a><ul>
+<li class="chapter" data-level="4.1" data-path="estimating-the-coefficients-of-the-linear-regression-model.html"><a href="estimating-the-coefficients-of-the-linear-regression-model.html"><i class="fa fa-check"></i><b>4.1</b> Estimating the Coefficients of the Linear Regression Model</a><ul>
+<li class="chapter" data-level="" data-path="estimating-the-coefficients-of-the-linear-regression-model.html"><a href="estimating-the-coefficients-of-the-linear-regression-model.html#the-ordinary-least-squares-estimator"><i class="fa fa-check"></i>The Ordinary Least Squares Estimator</a></li>
+</ul></li>
+<li class="chapter" data-level="4.2" data-path="measures-of-fit.html"><a href="measures-of-fit.html"><i class="fa fa-check"></i><b>4.2</b> Measures of Fit</a><ul>
+<li><a href="measures-of-fit.html#the-r2">The <span class="math inline">\(R^2\)</span></a></li>
+<li class="chapter" data-level="" data-path="measures-of-fit.html"><a href="measures-of-fit.html#standard-error-of-the-regression"><i class="fa fa-check"></i>Standard Error of the Regression</a></li>
+<li class="chapter" data-level="" data-path="measures-of-fit.html"><a href="measures-of-fit.html#application-to-the-test-score-data"><i class="fa fa-check"></i>Application to the Test Score Data</a></li>
+</ul></li>
+<li class="chapter" data-level="4.3" data-path="the-least-squares-assumptions.html"><a href="the-least-squares-assumptions.html"><i class="fa fa-check"></i><b>4.3</b> The Least Squares Assumptions</a><ul>
+<li class="chapter" data-level="" data-path="the-least-squares-assumptions.html"><a href="the-least-squares-assumptions.html#assumption-1-the-error-term-has-conditional-mean-of-zero"><i class="fa fa-check"></i>Assumption #1: The Error Term has Conditional Mean of Zero</a></li>
+<li><a href="the-least-squares-assumptions.html#assumption-2-all-x_i-y_i-are-independently-and-identically-distributed">Assumption #2: All <span class="math inline">\((X_i, Y_i)\)</span> are Independently and Identically Distributed</a></li>
+<li class="chapter" data-level="" data-path="the-least-squares-assumptions.html"><a href="the-least-squares-assumptions.html#assumption-3-large-outliers-are-unlikely"><i class="fa fa-check"></i>Assumption #3: Large outliers are unlikely</a></li>
+</ul></li>
+<li class="chapter" data-level="4.4" data-path="tsdotoe.html"><a href="tsdotoe.html"><i class="fa fa-check"></i><b>4.4</b> The Sampling Distribution of the OLS Estimator</a><ul>
+<li class="chapter" data-level="" data-path="tsdotoe.html"><a href="tsdotoe.html#r-simulation-study-1"><i class="fa fa-check"></i>R Simulation Study 1</a></li>
+<li class="chapter" data-level="" data-path="tsdotoe.html"><a href="tsdotoe.html#r-simulation-study-2"><i class="fa fa-check"></i>R Simulation Study 2</a></li>
+<li class="chapter" data-level="" data-path="tsdotoe.html"><a href="tsdotoe.html#r-simulation-study-3"><i class="fa fa-check"></i>R Simulation Study 3</a></li>
+</ul></li>
+<li class="chapter" data-level="4.5" data-path="exercises-1.html"><a href="exercises-1.html"><i class="fa fa-check"></i><b>4.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="hypothesis-tests-and-confidence-intervals-in-the-simple-linear-regression-model.html"><a href="hypothesis-tests-and-confidence-intervals-in-the-simple-linear-regression-model.html"><i class="fa fa-check"></i><b>5</b> Hypothesis Tests and Confidence Intervals in the Simple Linear Regression Model</a><ul>
+<li class="chapter" data-level="5.1" data-path="testing-two-sided-hypotheses-concerning-beta-1.html"><a href="testing-two-sided-hypotheses-concerning-beta-1.html"><i class="fa fa-check"></i><b>5.1</b> Testing Two-Sided Hypotheses Concerning <span class="math inline">\(\beta_1\)</span></a></li>
+<li class="chapter" data-level="5.2" data-path="confidence-intervals-for-regression-coefficients.html"><a href="confidence-intervals-for-regression-coefficients.html"><i class="fa fa-check"></i><b>5.2</b> Confidence Intervals for Regression Coefficients</a><ul>
+<li class="chapter" data-level="" data-path="confidence-intervals-for-regression-coefficients.html"><a href="confidence-intervals-for-regression-coefficients.html#r-simulation-study-5.1"><i class="fa fa-check"></i>R Simulation Study 5.1</a></li>
+</ul></li>
+<li class="chapter" data-level="5.3" data-path="regression-when-x-is-a-binary-variable.html"><a href="regression-when-x-is-a-binary-variable.html"><i class="fa fa-check"></i><b>5.3</b> Regression when <span class="math inline">\(X\)</span> is a Binary Variable</a></li>
+<li class="chapter" data-level="5.4" data-path="heteroskedasticity-and-homoskedasticity.html"><a href="heteroskedasticity-and-homoskedasticity.html"><i class="fa fa-check"></i><b>5.4</b> Heteroskedasticity and Homoskedasticity</a><ul>
+<li class="chapter" data-level="" data-path="heteroskedasticity-and-homoskedasticity.html"><a href="heteroskedasticity-and-homoskedasticity.html#a-real-world-example-for-heteroskedasticity"><i class="fa fa-check"></i>A Real-World Example for Heteroskedasticity</a></li>
+<li class="chapter" data-level="" data-path="heteroskedasticity-and-homoskedasticity.html"><a href="heteroskedasticity-and-homoskedasticity.html#should-we-care-about-heteroskedasticity"><i class="fa fa-check"></i>Should We Care About Heteroskedasticity?</a></li>
+<li class="chapter" data-level="" data-path="heteroskedasticity-and-homoskedasticity.html"><a href="heteroskedasticity-and-homoskedasticity.html#computation-of-heteroskedasticity-robust-standard-errors"><i class="fa fa-check"></i>Computation of Heteroskedasticity-Robust Standard Errors</a></li>
+</ul></li>
+<li class="chapter" data-level="5.5" data-path="the-gauss-markov-theorem.html"><a href="the-gauss-markov-theorem.html"><i class="fa fa-check"></i><b>5.5</b> The Gauss-Markov Theorem</a><ul>
+<li class="chapter" data-level="" data-path="the-gauss-markov-theorem.html"><a href="the-gauss-markov-theorem.html#r-simulation-study-blue-estimator"><i class="fa fa-check"></i>R Simulation Study: BLUE Estimator</a></li>
+</ul></li>
+<li class="chapter" data-level="5.6" data-path="using-the-t-statistic-in-regression-when-the-sample-size-is-small.html"><a href="using-the-t-statistic-in-regression-when-the-sample-size-is-small.html"><i class="fa fa-check"></i><b>5.6</b> Using the <span class="math inline">\(t\)</span>-Statistic in Regression When the Sample Size Is Small</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="regression-models-with-multiple-regressors.html"><a href="regression-models-with-multiple-regressors.html"><i class="fa fa-check"></i><b>6</b> Regression Models with Multiple Regressors</a><ul>
+<li class="chapter" data-level="6.1" data-path="omitted-variable-bias.html"><a href="omitted-variable-bias.html"><i class="fa fa-check"></i><b>6.1</b> Omitted Variable Bias</a></li>
+<li class="chapter" data-level="6.2" data-path="the-multiple-regression-model.html"><a href="the-multiple-regression-model.html"><i class="fa fa-check"></i><b>6.2</b> The Multiple Regression Model</a></li>
+<li class="chapter" data-level="6.3" data-path="measures-of-fit-in-multiple-regression.html"><a href="measures-of-fit-in-multiple-regression.html"><i class="fa fa-check"></i><b>6.3</b> Measures of Fit in Multiple Regression</a></li>
+<li class="chapter" data-level="6.4" data-path="ols-assumptions-in-multiple-regression.html"><a href="ols-assumptions-in-multiple-regression.html"><i class="fa fa-check"></i><b>6.4</b> OLS Assumptions in Multiple Regression</a><ul>
+<li class="chapter" data-level="" data-path="ols-assumptions-in-multiple-regression.html"><a href="ols-assumptions-in-multiple-regression.html#multicollinearity"><i class="fa fa-check"></i>Multicollinearity</a></li>
+</ul></li>
+<li class="chapter" data-level="6.5" data-path="the-distribution-of-the-ols-estimators-in-multiple-regression.html"><a href="the-distribution-of-the-ols-estimators-in-multiple-regression.html"><i class="fa fa-check"></i><b>6.5</b> The Distribution of the OLS Estimators in Multiple Regression</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="hypothesis-tests-and-confidence-intervals-in-multiple-regression.html"><a href="hypothesis-tests-and-confidence-intervals-in-multiple-regression.html"><i class="fa fa-check"></i><b>7</b> Hypothesis Tests and Confidence intervals in Multiple Regression</a><ul>
+<li class="chapter" data-level="7.1" data-path="hypothesis-tests-and-confidence-intervals-for-a-single-coefficient.html"><a href="hypothesis-tests-and-confidence-intervals-for-a-single-coefficient.html"><i class="fa fa-check"></i><b>7.1</b> Hypothesis Tests and Confidence Intervals for a Single Coefficient</a></li>
+<li class="chapter" data-level="7.2" data-path="an-application-to-test-scores-and-the-student-teacher-ratio.html"><a href="an-application-to-test-scores-and-the-student-teacher-ratio.html"><i class="fa fa-check"></i><b>7.2</b> An Application to Test Scores and the Student-Teacher Ratio</a><ul>
+<li class="chapter" data-level="" data-path="an-application-to-test-scores-and-the-student-teacher-ratio.html"><a href="an-application-to-test-scores-and-the-student-teacher-ratio.html#another-augmentation-of-the-model"><i class="fa fa-check"></i>Another Augmentation of the Model</a></li>
+</ul></li>
+<li class="chapter" data-level="7.3" data-path="joint-hypothesis-testing-using-the-f-statistic.html"><a href="joint-hypothesis-testing-using-the-f-statistic.html"><i class="fa fa-check"></i><b>7.3</b> Joint Hypothesis Testing Using the <span class="math inline">\(F\)</span>-Statistic</a></li>
+<li class="chapter" data-level="7.4" data-path="confidence-sets-for-multiple-coefficients.html"><a href="confidence-sets-for-multiple-coefficients.html"><i class="fa fa-check"></i><b>7.4</b> Confidence Sets for Multiple Coefficients</a></li>
+<li class="chapter" data-level="7.5" data-path="model-specification-for-multiple-regression.html"><a href="model-specification-for-multiple-regression.html"><i class="fa fa-check"></i><b>7.5</b> Model Specification for Multiple Regression</a><ul>
+<li class="chapter" data-level="" data-path="model-specification-for-multiple-regression.html"><a href="model-specification-for-multiple-regression.html#model-specification-in-theory-and-in-practice"><i class="fa fa-check"></i>Model Specification in Theory and in Practice</a></li>
+</ul></li>
+<li class="chapter" data-level="7.6" data-path="analysis-of-the-test-score-data-set.html"><a href="analysis-of-the-test-score-data-set.html"><i class="fa fa-check"></i><b>7.6</b> Analysis of the Test Score Data Set</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="nonlinear-regression-functions.html"><a href="nonlinear-regression-functions.html"><i class="fa fa-check"></i><b>8</b> Nonlinear Regression Functions</a><ul>
+<li class="chapter" data-level="8.1" data-path="a-general-strategy-for-modeling-nonlinear-regression-functions.html"><a href="a-general-strategy-for-modeling-nonlinear-regression-functions.html"><i class="fa fa-check"></i><b>8.1</b> A General Strategy for Modeling Nonlinear Regression Functions</a></li>
+<li class="chapter" data-level="8.2" data-path="nonlinear-functions-of-a-single-independent-variable.html"><a href="nonlinear-functions-of-a-single-independent-variable.html"><i class="fa fa-check"></i><b>8.2</b> Nonlinear Functions of a Single Independent Variable</a><ul>
+<li class="chapter" data-level="" data-path="nonlinear-functions-of-a-single-independent-variable.html"><a href="nonlinear-functions-of-a-single-independent-variable.html#polynomials"><i class="fa fa-check"></i>Polynomials</a></li>
+<li class="chapter" data-level="" data-path="nonlinear-functions-of-a-single-independent-variable.html"><a href="nonlinear-functions-of-a-single-independent-variable.html#logarithms"><i class="fa fa-check"></i>Logarithms</a></li>
+</ul></li>
+<li class="chapter" data-level="8.3" data-path="interactions-between-independent-variables.html"><a href="interactions-between-independent-variables.html"><i class="fa fa-check"></i><b>8.3</b> Interactions Between Independent Variables</a></li>
+<li class="chapter" data-level="8.4" data-path="nonlinear-effects-on-test-scores-of-the-student-teacher-ratio.html"><a href="nonlinear-effects-on-test-scores-of-the-student-teacher-ratio.html"><i class="fa fa-check"></i><b>8.4</b> Nonlinear Effects on Test Scores of the Student-Teacher Ratio</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="assessing-studies-based-on-multiple-regression.html"><a href="assessing-studies-based-on-multiple-regression.html"><i class="fa fa-check"></i><b>9</b> Assessing Studies Based on Multiple Regression</a><ul>
+<li class="chapter" data-level="9.1" data-path="internal-and-external-validity.html"><a href="internal-and-external-validity.html"><i class="fa fa-check"></i><b>9.1</b> Internal and External Validity</a></li>
+<li class="chapter" data-level="9.2" data-path="threats-to-internal-validity-of-multiple-regression-analysis.html"><a href="threats-to-internal-validity-of-multiple-regression-analysis.html"><i class="fa fa-check"></i><b>9.2</b> Threats to Internal Validity of Multiple Regression Analysis</a></li>
+<li class="chapter" data-level="9.3" data-path="internal-and-external-validity-when-the-regression-is-used-for-forecasting.html"><a href="internal-and-external-validity-when-the-regression-is-used-for-forecasting.html"><i class="fa fa-check"></i><b>9.3</b> Internal and External Validity When the Regression is Used for Forecasting</a></li>
+<li class="chapter" data-level="9.4" data-path="example-test-scores-and-class-size.html"><a href="example-test-scores-and-class-size.html"><i class="fa fa-check"></i><b>9.4</b> Example: Test Scores and Class Size</a></li>
+</ul></li>
+<li class="chapter" data-level="10" data-path="regression-with-panel-data.html"><a href="regression-with-panel-data.html"><i class="fa fa-check"></i><b>10</b> Regression with Panel Data</a><ul>
+<li class="chapter" data-level="10.1" data-path="panel-data.html"><a href="panel-data.html"><i class="fa fa-check"></i><b>10.1</b> Panel Data</a></li>
+<li class="chapter" data-level="10.2" data-path="PDWTTP.html"><a href="PDWTTP.html"><i class="fa fa-check"></i><b>10.2</b> Panel Data with Two Time Periods: “Before and Afer” Comparisons</a></li>
+<li class="chapter" data-level="10.3" data-path="fixed-effects-regression.html"><a href="fixed-effects-regression.html"><i class="fa fa-check"></i><b>10.3</b> Fixed Effects Regression</a><ul>
+<li class="chapter" data-level="" data-path="fixed-effects-regression.html"><a href="fixed-effects-regression.html#estimation-and-inference"><i class="fa fa-check"></i>Estimation and Inference</a></li>
+<li class="chapter" data-level="" data-path="fixed-effects-regression.html"><a href="fixed-effects-regression.html#application-to-traffic-deaths"><i class="fa fa-check"></i>Application to Traffic Deaths</a></li>
+</ul></li>
+<li class="chapter" data-level="10.4" data-path="regression-with-time-fixed-effects.html"><a href="regression-with-time-fixed-effects.html"><i class="fa fa-check"></i><b>10.4</b> Regression with Time Fixed Effects</a></li>
+<li class="chapter" data-level="10.5" data-path="the-fixed-effects-regression-assumptions-and-standard-errors-for-fixed-effects-regression.html"><a href="the-fixed-effects-regression-assumptions-and-standard-errors-for-fixed-effects-regression.html"><i class="fa fa-check"></i><b>10.5</b> The Fixed Effects Regression Assumptions and Standard Errors for Fixed Effects Regression</a></li>
+<li class="chapter" data-level="10.6" data-path="drunk-driving-laws-and-traffic-deaths.html"><a href="drunk-driving-laws-and-traffic-deaths.html"><i class="fa fa-check"></i><b>10.6</b> Drunk Driving Laws and Traffic Deaths</a></li>
+</ul></li>
+<li class="chapter" data-level="11" data-path="regression-with-a-binary-dependent-variable.html"><a href="regression-with-a-binary-dependent-variable.html"><i class="fa fa-check"></i><b>11</b> Regression with a Binary Dependent Variable</a><ul>
+<li class="chapter" data-level="11.1" data-path="binary-dependent-variables-and-the-linear-probability-model.html"><a href="binary-dependent-variables-and-the-linear-probability-model.html"><i class="fa fa-check"></i><b>11.1</b> Binary Dependent Variables and the Linear Probability Model</a></li>
+<li class="chapter" data-level="11.2" data-path="probit-and-logit-regression.html"><a href="probit-and-logit-regression.html"><i class="fa fa-check"></i><b>11.2</b> Probit and Logit Regression</a><ul>
+<li class="chapter" data-level="" data-path="probit-and-logit-regression.html"><a href="probit-and-logit-regression.html#probit-regression"><i class="fa fa-check"></i>Probit Regression</a></li>
+<li class="chapter" data-level="" data-path="probit-and-logit-regression.html"><a href="probit-and-logit-regression.html#logit-regression"><i class="fa fa-check"></i>Logit Regression</a></li>
+</ul></li>
+<li class="chapter" data-level="11.3" data-path="estimation-and-inference-in-the-logit-and-probit-models.html"><a href="estimation-and-inference-in-the-logit-and-probit-models.html"><i class="fa fa-check"></i><b>11.3</b> Estimation and Inference in the Logit and Probit Models</a></li>
+<li class="chapter" data-level="11.4" data-path="application-to-the-boston-hmda-data.html"><a href="application-to-the-boston-hmda-data.html"><i class="fa fa-check"></i><b>11.4</b> Application to the Boston HMDA Data</a></li>
+</ul></li>
+<li class="chapter" data-level="12" data-path="instrumental-variables-regression.html"><a href="instrumental-variables-regression.html"><i class="fa fa-check"></i><b>12</b> Instrumental Variables Regression</a><ul>
+<li class="chapter" data-level="12.1" data-path="TIVEWASRAASI.html"><a href="TIVEWASRAASI.html"><i class="fa fa-check"></i><b>12.1</b> The IV Estimator with a Single Regressor and a Single Instrument</a></li>
+<li class="chapter" data-level="12.2" data-path="TGIVRM.html"><a href="TGIVRM.html"><i class="fa fa-check"></i><b>12.2</b> The General IV Regression Model</a></li>
+<li class="chapter" data-level="12.3" data-path="checking-instrument-validity.html"><a href="checking-instrument-validity.html"><i class="fa fa-check"></i><b>12.3</b> Checking Instrument Validity</a></li>
+<li class="chapter" data-level="12.4" data-path="application-to-the-demand-for-cigarettes-2.html"><a href="application-to-the-demand-for-cigarettes-2.html"><i class="fa fa-check"></i><b>12.4</b> Application to the Demand for Cigarettes</a></li>
+<li class="chapter" data-level="12.5" data-path="where-do-valid-instruments-come-from.html"><a href="where-do-valid-instruments-come-from.html"><i class="fa fa-check"></i><b>12.5</b> Where Do Valid Instruments Come From?</a></li>
+</ul></li>
+<li class="chapter" data-level="13" data-path="experiments-and-quasi-experiments.html"><a href="experiments-and-quasi-experiments.html"><i class="fa fa-check"></i><b>13</b> Experiments and Quasi-Experiments</a><ul>
+<li class="chapter" data-level="13.1" data-path="potential-outcomes-causal-effects-and-idealized-experiments.html"><a href="potential-outcomes-causal-effects-and-idealized-experiments.html"><i class="fa fa-check"></i><b>13.1</b> Potential Outcomes, Causal Effects and Idealized Experiments</a></li>
+<li class="chapter" data-level="13.2" data-path="threats-to-validity-of-experiments.html"><a href="threats-to-validity-of-experiments.html"><i class="fa fa-check"></i><b>13.2</b> Threats to Validity of Experiments</a></li>
+<li class="chapter" data-level="13.3" data-path="experimental-estimates-of-the-effect-of-class-size-reductions.html"><a href="experimental-estimates-of-the-effect-of-class-size-reductions.html"><i class="fa fa-check"></i><b>13.3</b> Experimental Estimates of the Effect of Class Size Reductions</a><ul>
+<li class="chapter" data-level="" data-path="experimental-estimates-of-the-effect-of-class-size-reductions.html"><a href="experimental-estimates-of-the-effect-of-class-size-reductions.html#experimental-design-and-the-data-set"><i class="fa fa-check"></i>Experimental Design and the Data Set</a></li>
+<li class="chapter" data-level="" data-path="experimental-estimates-of-the-effect-of-class-size-reductions.html"><a href="experimental-estimates-of-the-effect-of-class-size-reductions.html#analysis-of-the-star-data"><i class="fa fa-check"></i>Analysis of the STAR Data</a></li>
+</ul></li>
+<li class="chapter" data-level="13.4" data-path="quasi-experiments.html"><a href="quasi-experiments.html"><i class="fa fa-check"></i><b>13.4</b> Quasi Experiments</a><ul>
+<li class="chapter" data-level="" data-path="quasi-experiments.html"><a href="quasi-experiments.html#the-differences-in-differences-estimator"><i class="fa fa-check"></i>The Differences-in-Differences Estimator</a></li>
+<li class="chapter" data-level="" data-path="quasi-experiments.html"><a href="quasi-experiments.html#regression-discontinuity-estimators"><i class="fa fa-check"></i>Regression Discontinuity Estimators</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="14" data-path="introduction-to-time-series-regression-and-forecasting.html"><a href="introduction-to-time-series-regression-and-forecasting.html"><i class="fa fa-check"></i><b>14</b> Introduction to Time Series Regression and Forecasting</a><ul>
+<li class="chapter" data-level="14.1" data-path="using-regression-models-for-forecasting.html"><a href="using-regression-models-for-forecasting.html"><i class="fa fa-check"></i><b>14.1</b> Using Regression Models for Forecasting</a></li>
+<li class="chapter" data-level="14.2" data-path="time-series-data-and-serial-correlation.html"><a href="time-series-data-and-serial-correlation.html"><i class="fa fa-check"></i><b>14.2</b> Time Series Data and Serial Correlation</a><ul>
+<li class="chapter" data-level="" data-path="time-series-data-and-serial-correlation.html"><a href="time-series-data-and-serial-correlation.html#notation-lags-differences-logarithms-and-growth-rates"><i class="fa fa-check"></i>Notation, Lags, Differences, Logarithms and Growth Rates</a></li>
+</ul></li>
+<li class="chapter" data-level="14.3" data-path="autoregressions.html"><a href="autoregressions.html"><i class="fa fa-check"></i><b>14.3</b> Autoregressions</a><ul>
+<li><a href="autoregressions.html#the-pth-order-autoregressive-model">The <span class="math inline">\(p^{th}\)</span>-Order Autoregressive Model</a></li>
+</ul></li>
+<li class="chapter" data-level="14.4" data-path="can-you-beat-the-market-part-i.html"><a href="can-you-beat-the-market-part-i.html"><i class="fa fa-check"></i><b>14.4</b> Can You Beat the Market? (Part I)</a></li>
+<li class="chapter" data-level="14.5" data-path="additional-predictors-and-the-adl-model.html"><a href="additional-predictors-and-the-adl-model.html"><i class="fa fa-check"></i><b>14.5</b> Additional Predictors and The ADL Model</a><ul>
+<li class="chapter" data-level="" data-path="additional-predictors-and-the-adl-model.html"><a href="additional-predictors-and-the-adl-model.html#forecast-uncertainty-and-forecast-intervals"><i class="fa fa-check"></i>Forecast Uncertainty and Forecast Intervals</a></li>
+</ul></li>
+<li class="chapter" data-level="14.6" data-path="lag-length-selection-using-information-criteria.html"><a href="lag-length-selection-using-information-criteria.html"><i class="fa fa-check"></i><b>14.6</b> Lag Length Selection Using Information Criteria</a></li>
+<li class="chapter" data-level="14.7" data-path="nonstationarity-i-trends.html"><a href="nonstationarity-i-trends.html"><i class="fa fa-check"></i><b>14.7</b> Nonstationarity I: Trends</a></li>
+<li class="chapter" data-level="14.8" data-path="nonstationarity-ii-breaks.html"><a href="nonstationarity-ii-breaks.html"><i class="fa fa-check"></i><b>14.8</b> Nonstationarity II: Breaks</a></li>
+<li class="chapter" data-level="14.9" data-path="can-you-beat-the-market-part-ii.html"><a href="can-you-beat-the-market-part-ii.html"><i class="fa fa-check"></i><b>14.9</b> Can You Beat the Market? Part II</a></li>
+</ul></li>
+<li class="chapter" data-level="15" data-path="estimation-of-dynamic-causal-effects.html"><a href="estimation-of-dynamic-causal-effects.html"><i class="fa fa-check"></i><b>15</b> Estimation of Dynamic Causal Effects</a><ul>
+<li class="chapter" data-level="15.1" data-path="the-orange-juice-data.html"><a href="the-orange-juice-data.html"><i class="fa fa-check"></i><b>15.1</b> The Orange Juice Data</a></li>
+<li class="chapter" data-level="15.2" data-path="dynamic-causal-effects.html"><a href="dynamic-causal-effects.html"><i class="fa fa-check"></i><b>15.2</b> Dynamic Causal Effects</a></li>
+<li class="chapter" data-level="15.3" data-path="dynamic-multipliers-and-cumulative-dynamic-multipliers.html"><a href="dynamic-multipliers-and-cumulative-dynamic-multipliers.html"><i class="fa fa-check"></i><b>15.3</b> Dynamic Multipliers and Cumulative Dynamic Multipliers</a></li>
+<li class="chapter" data-level="15.4" data-path="hac-standard-errors.html"><a href="hac-standard-errors.html"><i class="fa fa-check"></i><b>15.4</b> HAC Standard Errors</a></li>
+<li class="chapter" data-level="15.5" data-path="estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html"><a href="estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html"><i class="fa fa-check"></i><b>15.5</b> Estimation of Dynamic Causal Effects with Strictly Exogeneous Regressors</a></li>
+<li class="chapter" data-level="15.6" data-path="orange-juice-prices-and-cold-weather.html"><a href="orange-juice-prices-and-cold-weather.html"><i class="fa fa-check"></i><b>15.6</b> Orange Juice Prices and Cold Weather</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Using R for Introduction to Econometrics</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div class = rmdreview>
+This book is in <b>Open Review</b>. We want your feedback to make the book better for you and other students. You may annotate some text by <span style="background-color: #3297FD; color: white">selecting it with the cursor</span> and then click the <i class="h-icon-annotate"></i> on the pop-up menu. You can also see the annotations of others: click the <i class="h-icon-chevron-left"></i> in the upper right hand corner of the page <i class="fa fa-arrow-circle-right  fa-rotate-315" aria-hidden="true"></i>
+</div>
+<div id="hypothesis-tests-concerning-the-population-mean" class="section level2">
+<h2><span class="header-section-number">3.3</span> Hypothesis Tests Concerning the Population Mean</h2>
+<p>In this section we briefly review concepts in hypothesis testing and discuss how to conduct hypothesis tests in R. We focus on drawing inference about an unkown population mean.</p>
+<div id="about-hypotheses-and-hypothesis-testing" class="section level4 unnumbered">
+<h4>About Hypotheses and Hypothesis Testing</h4>
+<p>In a significance test we want to exploit the information contained in a random sample as evidence in favour or against a hypothesis. Essentially, hypotheses are simple question that can be answered by ‘yes’ or ‘no’. When conducting a hypothesis test we always deal with two different hypotheses:</p>
+<ul>
+<li><p>The <font color="#004A93"><strong>null hypothesis</strong></font>, denoted <span class="math inline">\(H_0\)</span> is the hypothesis we are interested in testing</p></li>
+<li><p>The <font color="#004A93"><strong>alternative hypothesis</strong></font>, denoted <span class="math inline">\(H_1\)</span>, is the hypothesis that holds if the null hypothesis is false</p></li>
+</ul>
+<p>The null hypothesis that the population mean of <span class="math inline">\(Y\)</span> equals the value <span class="math inline">\(\mu_{Y,0}\)</span> is written down as</p>
+<p><span class="math display">\[ H_0: E(Y) = \mu_{Y,0}. \]</span></p>
+<p>The alternative hypothesis states what holds if the null hypothesis is false. Often the alternative hypothesis chosen is the most general one,</p>
+<p><span class="math display">\[ H_1: E(Y) \neq \mu_{Y,0}, \]</span></p>
+<p>meaning that <span class="math inline">\(E(Y)\)</span> may be anything else but the value as the null hypothesis. This is called a two-sided alternative.</p>
+<p>For brevity, we will only consider the case of a two-sided alternative in the subsequent sections of this chapter.</p>
+</div>
+<div id="p-value" class="section level3 unnumbered">
+<h3><span class="math inline">\(p\)</span>-Value</h3>
+<p>Assume that the null hypothesis is <em>true</em>. The <span class="math inline">\(p\)</span>-value is the probability of drawing data and observing a corresponding test statistics that is at least as adverse to what is stated under the null hypothesis as the test statistic actually computed using the sample data.</p>
+<p>In context of population mean and sample mean, this definition can be stated mathematically in the following way:</p>
+<span class="math display" id="eq:pvalue">\[\begin{equation}
+p \text{-value} = P_{H_0}\left[ \lvert \overline{Y} - \mu_{Y,0} \rvert &gt; \lvert \overline{Y}^{act} - \mu_{Y,0} \rvert \right] \tag{3.2}
+\end{equation}\]</span>
+<p>In <a href="hypothesis-tests-concerning-the-population-mean.html#eq:pvalue">(3.2)</a>, <span class="math inline">\(\overline{Y}^{act}\)</span> is the acutally computed mean of the random sample.<br> Visualized, the <span class="math inline">\(p\)</span>-value is the area in the part of tails of the distribution of <span class="math inline">\(\overline{Y}\)</span> that lies beyond</p>
+<p><span class="math display">\[ \mu_{Y,0} \pm \lvert \overline{Y}^{act} - \mu_{Y,0} \rvert. \]</span></p>
+<p>Consequently, in order to compute the <span class="math inline">\(p\)</span>-value as in <a href="hypothesis-tests-concerning-the-population-mean.html#eq:pvalue">(3.2)</a>, knowledge about the sampling distribution of <span class="math inline">\(\overline{Y}\)</span> when the null hypothesis is true is required. However in most cases the sampling distribution of <span class="math inline">\(\overline{Y}\)</span> is unkown. Furtunately, due to the large-sample normal approximation (see chapter 3) we know that under the null hypothesis</p>
+<p><span class="math display">\[ \overline{Y} \sim N(\mu_{Y,0}, \, \sigma^2_{\overline{Y}}) \ \ , \ \ \sigma^2_{\overline{Y}} = \frac{\sigma_Y^2}{n} \]</span></p>
+<p>and thus</p>
+<p><span class="math display">\[ \frac{\overline{Y} - \mu_{Y,0}}{\sigma_Y/\sqrt{n}} \sim N(0,1). \]</span></p>
+<p>So in large samples, the <span class="math inline">\(p\)</span>-value can be computed <em>without</em> knowledge about the sampling distribution of <span class="math inline">\(\overline{Y}\)</span>.</p>
+</div>
+<div id="calculating-the-p-value-when-sigma_y-is-known" class="section level3 unnumbered">
+<h3>Calculating the <span class="math inline">\(p\)</span>-Value When <span class="math inline">\(\sigma_Y\)</span> Is Known</h3>
+<p>For now, let us assume that <span class="math inline">\(\sigma_{\overline{Y}}\)</span> is known. Then we can rewrite <a href="hypothesis-tests-concerning-the-population-mean.html#eq:pvalue">(3.2)</a> as</p>
+<span class="math display" id="eq:pvaluenorm1">\[\begin{align}
+p \text{-value} =&amp; \, P_{H_0}\left[ \left\lvert \frac{\overline{Y} - \mu_{Y,0}}{\sigma_{\overline{Y}}} \right\rvert &gt; \left\lvert \frac{\overline{Y}^{act} - \mu_{Y,0}}{\sigma_{\overline{Y}}} \right\rvert \right] \\
+=&amp; \, 2 \cdot \Phi \left[ - \left\lvert \frac{\overline{Y}^{act} - \mu_{Y,0}}{\sigma_{\overline{Y}}}  \right\rvert\right].  \tag{3.3}
+\end{align}\]</span>
+<p>so the <span class="math inline">\(p\)</span>-value can be seen as the area in the tails of the <span class="math inline">\(N(0,1)\)</span> distribution that lies beyond</p>
+<span class="math display" id="eq:pvaluenorm2">\[\begin{equation}
+\pm \left\lvert \frac{\overline{Y}^{act} - \mu_{Y,0}}{\sigma_{\overline{Y}}} \right\rvert \tag{3.4}
+\end{equation}\]</span>
+<p>Whew, that was a lot of theory. Now we use R to visualize what is stated in <a href="hypothesis-tests-concerning-the-population-mean.html#eq:pvaluenorm1">(3.3)</a> and <a href="hypothesis-tests-concerning-the-population-mean.html#eq:pvaluenorm2">(3.4)</a>. The next code chunck replicates figure 3.1 of the book.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># plot the standard normal density on the domain [-4,4]</span>
+<span class="kw">curve</span>(<span class="kw">dnorm</span>(x),
+      <span class="dt">xlim =</span> <span class="kw">c</span>(<span class="op">-</span><span class="dv">4</span>,<span class="dv">4</span>),
+      <span class="dt">main =</span> <span class="st">&#39;Calculating a p-value&#39;</span>,
+      <span class="dt">yaxs =</span> <span class="st">&#39;i&#39;</span>,
+      <span class="dt">xlab =</span> <span class="st">&#39;z&#39;</span>,
+      <span class="dt">ylab =</span> <span class="st">&#39;&#39;</span>,
+      <span class="dt">lwd =</span> <span class="dv">2</span>,
+      <span class="dt">axes =</span> <span class="st">&#39;F&#39;</span>
+      )
+
+<span class="co"># add x-axis</span>
+<span class="kw">axis</span>(<span class="dv">1</span>, 
+     <span class="dt">at =</span> <span class="kw">c</span>(<span class="op">-</span><span class="fl">1.5</span>,<span class="dv">0</span>,<span class="fl">1.5</span>), 
+     <span class="dt">padj =</span> <span class="fl">0.75</span>,
+     <span class="dt">labels =</span> <span class="kw">c</span>(<span class="kw">expression</span>(<span class="op">-</span><span class="kw">frac</span>(<span class="kw">bar</span>(Y)<span class="op">^</span><span class="st">&quot;act&quot;</span><span class="op">~-</span><span class="er">~</span><span class="kw">bar</span>(mu)[Y,<span class="dv">0</span>],sigma[<span class="kw">bar</span>(Y)])),
+                <span class="dv">0</span>,
+                <span class="kw">expression</span>(<span class="kw">frac</span>(<span class="kw">bar</span>(Y)<span class="op">^</span><span class="st">&quot;act&quot;</span><span class="op">~-</span><span class="er">~</span><span class="kw">bar</span>(mu)[Y,<span class="dv">0</span>],sigma[<span class="kw">bar</span>(Y)])))
+     )
+
+<span class="co"># shade p-value/2 region in left tail</span>
+<span class="kw">polygon</span>(<span class="dt">x =</span> <span class="kw">c</span>(<span class="op">-</span><span class="dv">6</span>, <span class="kw">seq</span>(<span class="op">-</span><span class="dv">6</span>,<span class="op">-</span><span class="fl">1.5</span>,<span class="fl">0.01</span>),<span class="op">-</span><span class="fl">1.5</span>),
+        <span class="dt">y =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="kw">dnorm</span>(<span class="kw">seq</span>(<span class="op">-</span><span class="dv">6</span>,<span class="op">-</span><span class="fl">1.5</span>,<span class="fl">0.01</span>)),<span class="dv">0</span>), 
+        <span class="dt">col =</span> <span class="st">&#39;steelblue&#39;</span>
+        )
+
+## shade p-value/2 region in right tail
+<span class="kw">polygon</span>(<span class="dt">x =</span> <span class="kw">c</span>(<span class="fl">1.5</span>, <span class="kw">seq</span>(<span class="fl">1.5</span>, <span class="dv">6</span>, <span class="fl">0.01</span>), <span class="dv">6</span>),
+        <span class="dt">y =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="kw">dnorm</span>(<span class="kw">seq</span>(<span class="fl">1.5</span>, <span class="dv">6</span>, <span class="fl">0.01</span>)), <span class="dv">0</span>), 
+        <span class="dt">col =</span> <span class="st">&#39;steelblue&#39;</span>
+        )</code></pre></div>
+<p><img src="URFITE_files/figure-html/unnamed-chunk-50-1.png" width="672" /></p>
+</div>
+<div id="sample-variance-sample-standard-deviation-and-standard-error" class="section level3 unnumbered">
+<h3>Sample Variance, Sample Standard Deviation and Standard Error</h3>
+<p>If <span class="math inline">\(\sigma^2_Y\)</span> is unknown, it must be estimated. This can be done efficiently using the sample variance</p>
+<span class="math display">\[\begin{equation}
+s_y^2 = \frac{1}{n-1} \sum_{i=1}^n (Y_i - \overline{Y})^2.
+\end{equation}\]</span>
+<p>Furthermore</p>
+<span class="math display">\[\begin{equation}
+s_y = \sqrt{\frac{1}{n-1} \sum_{i=1}^n (Y_i - \overline{Y})^2}.
+\end{equation}\]</span>
+<p>is a suitable estimator for the standard deviation of <span class="math inline">\(Y\)</span>. In R, <span class="math inline">\(s_y\)</span> is implemented in the function <code>sd()</code>, see <code>?sd</code>.</p>
+<p>Using R we can get a notion that <span class="math inline">\(s_y\)</span> is a consistent estimator for <span class="math inline">\(\sigma_Y\)</span>, that is</p>
+<p><span class="math display">\[ s_Y \overset{p}{\longrightarrow} \sigma_Y. \]</span></p>
+<p>The idea here is to generate a large number of samples <span class="math inline">\(Y_1,\dots,Y_n\)</span> where <span class="math inline">\(Y\sim N(10,10)\)</span>, estimate <span class="math inline">\(\sigma_Y\)</span> using <span class="math inline">\(s_y\)</span> and investigate how the distribution of <span class="math inline">\(s_Y\)</span> changes as <span class="math inline">\(n\)</span> grows.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># vector of sample sizes</span>
+n &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">10000</span>, <span class="dv">5000</span>, <span class="dv">2000</span>, <span class="dv">1000</span>, <span class="dv">500</span>)
+
+<span class="co"># sample observations, estimate using sd() and plot estimated distributions</span>
+s2_y &lt;-<span class="st"> </span><span class="kw">replicate</span>(<span class="dt">n =</span> <span class="dv">10000</span>, <span class="dt">expr =</span> <span class="kw">sd</span>(<span class="kw">rnorm</span>(n[<span class="dv">1</span>], <span class="dv">10</span>, <span class="dv">10</span>)))
+<span class="kw">plot</span>(<span class="kw">density</span>(s2_y),
+     <span class="dt">main =</span> <span class="kw">expression</span>(<span class="st">&#39;Sampling Distributions of&#39;</span> <span class="op">~</span><span class="st"> </span>s[y]),
+     <span class="dt">xlab =</span> <span class="kw">expression</span>(s[y]),
+     <span class="dt">lwd =</span> <span class="dv">2</span>
+     )
+
+<span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">2</span><span class="op">:</span><span class="kw">length</span>(n)) {
+  s2_y &lt;-<span class="st"> </span><span class="kw">replicate</span>(<span class="dt">n =</span> <span class="dv">10000</span>, <span class="dt">expr =</span> <span class="kw">sd</span>(<span class="kw">rnorm</span>(n[i],<span class="dv">10</span>,<span class="dv">10</span>)))
+  <span class="kw">lines</span>(<span class="kw">density</span>(s2_y), 
+        <span class="dt">col=</span>i, 
+        <span class="dt">lwd=</span><span class="dv">2</span>)
+}
+
+<span class="co"># add a legend</span>
+<span class="kw">legend</span>(<span class="st">&quot;topleft&quot;</span>,
+       <span class="dt">legend =</span> <span class="kw">c</span>(<span class="kw">expression</span>(n<span class="op">==</span><span class="dv">10000</span>),
+                  <span class="kw">expression</span>(n<span class="op">==</span><span class="dv">5000</span>),
+                  <span class="kw">expression</span>(n<span class="op">==</span><span class="dv">2000</span>),
+                  <span class="kw">expression</span>(n<span class="op">==</span><span class="dv">1000</span>),
+                  <span class="kw">expression</span>(n<span class="op">==</span><span class="dv">500</span>)
+       ), 
+       <span class="dt">col =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">5</span>,
+       <span class="dt">lwd =</span> <span class="dv">2</span>
+)</code></pre></div>
+<p><img src="URFITE_files/figure-html/unnamed-chunk-51-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>The plot shows that the distribution of <span class="math inline">\(s_Y\)</span> tightens around the true value <span class="math inline">\(\sigma_Y = 10\)</span> as <span class="math inline">\(n\)</span> increases.</p>
+<p>The function that estimates the standard deviation of an estimator is called the <em>standard error of the estimator</em>. Key Concept 3.4 summarizes the terminology in the context of the sample mean.</p>
+<div class="keyconcept">
+<h3 class="right">
+Key Concept 3.4
+</h3>
+<h3 class="left">
+The Standard Error of <span class="math inline">\(\overline{Y}\)</span>
+</h3>
+<p>Take an i.i.d. sample <span class="math inline">\(Y_1, \dots, Y_n\)</span>. The mean of <span class="math inline">\(Y\)</span> can be consistently estimated using <span class="math inline">\(\overline{Y}\)</span>, the sample mean of the <span class="math inline">\(Y_i\)</span>. Since <span class="math inline">\(\overline{Y}\)</span> is a random variable, it has a sampling distribution with variance <span class="math inline">\(\frac{\sigma_Y^2}{n}\)</span>.</p>
+<p>The standard error of <span class="math inline">\(\overline{Y}\)</span>, denoted <span class="math inline">\(SE(\overline{Y})\)</span> is an estimator of the standard deviation <span class="math inline">\(\overline{Y}\)</span>:</p>
+<p><span class="math display">\[ SE(\overline{Y}) = \hat\sigma_{\overline{Y}} = \frac{s_Y}{\sqrt{n}} \]</span></p>
+<p>The caret (^) over <span class="math inline">\(\sigma\)</span> indicates that <span class="math inline">\(\hat\sigma_{\overline{Y}}\)</span> is an estimator for <span class="math inline">\(\sigma_{\overline{Y}}\)</span>.</p>
+</div>
+<p>As an example to underpin Key Concept 3.4, consider a sample of <span class="math inline">\(n=100\)</span> i.i.d. observations of the bernoulli distributed variable <span class="math inline">\(Y\)</span> with success probability <span class="math inline">\(p=0.1\)</span> and thus <span class="math inline">\(E(Y)=p=0.1\)</span> and <span class="math inline">\(\text{Var}(Y)=p(1-p)\)</span>. <span class="math inline">\(E(Y)\)</span> can be estimated by <span class="math inline">\(\overline{Y}\)</span> which then has variance</p>
+<p><span class="math display">\[ \sigma^2_{\overline{Y}} = p(1-p)/n = 0.0009 \]</span></p>
+<p>and standard deviation</p>
+<p><span class="math display">\[ \sigma_{\overline{Y}} = \sqrt{p(1-p)/n} = 0.03. \]</span></p>
+<p>In this case the standard error of <span class="math inline">\(\overline{Y}\)</span> is given as</p>
+<p><span class="math display">\[ SE(\overline{Y}) = \sqrt{\overline{Y}(1-\overline{Y})/n} \]</span></p>
+<p>Let verify whether <span class="math inline">\(\overline{Y}\)</span> and <span class="math inline">\(SE(\overline{Y})\)</span> estimate the respective true values on average.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># draw 10000 samples of size 100 and estimate the mean of Y and</span>
+<span class="co"># estimate the standard error of the sample mean</span>
+
+mean_estimates &lt;-<span class="st"> </span><span class="kw">numeric</span>(<span class="dv">10000</span>)
+se_estimates &lt;-<span class="st"> </span><span class="kw">numeric</span>(<span class="dv">10000</span>)
+
+<span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">10000</span>) {
+  s &lt;-<span class="st"> </span><span class="kw">sample</span>(<span class="dv">0</span><span class="op">:</span><span class="dv">1</span>, 
+              <span class="dt">size =</span> <span class="dv">100</span>,  
+              <span class="dt">prob =</span> <span class="kw">c</span>(<span class="fl">0.9</span>, <span class="fl">0.1</span>),
+              <span class="dt">replace =</span> T
+              )
+  mean_estimates[i] &lt;-<span class="st"> </span><span class="kw">mean</span>(s)
+  se_estimates[i] &lt;-<span class="st"> </span><span class="kw">sqrt</span>(<span class="kw">mean</span>(s)<span class="op">*</span>(<span class="dv">1</span><span class="op">-</span><span class="kw">mean</span>(s))<span class="op">/</span><span class="dv">100</span>)
+}
+
+<span class="kw">mean</span>(mean_estimates)</code></pre></div>
+<pre><code>## [1] 0.099693</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">mean</span>(se_estimates)</code></pre></div>
+<pre><code>## [1] 0.02953467</code></pre>
+<p>Both estimators seem to be unbiased for the true parameters.</p>
+</div>
+<div id="calculating-the-p-value-when-sigma_y-is-unknown" class="section level3 unnumbered">
+<h3>Calculating the <span class="math inline">\(p\)</span>-value When <span class="math inline">\(\sigma_Y\)</span> is Unknown</h3>
+<p>When <span class="math inline">\(\sigma_Y\)</span> is unkown, the <span class="math inline">\(p\)</span>-value for a hypothesis test about <span class="math inline">\(\mu_Y\)</span> using <span class="math inline">\(\overline{Y}\)</span> can be computed by replacing <span class="math inline">\(\sigma_{\overline{Y}}\)</span> in <a href="hypothesis-tests-concerning-the-population-mean.html#eq:pvaluenorm1">(3.3)</a> by the standard error <span class="math inline">\(SE(\overline{Y}) = \hat\sigma_Y\)</span>. Then,</p>
+<p><span class="math display">\[ p\text{-value} = 2\cdot\Phi\left(-\left\lvert \frac{\overline{Y}^{act}-\mu_{Y,0}}{SE(\overline{Y})} \right\rvert \right). \]</span></p>
+<p>This is easily done in R:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># sample and estimate, compute standard error and make a hypothesis</span>
+samplemean_act &lt;-<span class="st"> </span><span class="kw">mean</span>(
+  <span class="kw">sample</span>(<span class="dv">0</span><span class="op">:</span><span class="dv">1</span>, 
+         <span class="dt">prob =</span> <span class="kw">c</span>(<span class="fl">0.9</span>,<span class="fl">0.1</span>), 
+         <span class="dt">replace =</span> T, 
+         <span class="dt">size =</span> <span class="dv">100</span>
+         )
+  )
+
+SE_samplemean &lt;-<span class="st"> </span><span class="kw">sqrt</span>(samplemean_act <span class="op">*</span><span class="st"> </span>(<span class="dv">1</span><span class="op">-</span>samplemean_act)<span class="op">/</span><span class="dv">100</span>)
+
+mean_h0 &lt;-<span class="st"> </span><span class="fl">0.1</span> <span class="co">#true null hypothesis</span>
+
+<span class="co"># compute the pvalue</span>
+pvalue &lt;-<span class="st"> </span><span class="dv">2</span> <span class="op">*</span><span class="st"> </span><span class="kw">pnorm</span>(<span class="op">-</span><span class="kw">abs</span>(samplemean_act<span class="op">-</span>mean_h0)<span class="op">/</span>SE_samplemean)
+pvalue</code></pre></div>
+<pre><code>## [1] 0.5382527</code></pre>
+</div>
+<div id="the-t-statistic" class="section level3 unnumbered">
+<h3>The <span class="math inline">\(t\)</span>-statistic</h3>
+<p>In hypothesis testing, the standardized sample average</p>
+<span class="math display" id="eq:tstat">\[\begin{equation}
+t = \frac{\overline{Y} - \mu_{Y,0}}{SE(\overline{Y})} \tag{3.5}
+\end{equation}\]</span>
+<p>is called <span class="math inline">\(t\)</span>-statistic. This <span class="math inline">\(t\)</span>-statistic has an important role when testing hypothesis about <span class="math inline">\(\mu_Y\)</span>. It is a prominent example of a test statistic.</p>
+<p>Implicitly, we already have computed a <span class="math inline">\(t\)</span>-statistic for <span class="math inline">\(\overline{Y}\)</span> in the previous code chunk.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># compute a t-statistic for the sample mean</span>
+tstatistic &lt;-<span class="st"> </span>(samplemean_act <span class="op">-</span><span class="st"> </span>mean_h0) <span class="op">/</span><span class="st"> </span>SE_samplemean
+tstatistic</code></pre></div>
+<pre><code>## [1] 0.6154575</code></pre>
+<p>Using R we can show that if <span class="math inline">\(\mu_{Y,0}\)</span> equals the true value, that is the null hypothesis is true, <a href="hypothesis-tests-concerning-the-population-mean.html#eq:tstat">(3.5)</a> is approximately distributed <span class="math inline">\(N(0,1)\)</span> when <span class="math inline">\(n\)</span> is large.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># initialize empty vector for t-statistics</span>
+tstatistics &lt;-<span class="st"> </span><span class="kw">numeric</span>(<span class="dv">10000</span>)
+
+<span class="co"># set sample size</span>
+n &lt;-<span class="st"> </span><span class="dv">300</span>
+
+<span class="co"># simulate 10000 t-statistics</span>
+<span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">10000</span>) {
+  s &lt;-<span class="st"> </span><span class="kw">sample</span>(<span class="dv">0</span><span class="op">:</span><span class="dv">1</span>, 
+              <span class="dt">size =</span> n,  
+              <span class="dt">prob =</span> <span class="kw">c</span>(<span class="fl">0.9</span>, <span class="fl">0.1</span>),
+              <span class="dt">replace =</span> T
+              )
+  tstatistics[i] &lt;-<span class="st"> </span>(<span class="kw">mean</span>(s)<span class="op">-</span><span class="fl">0.1</span>)<span class="op">/</span>(<span class="kw">sqrt</span>(<span class="kw">mean</span>(s)<span class="op">*</span>(<span class="dv">1</span><span class="op">-</span><span class="kw">mean</span>(s))<span class="op">/</span>n))
+}
+
+<span class="co"># plot density and compare to N(0,1) density</span>
+<span class="kw">plot</span>(<span class="kw">density</span>(tstatistics),
+     <span class="dt">xlab =</span> <span class="st">&#39;t-statistic&#39;</span>,
+     <span class="dt">main =</span> <span class="st">&#39;Distribution of the t-statistic when n=300&#39;</span>,
+     <span class="dt">lwd =</span> <span class="dv">2</span>,
+     <span class="dt">xlim =</span> <span class="kw">c</span>(<span class="op">-</span><span class="dv">4</span>,<span class="dv">4</span>),
+     <span class="dt">col =</span> <span class="st">&#39;steelblue&#39;</span>
+     )
+
+<span class="co"># N(0,1) density (dashed)</span>
+<span class="kw">curve</span>(<span class="kw">dnorm</span>(x), 
+      <span class="dt">add =</span> T, 
+      <span class="dt">lty =</span> <span class="dv">2</span>, 
+      <span class="dt">lwd=</span> <span class="dv">2</span>
+      )</code></pre></div>
+<p><img src="URFITE_files/figure-html/unnamed-chunk-55-1.png" width="672" /></p>
+<p>Judging from the plot, the normal approximation works reasonably well for the chosen sample size. This normal approximation has already been used in the definition of the <span class="math inline">\(p\)</span>-value, see <a href="hypothesis-tests-concerning-the-population-mean.html#eq:tstat">(3.5)</a>.</p>
+</div>
+<div id="hypothesis-testing-with-a-prespecified-significance-level" class="section level3 unnumbered">
+<h3>Hypothesis Testing with a Prespecified Significance Level</h3>
+<div class="keyconcept">
+<h3 class="right">
+Key Concept 3.5
+</h3>
+<h3 class="left">
+The Terminology of Hypothesis Testing
+</h3>
+<p>In hypothesis testing, two types of mistakes are possible:</p>
+<ol style="list-style-type: decimal">
+<li><p>The null hypothesis <em>is</em> rejected although it is true (<span class="math inline">\(\alpha\)</span>-error / type-I-error)</p></li>
+<li><p>The null hypothesis <em>is not</em> rejected although it is false (<span class="math inline">\(\beta\)</span>-error / type-II-error)</p></li>
+</ol>
+<p>The <font color="#004A93"><strong>significance level</strong></font> of the test is the probability to commit a type-I-error we are willing to accept in advance. E.g. using a prespecified significance level of <span class="math inline">\(0.05\)</span>, we reject the null hypothesis if and only if the <span class="math inline">\(p\)</span>-value is less than <span class="math inline">\(0.05\)</span>. The significance level is chosen before the test is conducted.</p>
+<p>An equivalent procedure is to reject the null hypothesis if the test statistic observed is, in absolute value terms, larger than the <font color="#004A93"><strong>critical value</strong></font> of the test statistic. The critical value is determined by the significance level chosen and defines two disjoint sets of values which are called <font color="#004A93"><strong>acceptance region</strong></font> and <font color="#004A93"><strong>rejection region</strong></font>. The acceptance region contains all values of the test statistic for which the test does not reject while the rejection region contains all the values for which the test does reject.</p>
+<p>The <font color="#004A93"><strong><span class="math inline">\(p\)</span>-value</strong></font> is the probability that, in repeated sampling under the same conditions, meaning i.i.d. sampling, the same null hypothesis and the same sample size, a test statistic is observed that provides just as much evidence against the null hypothesis as the test statistic actually observed.</p>
+<p>The actual probability that the test rejects the true null hypothesis is called the <font color="#004A93"><strong>size of the test</strong></font>. In an ideal setting, the size does not exceed the significance level.</p>
+<p>The probability that the test correctly rejects a false null hypothesis is called <font color="#004A93"><strong>power</strong></font>.</p>
+</div>
+<p>Reconsider <code>pvalue</code> computed further above:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># check whether p-value &lt; 0.05</span>
+pvalue <span class="op">&lt;</span><span class="st"> </span><span class="fl">0.05</span></code></pre></div>
+<pre><code>## [1] FALSE</code></pre>
+<p>The condition is not fulfilled so we do not reject the null hypotheis (remember that the null hypothesis is true in this example).</p>
+<p>When working with a <span class="math inline">\(t\)</span>-statistic instead, it is equivalent to apply the following rule:</p>
+<p><span class="math display">\[ \text{Reject } H_0 \text{ if } \lvert t^{act} \rvert &gt; 1.96 \]</span></p>
+<p>We reject the null hypothesis at the significance level of <span class="math inline">\(5\%\)</span> if the computed <span class="math inline">\(t\)</span>-statistic lies beyond the critical value of 1.96 in absolute value terms. <span class="math inline">\(1.96\)</span> is the <span class="math inline">\(0.05\)</span>-quantile of the standard normal distribution.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># check the critical value</span>
+<span class="kw">qnorm</span>(<span class="dt">p =</span> <span class="fl">0.05</span>)</code></pre></div>
+<pre><code>## [1] -1.644854</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># check whether the null is rejected using the t-statistic computed further above</span>
+<span class="kw">abs</span>(tstatistic) <span class="op">&gt;</span><span class="st"> </span><span class="fl">1.96</span></code></pre></div>
+<pre><code>## [1] FALSE</code></pre>
+<p>As when using the <span class="math inline">\(p\)</span>-value, we cannot reject the null hypothesis using the corresponding <span class="math inline">\(t\)</span>-statistic. Key Concept 3.6 summarizes the procedure of performing a two-sided hypothesis about the population mean <span class="math inline">\(E(Y)\)</span>.</p>
+<div class="keyconcept">
+<h3 class="right">
+Key Concept 3.6
+</h3>
+<h3 class="left">
+Testing the Hypothesis <span class="math inline">\(E(Y) = \mu_{Y,0}\)</span> Against the Alternative <span class="math inline">\(E(Y) \neq \mu_{Y,0}\)</span>
+</h3>
+<ol style="list-style-type: decimal">
+<li><p>Estimate <span class="math inline">\(\mu_{Y}\)</span> using <span class="math inline">\(\overline{Y}\)</span> and compute the standard error of <span class="math inline">\(\overline{Y}\)</span>, <span class="math inline">\(SE(\overline{Y})\)</span>.</p></li>
+<li><p>Compute the <span class="math inline">\(t\)</span>-statistic.</p></li>
+<li><p>Compute the <span class="math inline">\(p\)</span>-value and reject the null hypothesis at the <span class="math inline">\(5\%\)</span> level of significance if the <span class="math inline">\(p\)</span>-value is smaller than <span class="math inline">\(0.05\)</span> or equivalently, if</p></li>
+</ol>
+<p><span class="math display">\[ \left\lvert t^{act} \right\rvert &gt; 1.96. \]</span></p>
+</div>
+</div>
+<div id="one-sided-alternatives" class="section level3 unnumbered">
+<h3>One-sided Alternatives</h3>
+<p>Sometimes we are interested in finding evidence that the mean is bigger or smaller than the some value hypothesized under the null. One can come up with many examples here but, to stick to the book, take the presumed wage differential between good and less educated working individuals. Since we hope that this differential exists, a relevant alternative (to the null hypothesis that there is no wage differential) is that good educated individuals earn more, i.e. that the average hourly wage for this group, <span class="math inline">\(\mu_Y\)</span> is <em>bigger</em> than <span class="math inline">\(\mu_{Y,0}\)</span> the know average wage of less educated workers.</p>
+<p>This is an example of a <em>right-sided test</em> and the hypotheses pair is chosen as</p>
+<p><span class="math display">\[ H_0: \mu_Y = \mu_{Y,0} \ \ \text{vs} \ \ H_1: \mu_Y &gt; \mu_{Y,0}. \]</span></p>
+<p>We reject the null hypothesis if the computed test-statistic is larger than the critical value <span class="math inline">\(1.64\)</span>, the <span class="math inline">\(0.95\)</span>-quantile of the <span class="math inline">\(N(0,1)\)</span> distribution. This ensures that <span class="math inline">\(1-0.95=5\%\)</span> probability mass remains in the area to the right of the critical value. Similar as before we can visualize this in R using the function <code>polygon()</code>.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># plot the standard normal density on the domain [-4,4]</span>
+<span class="kw">curve</span>(<span class="kw">dnorm</span>(x),
+      <span class="dt">xlim =</span> <span class="kw">c</span>(<span class="op">-</span><span class="dv">4</span>,<span class="dv">4</span>),
+      <span class="dt">main =</span> <span class="st">&#39;Rejection Region of a Right-Sided Test&#39;</span>,
+      <span class="dt">yaxs =</span> <span class="st">&#39;i&#39;</span>,
+      <span class="dt">xlab =</span> <span class="st">&#39;t-statistic&#39;</span>,
+      <span class="dt">ylab =</span> <span class="st">&#39;&#39;</span>,
+      <span class="dt">lwd =</span> <span class="dv">2</span>,
+      <span class="dt">axes =</span> <span class="st">&#39;F&#39;</span>
+)
+
+<span class="co"># add x-axis</span>
+<span class="kw">axis</span>(<span class="dv">1</span>, 
+     <span class="dt">at =</span> <span class="kw">c</span>(<span class="op">-</span><span class="dv">4</span>,<span class="dv">0</span>,<span class="fl">1.64</span>,<span class="dv">4</span>), 
+     <span class="dt">padj =</span> <span class="fl">0.5</span>,
+     <span class="dt">labels =</span> <span class="kw">c</span>(<span class="st">&#39;&#39;</span>,<span class="dv">0</span>,<span class="kw">expression</span>(Phi<span class="op">^-</span><span class="dv">1</span><span class="op">~</span>(.<span class="dv">95</span>)<span class="op">==</span><span class="fl">1.64</span>),<span class="st">&#39;&#39;</span>)
+)
+
+<span class="co"># shade rejection region in right tail</span>
+<span class="kw">polygon</span>(<span class="dt">x =</span> <span class="kw">c</span>(<span class="fl">1.64</span>, <span class="kw">seq</span>(<span class="fl">1.64</span>, <span class="dv">4</span>, <span class="fl">0.01</span>), <span class="dv">4</span>),
+        <span class="dt">y =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="kw">dnorm</span>(<span class="kw">seq</span>(<span class="fl">1.64</span>, <span class="dv">4</span>, <span class="fl">0.01</span>)), <span class="dv">0</span>), 
+        <span class="dt">col =</span> <span class="st">&#39;darkred&#39;</span>
+)</code></pre></div>
+<p><img src="URFITE_files/figure-html/unnamed-chunk-58-1.png" width="672" /></p>
+<p>In an analogously manner for the <em>left-sided test</em> we have</p>
+<p><span class="math display">\[ H_0: \mu_Y = \mu_{Y,0} \ \ \text{vs.} \ \ H_1: \mu_Y &lt; \mu_{Y,0}. \]</span></p>
+<p>The null is rejected if the observed test statistic falls short of the critical value which, for a test at the <span class="math inline">\(0.05\)</span> level of significance, is given by <span class="math inline">\(-1.64\)</span>, the <span class="math inline">\(0.05\)</span>-quantile of the <span class="math inline">\(N(0,1)\)</span> distribution. <span class="math inline">\(5\%\)</span> probability mass lies to the left of the critical value.</p>
+<p>It is straight forward to adapt the code chunk above to the case of a left-sided test. We only have to fiddle with the color shading and the tick marks.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># plot the standard normal density on the domain [-4,4]</span>
+<span class="kw">curve</span>(<span class="kw">dnorm</span>(x),
+      <span class="dt">xlim =</span> <span class="kw">c</span>(<span class="op">-</span><span class="dv">4</span>,<span class="dv">4</span>),
+      <span class="dt">main =</span> <span class="st">&#39;Rejection Region of a Left-Sided Test&#39;</span>,
+      <span class="dt">yaxs =</span> <span class="st">&#39;i&#39;</span>,
+      <span class="dt">xlab =</span> <span class="st">&#39;t-statistic&#39;</span>,
+      <span class="dt">ylab =</span> <span class="st">&#39;&#39;</span>,
+      <span class="dt">lwd =</span> <span class="dv">2</span>,
+      <span class="dt">axes =</span> <span class="st">&#39;F&#39;</span>
+)
+
+<span class="co"># add x-axis</span>
+<span class="kw">axis</span>(<span class="dv">1</span>, 
+     <span class="dt">at =</span> <span class="kw">c</span>(<span class="op">-</span><span class="dv">4</span>,<span class="dv">0</span>,<span class="op">-</span><span class="fl">1.64</span>,<span class="dv">4</span>), 
+     <span class="dt">padj =</span> <span class="fl">0.5</span>,
+     <span class="dt">labels =</span> <span class="kw">c</span>(<span class="st">&#39;&#39;</span>,<span class="dv">0</span>,<span class="kw">expression</span>(Phi<span class="op">^-</span><span class="dv">1</span><span class="op">~</span>(.<span class="dv">05</span>)<span class="op">==-</span><span class="fl">1.64</span>),<span class="st">&#39;&#39;</span>)
+)
+
+<span class="co"># shade rejection region in right tail</span>
+<span class="kw">polygon</span>(<span class="dt">x =</span> <span class="kw">c</span>(<span class="op">-</span><span class="dv">4</span>, <span class="kw">seq</span>(<span class="op">-</span><span class="dv">4</span>, <span class="op">-</span><span class="fl">1.64</span>, <span class="fl">0.01</span>), <span class="op">-</span><span class="fl">1.64</span>),
+        <span class="dt">y =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="kw">dnorm</span>(<span class="kw">seq</span>(<span class="op">-</span><span class="dv">4</span>, <span class="op">-</span><span class="fl">1.64</span>, <span class="fl">0.01</span>)), <span class="dv">0</span>), 
+        <span class="dt">col =</span> <span class="st">&#39;darkred&#39;</span>
+)</code></pre></div>
+<p><img src="URFITE_files/figure-html/unnamed-chunk-59-1.png" width="672" /></p>
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="properties-of-the-sample-mean.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="confidence-intervals-for-the-population-mean.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"google": false,
+"linkedin": false,
+"weibo": false,
+"instapper": false,
+"vk": false,
+"all": ["facebook", "google", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "FontAwesome",
+"size": 1
+},
+"edit": {
+"link": "https://github.com/rstudio/bookdown-demo/edit/master/03-ch3.Rmd",
+"text": "Edit"
+},
+"download": ["URFITE.pdf"],
+"toc": {
+"collapse": "section",
+"scroll_highlight": true
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "";
+    if (src === "" || src === "true") src = "https://cdn.bootcss.com/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:" && /^https?:/.test(src))
+      src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

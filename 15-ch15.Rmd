@@ -15,6 +15,7 @@ library(PerformanceAnalytics)
 library(dynlm)
 library(orcutt)
 library(nlme)
+library(stargazer)
 ```
 
 ## The Orange Juice Data 
@@ -28,9 +29,9 @@ To begin with the analysis, we reproduce Figure 15.1 of the book which displays 
 data("FrozenJuice")
 
 # price index for frozen concentrated juice
-FOJCPI <- 100 * FrozenJuice[,1]/FrozenJuice[,2]
+FOJCPI <- FrozenJuice[,"price"]/FrozenJuice[,"ppi"]
 FOJC_pctc <- 100 * diff(log(FOJCPI))
-FDD <- FrozenJuice[,3]
+FDD <- FrozenJuice[, "fdd"]
 ```
 
 ```{r, fig.align='center'}
@@ -220,9 +221,9 @@ the so-called *Newey-West variance estimator* for the variance of the OLS estima
 \begin{align*}
   \widehat{f}_t = 1 + 2 \sum_{j=1}^{m-1} \left(\frac{m-j}{m}\right) \overset{\sim}{\rho}_j (\#eq:nwhacf)
 \end{align*}
-is a correction factor that adjusts for serially correlated errors and involves estimates of $m-1$ autocovariances $\overset{\sim}{\rho}_j$, whereby $m$ is a truncation parameter to be chosen. A rule-of-thumb for choosing $m$ is
+is a correction factor that adjusts for serially correlated errors and involves estimates of $m-1$ autocovariances $\overset{\sim}{\rho}_j$, whereby $m$ is a truncation parameter to be chosen. A rule of thumb for choosing $m$ is
 \begin{align*}
-  m = \left \lfloor{0.75 \cdot T^{1/3}}\right\rfloor.
+  m = \left \lceil{0.75 \cdot T^{1/3}}\right\rceil. (\#eq:hactruncrot)
 \end{align*}
 
 In the following we simulate a time series that, as stated above, follows a distributed lag model with autocorrelated errors and then show how to compute the Newey West HAC estimate of $SD(\widehat{\beta}_1)$ using <tt>R</tt>. This is done in two seperat but, as we will see, identical approches: at first we follow the derivation presented in the book step-by-step and compute the estimate \glqq by hand \grqq. Then we prove that the result is exactly the estimate obtained when using the function `NeweyWest()`. 
@@ -307,6 +308,8 @@ where $q=r+p$ and compute estimates of the dynamic multipliers $\beta_1, \beta_2
 
 An alternative is to estimate the dynamic multipliers using feasible GLS, that is to apply the OLS estimator to a quasi-differenced specification of \@ref(eq:dlmarerrors). Under strict exogeneity, the feasible GLS approach is the BLUE estimator for the dynamic multipliers in large samples.
 
+On the one han, as demonstrated in Chapter 15.5 of the book, the OLS estimation of the ADL representation can be beneficial for estimation of dynamic multipliers in large distributed lag model beacause it allows for a more parsimonious model that may be a good approximation to a large distributed lag model. On the other hand, the GLS approach is more efficient than the ADL estimator if the sample size is large.
+
 </p>
 </div>
 
@@ -327,6 +330,9 @@ with the restrictions
   \beta_1 =& \, \delta_0, \\
   \beta_2 =& \, \delta_1 + \phi_1 \delta_0.
 \end{align*}
+
+##### Quasi-Differences {-}
+
 Another way of writing this ADL($1$,$2$) representation is the *quasi-difference* model
 \begin{align*}
   \overset{\sim}{Y}_t = \alpha_0 + \beta_1 \overset{\sim}{X}_t + \beta_2   \overset{\sim}{X}_{t-1} + \overset{\sim}{u}_t (\#eq:qdm)
@@ -359,7 +365,7 @@ acf(
 )
 ```
 
-The plot indicates that the residuals are autocorrelated. In particular, the pattern reveals that the residuals follow an autoregressive process, as the sample autocorrelation function decays quickly for the first few lags and is probably zero for higher lag orders. At any case, HAC standard errors should.
+The plot indicates that the residuals are autocorrelated. In particular, the pattern reveals that the residuals follow an autoregressive process, as the sample autocorrelation function decays quickly for the first few lags and is probably zero for higher lag orders. At any case, HAC standard errors should be used.
 
 ```{r}
 # coefficient summary using NeweyWest estimator
@@ -368,7 +374,7 @@ coeftest(dlm, vcov = NeweyWest(dlm, prewhite = F, adjust = T))
 
 ##### OLS Estimation of the ADL Model {-}
 
-Next, we estimate the ADL($2$,$1$) model \@ref(eq:adl21dynamic) using OLS. Notice that the errors are uncorrelated in this representation of the model. This statement is supported by a plot of the sample autocorrelation function of the residual series.
+Next, we estimate the ADL($1$,$2$) model \@ref(eq:adl21dynamic) using OLS. Notice that the errors are uncorrelated in this representation of the model. This statement is supported by a plot of the sample autocorrelation function of the residual series.
 
 ```{r, fig.align='center'}
 # Estimate ADL(2, 1) representation
@@ -395,7 +401,7 @@ c(
 
 Strict exogeneity allows OLS estimation of the quasi-difference model \@ref(eq:qdm). The idea of applying the OLS estimator to a model where the variables are linearly transformed such that the model errors are uncorrelated and homoskedastic is called *generalized least squares* (GLS)
 
-The OLS estimator in \@ref(eq:qdm) is called the *infeasible GLS* estimator because we $\overset{\sim}{Y}$ and $\overset{\sim}{X}$ cannot be computed without $\phi_1$, the autoregressive coefficient in the error AR($1$) model, which is generally unknown in practice.
+The OLS estimator in \@ref(eq:qdm) is called the *infeasible GLS* estimator because we $\overset{\sim}{Y}$ and $\overset{\sim}{X}$ cannot be computed without knowledge of $\phi_1$, the autoregressive coefficient in the error AR($1$) model, which is generally unknown in practice.
 
 Suppose $\phi = 0.5$ was known. The infeasible GLS estimates of the dynamic multipliers in \@ref(eq:dldynamic) are obtained by applying OLS to the transformed data. 
 
@@ -414,14 +420,308 @@ X_l1 <- c(X[-500])
 Y_t <- c(Y[-1])
 
 # iterated cochrance-orcutt procedure
-cochrane.orcutt(lm(Y_t ~ X_t + X_l1))
+summary(
+  cochrane.orcutt(lm(Y_t ~ X_t + X_l1))
+)
 ```
 
-Some more sophisticated methods are provided with the package <tt>nlme</tt>.
+Some more sophisticated methods are provided with the package <tt>nlme</tt>. The function <tt>gls()</tt> can be used to fit linear models by maximum likelihood estimation algorithms and allows to specify a correlation structure for the error term. 
 
 ```{r}
-# feasible GLS maximum likelihood estimation preocedure
-gls(Y_t ~ X_t + X_l1, correlation = corAR1())
+# feasible GLS maximum likelihood estimation procedure
+summary(
+  gls(Y_t ~ X_t + X_l1, correlation = corAR1())
+)
 ```
 
+Feasible GLS is the BLUE of the dynamic multipliers when there is serial correlation and/or heteroskedasticity. Notice that in this example, the coefficient estimates produced by GLS are somewhat closer to their true values and that the standard errors are the smallest for the GLS estimator.
+
+## Orange Juice Prices and Cold Weather
+
+In this section we investigate the following two questions using the time series regression methods discussed before:
+
++ How persistent is the effect of a single freeze on prices?
+
++ Has this effect been stable over the whole time span considered?
+
+We start by estimating dynamic causal effects with a distributed lag model where $\%ChgOJC_t$ is regressed on $FDD_t$ and 18 lags of it. A second model specification is a transformation of the the distributed lag model which allows to estimate the 19 cumulative dynamic multipliers using OLS. In a third model, we add 11 binary variables (one for each of the months from February to December) to adjust for a possible omitted variable bias arising from correllation of $FDD_t$ and seasons by adding `season(FDD)` to the right hand side of the formula of the second model. 
+
+```{r}
+# estimate distributed lag models of frozen orange juice price changes
+FOJC_mod_DM <- dynlm(FOJC_pctc ~ L(FDD, 0:18))
+FOJC_mod_CM1 <- dynlm(FOJC_pctc ~ L(d(FDD), 0:17) + L(FDD, 18))
+FOJC_mod_CM2 <- dynlm(FOJC_pctc ~ L(d(FDD), 0:17) + L(FDD, 18) + season(FDD))
+```
+
+The models above include a large number of lags with default labels that correspond to the degree of differencing and the lag orders which makes it somewhat cumbersome to read the outcomes. The regressor labels of a model object may be altered by overriding the attribute `names` of the coefficient section using the function `attr()`. Thus, for better readability we use the lag orders as regressor labels.
+
+```{r, echo=F}
+# lag orders as regressor labels 
+attr(FOJC_mod_DM$coefficients, "names")[1:20] <- c("(Intercept)", as.character(0:18))
+attr(FOJC_mod_CM1$coefficients, "names")[1:20] <- c("(Intercept)", as.character(0:18))
+attr(FOJC_mod_CM2$coefficients, "names")[1:20] <- c("(Intercept)", as.character(0:18))
+```
+
+
+Next, we compute HAC standard errors standard errors for each model using $NeweyWest()$ and gather the results in a list which is then supplied as the argument `se` to the function `stargazer()`, see below. Note that the sample consists of 612 observations.
+```{r}
+length(FDD)
+```
+According to \@ref(eq:hactruncrot), the rule of thumb for choosing the HAC standard error truncation parameter $m$, we choose
+$$m = \left\lceil0.75 \cdot 612^{1/3} \right\rceil = \lceil6.37\rceil = 7.$$
+To check for sensitivity of the standard errors to different choices of the truncation parameter in the model that is used to estimate the cumulative multipliers, we also compute the Newey and West estimator for $m=14$.
+
+```{r}
+# gather hAC standard error errors in a list
+SEs <- list(
+  sqrt(
+    diag(
+      NeweyWest(FOJC_mod_DM, lag = 7, prewhite = F)
+    )  
+  ), 
+  sqrt(
+    diag(
+      NeweyWest(FOJC_mod_CM1, lag = 7, prewhite = F)
+    )  
+  ), 
+   sqrt(
+    diag(
+      NeweyWest(FOJC_mod_CM1, lag = 14, prewhite = F)
+    )  
+  ),
+  sqrt(
+    diag(
+      NeweyWest(FOJC_mod_CM2, lag = 7, prewhite = F)
+    )  
+  )
+)
+```
+
+
+The results are then used to reproduce the outcomes presented in Table 15.1 of the book.
+
+```{r, eval=F}
+stargazer(FOJC_mod_DM , FOJC_mod_CM1, FOJC_mod_CM1, FOJC_mod_CM2,
+  title = "Dynamic Effects of a Freezing Degree Day on the Price of Orange Juice",
+  header = FALSE, 
+  digits = 2, 
+  column.labels = c("Dynamic Multipliers", rep("Dynamic Cumulative Multipliers",3)),
+  dep.var.caption  = "Monthly Percentage Change in Orange Juice Price",
+  dep.var.labels.include = FALSE,
+  covariate.labels = as.character(0:18),
+  omit = "season",
+  se = SEs,
+  no.space = T,
+  add.lines = list(
+                   c("Monthly indicators?","no", "no", "no", "yes"),
+                   c("HAC truncation","7", "7", "14", "7")
+                   ),
+  omit.stat = c("rsq", "f","ser")
+  ) 
+```
+
+<!--html_preserve-->
+
+```{r, message=F, warning=F, results='asis', echo=F}
+stargazer(FOJC_mod_DM , FOJC_mod_CM1, FOJC_mod_CM1, FOJC_mod_CM2,
+  title = "Dynamic Effects of a Freezing Degree Day on the Price of Orange Juice",
+  header = FALSE, 
+  type = "html",
+  digits = 2, 
+  column.labels = c("Dynamic Multipliers", rep("Dynamic Cumulative Multipliers",3)),
+  dep.var.caption  = "Monthly Percentage Change in Orange Juice Price",
+  dep.var.labels.include = FALSE,
+  covariate.labels = as.character(0:18),
+  omit = "season",
+  se = SEs,
+  no.space = T,
+  add.lines = list(
+                   c("Monthly indicators?","no", "no", "no", "yes"),
+                   c("HAC truncation","7", "7", "14", "7")
+                   ),
+  omit.stat = c("rsq", "f","ser")
+  ) 
+```
+
+<!--/html_preserve-->
+
+Acording to coloumn (1), the contemporaneous effect of a freezing degree day is an increase of $0.5\%$ in orange juice prices. The estimated effect is only $0.17\%$ for the next month and close to zero for subsequent months. In fact, for all lags larger than 1, we cannot reject the individual null hypotheses that the respective coefficients are zero. Notice also that the model `FOJC_mod_DM` does only explain little variation in the dependent variable ($\overline{R}^2 = 0.11$). 
+
+Columns (2) and (3) present estimates of the dynamic cumulative multipliers of model `FOJC_mod_CM1`. Apparently, it does not matter whether we choose $m=7$ or $m=14$ when computing HAC standard errors so we stick with $m=7$ and the standard errors reported in column (2). 
+
+If demand for orange juice is higher in winter, $FDD_t$ would be correlated with the error term since since freezes occur rather in winter so we would face omitted variable bias. The third model estimate, `FOJC_mod_CM2`, accounts for this possible issue by using an additional set of 11 monthly dummies. For brevity, estimates of the dummy coefficients are excluded from the output produced by stargazer (this is achieved by setting `omit = "season"`). We may check that the dummy for January was omitted to prevent perfect multicollinearity.
+
+```{r}
+# estimates on mothly dummies
+FOJC_mod_CM2$coefficients[-c(1:20)]
+```
+
+A comparison of the estimates presented in columns (3) and (4) indicates that adding monthly dummies has a negligible effect. Further evidence for this comes from a test of the hypothesis that the 11 dummy coefficients are jointly zero. Instead of using `linearHypothesis()` which requires that all 11 restrictions are provided in a matrix, we use the function `waldtest()` and supply two model objects instead: `unres_model`, the unrestricted model object which is the same as `FOJC_mod_CM2` (except for the coefficient names since we have modified them above) and `res_model`, the model where the restriction that all dummy coefficients are zero is imposed. `res_model` is conveniently obtained using the function `update()`. It extracts the argument <tt>formula</tt> of a model object, updates it as specified and then re-fits the model. By setting `formula = . ~ . - season(FDD)` we impose that the monthly dummies do not enter the model.
+
+```{r}
+# test if coefficients on monthly dummies are zero
+
+unres_model <- dynlm(FOJC_pctc ~ L(d(FDD), 0:17) + L(FDD, 18) + season(FDD))
+
+res_model <- update(unres_model, formula = . ~ . - season(FDD))
+
+waldtest(unres_model, 
+         res_model, 
+         vcov = NeweyWest(unres_model, lag = 7, prewhite = F))
+```
+
+The $p$-value is $0.47$ so we cannot reject the hypothesis that the coefficients on the monthly dummies are zero, even at the $10\%$ level of significance. We conclude that the seasonal fluctuations in demand for orange juice do not pose a serious threat to internal validity of the model.
+
+It is convenient to use plots of dynamic multipliers and cumulative dynamic multipliers. The following two code chunks reproduce Figures 15.2 (a) and 15.2 (b) of the book which display point estimates of dynamic and cumulative multipliers along with upper and lower bounds of their $95\%$ confidence intervals computed using the HAC standard errors from above.
+
+```{r, fig.align='center', fig.cap="Dynamic Multipliers", label = DM}
+# 95% CI bounds
+point_estimates <- FOJC_mod_DM$coefficients
+
+CI_bounds <- cbind(
+   "lower" = point_estimates - 1.96 * SEs[[1]],
+   "upper" = point_estimates + 1.96 * SEs[[1]]
+ )[-1,]
+
+
+# plot estimated dynamic multipliers
+plot(0:18, point_estimates[-1], 
+     type = "l", 
+     lwd = 2, 
+     col = "steelblue", 
+     ylim = c(-0.4, 1),
+     xlab = "Lag",
+     ylab = "Dynamic multiplier",
+     main = "Dynamic Effect of FDD on Orange Juice Price"
+     )
+
+# add dashed line at 0
+abline(h = 0, lty = 2)
+
+# add CI bounds
+lines(0:18, CI_bounds[,1], col = "darkred")
+lines(0:18, CI_bounds[,2], col = "darkred")
+```
+
+Notice that the $95\%$ confidence intervals plotted in Figure \@ref(fig:DM) indeed include zero for lags larger than 1 such that the null of a zero multiplier cannot be rejected for these lags.
+
+```{r, fig.align='center', fig.cap="Dynamic Cumulative Multipliers", label = DCM}
+# 95% CI bounds
+point_estimates <- FOJC_mod_CM1$coefficients
+
+CI_bounds <- cbind(
+   "lower" = point_estimates - 1.96 * SEs[[2]],
+   "upper" = point_estimates + 1.96 * SEs[[2]]
+ )[-1,]
+
+
+# plot estimated dynamic multipliers
+plot(0:18, point_estimates[-1], 
+     type = "l", 
+     lwd = 2, 
+     col = "steelblue", 
+     ylim = c(-0.4, 1.6),
+     xlab = "Lag",
+     ylab = "Cumulative dynamic multiplier",
+    main = "Cumulative Dynamic Effect of FDD on Orange Juice Price"
+     )
+
+# add dashed line at 0
+abline(h = 0, lty = 2)
+
+# add CI bounds
+lines(0:18, CI_bounds[, 1], col = "darkred")
+lines(0:18, CI_bounds[, 2], col = "darkred")
+```
+
+As can be seen from Figure \@ref(fig:DCM), the estimated dynamic cumulative multipliers grow through the seventh month up to a price increase of about $0.91\%$ and then decrease slighly to the estimated long-run cumulative multiplier of $0.37\%$ which, however, is not significantly different from zero at the $5\%$ level.
+
+Have the dynamic multipliers been stable over time? One way to see this is the estimate them for different subperiods of the sample. For example, consider periods 1950 - 1966, 1967 - 1983 and 1984 - 2000. If the multipliers are the same for all three periods the estimates should be close and thus the estimated cumulative multipliers should be similar, too. We investigate this by re-estimating `FOJC_mod_CM1` for the three different time spans and then plot the estimated cumulative dynamic multipliers for the comparison.
+
+```{r}
+# estimate cumulative multiplieres using different sample periods
+FOJC_mod_CM1950 <- update(FOJC_mod_CM1, start = c(1950,1), end = c(1966,12))
+
+FOJC_mod_CM1967 <- update(FOJC_mod_CM1, start = c(1967,1), end = c(1983,12))
+
+FOJC_mod_CM1984 <- update(FOJC_mod_CM1, start = c(1984,1), end = c(2000,12))
+```
+
+
+```{r, fig.align='center'}
+# plot estimated dynamic cumulative multipliers (1950-1966)
+plot(0:18, FOJC_mod_CM1950$coefficients[-1], 
+     type = "l", 
+     lwd = 2, 
+     col = "steelblue",
+     xlim = c(0,20),
+     ylim = c(-0.5, 2),
+     xlab = "Lag",
+     ylab = "Cumulative dynamic multiplier",
+     main = "Cumulative Dynamic Effect for Different Sample Periods"
+)
+
+# plot estimated dynamic multipliers (1967-1983)
+lines(0:18, FOJC_mod_CM1967$coefficients[-1], lwd = 2)
+
+# plot estimated dynamic multipliers (1984-2000)
+lines(0:18, FOJC_mod_CM1984$coefficients[-1], lwd = 2, col = "darkgreen")
+
+# add dashed line at 0
+abline(h = 0, lty = 2)
+
+# add annotations
+text(18, -0.24, "1984 - 2000")
+text(18, 0.6, "1967 - 1983")
+text(18, 1.2, "1950 - 1966")
+```
+
+Clearly, the cumulative dynamic multipliers have changed considerarbly over time. Notice that the effect of a freeze was stronger an more persistent in the 1950s and 1960s. For the 1970s the magnitude of the effect was lower but still highly persistent. We observe an even lower magnitude for the final third of the sample (1984 - 2000) where the long-run effect is much less persist and essentialy zero after a year. 
+
+Evidence of a QLR test for a break in the population distributed lag regression of column (1) with $15\%$ trimming and HAC variance-covariance matrix estimator supports the conjection that the population regression coefficients have changed over time.
+
+```{r, cache=TRUE}
+# set up a range of possible break dates
+tau <- c(
+  window(
+    time(FDD), 
+    time(FDD)[round(612/100*15)], 
+    time(FDD)[round(612/100*85)]
+    )
+  )
+
+# initialize vector of F-statistics
+Fstats <- numeric(length(tau))
+
+# restricted model
+res_model <- update(unres_model, formula = . ~ L(FDD, 0:18))
+
+
+# estimation loop over break dates
+for(i in 1:length(tau)) {
+  
+  # set up dummy variable
+  D <- time(FOJC_pctc) > tau[i]
+  
+  # estimate DL model with intercations
+  unres_model <- dynlm(FOJC_pctc ~ L(FDD, 0:18) + D*L(FDD, 0:18))
+                 
+  # compute and save F-statistic
+  Fstats[i] <- waldtest(unres_model, 
+                        res_model, 
+                        vcov = NeweyWest(unres_model, lag = 7, prewhite = F))$F[2]
+    
+}
+```
+
+Note that this code takes a couple of seconds to run since a total of `r length(tau)` regressions with 40 model coefficients each are estimated.
+
+```{r}
+# QLR test statistic
+max(Fstats)
+```
+
+The QLR statistic is $36.77$. From table 14.5 of the book we see that the $1\%$ critical value for the QLR test with $15\%$ trimming and $q=20$ restrictions is $2.43$. Since this is a right-sided test, the QLR statistic clearly lies in the region of rejection so we can discard the null hypothesis of no break in the population regression function.
+
+See Chapter 15.7 of the book for a discussion of empirical examples where it is questionable whether the assumption of (past and present) exogeneity of regressors is plausible.
 

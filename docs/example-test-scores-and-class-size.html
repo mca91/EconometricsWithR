@@ -7,7 +7,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>Using R for Introduction to Econometrics</title>
   <meta name="description" content="Using R for Introduction to Econometrics">
-  <meta name="generator" content="bookdown 0.5 and GitBook 2.6.7">
+  <meta name="generator" content="bookdown 0.7.1 and GitBook 2.6.7">
 
   <meta property="og:title" content="Using R for Introduction to Econometrics" />
   <meta property="og:type" content="book" />
@@ -25,7 +25,7 @@
 <meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber and Martin Schmelzer">
 
 
-<meta name="date" content="2018-03-15">
+<meta name="date" content="2018-03-19">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -131,6 +131,7 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 </style>
 
 <link rel="stylesheet" href="style.css" type="text/css" />
+<link rel="stylesheet" href="toc.css" type="text/css" />
 </head>
 
 <body>
@@ -146,7 +147,7 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 <li><a href="./">URFITE</a></li>
 
 <li class="divider"></li>
-<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Preface</a></li>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Introduction</a></li>
 <li class="chapter" data-level="2" data-path="probability-theory.html"><a href="probability-theory.html"><i class="fa fa-check"></i><b>2</b> Probability Theory</a><ul>
 <li class="chapter" data-level="2.1" data-path="random-variables-and-probability-distributions.html"><a href="random-variables-and-probability-distributions.html"><i class="fa fa-check"></i><b>2.1</b> Random Variables and Probability Distributions</a><ul>
 <li class="chapter" data-level="" data-path="random-variables-and-probability-distributions.html"><a href="random-variables-and-probability-distributions.html#probability-distributions-of-discrete-random-variables"><i class="fa fa-check"></i>Probability Distributions of Discrete Random Variables</a></li>
@@ -317,6 +318,7 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 <li class="chapter" data-level="15.3" data-path="dynamic-multipliers-and-cumulative-dynamic-multipliers.html"><a href="dynamic-multipliers-and-cumulative-dynamic-multipliers.html"><i class="fa fa-check"></i><b>15.3</b> Dynamic Multipliers and Cumulative Dynamic Multipliers</a></li>
 <li class="chapter" data-level="15.4" data-path="hac-standard-errors.html"><a href="hac-standard-errors.html"><i class="fa fa-check"></i><b>15.4</b> HAC Standard Errors</a></li>
 <li class="chapter" data-level="15.5" data-path="estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html"><a href="estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html"><i class="fa fa-check"></i><b>15.5</b> Estimation of Dynamic Causal Effects with Strictly Exogeneous Regressors</a></li>
+<li class="chapter" data-level="15.6" data-path="orange-juice-prices-and-cold-weather.html"><a href="orange-juice-prices-and-cold-weather.html"><i class="fa fa-check"></i><b>15.6</b> Orange Juice Prices and Cold Weather</a></li>
 </ul></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
@@ -466,7 +468,7 @@ order_id  &lt;-<span class="st"> </span><span class="kw">order</span>(MASchools<
        <span class="dt">lty =</span> <span class="dv">1</span>,
        <span class="dt">col =</span> <span class="kw">c</span>(<span class="st">&quot;Black&quot;</span>,<span class="st">&quot;darkgreen&quot;</span>,<span class="st">&quot;orange&quot;</span>)
        )</code></pre></div>
-<p><img src="URFITE_files/figure-html/unnamed-chunk-210-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="URFITE_files/figure-html/unnamed-chunk-209-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>The plot indicates that the cubic specification fits the data best. Interstingly, this is different from the <code>CASchools</code> data where the pattern of nonlinearity is better described by the linear-log specification.</p>
 <p>We continue by estimating the most of the model specifications used for analysis of the <code>CASchools</code> data set in chapter 8 and use <code>stargazer()</code> to generate a tabular representation of the regression results.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Add HiEL to &#39;MASchools&#39;</span>
@@ -477,39 +479,34 @@ TestScore_MA_mod1 &lt;-<span class="st"> </span><span class="kw">lm</span>(score
 
 TestScore_MA_mod2 &lt;-<span class="st"> </span><span class="kw">lm</span>(score <span class="op">~</span><span class="st"> </span>STR <span class="op">+</span><span class="st"> </span>english <span class="op">+</span><span class="st"> </span>lunch <span class="op">+</span><span class="st"> </span><span class="kw">log</span>(income), <span class="dt">data =</span> MASchools)
 
-TestScore_MA_mod3 &lt;-<span class="st"> </span><span class="kw">lm</span>(score <span class="op">~</span><span class="st"> </span>STR <span class="op">+</span><span class="st"> </span>english <span class="op">+</span><span class="st"> </span>lunch <span class="op">+</span><span class="st"> </span>income <span class="op">+</span><span class="st"> </span><span class="kw">I</span>(income<span class="op">^</span><span class="dv">2</span>) <span class="op">+</span><span class="st"> </span><span class="kw">I</span>(income<span class="op">^</span><span class="dv">3</span>), <span class="dt">data =</span> MASchools)
+TestScore_MA_mod3 &lt;-<span class="st"> </span><span class="kw">lm</span>(score <span class="op">~</span><span class="st"> </span>STR <span class="op">+</span><span class="st"> </span>english <span class="op">+</span><span class="st"> </span>lunch <span class="op">+</span><span class="st"> </span>income <span class="op">+</span><span class="st"> </span><span class="kw">I</span>(income<span class="op">^</span><span class="dv">2</span>) <span class="op">+</span><span class="st"> </span>
+<span class="st">    </span><span class="kw">I</span>(income<span class="op">^</span><span class="dv">3</span>), <span class="dt">data =</span> MASchools)
 
-TestScore_MA_mod4 &lt;-<span class="st"> </span><span class="kw">lm</span>(score <span class="op">~</span><span class="st"> </span>STR <span class="op">+</span><span class="st"> </span><span class="kw">I</span>(STR<span class="op">^</span><span class="dv">2</span>) <span class="op">+</span><span class="st"> </span><span class="kw">I</span>(STR<span class="op">^</span><span class="dv">3</span>) <span class="op">+</span><span class="st"> </span>english <span class="op">+</span><span class="st"> </span>lunch <span class="op">+</span><span class="st"> </span>income <span class="op">+</span><span class="st"> </span><span class="kw">I</span>(income<span class="op">^</span><span class="dv">2</span>) <span class="op">+</span><span class="st"> </span><span class="kw">I</span>(income<span class="op">^</span><span class="dv">3</span>), 
-    <span class="dt">data =</span> MASchools)
+TestScore_MA_mod4 &lt;-<span class="st"> </span><span class="kw">lm</span>(score <span class="op">~</span><span class="st"> </span>STR <span class="op">+</span><span class="st"> </span><span class="kw">I</span>(STR<span class="op">^</span><span class="dv">2</span>) <span class="op">+</span><span class="st"> </span><span class="kw">I</span>(STR<span class="op">^</span><span class="dv">3</span>) <span class="op">+</span><span class="st"> </span>english <span class="op">+</span><span class="st"> </span>lunch <span class="op">+</span><span class="st"> </span>
+<span class="st">    </span>income <span class="op">+</span><span class="st"> </span><span class="kw">I</span>(income<span class="op">^</span><span class="dv">2</span>) <span class="op">+</span><span class="st"> </span><span class="kw">I</span>(income<span class="op">^</span><span class="dv">3</span>), <span class="dt">data =</span> MASchools)
 
-TestScore_MA_mod5 &lt;-<span class="st"> </span><span class="kw">lm</span>(score <span class="op">~</span><span class="st"> </span>STR <span class="op">+</span><span class="st"> </span><span class="kw">I</span>(income<span class="op">^</span><span class="dv">2</span>) <span class="op">+</span><span class="st"> </span><span class="kw">I</span>(income<span class="op">^</span><span class="dv">3</span>) <span class="op">+</span><span class="st"> </span>HiEL<span class="op">:</span>STR <span class="op">+</span><span class="st"> </span>lunch <span class="op">+</span><span class="st"> </span>income, 
-    <span class="dt">data =</span> MASchools)
+TestScore_MA_mod5 &lt;-<span class="st"> </span><span class="kw">lm</span>(score <span class="op">~</span><span class="st"> </span>STR <span class="op">+</span><span class="st"> </span><span class="kw">I</span>(income<span class="op">^</span><span class="dv">2</span>) <span class="op">+</span><span class="st"> </span><span class="kw">I</span>(income<span class="op">^</span><span class="dv">3</span>) <span class="op">+</span><span class="st"> </span>HiEL<span class="op">:</span>STR <span class="op">+</span><span class="st"> </span>
+<span class="st">    </span>lunch <span class="op">+</span><span class="st"> </span>income, <span class="dt">data =</span> MASchools)
 
-TestScore_MA_mod6 &lt;-<span class="st"> </span><span class="kw">lm</span>(score <span class="op">~</span><span class="st"> </span>STR <span class="op">+</span><span class="st"> </span><span class="kw">I</span>(income<span class="op">^</span><span class="dv">2</span>) <span class="op">+</span><span class="st"> </span><span class="kw">I</span>(income<span class="op">^</span><span class="dv">3</span>) <span class="op">+</span><span class="st"> </span>HiEL <span class="op">+</span><span class="st"> </span>HiEL<span class="op">:</span>STR <span class="op">+</span><span class="st"> </span>lunch <span class="op">+</span><span class="st"> </span>income, <span class="dt">data =</span> MASchools)
+TestScore_MA_mod6 &lt;-<span class="st"> </span><span class="kw">lm</span>(score <span class="op">~</span><span class="st"> </span>STR <span class="op">+</span><span class="st"> </span><span class="kw">I</span>(income<span class="op">^</span><span class="dv">2</span>) <span class="op">+</span><span class="st"> </span><span class="kw">I</span>(income<span class="op">^</span><span class="dv">3</span>) <span class="op">+</span><span class="st"> </span>HiEL <span class="op">+</span><span class="st"> </span>HiEL<span class="op">:</span>STR <span class="op">+</span><span class="st"> </span>
+<span class="st">    </span>lunch <span class="op">+</span><span class="st"> </span>income, <span class="dt">data =</span> MASchools)
 
 <span class="co"># robust estimation of variance-covariance matrices</span>
 <span class="kw">library</span>(sandwich)
 
-rob_se &lt;-<span class="st"> </span><span class="kw">list</span>(
-  <span class="kw">sqrt</span>(<span class="kw">diag</span>(<span class="kw">vcovHC</span>(TestScore_MA_mod1, <span class="dt">type=</span><span class="st">&quot;HC1&quot;</span>))),
-  <span class="kw">sqrt</span>(<span class="kw">diag</span>(<span class="kw">vcovHC</span>(TestScore_MA_mod2, <span class="dt">type=</span><span class="st">&quot;HC1&quot;</span>))),
-  <span class="kw">sqrt</span>(<span class="kw">diag</span>(<span class="kw">vcovHC</span>(TestScore_MA_mod3, <span class="dt">type=</span><span class="st">&quot;HC1&quot;</span>))),
-  <span class="kw">sqrt</span>(<span class="kw">diag</span>(<span class="kw">vcovHC</span>(TestScore_MA_mod4, <span class="dt">type=</span><span class="st">&quot;HC1&quot;</span>))),
-  <span class="kw">sqrt</span>(<span class="kw">diag</span>(<span class="kw">vcovHC</span>(TestScore_MA_mod5, <span class="dt">type=</span><span class="st">&quot;HC1&quot;</span>))),
-  <span class="kw">sqrt</span>(<span class="kw">diag</span>(<span class="kw">vcovHC</span>(TestScore_MA_mod6, <span class="dt">type=</span><span class="st">&quot;HC1&quot;</span>)))
-)
+rob_se &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="kw">sqrt</span>(<span class="kw">diag</span>(<span class="kw">vcovHC</span>(TestScore_MA_mod1, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>))), <span class="kw">sqrt</span>(<span class="kw">diag</span>(<span class="kw">vcovHC</span>(TestScore_MA_mod2, 
+    <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>))), <span class="kw">sqrt</span>(<span class="kw">diag</span>(<span class="kw">vcovHC</span>(TestScore_MA_mod3, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>))), <span class="kw">sqrt</span>(<span class="kw">diag</span>(<span class="kw">vcovHC</span>(TestScore_MA_mod4, 
+    <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>))), <span class="kw">sqrt</span>(<span class="kw">diag</span>(<span class="kw">vcovHC</span>(TestScore_MA_mod5, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>))), <span class="kw">sqrt</span>(<span class="kw">diag</span>(<span class="kw">vcovHC</span>(TestScore_MA_mod6, 
+    <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>))))
 
 <span class="co"># generate table with stargazer()</span>
 
 <span class="kw">library</span>(stargazer)
 
-<span class="kw">stargazer</span>(Linear_model_MA, TestScore_MA_mod2, TestScore_MA_mod3, TestScore_MA_mod4, TestScore_MA_mod5, TestScore_MA_mod6 
-          <span class="dt">type =</span> <span class="st">&quot;latex&quot;</span>,
-          <span class="dt">se =</span> rob_se,
-          <span class="dt">object.names =</span> <span class="ot">TRUE</span>,
-          <span class="dt">model.numbers =</span> <span class="ot">FALSE</span>,
-          <span class="dt">column.labels =</span> <span class="kw">c</span>(<span class="st">&quot;(I)&quot;</span>, <span class="st">&quot;(II)&quot;</span>, <span class="st">&quot;(III)&quot;</span>, <span class="st">&quot;(IV)&quot;</span>, <span class="st">&quot;(V)&quot;</span>, <span class="st">&quot;(VI)&quot;</span>)
-          )</code></pre></div>
+<span class="kw">stargazer</span>(Linear_model_MA, TestScore_MA_mod2, TestScore_MA_mod3, TestScore_MA_mod4, 
+    TestScore_MA_mod5, TestScore_MA_mod6, <span class="dt">type =</span> <span class="st">&quot;latex&quot;</span>, <span class="dt">se =</span> rob_se, <span class="dt">object.names =</span> <span class="ot">TRUE</span>, 
+    <span class="dt">model.numbers =</span> <span class="ot">FALSE</span>, <span class="dt">column.labels =</span> <span class="kw">c</span>(<span class="st">&quot;(I)&quot;</span>, <span class="st">&quot;(II)&quot;</span>, <span class="st">&quot;(III)&quot;</span>, <span class="st">&quot;(IV)&quot;</span>, 
+        <span class="st">&quot;(V)&quot;</span>, <span class="st">&quot;(VI)&quot;</span>))</code></pre></div>
 
 
 
@@ -798,14 +795,15 @@ gitbook.start({
 "facebook": true,
 "twitter": true,
 "google": false,
+"linkedin": false,
 "weibo": false,
 "instapper": false,
 "vk": false,
-"all": ["facebook", "google", "twitter", "weibo", "instapaper"]
+"all": ["facebook", "google", "twitter", "linkedin", "weibo", "instapaper"]
 },
 "fontsettings": {
 "theme": "white",
-"family": "FontAwesome",
+"family": "sans",
 "size": 1
 },
 "edit": {
@@ -814,7 +812,8 @@ gitbook.start({
 },
 "download": ["URFITE.pdf"],
 "toc": {
-"collapse": "subsection"
+"collapse": "subsection",
+"scroll_highlight": true
 }
 });
 });
@@ -825,12 +824,14 @@ gitbook.start({
   (function () {
     var script = document.createElement("script");
     script.type = "text/javascript";
-    script.src  = "https://cdn.bootcss.com/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML";
-    if (location.protocol !== "file:" && /^https?:/.test(script.src))
-      script.src  = script.src.replace(/^https?:/, '');
+    var src = "";
+    if (src === "" || src === "true") src = "https://cdn.bootcss.com/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:" && /^https?:/.test(src))
+      src = src.replace(/^https?:/, '');
+    script.src = src;
     document.getElementsByTagName("head")[0].appendChild(script);
   })();
 </script>
 </body>
 
-<!-- </html> -->
+</html>
