@@ -14,7 +14,7 @@ These subsections cover the following topics:
 
 ## Testing Two-Sided Hypotheses Concerning $\beta_1$
 
-Using the fact that $\hat{\beta}_1$ is approximately normal distributed in large samples (see [Key Concept 4.4](#tsdotoe)), testing  hypothesis about the true value $\beta_1$ can be done with the same approach as discussed in chapter 3.2.
+Using the fact that $\hat{\beta}_1$ is approximately normal distributed in large samples (see [Key Concept 4.4](#tsdotoe)), testing hypotheses about the true value $\beta_1$ can be done with the same approach as discussed in chapter 3.2.
 
 <div class = "keyconcept"> 
 <h3 class = "right"> Key Concept 5.1 </h3>
@@ -30,7 +30,7 @@ Remember from chapter 3 that a general $t$-statistic has the form
 
 <div class = "keyconcept"> 
 <h3 class = "right"> Key Concept 5.2 </h3>
-<h3 class = "left"> Testing Hyothesis about $\beta_1$ </h3>
+<h3 class = "left"> Testing Hyotheses about $\beta_1$ </h3>
 
 For testing the hypothesis $H_0: \beta_1 = \beta_{1,0}$, we need to perform the following steps:
 
@@ -396,7 +396,7 @@ points(CASchools$D, predict(dummy_model), col="red", pch=20)
 ```
 </div>
 
-We see that with $D$ as the regressor, it is not useful to think of $\beta_1$ as a slope parameter since $D_i \in \{0,1\}$, i.e. we only observe two discrete values instead of a continuoum of regressor values lying (in some range) on the real line. Simply put, there is no continuous line depicting the conditional expectation function $E(TestScore_i | D_i)$ since this function is solely defined for $X$-positions $0$ and $1$. 
+We see that with $D$ as the regressor, it is not useful to think of $\beta_1$ as a slope parameter since $D_i \in \{0,1\}$, i.e. we only observe two discrete values instead of a continuum of regressor values lying (in some range) on the real line. Simply put, there is no continuous line depicting the conditional expectation function $E(TestScore_i | D_i)$ since this function is solely defined for $X$-positions $0$ and $1$. 
 
 Therefore, the interpretation of the coefficients in our regression model is as follows:
 
@@ -894,3 +894,541 @@ curve(dt(x, df = 18),
 ```
 
 The outcomes are consistent with our expectations: the empirical distributions of both estimators seem to track the $t_{18}$ distribution quite closely.
+
+## Exercises
+
+<div  class = "DCexercise">
+
+#### 1. Testing Two Null Hypotheses Individually {-}
+
+Consider the estimated regression line
+
+$$ \widehat{TestScore} = \underset{(23.96)}{567.43} - \underset{(0.85)}{7.15} \times STR, \, R^2 = 0.8976, \, SER=15.19 $$
+
+with standard errors in parentheses.
+
+**Instructions:**
+
++ Compute the $p$-value for a $t$-test of the hypothesis that the intercept is zero. Save the result to <tt>p_int</tt>
++ Compute the $p$-value for a $t$-test of the hypothesis that the coefficient of <tt>STR</tt> is zero. Save the result to <tt>p_STR</tt>
+
+**Hint:** both hypotheses can be tested individually using a two-sided test. Use <tt>pnorm()</tt> to obtain cumulated probabilities for standard normally distributed outcomes, see <tt>?pnorm</tt>
+
+<!--html_preserve-->
+
+<div data-datacamp-exercise data-lang="r">
+
+  <code data-type="sample-code">
+  # Compute the p-value for the first significance test and save it to p_int
+
+
+  # Compute the p-value for the second significance test and save it to p_cs
+  
+  
+  </code>
+  <code data-type="solution">
+  t_int <- 567.43/23.9606
+  p_int <- 2*(1-pnorm(abs(t_int)))
+  t_STR <- 7.15/0.8536
+  p_STR <- 2*(1-pnorm(abs(t_STR)))
+  </code>
+  <code data-type="sct">
+  test_object("p_int")
+  test_object("p_STR")
+  </code>
+  
+</div>
+
+<!--/html_preserve-->
+
+</div>
+
+<div  class = "DCexercise">
+
+#### 2. Two Null Hypotheses You Can't Reject, Can You? {-}
+
+$$\widehat{TestScore} = \underset{(23.96)}{567.43} - \underset{(0.85)}{7.15} \times STR, \, R^2 = 0.8976, \,SER=15.19$$
+
+Can you reject the null hypotheses discussed in the previous code exercise using individual $t$-tests at the $5\%$ significance level?
+
+The variables <tt>t_int</tt> and <tt>t_STR</tt> are the $t$-statistics. Both are available in your working environment.
+
+**Instructions**
+
++ Gather <tt>t_int</tt> and <tt>t_STR</tt> in a vector <tt>test</tt> and use logical operators to check whether the corresponding rejection rule applies.
+
+**Hints:**
+
++ Both tests are two-sided $t$-tests. Key Concept 5.2 recaps how a two-sided $t$-test is conducted. 
++ Use <tt>qnorm()</tt> to obtain normal critical values.
+
+<!--html_preserve-->
+
+<div data-datacamp-exercise data-lang="r">
+
+  <code data-type="pre-exercise-code">
+  t_int <- 567.43/23.9606
+  t_STR <- 7.15/0.8536
+  </code>
+  <code data-type="sample-code">
+  # check wether the t-tests reject
+  
+  
+  </code>
+  <code data-type="solution">
+  test <- c(t_int, t_STR)
+  # entry is 'TRUE' if a test rejects
+  abs(test) >= qnorm(0.95)
+  </code>
+
+  <code data-type="sct">
+  test_or({
+    test <- c(t_int,t_STR)
+  },{
+    test <- c(t_STR, t_int)
+  })
+  test_or({
+    test_student_typed("abs(test) >= qnorm(0.95)")
+  },{
+    test_student_typed("abs(test) <= qnorm(0.95)")
+  })
+  </code>
+  
+</div>
+
+<!--/html_preserve-->
+
+</div>
+
+<div  class = "DCexercise">
+
+#### 3. Confidence Intervals {-}
+
+<tt>mod</tt>, an object of class <tt>lm</tt> which contains the estimated model $$\widehat{TestScore} = \underset{(23.96)}{567.43} - \underset{(0.85)}{7.15} \times STR, \, R^2 = 0.8976, \,SER=15.19$$ is available in your working environment.
+
+**Instructions**
+
++ Compute 90% confidence intervals for both coefficients. 
+
+**Hints:**
+
+Use the function <tt>confint()</tt>, see <tt>?confint</tt>. The argument <tt>level</tt> sets the confidence level to be used.
+
+<!--html_preserve-->
+
+<div data-datacamp-exercise data-lang="r">
+
+  <code data-type="pre-exercise-code">
+    STR <- c(23, 19, 30, 22, 23, 29, 35, 36, 33, 25)
+    TS <- c(430, 430, 333, 410, 390, 377, 325, 310, 328, 375)
+    mod <- lm(TS ~ STR)
+  </code>
+  <code data-type="sample-code">
+  # compute 90% confidence intervals for the model coefficients
+  
+  
+  </code>
+  <code data-type="solution">
+  confint(mod, level = 0.9)
+  </code>
+
+  <code data-type="sct">
+  test_function("confint", args = c("object","level"))
+  </code>
+  
+</div>
+
+<!--/html_preserve-->
+
+</div>
+
+<div  class = "DCexercise">
+
+#### 4. A Confidence Interval for the Mean I {-}
+
+Consider the model $$Y_i = \beta_1 + u_i$$ where $Y_i \sim \mathcal{N}(\mu, \sigma^2)$. Following the discussion preceding equation \@ref(eq:KI), a $95\%$ confidence interval for the mean of the $Y_i$ can be computed as
+
+$$KI^{\mu}_{0.95} = \left[\hat\mu - 1.96 \times \frac{\sigma}{\sqrt{n}} \ , \ \hat\mu + 1.96 \times \frac{\sigma}{\sqrt{n}} \right].$$
+
+**Instructions**
+
++ Sample $n=100$ observations from a normal distribution with variance 100 and mean 10.
++ Use the sample to estimate $\beta_1$. Save the estimate in <tt>mu_hat</tt>.
++ Assume that $\sigma^2 = 100$ is known. Replace the zeros in the code below to obtain a $95\%$ confidence interval for the mean of the $Y_i$.
+
+**Hints:**
+
+Use the function <tt>confint()</tt>, see <tt>?confint</tt>. The argument <tt>level</tt> sets the confidence level to be used.
+
+<!--html_preserve-->
+
+<div data-datacamp-exercise data-lang="r">
+
+  <code data-type="sample-code">
+  # random seed for reproducibility
+  set.seed(1)
+  
+  
+  # sample the observations
+  
+  
+  # estimate the mean, assign the estimate to 'mu_hat'
+  
+  
+  # compute the 95% confidence interval using the formula above
+  CI <- c(
+    "lower" = 0,
+    "upper" = 0
+  )
+  
+  </code>
+  <code data-type="solution">
+  set.seed(1)
+  mu_hat <- mean(rnorm(100, mean = 10, sd = 10))
+  CI <- c(
+   "lower" = mu_hat - 1.96,
+   "upper" = mu_hat + 1.96
+  )
+  </code>
+  test_object("CI")
+  <code data-type="sct">
+  test_object("mu_hat")
+  test_object("CI")
+  </code>
+  
+</div>
+
+<!--/html_preserve-->
+
+</div>
+
+<div  class = "DCexercise">
+
+#### 5. A Confidence Interval for the Mean II {-}
+
+For historical reasons, some <tt>R</tt> functions that we use to obtain statistical inference on model parameters, among them <tt>confint()</tt> and <tt>summary()</tt>, rely on the $t$-distribution instead of using the large-sample normal approximation. This is why for small sample sizes (and hence small degrees of freedom), $p$-values and confidence intervals reported by these functions deviate from those computed using critical values or cumulative probabilities of the standard normal distribution.
+
+The $95\%$ confidence interval for the mean in the previous exercise is $[`r set.seed(1); mu_hat <- mean(rnorm(100, mean = 10, sd = 10));round(c("lower"= mu_hat - 1.96, "upper" = mu_hat + 1.96),4)`]$.
+
+100 observations sampled from a normal distribution with $\mu=10$ and $\sigma^2=100$ have been assigned to the vector <tt>s</tt> and are available in your workspace.
+
+**Instructions**
+
++ Set up a suitable regression model to estimate the mean of the observations in <tt>s</tt>. Then use <tt>confint()</tt> to compute a $95\%$ confidence interval for the mean.
+
+(Check that the result is different from the interval reported above.)
+
+<!--html_preserve-->
+
+<div data-datacamp-exercise data-lang="r">
+
+  <code data-type="pre-exercise-code">
+  set.seed(1); s <- rnorm(100, mean = 10, sd = 10)
+  </code>
+  <code data-type="sample-code">
+  # use a regression to obtain an estimate of the mean
+  
+  
+  # compute the 95% CI
+  
+  
+  </code>
+  <code data-type="solution">
+  set.seed(1)
+  confint(lm(s ~ 1))
+  </code>
+  <code data-type="sct">
+  test_predefined_objects("s")
+  test_output_contains("confint(lm(s ~ 1))")
+  </code>
+  
+</div>
+
+<!--/html_preserve-->
+
+</div>
+
+<div  class = "DCexercise">
+
+#### 6. Regression on a Dummy I {-}
+
+Chapter 5.3 discusses regression when $X$ is a dummy variables where we have used a <tt>for()</tt> loop to generate a binary variable indicating whether a schooling district in the <tt>CASchools</tt> data set has a student-teacher ration below 20. Though it is instructive to use a loop for this, there are ways to achieve the same with less code.
+
+A dataframe <tt>DF</tt> with 100 observations of a variable <tt>X</tt> is available in your working environment.
+
+**Instructions**
+
++ Use <tt>ifelse()</tt> to generate a binary vector <tt>dummy</tt> indicating whether the observations in <tt>X</tt> are positive.
+
++ Append <tt>dummy</tt> to the dataframe <tt>DF</tt>.
+
+<!--html_preserve-->
+
+<div data-datacamp-exercise data-lang="r">
+
+  <code data-type="pre-exercise-code">
+  set.seed(1)
+  DF <- data.frame("X" = rnorm(100))
+  </code>
+  <code data-type="sample-code">
+  # generate the dummy vector 'dummy' using 'ifelse()'
+  
+  
+  # append 'dummy' to 'DF'
+  
+  
+  </code>
+  <code data-type="solution">
+  dummy <- ifelse(DF$X > 0, 1, 0)
+  DF$dummy <- dummy
+  </code>
+  <code data-type="sct">
+  test_object("dummy")
+  test_function("ifelse")
+  test_object("DF")
+  </code>
+  
+</div>
+
+<!--/html_preserve-->
+
+</div>
+
+<div  class = "DCexercise">
+
+#### 7. Regression on a Dummy II {-}
+
+A dataframe <tt>DF</tt> with 100 observations on <tt>Y</tt> and the binary variable <tt>D</tt> from the previous exercise are available in your working environment.
+
+**Instructions**
+
++ Compute the group-specific sample means of the observations in <tt>Y</tt>. Save the mean of observations in <tt>Y</tt> where <tt>dummy == 1</tt> to <tt>mu_Y_D1</tt> and assign the mean of those observations with <tt>D == 0</tt> to <tt>mu_Y_D0</tt>. 
+
++ Use <tt>lm()</tt> to regress <tt>Y</tt> on <tt>D</tt> i.e. estimate the coefficients in the model $$\widehat{Y}_i = \beta_0 + \beta_1 \times D_i + u_i.$$
+
+Check that the estimates of the coefficients $\beta_0$ and $\beta_1$ reflect specific sample means. Can you tell which?
+
+<!--html_preserve-->
+
+<div data-datacamp-exercise data-lang="r">
+
+  <code data-type="pre-exercise-code">
+  set.seed(1)
+  DF <- data.frame("Y" = rnorm(100))
+  DF$D <- ifelse(DF$Y > 0, 1, 0)
+  </code>
+  <code data-type="sample-code">
+  # compute group-specific sample means of 'Y'
+  
+  
+  # Regress 'Y' on 'D'
+  
+  
+  </code>
+  <code data-type="solution">
+   mu_Y_D1 <- mean(DF$Y[DF$D ==1])
+   mu_Y_D0 <- mean(DF$Y[DF$D ==0])
+   lm(Y ~ dummy, data = DF)
+  </code>
+  <code data-type="sct">
+  test_object("mu_Y_D1")
+  test_object("mu_Y_D1")
+  test_or(
+  {
+  test_function("lm", args = "formula")
+  },{
+  ex() %>% override_solution("lm(DF$Y ~ DF$dummy)") %>% check_function("lm") %>% check_arg("formula")
+  }
+  )
+  </code>
+  
+</div>
+
+<!--/html_preserve-->
+
+</div>
+
+<div  class = "DCexercise">
+
+#### 8. Regression on a Dummy III {-}
+
+In this exercise, you have to visualize some of the results from the dummy regression model $$\widehat{Y}_i = -0.66 + 1.43 \times D_i$$ estimated in the previous exercise.
+
+A dataframe <tt>DF</tt> with 100 observations on <tt>X</tt> and the binary variable <tt>dummy</tt> as well as the model object <tt>dummy_mod</tt> from the previous exercise are available in your working environment.
+
+**Instructions**
+
++ Start by drawing a visually appealing plot of the observations on $Y$ and $D$ based on the code chunk provided in <tt>Script.R</tt>. Replace the <tt>???</tt> by the correct expressions!
+
++ Add the regression line to the plot.
+
+<!--html_preserve-->
+
+<div data-datacamp-exercise data-lang="r">
+
+  <code data-type="pre-exercise-code">
+  set.seed(1)
+  DF <- data.frame("Y" = rnorm(100))
+  DF$D <- ifelse(DF$Y > 0, 1, 0)
+  dummy_mod <- lm(Y ~ D, data = DF)
+  </code>
+  <code data-type="sample-code">
+  # Replace the '???' by the correct values
+  plot(x = ??? , y = ???, 
+     pch = 20, 
+     cex = 1,
+     col = 'Steelblue',
+     xlab = expression(D[i]), ylab = 'Test Score',
+     main = 'Dummy Regression'
+     )
+  
+  # add the regression line   
+  
+  </code>
+  <code data-type="solution">
+  plot(x = DF$D , y = DF$Y, 
+     pch = 20, 
+     cex = 1,
+     col = 'Steelblue',
+     xlab = expression(D[i]), ylab = 'Test Score',
+     main = 'Dummy Regression'
+    )  
+    abline(dummy_mod)
+  </code>
+  <code data-type="sct">
+  test_predefined_objects(c("DF","dummy_mod"))
+  test_function("abline")
+  test_function("plot", args = c("x","y"))
+  success_msg("Nice! Clearly, a line is not a suitable way to think of this model!")
+  </code>
+  
+</div>
+
+<!--/html_preserve-->
+
+</div>
+
+<div  class = "DCexercise">
+
+#### 9. Gender Wage Gap I {-}
+
+<tt>CPS1985</tt> is a cross-section data set originating from the May 1985 *Current Population Survey* by the *US Census Bureau* and, among others things, containes observations on wage and gender of employees.
+
+<tt>CPS1985</tt> is part of the package <tt>AER</tt>.
+
+**Instructions**
+
++ Load the package <tt>AER</tt> and attach the data set <tt>CPS1985</tt>.
+
++ Estimate the dummy regression model $$wage_i = \beta_0 + \beta_1 \cdot female_i + u_i$$ where 
+  
+    \begin{align*}
+      female = 
+      \begin{cases}
+        1, & \text{if employee is female} \\
+        0, & \text{if employee is male}.
+      \end{cases}
+    \end{align*}
+  
+    Save the result in `wage_mod`.
+
+<!--html_preserve-->
+
+<div data-datacamp-exercise data-lang="r">
+
+  <code data-type="sample-code">
+  # Load the package and attach the data set
+  
+  
+  # Perform the regression
+  
+  
+  </code>
+  <code data-type="solution">
+  library(AER)
+  data(CPS1985)
+  dummy_mod <- lm(wage ~ gender, data = CPS1985)
+  </code>
+  <code data-type="sct">
+  test_function("library")
+  test_function("data")
+  test_or({
+    ex() %>% override_solution("attach(CPS1985); dummy_mod <- lm(wage ~ gender)") %>% check_object("dummy_mod")
+  },{
+    ex() %>% override_solution("dummy_mod <- lm(CPS1985$wage ~ CPS1985$gender)") %>% check_object("dummy_mod")
+  },{
+    ex() %>% override_solution("dummy_mod <- lm(wage ~ gender, data = CPS1985)") %>% check_object("dummy_mod")
+  }
+  )
+  success_msg("Well done!")
+  </code>
+  
+</div>
+
+<!--/html_preserve-->
+
+</div>
+
+<div  class = "DCexercise">
+
+#### 10. Gender Wage Gap II {-}
+
+<tt>CPS1985</tt> is a cross-section data set originating from the May 1985 *Current Population Survey* by the *US Census Bureau* and, among others things, containes observations on wage and gender of employees.
+
+<tt>CPS1985</tt> is part of the package <tt>AER</tt>.
+
+**Instructions**
+
++ Load the package <tt>AER</tt> and attach the data set <tt>CPS1985</tt>.
+
++ Estimate the dummy regression model $$wage_i = \beta_0 + \beta_1 \cdot female_i + u_i$$ where 
+  
+    \begin{align*}
+      female = 
+      \begin{cases}
+        1, & \text{if employee is female} \\
+        0, & \text{if employee is male}.
+      \end{cases}
+    \end{align*}
+  
+    Save the result in `wage_mod`.
+
+<!--html_preserve-->
+
+<div data-datacamp-exercise data-lang="r">
+
+  <code data-type="sample-code">
+  # Load the package and attach the data set
+  
+  
+  # Perform the regression
+  
+  
+  </code>
+  <code data-type="solution">
+  library(AER)
+  data(CPS1985)
+  dummy_mod <- lm(wage ~ gender, data = CPS1985)
+  </code>
+  <code data-type="sct">
+  test_function("library")
+  test_function("data")
+  test_or({
+    ex() %>% override_solution("attach(CPS1985); dummy_mod <- lm(wage ~ gender)") %>% check_object("dummy_mod")
+  },{
+    ex() %>% override_solution("dummy_mod <- lm(CPS1985$wage ~ CPS1985$gender)") %>% check_object("dummy_mod")
+  },{
+    ex() %>% override_solution("dummy_mod <- lm(wage ~ gender, data = CPS1985)") %>% check_object("dummy_mod")
+  }
+  )
+  success_msg("Well done!")
+  </code>
+  
+</div>
+
+<!--/html_preserve-->
+
+</div>
+
+
+

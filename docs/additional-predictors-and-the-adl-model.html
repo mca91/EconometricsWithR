@@ -7,7 +7,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>Using R for Introduction to Econometrics</title>
   <meta name="description" content="Using R for Introduction to Econometrics">
-  <meta name="generator" content="bookdown 0.7.1 and GitBook 2.6.7">
+  <meta name="generator" content="bookdown 0.7 and GitBook 2.6.7">
 
   <meta property="og:title" content="Using R for Introduction to Econometrics" />
   <meta property="og:type" content="book" />
@@ -25,7 +25,7 @@
 <meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber and Martin Schmelzer">
 
 
-<meta name="date" content="2018-03-21">
+<meta name="date" content="2018-03-26">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -219,6 +219,7 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 <li class="chapter" data-level="" data-path="the-gauss-markov-theorem.html"><a href="the-gauss-markov-theorem.html#r-simulation-study-blue-estimator"><i class="fa fa-check"></i>R Simulation Study: BLUE Estimator</a></li>
 </ul></li>
 <li class="chapter" data-level="5.6" data-path="using-the-t-statistic-in-regression-when-the-sample-size-is-small.html"><a href="using-the-t-statistic-in-regression-when-the-sample-size-is-small.html"><i class="fa fa-check"></i><b>5.6</b> Using the <span class="math inline">\(t\)</span>-Statistic in Regression When the Sample Size Is Small</a></li>
+<li class="chapter" data-level="5.7" data-path="exercises-2.html"><a href="exercises-2.html"><i class="fa fa-check"></i><b>5.7</b> Exercises</a></li>
 </ul></li>
 <li class="chapter" data-level="6" data-path="regression-models-with-multiple-regressors.html"><a href="regression-models-with-multiple-regressors.html"><i class="fa fa-check"></i><b>6</b> Regression Models with Multiple Regressors</a><ul>
 <li class="chapter" data-level="6.1" data-path="omitted-variable-bias.html"><a href="omitted-variable-bias.html"><i class="fa fa-check"></i><b>6.1</b> Omitted Variable Bias</a></li>
@@ -365,41 +366,38 @@ The Autoregressive Distributed Lag Model
 <p>Interest on long-term and short term treasury bonds are closly linked to the macroeconomic development. While interest rates on both types of bonds have the same long-run tendencies, they behave quite differently in the short run. The difference in interest rates of two bonds with distinct matuarity is called the <em>term spread</em>.</p>
 <p>The following code chuncks reproduce figure 14.3 of the book which displays interest rates of 10-year U.S. Treasury bonds and 3 month U.S. Treasury bills from 1960 to 2012.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 3 months Treasury bills interest rate</span>
-TB3MS &lt;-<span class="st"> </span><span class="kw">xts</span>(USMacroSWQ<span class="op">$</span>TB3MS, <span class="kw">as.yearqtr</span>(USMacroSWQ<span class="op">$</span>X., <span class="dt">format =</span> <span class="st">&quot;%Y:0%q&quot;</span>))[<span class="st">&quot;1960::2012&quot;</span>]
+TB3MS &lt;-<span class="st"> </span><span class="kw">xts</span>(USMacroSWQ<span class="op">$</span>TB3MS, USMacroSWQ<span class="op">$</span>Date)[<span class="st">&quot;1960::2012&quot;</span>]
 
 <span class="co"># 10 years Treasury bonds interest rate</span>
-TB10YS &lt;-<span class="st"> </span><span class="kw">xts</span>(USMacroSWQ<span class="op">$</span>GS10, <span class="kw">as.yearqtr</span>(USMacroSWQ<span class="op">$</span>X., <span class="dt">format =</span> <span class="st">&quot;%Y:0%q&quot;</span>))[<span class="st">&quot;1960::2012&quot;</span>]
+TB10YS &lt;-<span class="st"> </span><span class="kw">xts</span>(USMacroSWQ<span class="op">$</span>GS10, USMacroSWQ<span class="op">$</span>Date)[<span class="st">&quot;1960::2012&quot;</span>]
 
 <span class="co"># term spread</span>
 TSpread &lt;-<span class="st"> </span>TB10YS <span class="op">-</span><span class="st"> </span>TB3MS</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># reproduce figure 14.2 (a) of the book</span>
-<span class="kw">chart.TimeSeries</span>(<span class="kw">merge</span>(TB3MS,TB10YS),
-                 <span class="dt">date.format =</span> <span class="st">&quot;%Y&quot;</span>, 
-                 <span class="dt">minor.ticks =</span> F,
-                 <span class="dt">col =</span> <span class="kw">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;steelblue&quot;</span>), 
-                 <span class="dt">lty =</span> <span class="kw">c</span>(<span class="dv">2</span>,<span class="dv">1</span>),
-                 <span class="dt">period.areas =</span> <span class="kw">c</span>(
-                   <span class="st">&quot;1960::1961&quot;</span>,<span class="st">&quot;1970&quot;</span>,<span class="st">&quot;1974::1975&quot;</span>,
-                   <span class="st">&quot;1980&quot;</span>,<span class="st">&quot;1981::1982&quot;</span>,<span class="st">&quot;1990::1991&quot;</span>,<span class="st">&quot;2001&quot;</span>,<span class="st">&quot;2007::2009&quot;</span>
-                   ),
-                 <span class="dt">ylab =</span> <span class="st">&quot;Percent per annum&quot;</span>,
-                 <span class="dt">main =</span> <span class="st">&quot;Interest Rates&quot;</span>,
-                 <span class="dt">legend.loc =</span> <span class="st">&quot;topright&quot;</span>
-                 )</code></pre></div>
-<p><img src="URFITE_files/figure-html/unnamed-chunk-347-1.png" width="672" style="display: block; margin: auto;" /></p>
+<span class="kw">plot</span>(<span class="kw">merge</span>(<span class="kw">as.zoo</span>(TB3MS),<span class="kw">as.zoo</span>(TB10YS)), 
+     <span class="dt">plot.type =</span> <span class="st">&quot;single&quot;</span>, 
+     <span class="dt">col =</span> <span class="kw">c</span>(<span class="st">&quot;darkred&quot;</span>, <span class="st">&quot;steelblue&quot;</span>),
+     <span class="dt">lwd =</span> <span class="dv">2</span>,
+     <span class="dt">xlab =</span> <span class="st">&quot;Date&quot;</span>,
+     <span class="dt">ylab =</span> <span class="st">&quot;Percent per annum&quot;</span>,
+     <span class="dt">main =</span> <span class="st">&quot;Interest Rates&quot;</span>
+)
+
+<span class="kw">legend</span>(<span class="st">&quot;topright&quot;</span>, 
+       <span class="dt">legend =</span> <span class="kw">c</span>(<span class="st">&quot;TB3MS&quot;</span>,<span class="st">&quot;TB10YS&quot;</span>),
+       <span class="dt">col =</span> <span class="kw">c</span>(<span class="st">&quot;darkred&quot;</span>, <span class="st">&quot;steelblue&quot;</span>),
+       <span class="dt">lwd =</span> <span class="kw">c</span>(<span class="dv">2</span>,<span class="dv">2</span>)
+       )</code></pre></div>
+<p><img src="URFITE_files/figure-html/unnamed-chunk-348-1.png" width="672" style="display: block; margin: auto;" /></p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># reproduce figure 14.2 (b) of the book</span>
-<span class="kw">chart.TimeSeries</span>(TSpread,
-                 <span class="dt">date.format =</span> <span class="st">&quot;%Y&quot;</span>, 
-                 <span class="dt">minor.ticks =</span> F,
-                 <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>, 
-                 <span class="dt">period.areas =</span> <span class="kw">c</span>(
-                   <span class="st">&quot;1960::1961&quot;</span>,<span class="st">&quot;1970&quot;</span>,<span class="st">&quot;1974::1975&quot;</span>,
-                   <span class="st">&quot;1980&quot;</span>,<span class="st">&quot;1981::1982&quot;</span>,<span class="st">&quot;1990::1991&quot;</span>,<span class="st">&quot;2001&quot;</span>,<span class="st">&quot;2007::2009&quot;</span>
-                   ),
-                 <span class="dt">ylab =</span> <span class="st">&quot;Percent per annum&quot;</span>,
-                 <span class="dt">main =</span> <span class="st">&quot;Term Spread&quot;</span>
-                 )</code></pre></div>
-<p><img src="URFITE_files/figure-html/unnamed-chunk-347-2.png" width="672" style="display: block; margin: auto;" /></p>
+<span class="kw">plot</span>(<span class="kw">as.zoo</span>(TSpread), 
+     <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>,
+     <span class="dt">lwd =</span> <span class="dv">2</span>,
+     <span class="dt">xlab =</span> <span class="st">&quot;Date&quot;</span>,
+     <span class="dt">ylab =</span> <span class="st">&quot;Percent per annum&quot;</span>,
+     <span class="dt">main =</span> <span class="st">&quot;Term Spread&quot;</span>
+)</code></pre></div>
+<p><img src="URFITE_files/figure-html/unnamed-chunk-348-2.png" width="672" style="display: block; margin: auto;" /></p>
 <p>Notice that before recessions, the gap between interests on long-term bonds and short term bills narrows and consequently the term spread declines drastically towards zero or even falls below zero in times of economic stress. This information might be used to improve forecasts of future GDP growth.</p>
 <p>We check this by estimating an ADL(<span class="math inline">\(2\)</span>,<span class="math inline">\(1\)</span>) model and an ADL(<span class="math inline">\(2\)</span>,<span class="math inline">\(2\)</span>) model of the GDP growth rate using lags of GDP growth and lags of the term spread as regressors and use both models for forecasting the GDP growth in 2013:Q1.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># convert series to ts objects</span>
@@ -625,7 +623,7 @@ fc &lt;-<span class="st"> </span><span class="kw">forecast</span>(model, <span c
      <span class="dt">showgap =</span> F, 
      <span class="dt">fcol =</span> <span class="st">&quot;red&quot;</span>,
      <span class="dt">flty =</span> <span class="dv">2</span>)</code></pre></div>
-<p><img src="URFITE_files/figure-html/unnamed-chunk-354-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="URFITE_files/figure-html/unnamed-chunk-355-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>The dashed red line shows point forecasts of the series for the next 25 periods based on an <span class="math inline">\(ADL(1,1)\)</span> model and the shaded areas represent the prediction intervals. The degree of shading indicates the level of the prediction interval. The darkest of the blue bands displays the <span class="math inline">\(5\%\)</span> forecast intervals and the color fades towards grey as the level of the intervals increases.</p>
 </div>
 </div>
@@ -661,7 +659,7 @@ gitbook.start({
 },
 "fontsettings": {
 "theme": "white",
-"family": "sans",
+"family": "serif",
 "size": 1
 },
 "edit": {

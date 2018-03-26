@@ -4,6 +4,7 @@
 library(dynlm)
 library(stargazer)
 library(scales)
+library(readxl)
 ```
 
 Time series data is data that is collected for a single entitity over time. This is fundamentally different from cross-section data which is data on *multiple* entities at the same point in time. Time series data allows estimation of the effect on $Y$ of a change in $X$ *over time*. This is what econometricians call a *dynamic causal effect*. Let us go back to the application to cigarette consumption of Chapter 12 where we where interest in estimating the effect on cigarette demand of a price increase caused by a raise of the general sales tax. One might use time series data to assess the effect of causal effect of a tax hike on smoking both, initially and in subsequent periods.
@@ -13,7 +14,6 @@ Another application of time series data is forecasting. For example, weather ser
 The remainder of the book deals with the econometric techniques for the analysis of time series data and application of the latter to problems of forecasting and estimation of dynamic causal effects. This section covers the basic concepts presented in Chapter 14 of the book, explains how to visualize time series data and demonstrates how to estimate simple autoregressive models where the regressors are past values of the dependent variable or other variables. In this context we will also discuss the concept of stationarity, an important property which has far-reaching consequences since it determines whether the past of a series has any power in explaining the series' future. 
 
 Most empirical applications in this chapter are concerned with forecasting and use data on U.S. macroeconomic indicators or financial time series like Gross Domestic Product (GDP), the unemployment rate or excess stock returns.
-
 
 ## Using Regression Models for Forecasting
 
@@ -47,8 +47,6 @@ As before, a good point to start with in pre-estimation is plotting the data. Th
 
 ```{r, warning=FALSE, message=FALSE}
 # attach the packages
-library(xlsx)
-library(PerformanceAnalytics)
 library(quantmod)
 ```
 
@@ -56,11 +54,16 @@ We begin by importing the data set.
 
 ```{r}
 # load US macroeconomic data
-USMacroSWQ <- read.xlsx2("Data/us_macro_quarterly.xlsx",
-                         sheetIndex = 1,
-                         header = T,
-                         colClasses = c("character", rep("numeric", 9)),
-                         stringsAsFactors = F)
+USMacroSWQ <- read_xlsx("Data/us_macro_quarterly.xlsx",
+                         sheet = 1,
+                         col_types = c("text", rep("numeric", 9))
+                        )
+
+# format date column
+USMacroSWQ$X__1 <- as.yearqtr(USMacroSWQ$X__1, format = "%Y:0%q")
+
+# adjust column names
+colnames(USMacroSWQ) <- c("Date", "GDPC96", "JAPAN_IP", "PCECTPI", "GS10", "GS1", "TB3MS", "UNRATE", "EXUSUK", "CPIAUCSL")
 ```
 
 When dealing with time series data in <tt>R</tt> it is preferable to work with time-series objects that keep track of the frequency of the data and are extensible. In what follows we will use <tt>xts</tt> objects, see `?xts`. Since the data In `USMacroSWQ` are in quarterly frequence we convert the first column to `yearqtr` format before generating the <tt>xts</tt> object `GDP`.
@@ -69,7 +72,7 @@ The function `Delt()` from the package `Quantmod` computes growth rates. Note th
 
 ```{r}
 # GDP series as xts object
-GDP <- xts(USMacroSWQ$GDPC96, as.yearqtr(USMacroSWQ$X., format = "%Y:0%q"))["1960::2013"]
+GDP <- xts(USMacroSWQ$GDPC96, USMacroSWQ$Date)["1960::2013"]
 
 # GDP growth series as xts object
 GDPGrowth <- xts(400 * log(GDP/lag(GDP)))
@@ -79,32 +82,24 @@ We use `chart.TimeSeries()` from the package `PerformanceAnalytics` to generate 
 
 ```{r, fig.align='center'}
 # reproduce figure 14.1 (a) of the book
-chart.TimeSeries(log(GDP),
-                 date.format = "%Y", 
-                 minor.ticks = F,
-                 col = "steelblue",
-                 period.areas = c(
-                   "1960::1961","1970","1974::1975",
-                   "1980","1981::1982","1990::1991","2001","2007::2009"
-                   ),
-                 ylab = "Logarithm",
-                 main = "US Quarterly Real GDP"
-                 )
+plot(log(as.zoo(GDP)),
+     col = "steelblue",
+     lwd = 2,
+     ylab = "Logarithm",
+     xlab = "Date",
+     main = "US Quarterly Real GDP"
+     )
 ```
 
 ```{r, fig.align='center'}
 # reproduce figure 14.1 (b) of the book
-chart.TimeSeries(GDPGrowth,
-                 date.format = "%Y", 
-                 minor.ticks = F,
-                 col = "steelblue",
-                 period.areas = c(
-                   "1960::1961","1970","1974::1975",
-                   "1980","1981::1982","1990::1991","2001","2007::2009"
-                   ),
-                 ylab = "Percent at an annual rate",
-                 main = "Growth Rates in US Real GDP"
-                 )
+plot(as.zoo(GDPGrowth),
+     col = "steelblue",
+     lwd = 2,
+     ylab = "Logarithm",
+     xlab = "Date",
+     main = "Growth Rates in US Real GDP"
+     )
 ```
 
 ### Notation, Lags, Differences, Logarithms and Growth Rates {-}
@@ -198,52 +193,55 @@ Figure 14.2 of the book presents four plots. The U.S. unemployment rate, the U.S
 
 ```{r}
 # define series as xts objects
-USUnemp <- xts(USMacroSWQ$UNRATE, 
-                    as.yearqtr(USMacroSWQ$X., format = "%Y:0%q"))["1960::2013"]
+USUnemp <- xts(USMacroSWQ$UNRATE, USMacroSWQ$Date)["1960::2013"]
 
-DollarPoundFX <- xts(USMacroSWQ$EXUSUK, 
-                     as.yearqtr(USMacroSWQ$X., format = "%Y:0%q"))["1960::2013"]
+DollarPoundFX <- xts(USMacroSWQ$EXUSUK, USMacroSWQ$Date)["1960::2013"]
   
-JPIndProd <- xts(log(USMacroSWQ$JAPAN_IP), 
-                 as.yearqtr(USMacroSWQ$X., format = "%Y:0%q"))["1960::2013"]
+JPIndProd <- xts(log(USMacroSWQ$JAPAN_IP), USMacroSWQ$Date)["1960::2013"]
 
 data("NYSESW")  
 NYSESW <- xts(Delt(NYSESW))
 ```
 
-```{r}
+```{r, fig.align='center'}
 par(mfrow = c(2, 2))
-chart.TimeSeries(USUnemp, 
-                 date.format = "%Y", 
-                 minor.ticks = F,
-                 col = "steelblue",
-                 ylab = "Percent",
-                 main = "US Unemployment Rate"
-                 )
 
-chart.TimeSeries(DollarPoundFX, 
-                 date.format = "%Y", 
-                 minor.ticks = F,
-                 col = "steelblue",
-                 ylab = "Dollar per pound",
-                 main = "U.S. Dollar / B. Pound Exchange Rate"
-                 )
+plot(as.zoo(USUnemp),
+     col = "steelblue",
+     lwd = 2,
+     ylab = "Percent",
+     xlab = "Date",
+     main = "US Unemployment Rate",
+     cex.main = 1
+)
 
-chart.TimeSeries(JPIndProd, 
-                 date.format = "%Y", 
-                 minor.ticks = F,
-                 col = "steelblue",
-                 ylab = "Logarithm",
-                 main = "Japanese Industrial Production"
-                 )
 
-chart.TimeSeries(NYSESW, 
-                 date.format = "%Y", 
-                 minor.ticks = F,
-                 col = "steelblue",
-                 ylab = "Percent per Day",
-                 main = "New York Stock Exchange Composite Index"
-                 )
+plot(as.zoo(DollarPoundFX),
+     col = "steelblue",
+     lwd = 2,
+     ylab = "Dollar per pound",
+     xlab = "Date",
+     main = "U.S. Dollar / B. Pound Exchange Rate",
+     cex.main = 1
+)
+
+plot(as.zoo(JPIndProd),
+     col = "steelblue",
+     lwd = 2,
+     ylab = "Logarithm",
+     xlab = "Date",
+     main = "Japanese Industrial Production",
+     cex.main = 1
+)
+
+plot(as.zoo(NYSESW),
+     col = "steelblue",
+     lwd = 2,
+     ylab = "Percent per Day",
+     xlab = "Date",
+     main = "New York Stock Exchange Composite Index",
+     cex.main = 1
+)
 ```
 
 Note that the series show quite different characteristics. The unemployment rate increases during recessions and declines in times of economic recoveries and growth. The Dollar/Pund exchange rates shows a deterministic patern until the end of the Bretton Woods system. Japans industrial production exhibits an upward trend and decreasing growth. Daily changes in the New York Stock Exchange composite index seems to be random around the zero line. Sample autocorrelations confirm this conjecture.
@@ -441,13 +439,10 @@ We start by importing monthly data from 1931:1 to 2002:12 on excess returns of a
 
 ```{r}
 # read in data on stock returns
-SReturns <- read.xlsx2("Data/Stock_Returns_1931_2002.xlsx",
-                         sheetIndex = 1,
-                         colIndex = 1:4,
-                         header = T,
-                         colClasses = rep("numeric", 4),
-                         stringsAsFactors = F)
-
+SReturns <- read_xlsx("Data/Stock_Returns_1931_2002.xlsx",
+                      sheet = 1,
+                      col_types = "numeric"
+                      )
 ```
 
 We continue by converting the data to an object of class <tt>ts</tt>.
@@ -555,10 +550,10 @@ The following code chuncks reproduce figure 14.3 of the book which displays inte
 
 ```{r}
 # 3 months Treasury bills interest rate
-TB3MS <- xts(USMacroSWQ$TB3MS, as.yearqtr(USMacroSWQ$X., format = "%Y:0%q"))["1960::2012"]
+TB3MS <- xts(USMacroSWQ$TB3MS, USMacroSWQ$Date)["1960::2012"]
 
 # 10 years Treasury bonds interest rate
-TB10YS <- xts(USMacroSWQ$GS10, as.yearqtr(USMacroSWQ$X., format = "%Y:0%q"))["1960::2012"]
+TB10YS <- xts(USMacroSWQ$GS10, USMacroSWQ$Date)["1960::2012"]
 
 # term spread
 TSpread <- TB10YS - TB3MS
@@ -567,32 +562,29 @@ TSpread <- TB10YS - TB3MS
 
 ```{r, fig.align='center'}
 # reproduce figure 14.2 (a) of the book
-chart.TimeSeries(merge(TB3MS,TB10YS),
-                 date.format = "%Y", 
-                 minor.ticks = F,
-                 col = c("black", "steelblue"), 
-                 lty = c(2,1),
-                 period.areas = c(
-                   "1960::1961","1970","1974::1975",
-                   "1980","1981::1982","1990::1991","2001","2007::2009"
-                   ),
-                 ylab = "Percent per annum",
-                 main = "Interest Rates",
-                 legend.loc = "topright"
-                 )
+plot(merge(as.zoo(TB3MS),as.zoo(TB10YS)), 
+     plot.type = "single", 
+     col = c("darkred", "steelblue"),
+     lwd = 2,
+     xlab = "Date",
+     ylab = "Percent per annum",
+     main = "Interest Rates"
+)
+
+legend("topright", 
+       legend = c("TB3MS","TB10YS"),
+       col = c("darkred", "steelblue"),
+       lwd = c(2,2)
+       )
 
 # reproduce figure 14.2 (b) of the book
-chart.TimeSeries(TSpread,
-                 date.format = "%Y", 
-                 minor.ticks = F,
-                 col = "steelblue", 
-                 period.areas = c(
-                   "1960::1961","1970","1974::1975",
-                   "1980","1981::1982","1990::1991","2001","2007::2009"
-                   ),
-                 ylab = "Percent per annum",
-                 main = "Term Spread"
-                 )
+plot(as.zoo(TSpread), 
+     col = "steelblue",
+     lwd = 2,
+     xlab = "Date",
+     ylab = "Percent per annum",
+     main = "Term Spread"
+)
 ```
 
 Notice that before recessions, the gap between interests on long-term bonds and short term bills narrows and consequently the term spread declines drastically towards zero or even falls below zero in times of economic stress. This information might be used to improve forecasts of future GDP growth.
@@ -1067,14 +1059,19 @@ As an empirical example, consider the U.S. unemployment rate and the Japanese in
 
 ```{r}
 # Plot U.S. unemployment rate & Japanese industrial production
-chart.TimeSeries(merge(USUnemp, JPIndProd),
-                 date.format = "%Y", 
-                 minor.ticks = F,
-                 col = c("darkred", "steelblue"), 
-                 main = "Spurious Regression: Macroeconomic Time series",
-                 legend.loc = "topleft",
-                 ylab = ""
-                 )
+plot(merge(as.zoo(USUnemp), as.zoo(JPIndProd)), 
+     plot.type = "single", 
+     col = c("darkred","steelblue"),
+     lwd = 2,
+     xlab = "Date",
+     ylab = "",
+     main = "Spurious Regression: Macroeconomic Time series"
+)
+legend("topleft", 
+       legend = c("USUnemp","JPIndProd"),
+       col = c("darkred", "steelblue"),
+       lwd = c(2, 2)
+       )
 ```
 
 

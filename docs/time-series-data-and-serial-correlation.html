@@ -7,7 +7,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>Using R for Introduction to Econometrics</title>
   <meta name="description" content="Using R for Introduction to Econometrics">
-  <meta name="generator" content="bookdown 0.7.1 and GitBook 2.6.7">
+  <meta name="generator" content="bookdown 0.7 and GitBook 2.6.7">
 
   <meta property="og:title" content="Using R for Introduction to Econometrics" />
   <meta property="og:type" content="book" />
@@ -25,7 +25,7 @@
 <meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber and Martin Schmelzer">
 
 
-<meta name="date" content="2018-03-21">
+<meta name="date" content="2018-03-26">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -219,6 +219,7 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 <li class="chapter" data-level="" data-path="the-gauss-markov-theorem.html"><a href="the-gauss-markov-theorem.html#r-simulation-study-blue-estimator"><i class="fa fa-check"></i>R Simulation Study: BLUE Estimator</a></li>
 </ul></li>
 <li class="chapter" data-level="5.6" data-path="using-the-t-statistic-in-regression-when-the-sample-size-is-small.html"><a href="using-the-t-statistic-in-regression-when-the-sample-size-is-small.html"><i class="fa fa-check"></i><b>5.6</b> Using the <span class="math inline">\(t\)</span>-Statistic in Regression When the Sample Size Is Small</a></li>
+<li class="chapter" data-level="5.7" data-path="exercises-2.html"><a href="exercises-2.html"><i class="fa fa-check"></i><b>5.7</b> Exercises</a></li>
 </ul></li>
 <li class="chapter" data-level="6" data-path="regression-models-with-multiple-regressors.html"><a href="regression-models-with-multiple-regressors.html"><i class="fa fa-check"></i><b>6</b> Regression Models with Multiple Regressors</a><ul>
 <li class="chapter" data-level="6.1" data-path="omitted-variable-bias.html"><a href="omitted-variable-bias.html"><i class="fa fa-check"></i><b>6.1</b> Omitted Variable Bias</a></li>
@@ -348,50 +349,45 @@ This book is in <b>Open Review</b>. We want your feedback to make the book bette
 <p>GDP measures the productivity of an economy. It is commonly defined as the value of goods services produced over a given time period. The data set <tt>us_macro_quarterly.xlsx</tt> is provided by the authors and can be downloaded <a href="http://wps.aw.com/aw_stock_ie_3/178/45691/11696965.cw/index.html">here</a>. It provides data on quarterly data on US real (i.e. inflation adjusted) GDP from years 1947 to 2004.</p>
 <p>As before, a good point to start with in pre-estimation is plotting the data. The packages <code>PerformanceAnalytics</code> and <code>quantmod</code> provide some very convenient functions for plotting and computing with time series data. We also load the package <code>xlsx</code> to read the data into <tt>R</tt>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># attach the packages</span>
-<span class="kw">library</span>(xlsx)
-<span class="kw">library</span>(PerformanceAnalytics)
 <span class="kw">library</span>(quantmod)</code></pre></div>
 <p>We begin by importing the data set.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># load US macroeconomic data</span>
-USMacroSWQ &lt;-<span class="st"> </span><span class="kw">read.xlsx2</span>(<span class="st">&quot;Data/us_macro_quarterly.xlsx&quot;</span>,
-                         <span class="dt">sheetIndex =</span> <span class="dv">1</span>,
-                         <span class="dt">header =</span> T,
-                         <span class="dt">colClasses =</span> <span class="kw">c</span>(<span class="st">&quot;character&quot;</span>, <span class="kw">rep</span>(<span class="st">&quot;numeric&quot;</span>, <span class="dv">9</span>)),
-                         <span class="dt">stringsAsFactors =</span> F)</code></pre></div>
+USMacroSWQ &lt;-<span class="st"> </span><span class="kw">read_xlsx</span>(<span class="st">&quot;Data/us_macro_quarterly.xlsx&quot;</span>,
+                         <span class="dt">sheet =</span> <span class="dv">1</span>,
+                         <span class="dt">col_types =</span> <span class="kw">c</span>(<span class="st">&quot;text&quot;</span>, <span class="kw">rep</span>(<span class="st">&quot;numeric&quot;</span>, <span class="dv">9</span>))
+                        )
+
+<span class="co"># format date column</span>
+USMacroSWQ<span class="op">$</span>X__<span class="dv">1</span> &lt;-<span class="st"> </span><span class="kw">as.yearqtr</span>(USMacroSWQ<span class="op">$</span>X__<span class="dv">1</span>, <span class="dt">format =</span> <span class="st">&quot;%Y:0%q&quot;</span>)
+
+<span class="co"># adjust column names</span>
+<span class="kw">colnames</span>(USMacroSWQ) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Date&quot;</span>, <span class="st">&quot;GDPC96&quot;</span>, <span class="st">&quot;JAPAN_IP&quot;</span>, <span class="st">&quot;PCECTPI&quot;</span>, <span class="st">&quot;GS10&quot;</span>, <span class="st">&quot;GS1&quot;</span>, <span class="st">&quot;TB3MS&quot;</span>, <span class="st">&quot;UNRATE&quot;</span>, <span class="st">&quot;EXUSUK&quot;</span>, <span class="st">&quot;CPIAUCSL&quot;</span>)</code></pre></div>
 <p>When dealing with time series data in <tt>R</tt> it is preferable to work with time-series objects that keep track of the frequency of the data and are extensible. In what follows we will use <tt>xts</tt> objects, see <code>?xts</code>. Since the data In <code>USMacroSWQ</code> are in quarterly frequence we convert the first column to <code>yearqtr</code> format before generating the <tt>xts</tt> object <code>GDP</code>.</p>
 <p>The function <code>Delt()</code> from the package <code>Quantmod</code> computes growth rates. Note that, since the data is quarterly, we anualize the quarterly changes to obtain anual growth rates as <span class="math display">\[Rate_{annual} = (1+Rate_{quarterly})^4-1\]</span>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># GDP series as xts object</span>
-GDP &lt;-<span class="st"> </span><span class="kw">xts</span>(USMacroSWQ<span class="op">$</span>GDPC96, <span class="kw">as.yearqtr</span>(USMacroSWQ<span class="op">$</span>X., <span class="dt">format =</span> <span class="st">&quot;%Y:0%q&quot;</span>))[<span class="st">&quot;1960::2013&quot;</span>]
+GDP &lt;-<span class="st"> </span><span class="kw">xts</span>(USMacroSWQ<span class="op">$</span>GDPC96, USMacroSWQ<span class="op">$</span>Date)[<span class="st">&quot;1960::2013&quot;</span>]
 
 <span class="co"># GDP growth series as xts object</span>
 GDPGrowth &lt;-<span class="st"> </span><span class="kw">xts</span>(<span class="dv">400</span> <span class="op">*</span><span class="st"> </span><span class="kw">log</span>(GDP<span class="op">/</span><span class="kw">lag</span>(GDP)))</code></pre></div>
 <p>We use <code>chart.TimeSeries()</code> from the package <code>PerformanceAnalytics</code> to generate plots of <code>GDP</code> and <code>GDPGrowth</code>. The following code chunks reproduce figure 14.1 of the book.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># reproduce figure 14.1 (a) of the book</span>
-<span class="kw">chart.TimeSeries</span>(<span class="kw">log</span>(GDP),
-                 <span class="dt">date.format =</span> <span class="st">&quot;%Y&quot;</span>, 
-                 <span class="dt">minor.ticks =</span> F,
-                 <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>,
-                 <span class="dt">period.areas =</span> <span class="kw">c</span>(
-                   <span class="st">&quot;1960::1961&quot;</span>,<span class="st">&quot;1970&quot;</span>,<span class="st">&quot;1974::1975&quot;</span>,
-                   <span class="st">&quot;1980&quot;</span>,<span class="st">&quot;1981::1982&quot;</span>,<span class="st">&quot;1990::1991&quot;</span>,<span class="st">&quot;2001&quot;</span>,<span class="st">&quot;2007::2009&quot;</span>
-                   ),
-                 <span class="dt">ylab =</span> <span class="st">&quot;Logarithm&quot;</span>,
-                 <span class="dt">main =</span> <span class="st">&quot;US Quarterly Real GDP&quot;</span>
-                 )</code></pre></div>
-<p><img src="URFITE_files/figure-html/unnamed-chunk-322-1.png" width="672" style="display: block; margin: auto;" /></p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># reproduce figure 14.1 (b) of the book</span>
-<span class="kw">chart.TimeSeries</span>(GDPGrowth,
-                 <span class="dt">date.format =</span> <span class="st">&quot;%Y&quot;</span>, 
-                 <span class="dt">minor.ticks =</span> F,
-                 <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>,
-                 <span class="dt">period.areas =</span> <span class="kw">c</span>(
-                   <span class="st">&quot;1960::1961&quot;</span>,<span class="st">&quot;1970&quot;</span>,<span class="st">&quot;1974::1975&quot;</span>,
-                   <span class="st">&quot;1980&quot;</span>,<span class="st">&quot;1981::1982&quot;</span>,<span class="st">&quot;1990::1991&quot;</span>,<span class="st">&quot;2001&quot;</span>,<span class="st">&quot;2007::2009&quot;</span>
-                   ),
-                 <span class="dt">ylab =</span> <span class="st">&quot;Percent at an annual rate&quot;</span>,
-                 <span class="dt">main =</span> <span class="st">&quot;Growth Rates in US Real GDP&quot;</span>
-                 )</code></pre></div>
+<span class="kw">plot</span>(<span class="kw">log</span>(<span class="kw">as.zoo</span>(GDP)),
+     <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>,
+     <span class="dt">lwd =</span> <span class="dv">2</span>,
+     <span class="dt">ylab =</span> <span class="st">&quot;Logarithm&quot;</span>,
+     <span class="dt">xlab =</span> <span class="st">&quot;Date&quot;</span>,
+     <span class="dt">main =</span> <span class="st">&quot;US Quarterly Real GDP&quot;</span>
+     )</code></pre></div>
 <p><img src="URFITE_files/figure-html/unnamed-chunk-323-1.png" width="672" style="display: block; margin: auto;" /></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># reproduce figure 14.1 (b) of the book</span>
+<span class="kw">plot</span>(<span class="kw">as.zoo</span>(GDPGrowth),
+     <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>,
+     <span class="dt">lwd =</span> <span class="dv">2</span>,
+     <span class="dt">ylab =</span> <span class="st">&quot;Logarithm&quot;</span>,
+     <span class="dt">xlab =</span> <span class="st">&quot;Date&quot;</span>,
+     <span class="dt">main =</span> <span class="st">&quot;Growth Rates in US Real GDP&quot;</span>
+     )</code></pre></div>
+<p><img src="URFITE_files/figure-html/unnamed-chunk-324-1.png" width="672" style="display: block; margin: auto;" /></p>
 <div id="notation-lags-differences-logarithms-and-growth-rates" class="section level3 unnumbered">
 <h3>Notation, Lags, Differences, Logarithms and Growth Rates</h3>
 <p>If observations of a variable <span class="math inline">\(Y\)</span> are recorded over time, we denote <span class="math inline">\(Y_t\)</span> the value observed at time <span class="math inline">\(t\)</span>. The period between two sequential observations <span class="math inline">\(Y_t\)</span> and <span class="math inline">\(Y_{t-1}\)</span> is a unit of time: hours, days, weeks, months, quarters, years and so on. Key Concept 14.1 introduces the essential terminology and notation for time series data we will use.</p>
@@ -474,50 +470,53 @@ We thus have
 <h4>Other Examples of Economic Time Series</h4>
 <p>Figure 14.2 of the book presents four plots. The U.S. unemployment rate, the U.S. Dollar / British Pound exchange rate, The logarithm of the Janapese industrial production index as well as daily changes in the Whilshire 5000 stock price index, a financial time series. The next code chunck reproduces the plots of the three macroenomic series and adds percentage changes in the daily values of the New York Stock Exchange Composite index as a fourth one (the data set, <code>NYSESW</code> comes with the <code>AER</code> package).</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># define series as xts objects</span>
-USUnemp &lt;-<span class="st"> </span><span class="kw">xts</span>(USMacroSWQ<span class="op">$</span>UNRATE, 
-                    <span class="kw">as.yearqtr</span>(USMacroSWQ<span class="op">$</span>X., <span class="dt">format =</span> <span class="st">&quot;%Y:0%q&quot;</span>))[<span class="st">&quot;1960::2013&quot;</span>]
+USUnemp &lt;-<span class="st"> </span><span class="kw">xts</span>(USMacroSWQ<span class="op">$</span>UNRATE, USMacroSWQ<span class="op">$</span>Date)[<span class="st">&quot;1960::2013&quot;</span>]
 
-DollarPoundFX &lt;-<span class="st"> </span><span class="kw">xts</span>(USMacroSWQ<span class="op">$</span>EXUSUK, 
-                     <span class="kw">as.yearqtr</span>(USMacroSWQ<span class="op">$</span>X., <span class="dt">format =</span> <span class="st">&quot;%Y:0%q&quot;</span>))[<span class="st">&quot;1960::2013&quot;</span>]
+DollarPoundFX &lt;-<span class="st"> </span><span class="kw">xts</span>(USMacroSWQ<span class="op">$</span>EXUSUK, USMacroSWQ<span class="op">$</span>Date)[<span class="st">&quot;1960::2013&quot;</span>]
   
-JPIndProd &lt;-<span class="st"> </span><span class="kw">xts</span>(<span class="kw">log</span>(USMacroSWQ<span class="op">$</span>JAPAN_IP), 
-                 <span class="kw">as.yearqtr</span>(USMacroSWQ<span class="op">$</span>X., <span class="dt">format =</span> <span class="st">&quot;%Y:0%q&quot;</span>))[<span class="st">&quot;1960::2013&quot;</span>]
+JPIndProd &lt;-<span class="st"> </span><span class="kw">xts</span>(<span class="kw">log</span>(USMacroSWQ<span class="op">$</span>JAPAN_IP), USMacroSWQ<span class="op">$</span>Date)[<span class="st">&quot;1960::2013&quot;</span>]
 
 <span class="kw">data</span>(<span class="st">&quot;NYSESW&quot;</span>)  
 NYSESW &lt;-<span class="st"> </span><span class="kw">xts</span>(<span class="kw">Delt</span>(NYSESW))</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">par</span>(<span class="dt">mfrow =</span> <span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">2</span>))
-<span class="kw">chart.TimeSeries</span>(USUnemp, 
-                 <span class="dt">date.format =</span> <span class="st">&quot;%Y&quot;</span>, 
-                 <span class="dt">minor.ticks =</span> F,
-                 <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>,
-                 <span class="dt">ylab =</span> <span class="st">&quot;Percent&quot;</span>,
-                 <span class="dt">main =</span> <span class="st">&quot;US Unemployment Rate&quot;</span>
-                 )
 
-<span class="kw">chart.TimeSeries</span>(DollarPoundFX, 
-                 <span class="dt">date.format =</span> <span class="st">&quot;%Y&quot;</span>, 
-                 <span class="dt">minor.ticks =</span> F,
-                 <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>,
-                 <span class="dt">ylab =</span> <span class="st">&quot;Dollar per pound&quot;</span>,
-                 <span class="dt">main =</span> <span class="st">&quot;U.S. Dollar / B. Pound Exchange Rate&quot;</span>
-                 )
+<span class="kw">plot</span>(<span class="kw">as.zoo</span>(USUnemp),
+     <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>,
+     <span class="dt">lwd =</span> <span class="dv">2</span>,
+     <span class="dt">ylab =</span> <span class="st">&quot;Percent&quot;</span>,
+     <span class="dt">xlab =</span> <span class="st">&quot;Date&quot;</span>,
+     <span class="dt">main =</span> <span class="st">&quot;US Unemployment Rate&quot;</span>,
+     <span class="dt">cex.main =</span> <span class="dv">1</span>
+)
 
-<span class="kw">chart.TimeSeries</span>(JPIndProd, 
-                 <span class="dt">date.format =</span> <span class="st">&quot;%Y&quot;</span>, 
-                 <span class="dt">minor.ticks =</span> F,
-                 <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>,
-                 <span class="dt">ylab =</span> <span class="st">&quot;Logarithm&quot;</span>,
-                 <span class="dt">main =</span> <span class="st">&quot;Japanese Industrial Production&quot;</span>
-                 )
 
-<span class="kw">chart.TimeSeries</span>(NYSESW, 
-                 <span class="dt">date.format =</span> <span class="st">&quot;%Y&quot;</span>, 
-                 <span class="dt">minor.ticks =</span> F,
-                 <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>,
-                 <span class="dt">ylab =</span> <span class="st">&quot;Percent per Day&quot;</span>,
-                 <span class="dt">main =</span> <span class="st">&quot;New York Stock Exchange Composite Index&quot;</span>
-                 )</code></pre></div>
-<p><img src="URFITE_files/figure-html/unnamed-chunk-328-1.png" width="672" /></p>
+<span class="kw">plot</span>(<span class="kw">as.zoo</span>(DollarPoundFX),
+     <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>,
+     <span class="dt">lwd =</span> <span class="dv">2</span>,
+     <span class="dt">ylab =</span> <span class="st">&quot;Dollar per pound&quot;</span>,
+     <span class="dt">xlab =</span> <span class="st">&quot;Date&quot;</span>,
+     <span class="dt">main =</span> <span class="st">&quot;U.S. Dollar / B. Pound Exchange Rate&quot;</span>,
+     <span class="dt">cex.main =</span> <span class="dv">1</span>
+)
+
+<span class="kw">plot</span>(<span class="kw">as.zoo</span>(JPIndProd),
+     <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>,
+     <span class="dt">lwd =</span> <span class="dv">2</span>,
+     <span class="dt">ylab =</span> <span class="st">&quot;Logarithm&quot;</span>,
+     <span class="dt">xlab =</span> <span class="st">&quot;Date&quot;</span>,
+     <span class="dt">main =</span> <span class="st">&quot;Japanese Industrial Production&quot;</span>,
+     <span class="dt">cex.main =</span> <span class="dv">1</span>
+)
+
+<span class="kw">plot</span>(<span class="kw">as.zoo</span>(NYSESW),
+     <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>,
+     <span class="dt">lwd =</span> <span class="dv">2</span>,
+     <span class="dt">ylab =</span> <span class="st">&quot;Percent per Day&quot;</span>,
+     <span class="dt">xlab =</span> <span class="st">&quot;Date&quot;</span>,
+     <span class="dt">main =</span> <span class="st">&quot;New York Stock Exchange Composite Index&quot;</span>,
+     <span class="dt">cex.main =</span> <span class="dv">1</span>
+)</code></pre></div>
+<p><img src="URFITE_files/figure-html/unnamed-chunk-329-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>Note that the series show quite different characteristics. The unemployment rate increases during recessions and declines in times of economic recoveries and growth. The Dollar/Pund exchange rates shows a deterministic patern until the end of the Bretton Woods system. Japans industrial production exhibits an upward trend and decreasing growth. Daily changes in the New York Stock Exchange composite index seems to be random around the zero line. Sample autocorrelations confirm this conjecture.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">acf</span>(<span class="kw">na.omit</span>(NYSESW), <span class="dt">plot =</span> F, <span class="dt">lag.max =</span> <span class="dv">10</span>)</code></pre></div>
 <pre><code>## 
@@ -529,7 +528,7 @@ NYSESW &lt;-<span class="st"> </span><span class="kw">xts</span>(<span class="kw
 ##  0.004</code></pre>
 <p>The first 10 sample autocorrelation coefficients are very close to zero. Further evidence can be found by looking at the plot generated by <code>acf()</code> by default.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">acf</span>(<span class="kw">na.omit</span>(NYSESW), <span class="dt">main =</span> <span class="st">&quot;Sample Autocorrelation for NYSESW Data&quot;</span>)</code></pre></div>
-<p><img src="URFITE_files/figure-html/unnamed-chunk-330-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="URFITE_files/figure-html/unnamed-chunk-331-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>The blue dashed lines represent an approximate <span class="math inline">\(95\%\)</span> confidence interval if there was no serial correlation. If a sample autocorrelation lies beyond these bands, it is statistically different from zero. For most lags we see that the sample autocorrelation does not exceed the confidence bands and there are only a few that lie marginally beyond the limits.</p>
 <p>Furthermore, note that NYSWSW series shows a pattern which econometricians call <em>volatility clustering</em>: there are periods of high and periods of low variance. This is common for many financial time series.</p>
 </div>
@@ -567,7 +566,7 @@ gitbook.start({
 },
 "fontsettings": {
 "theme": "white",
-"family": "sans",
+"family": "serif",
 "size": 1
 },
 "edit": {
