@@ -25,7 +25,7 @@
 <meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber and Martin Schmelzer">
 
 
-<meta name="date" content="2018-03-26">
+<meta name="date" content="2018-03-27">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -713,7 +713,7 @@ This book is in <b>Open Review</b>. We want your feedback to make the book bette
     0, &amp; \text{if employee is male}.
   \end{cases}
 \end{align*}\]</span>
-<p>Save the result in <code>wage_mod</code>.</p></li>
+<p>Save the result in <tt>wage_mod</tt>.</p></li>
 </ul>
 
 
@@ -752,50 +752,179 @@ This book is in <b>Open Review</b>. We want your feedback to make the book bette
 </div>
 <div class="DCexercise">
 <h4 id="gender-wage-gap-ii" class="unnumbered">10. Gender Wage Gap II</h4>
-<p><tt>CPS1985</tt> is a cross-section data set originating from the May 1985 <em>Current Population Survey</em> by the <em>US Census Bureau</em> and, among others things, containes observations on wage and gender of employees.</p>
-<p><tt>CPS1985</tt> is part of the package <tt>AER</tt>.</p>
+<p>The wage regression from the previous exercise yields <span class="math display">\[\widehat{wage}_i = 9.995 - 2.116 \cdot female_i.\]</span></p>
+<p>The model object <tt>dummy_mod</tt> is available in your working environment.</p>
 <p><strong>Instructions</strong></p>
 <ul>
-<li><p>Load the package <tt>AER</tt> and attach the data set <tt>CPS1985</tt>.</p></li>
-<li><p>Estimate the dummy regression model <span class="math display">\[wage_i = \beta_0 + \beta_1 \cdot female_i + u_i\]</span> where</p>
-<span class="math display">\[\begin{align*}
-  female = 
-  \begin{cases}
-    1, &amp; \text{if employee is female} \\
-    0, &amp; \text{if employee is male}.
-  \end{cases}
-\end{align*}\]</span>
-<p>Save the result in <code>wage_mod</code>.</p></li>
+<li>Test the hypothesis that the coefficient on <span class="math inline">\(female_i\)</span> is zero. This would imply that there is no gender wage gap. Use White’s (1980) heteroskedasticity-robust estimator.</li>
+</ul>
+<p><strong>Hint:</strong></p>
+<ul>
+<li><p><tt>vcovHC()</tt> computes heteroskedasticity-robust estimates of the covariance matrix of the coefficient estimators for the model supplied, see <tt>?vcovHC</tt>.</p></li>
+<li><p><tt>coeftest()</tt> performs significance tests for the coefficients in model objects. A covariance matrix can be supplied using the argument <tt>vcov.</tt>.</p></li>
 </ul>
 
 
 <div data-datacamp-exercise data-lang="r">
-
+  
+  <code data-type="pre-exercise-code">
+    library(AER)
+    data(CPS1985)
+    dummy_mod <- lm(wage ~ gender, data = CPS1985)
+  </code>
   <code data-type="sample-code">
-  # Load the package and attach the data set
-  
-  
-  # Perform the regression
+  # test whether the gender gap is significantly different from zero 
+  # use robust standard errors
   
   
   </code>
   <code data-type="solution">
-  library(AER)
-  data(CPS1985)
-  dummy_mod <- lm(wage ~ gender, data = CPS1985)
+  coeftest(dummy_mod, vcov. = vcovHC(dummy_mod, type = "HC0"))
+  # or
+  linearHypothesis(dummy_mod, "genderfemale=0", vcov. = vcovHC(dummy_mod, type = "HC0"))
   </code>
   <code data-type="sct">
-  test_function("library")
-  test_function("data")
+  test_predefined_objects("dummy_mod")
   test_or({
-    ex() %>% override_solution("attach(CPS1985); dummy_mod <- lm(wage ~ gender)") %>% check_object("dummy_mod")
+    test_function("coeftest", args = c("x", "vcov.")) 
   },{
-    ex() %>% override_solution("dummy_mod <- lm(CPS1985$wage ~ CPS1985$gender)") %>% check_object("dummy_mod")
+    test_function("linearHypothesis", args = c("model", "vcov.", "hypothesis.matrix"))
   },{
-    ex() %>% override_solution("dummy_mod <- lm(wage ~ gender, data = CPS1985)") %>% check_object("dummy_mod")
+    f <- ex() %>% override_solution('linearHypothesis(dummy_mod, "genderfemale", vcov. = vcovHC(dummy_mod, type = "HC0"))') %>% check_function("linearHypothesis")
+    f %>% check_arg("model")
+    f %>% check_arg("vcov.")
+    f %>% check_arg("hypothesis.matrix")
+  })
+  success_msg("Right! The hypothesis that there is no wage gap is rejected at any common level.")
+  </code>
+  
+</div>
+
+
+</div>
+<div class="DCexercise">
+<h4 id="heteroskedasticity-robust-standard-errors" class="unnumbered">11. Heteroskedasticity-Robust Standard Errors</h4>
+<p>In the simple regression model, the covariance matrix of the coefficient estimators is denoted</p>
+<span class="math display">\[\begin{equation}
+\text{Var}
+  \begin{pmatrix}
+    \hat\beta_0 \\
+    \hat\beta_1
+  \end{pmatrix} = 
+\begin{pmatrix}
+  \text{Var}(\hat\beta_0) &amp; \text{Cov}(\hat\beta_0,\hat\beta_1) \\
+\text{Cov}(\hat\beta_0,\hat\beta_1) &amp; \text{Var}(\hat\beta_1)
+\end{pmatrix}
+\end{equation}\]</span>
+<p>The function <tt>vcovHC</tt> can be used to obtain estimates of this matrix for a model object of interest.</p>
+<p><tt>gender_mod</tt>, a model object containing the wage regression dealt with in exercises 9 and 10 is available in your working environment.</p>
+<p><strong>Instructions</strong></p>
+<ul>
+<li>Compute robust standard errors of the type <tt>HC0</tt> for the coefficients estimators in the model object <tt>gender_mod</tt>. Store the standard errors in a vector named <tt>rob_SEs</tt>.</li>
+</ul>
+<p><strong>Hint:</strong></p>
+<ul>
+<li><p>The standard errors we seek can be obtained by taking the square root of the diagonal elements of the estimated covariance matrix.</p></li>
+<li><p><tt>diag(A)</tt> returns the diagonal elements of the matrix <tt>A</tt>.</p></li>
+</ul>
+
+
+<div data-datacamp-exercise data-lang="r">
+  
+  <code data-type="pre-exercise-code">
+    library(AER)
+    data(CPS1985)
+    dummy_mod <- lm(wage ~ gender, data = CPS1985)
+  </code>
+  <code data-type="sample-code">
+  # compute robust standard errors and save them in rob_SEs
+  
+  
+  </code>
+  <code data-type="solution">
+  rob_SEs <- sqrt(diag(vcovHC(dummy_mod, typ = "HC0")))
+  </code>
+  <code data-type="sct">
+  test_predefined_objects("dummy_mod")
+  test_object("rob_SEs")
+  success_msg("Nice! ")
+  </code>
+  
+</div>
+
+
+</div>
+<div class="DCexercise">
+<h4 id="robust-confidence-intervals" class="unnumbered">12. Robust Confidence Intervals</h4>
+<p>The function <tt>confint()</tt> computes confidence intervals for regression models using homoskedasticity-only standard errors such that this function is not an option when there is heteroskedasticity.</p>
+<p>The function <tt>Rob_CI()</tt> is meant to compute and report heteroskedasticity-robust confidence intervals for both model coefficients in a simple regression model.</p>
+<p><tt>gender_mod</tt>, a model object containing the wage regression dealt with in the previous exercises is available in your working environment.</p>
+<p><strong>Instructions</strong></p>
+<ul>
+<li><p>Complete the code of <tt>Rob_CI()</tt> given in <tt>Script.R</tt> such that lower and upper bounds of <span class="math inline">\(95\%\)</span> confidence intervals are returned.</p></li>
+<li><p>Use the function to obtain <span class="math inline">\(95\%\)</span> confidence intervals for the model coefficients in <tt>dummy_mod</tt>.</p></li>
+</ul>
+
+
+<div data-datacamp-exercise data-lang="r">
+  
+  <code data-type="pre-exercise-code">
+    library(AER)
+    data(CPS1985)
+    dummy_mod <- lm(wage ~ gender, data = CPS1985)
+  </code>
+  <code data-type="sample-code">
+  # complete the function below
+  
+  Rob_CI <- function(model) {
+    SEs <- ???
+    lower <- model$coef - ???
+    upper <- model$coef + ???
+    return(
+      cbind("Lower" = lower, "Upper" = upper)
+    )
   }
-  )
-  success_msg("Well done!")
+  
+  </code>
+  <code data-type="solution">
+    Rob_CI <- function(model) {
+    SEs <- sqrt(diag(vcovHC(model, type = "HC0")))
+    lower <- model$coef - 1.96 * SEs
+    upper <- model$coef + 1.96 * SEs
+    return(
+      cbind("Lower" = lower, "Upper" = upper)
+    )
+  }
+  </code>
+  <code data-type="sct">
+  test_function_definition("Rob_CI",
+                         function_test = test_expression_result("Rob_CI(dummy_mod)"))
+  test_output_contains("Rob_CI(dummy_mod)")
+  success_msg("Nice!")
+  </code>
+  
+</div>
+
+
+</div>
+<div class="DCexercise">
+<h4 id="abc" class="unnumbered">13. abc</h4>
+<p><strong>Instructions</strong></p>
+
+
+<div data-datacamp-exercise data-lang="r">
+  
+  <code data-type="pre-exercise-code">
+
+  </code>
+  <code data-type="sample-code">
+  #
+  </code>
+  <code data-type="solution">
+
+  </code>
+  <code data-type="sct">
+
   </code>
   
 </div>
