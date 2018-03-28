@@ -1552,9 +1552,25 @@ The function <tt>Rob_CI()</tt> is meant to compute and report heteroskedasticity
 
 <div  class = "DCexercise">
 
-#### 13. abc {-}
+#### 13. A Small Simulation Study I {-}
+
+Consider the data generating process
+\begin{align*}
+  X_i \sim& \, \mathcal{U}[2,10],\\
+  e_i \sim& \, N(0, X_i),\\
+  Yi =& \, \beta_1 X_i + e_i  
+\end{align*}
+where $\mathcal{U}[0,10]$ denotes the uniform distribution on the interval $[0,10]$ and $\beta_1=2$.
+
+Notice that the errors $e_i$ are heteroskedastic since the variance is a linear function of $X_i$.
 
 **Instructions**
+
++ Write a function <tt>DGP_OLS</tt> that generates a sample $(X_i,Y_i)$, $i=1,…,100$ and returns the OLS estimate of $\beta_1$.
+
+**Hints**
+
+<tt>runif()</tt> can be used to obtain random samples form a uniform distribution, see <tt>?runif</tt>
 
 <!--html_preserve-->
 
@@ -1564,13 +1580,173 @@ The function <tt>Rob_CI()</tt> is meant to compute and report heteroskedasticity
 
   </code>
   <code data-type="sample-code">
-  #
+  # write the function
   </code>
   <code data-type="solution">
-
+  set.seed(1)
+  # write the function
+  DGP_OLS <- function() {
+  X <- runif(100,2,10)
+  Y <- X + rnorm(100, sd = sqrt(X))
+  return(
+    c("beta_1_hat" = sum(X*Y)/sum(X^2))
+  )
+  }
   </code>
   <code data-type="sct">
+  test_function_definition("DGP_OLS", 
+                           function_test =
+                           test_expression_result("DGP_OLS()")
+  )
+  success_msg("Well Done!")
+  </code>
+  
+</div>
 
+<!--/html_preserve-->
+
+</div>
+
+<div  class = "DCexercise">
+
+#### 14. A Small Simulation Study II {-}
+
+The function <tt>DGP_OLS()</tt> from the previous exercise is available in your working environment.
+
+**Instructions**
+
++ Use <tt>replicate()</tt> to generate a sample of $1000$ OLS estimates $\widehat{\beta}_1$ using the function <tt>DGP_OLS</tt>. Store the estimates in a vector named <tt>estimates</tt>.
+
++ Estimate the variance of the OLS estimates. Store the result in <tt>est_var_OLS</tt>.
+
+<!--html_preserve-->
+
+<div data-datacamp-exercise data-lang="r">
+  
+  <code data-type="pre-exercise-code">
+  DGP_OLS <- function() {
+    X <- runif(100,2,10)
+    Y <- X + rnorm(100, sd = sqrt(X))
+    return(
+      c("beta_1_hat" = sum(X*Y)/sum(X^2))
+    )
+    }
+  </code>
+  <code data-type="sample-code">
+  set.seed(1)
+  # Generate 1000 estimates of beta_1 using 'GDP_OLS()', store them in 'estimates'
+
+
+  # Estimate the variance of the estimates
+  
+  
+  </code>
+  <code data-type="solution">
+  set.seed(1)
+  # Generate 1000 estimates of beta_1 using 'GDP_OLS()', store them in 'estimates'
+  estimates <- replicate(1000, DGP_OLS())
+  # Estimate the variance of the estimates
+  est_var_OLS <- var(estimates)
+  </code>
+  <code data-type="sct">
+  test_predefined_objects("DGP_OLS")
+  test_object("estimates")
+  test_object("est_var_OLS")
+  </code>
+  
+</div>
+
+<!--/html_preserve-->
+
+</div>
+
+<div  class = "DCexercise">
+
+#### 15. A Small Simulation Study III {-}
+
+The Gauss-Markov Theorem states that the OLS estimator in linear regression models is no longer the most efficient estimator (in the sense of minimum variance) among the conditionally unbiased linear estimators, that is the OLS estimator loses the BLUE property, under heteroskedasticity.
+
+It turns out that OLS applied to the weighted observations $(w_i X_i, w_i Y_i)$ where $w_i=\frac{1}{\sigma_i}$ yields the BLUE estimator under heteroskedasticity. This estimator is called the *weighted least squares* (WLS) estimator so that its variance is smaller than the variance of the OLS estimator.
+
+The function <tt>DGP_OLS()</tt> and the estimated variance <tt>est_var_OLS</tt> from the previous exercises are available in your working environment.
+
+**Instructions**
+
++ Write a function <tt>DGP_WLS()</tt> that generates $100$ samples using the DGP introduced in exercise 13 and returns the WLS estimate of $\beta_1$. Treat $\sigma_i$ as known, i.e. set $w_i=\frac{1}{X_i}$.
+
++ Repeat exercise 14 using <tt>DGP_WLS()</tt>. Store the estimated variance in <tt>est_var_GLS</tt>.
+
++ Compare the estimated variances <tt>est_var_OLS</tt> and <tt>est_var_GLS</tt> using logical operators (<tt><</tt> or <tt>></tt>).
+
+**Hints**
+
++ <tt>DGP_WLS()</tt> can be obtained using a modified code of <tt>DGP_OLS()</tt>.
+
++ Remember that functions are objects and you may print the code of a function to the console.
+
+<!--html_preserve-->
+
+<div data-datacamp-exercise data-lang="r">
+  
+  <code data-type="pre-exercise-code">
+  set.seed(1)
+  DGP_OLS <- function() {
+    X <- runif(100,2,10)
+    Y <- X + rnorm(100, sd = sqrt(X))
+    return(
+      c("beta_1_hat" = sum(X*Y)/sum(X^2))
+    )
+  }
+  estimates <- replicate(1000, DGP_OLS())
+  est_var_OLS <- var(estimates)
+  </code>
+  <code data-type="sample-code">
+  set.seed(1)
+  # Define the function 'DGP_GLS()'
+  
+  
+  # estimate the variance, assign the value to 'var_est_GLS'
+  
+  
+  # compare the estimated variances
+  
+  
+  </code>
+  <code data-type="solution">
+  set.seed(1)
+  # Define the function 'DGP_GLS()'
+  DGP_GLS <- function() {
+  X <- runif(100,2,10)
+  Y <- X + rnorm(100, sd = sqrt(X))
+  w <- 1/sqrt(X)
+  return(
+    c("beta_1_hat" = sum(w^2*X*Y)/sum((w*X)^2))
+  )
+  }
+  # estimate the variance, assign the value to 'var_est_GLS'
+  est_var_GLS <- var(replicate(1000, DGP_GLS()))
+
+  # compare the estimated variances
+  est_var_GLS < est_var_OLS
+  </code>
+  <code data-type="sct">
+  test_predefined_objects(c("DGP_OLS","est_var_OLS"))
+  test_function_definition("DGP_GLS",
+                           function_test =
+                           test_expression_result("DGP_OLS()")
+  
+  )
+  test_object("est_var_GLS")
+  test_or({
+    test_student_typed("est_var_GLS < est_var_OLS")
+  },{
+    test_student_typed("est_var_GLS > est_var_OLS")
+  },{
+    test_student_typed("est_var_OLS > est_var_GLS")
+  },{
+    test_student_typed("est_var_OLS < est_var_GLS")
+  })
+  success_msg("Nice! This shows that the GLS estimator indeed has lower variance than OLS.")
   </code>
   
 </div>

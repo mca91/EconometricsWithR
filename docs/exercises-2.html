@@ -25,7 +25,7 @@
 <meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber and Martin Schmelzer">
 
 
-<meta name="date" content="2018-03-27">
+<meta name="date" content="2018-03-28">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -908,8 +908,21 @@ This book is in <b>Open Review</b>. We want your feedback to make the book bette
 
 </div>
 <div class="DCexercise">
-<h4 id="abc" class="unnumbered">13. abc</h4>
+<h4 id="a-small-simulation-study-i" class="unnumbered">13. A Small Simulation Study I</h4>
+Consider the data generating process
+<span class="math display">\[\begin{align*}
+  X_i \sim&amp; \, \mathcal{U}[2,10],\\
+  e_i \sim&amp; \, N(0, X_i),\\
+  Yi =&amp; \, \beta_1 X_i + e_i  
+\end{align*}\]</span>
+<p>where <span class="math inline">\(\mathcal{U}[0,10]\)</span> denotes the uniform distribution on the interval <span class="math inline">\([0,10]\)</span> and <span class="math inline">\(\beta_1=2\)</span>.</p>
+<p>Notice that the errors <span class="math inline">\(e_i\)</span> are heteroskedastic since the variance is a linear function of <span class="math inline">\(X_i\)</span>.</p>
 <p><strong>Instructions</strong></p>
+<ul>
+<li>Write a function <tt>DGP_OLS</tt> that generates a sample <span class="math inline">\((X_i,Y_i)\)</span>, <span class="math inline">\(i=1,…,100\)</span> and returns the OLS estimate of <span class="math inline">\(\beta_1\)</span>.</li>
+</ul>
+<p><strong>Hints</strong></p>
+<p><tt>runif()</tt> can be used to obtain random samples form a uniform distribution, see <tt>?runif</tt></p>
 
 
 <div data-datacamp-exercise data-lang="r">
@@ -918,13 +931,157 @@ This book is in <b>Open Review</b>. We want your feedback to make the book bette
 
   </code>
   <code data-type="sample-code">
-  #
+  # write the function
   </code>
   <code data-type="solution">
-
+  set.seed(1)
+  # write the function
+  DGP_OLS <- function() {
+  X <- runif(100,2,10)
+  Y <- X + rnorm(100, sd = sqrt(X))
+  return(
+    c("beta_1_hat" = sum(X*Y)/sum(X^2))
+  )
+  }
   </code>
   <code data-type="sct">
+  test_function_definition("DGP_OLS", 
+                           function_test =
+                           test_expression_result("DGP_OLS()")
+  )
+  success_msg("Well Done!")
+  </code>
+  
+</div>
 
+
+</div>
+<div class="DCexercise">
+<h4 id="a-small-simulation-study-ii" class="unnumbered">14. A Small Simulation Study II</h4>
+<p>The function <tt>DGP_OLS()</tt> from the previous exercise is available in your working environment.</p>
+<p><strong>Instructions</strong></p>
+<ul>
+<li><p>Use <tt>replicate()</tt> to generate a sample of <span class="math inline">\(1000\)</span> OLS estimates <span class="math inline">\(\widehat{\beta}_1\)</span> using the function <tt>DGP_OLS</tt>. Store the estimates in a vector named <tt>estimates</tt>.</p></li>
+<li><p>Estimate the variance of the OLS estimates. Store the result in <tt>est_var_OLS</tt>.</p></li>
+</ul>
+
+
+<div data-datacamp-exercise data-lang="r">
+  
+  <code data-type="pre-exercise-code">
+  DGP_OLS <- function() {
+    X <- runif(100,2,10)
+    Y <- X + rnorm(100, sd = sqrt(X))
+    return(
+      c("beta_1_hat" = sum(X*Y)/sum(X^2))
+    )
+    }
+  </code>
+  <code data-type="sample-code">
+  set.seed(1)
+  # Generate 1000 estimates of beta_1 using 'GDP_OLS()', store them in 'estimates'
+
+
+  # Estimate the variance of the estimates
+  
+  
+  </code>
+  <code data-type="solution">
+  set.seed(1)
+  # Generate 1000 estimates of beta_1 using 'GDP_OLS()', store them in 'estimates'
+  estimates <- replicate(1000, DGP_OLS())
+  # Estimate the variance of the estimates
+  est_var_OLS <- var(estimates)
+  </code>
+  <code data-type="sct">
+  test_predefined_objects("DGP_OLS")
+  test_object("estimates")
+  test_object("est_var_OLS")
+  </code>
+  
+</div>
+
+
+</div>
+<div class="DCexercise">
+<h4 id="a-small-simulation-study-iii" class="unnumbered">15. A Small Simulation Study III</h4>
+<p>The Gauss-Markov Theorem states that the OLS estimator in linear regression models is no longer the most efficient estimator (in the sense of minimum variance) among the conditionally unbiased linear estimators, that is the OLS estimator loses the BLUE property, under heteroskedasticity.</p>
+<p>It turns out that OLS applied to the weighted observations <span class="math inline">\((w_i X_i, w_i Y_i)\)</span> where <span class="math inline">\(w_i=\frac{1}{\sigma_i}\)</span> yields the BLUE estimator under heteroskedasticity. This estimator is called the <em>weighted least squares</em> (WLS) estimator so that its variance is smaller than the variance of the OLS estimator.</p>
+<p>The function <tt>DGP_OLS()</tt> and the estimated variance <tt>est_var_OLS</tt> from the previous exercises are available in your working environment.</p>
+<p><strong>Instructions</strong></p>
+<ul>
+<li><p>Write a function <tt>DGP_WLS()</tt> that generates <span class="math inline">\(100\)</span> samples using the DGP introduced in exercise 13 and returns the WLS estimate of <span class="math inline">\(\beta_1\)</span>. Treat <span class="math inline">\(\sigma_i\)</span> as known, i.e. set <span class="math inline">\(w_i=\frac{1}{X_i}\)</span>.</p></li>
+<li><p>Repeat exercise 14 using <tt>DGP_WLS()</tt>. Store the estimated variance in <tt>est_var_GLS</tt>.</p></li>
+<li><p>Compare the estimated variances <tt>est_var_OLS</tt> and <tt>est_var_GLS</tt> using logical operators (<tt>&lt;</tt> or <tt>&gt;</tt>).</p></li>
+</ul>
+<p><strong>Hints</strong></p>
+<ul>
+<li><p><tt>DGP_WLS()</tt> can be obtained using a modified code of <tt>DGP_OLS()</tt>.</p></li>
+<li><p>Remember that functions are objects and you may print the code of a function to the console.</p></li>
+</ul>
+
+
+<div data-datacamp-exercise data-lang="r">
+  
+  <code data-type="pre-exercise-code">
+  set.seed(1)
+  DGP_OLS <- function() {
+    X <- runif(100,2,10)
+    Y <- X + rnorm(100, sd = sqrt(X))
+    return(
+      c("beta_1_hat" = sum(X*Y)/sum(X^2))
+    )
+  }
+  estimates <- replicate(1000, DGP_OLS())
+  est_var_OLS <- var(estimates)
+  </code>
+  <code data-type="sample-code">
+  set.seed(1)
+  # Define the function 'DGP_GLS()'
+  
+  
+  # estimate the variance, assign the value to 'var_est_GLS'
+  
+  
+  # compare the estimated variances
+  
+  
+  </code>
+  <code data-type="solution">
+  set.seed(1)
+  # Define the function 'DGP_GLS()'
+  DGP_GLS <- function() {
+  X <- runif(100,2,10)
+  Y <- X + rnorm(100, sd = sqrt(X))
+  w <- 1/sqrt(X)
+  return(
+    c("beta_1_hat" = sum(w^2*X*Y)/sum((w*X)^2))
+  )
+  }
+  # estimate the variance, assign the value to 'var_est_GLS'
+  est_var_GLS <- var(replicate(1000, DGP_GLS()))
+
+  # compare the estimated variances
+  est_var_GLS < est_var_OLS
+  </code>
+  <code data-type="sct">
+  test_predefined_objects(c("DGP_OLS","est_var_OLS"))
+  test_function_definition("DGP_GLS",
+                           function_test =
+                           test_expression_result("DGP_OLS()")
+  
+  )
+  test_object("est_var_GLS")
+  test_or({
+    test_student_typed("est_var_GLS < est_var_OLS")
+  },{
+    test_student_typed("est_var_GLS > est_var_OLS")
+  },{
+    test_student_typed("est_var_OLS > est_var_GLS")
+  },{
+    test_student_typed("est_var_OLS < est_var_GLS")
+  })
+  success_msg("Nice! This shows that the GLS estimator indeed has lower variance than OLS.")
   </code>
   
 </div>
