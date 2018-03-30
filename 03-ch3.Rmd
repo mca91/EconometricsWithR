@@ -1069,3 +1069,650 @@ plot(example2, col='steelblue', pch=20, xlab = 'X', ylab = 'Y', main="Correlatio
 plot(example3, col='steelblue', pch=20, xlab = 'X', ylab = 'Y', main="Correlation = 0")
 plot(example4, col='steelblue', pch=20, xlab = 'X', ylab = 'Y', main="Correlation = 0")
 ```
+
+## Exercises
+
+<div  class = "DCexercise">
+
+#### 1. Biased ... {-}
+
+Consider the following alternative estimator
+
+$$\widetilde{Y}=\frac{1}{n-1}\sum\limits_{i=1}^n Y_i$$
+
+In this exercise we want to illustrate that this estimator is biased.
+
+**Instructions:**
+
+  + Define a function for the estimator by yourself and name it <tt>Y_tilde</tt>.
+  
+  + Randomly draw 5 observations from the $\mathcal{N}(10, 25)$ distribution and compute an estimate with <tt>Y_tilde()</tt>. Repeat this procedure 10000 times and store the results in <tt>est_biased</tt>. 
+  
+  + Plot a histogram of <tt>est_biased</tt>.
+  
+  + Add a red vertical line at $\mu=10$ using the function <tt>abline()</tt>.
+  
+
+<!--html_preserve-->
+
+<div data-datacamp-exercise data-lang="r">
+
+  <code data-type="sample-code">
+  # Define a function for the estimator
+  
+  
+  # Compute repeatedly estimates and store the results in est_biased
+  set.seed(123)
+  
+  
+  # Plot a histogram of est_biased
+  
+  
+  # Add a red vertical line at mu = 10
+  
+   
+  </code>
+  <code data-type="solution">
+  # Define a function for the estimator
+  Y_tilde <- function(x){sum(x)/(length(x)-1)}
+  
+  # Compute repeatedly estimates and store the results in est_biased
+  set.seed(123)
+  est_biased <- replicate(n = 10000, expr = Y_tilde(rnorm(5, 10, 5)))
+  
+  # Plot a histogram of est_biased
+  hist(est_biased)
+  
+  # Add a red vertical line at mu = 10
+  abline(v = 10, col = "red")
+  
+  </code>
+  <code data-type="sct">
+  test_function_definition('Y_tilde', function_test = {
+                           test_expression_result("Y_tilde(1:10)")
+                           test_expression_result("Y_tilde(1:25)")
+                           test_expression_result("Y_tilde(seq(0, 1, 0.1))")
+                         })
+  test_object('est_biased')
+  test_function('hist', args = 'x')
+  test_function('abline', args = c('v', 'col'))
+  </code>
+
+</div>
+
+<!--/html_preserve-->
+
+**Hints:**
+
+  + To compute the sum of a vector you can use <tt>sum()</tt>, to get the length of a vector you can use <tt>length()</tt>.
+  
+  + Use the function <tt>replicate()</tt> to compute repeatedly estimates of random samples. With the arguments <tt>expr</tt> and <tt>n</tt> you can specify the operation and how often it has to be replicated.
+  
+  + A histogram can be plotted with the function <tt>hist()</tt>.
+  
+  + The point on the x-axis as well as the color for the vertical line can be specified via the arguments <tt>v</tt> and <tt>col</tt>.
+
+</div>
+
+<div  class = "DCexercise">
+
+#### 2. ... but consistent estimator {-}
+
+Consider again the estimator from the previous exercise which is available in your environment as <tt>Y_tilde()</tt>.
+Do the same procedure as in the previous exercise but now increase the number of observations to draw from 5 to 1000. What do you note? What can you say about this estimator?
+
+**Instructions:**
+
+  + Randomly draw 1000 observations from the $\mathcal{N}(10, 25)$ distribution and compute an estimate with <tt>Y_tilde()</tt>.     Repeat this procedure 10000 times and store the results in <tt>est_consistent</tt>. 
+  
+  + Plot a histogram of <tt>est_consistent</tt>.
+  
+  + Add a red vertical line at $\mu=10$ using the function <tt>abline()</tt>.
+  
+
+<!--html_preserve-->
+
+<div data-datacamp-exercise data-lang="r">
+
+  <code data-type="pre-exercise-code">
+    Y_tilde <- function(x){sum(x)/(length(x)-1)}
+	</code>
+  
+  <code data-type="sample-code">
+  # Compute repeatedly estimates and store the results in est_consistent
+  set.seed(123)
+  
+  
+  # Plot a histogram of est_biased
+  
+  
+  # Add a red vertical line at mu = 10
+  
+  
+  </code>
+  <code data-type="solution">
+  # Compute repeatedly estimates and store the results in est_consistent
+  set.seed(123)
+  est_consistent <- replicate(n = 10000, expr = Y_tilde(rnorm(1000, 10, 5)))
+  
+  # Plot a histogram of est_consistent
+  hist(est_consistent)
+  
+  # Add a red vertical line at mu = 10
+  abline(v = 10, col = "red")
+  
+  </code>
+  <code data-type="sct">
+  test_object('est_consistent')
+  test_function('hist', args = 'x')
+  test_function('abline', args = c('v', 'col'))
+  </code>
+
+</div>
+
+<!--/html_preserve-->
+
+**Hints:**
+
+  + Use the function <tt>replicate()</tt> to compute repeatedly estimates of random samples. With the arguments <tt>expr</tt> and <tt>n</tt> you can specify the operation and how often it has to be replicated.
+  
+  + A histogram can be plotted with the function <tt>hist()</tt>.
+  
+  + The point on the x-axis as well as the color for the vertical line can be specified via the arguments <tt>v</tt> and <tt>col</tt>.
+
+</div>
+
+<div  class = "DCexercise">
+
+#### 3. Efficiency of an estimator {-}
+
+In this exercise we want to illustrate the result that the sample mean
+
+$$\hat{\mu}_Y=\sum\limits_{i=1}^{n}a_iY_i$$ with equal weighting scheme $a_i=\frac{1}{n}$ for $i=1,...,n$ is the best linear unbiased estimator (BLUE) of $\mu_Y$. 
+
+As an alternative consider the estimator
+
+$$\tilde{\mu}_Y=\sum\limits_{i=1}^{n}b_iY_i$$
+
+where $b_i$ gives the first $\frac{n}{2}$ observations a higher weighting than the second $\frac{n}{2}$ observations. 
+
+The respective weighting vector is already defined and available as <tt>w</tt> in your working environment.
+
+**Instructions:**
+
+  + Verify that $\tilde{\mu}$ is unbiased.
+  
+  + Define the alternative estimator as a function <tt>mu_tilde()</tt>.
+
+  + Randomly draw 100 observations from the $\mathcal{N}(5, 10)$ distribution and compute an estimate with both estimators. Repeat this procedure 10000 times and store the results in <tt>est_bar</tt> and <tt>est_tilde</tt>.
+  
+  + Compute the sample variances of <tt>est_bar</tt> and <tt>est_tilde</tt>. What can you say about both estimators?
+  
+
+<!--html_preserve-->
+
+<div data-datacamp-exercise data-lang="r">
+  
+  <code data-type="sample-code">
+  # Verify that the alternative estimator is unbiased
+  n <- 100
+  w <- c(rep((1+0.5)/n, n/2), rep((1-0.5)/n, n/2))
+  
+  
+  # Define the alternative estimator mu_tilde
+  
+  
+  # Compute repeatedly estimates for both estimators and store the results in est_bar and est_tilde
+  set.seed(123)
+  
+  
+  
+  # Compute the sample variances for est_bar and est_tilde
+  
+  
+  
+  </code>
+  <code data-type="solution">
+  # Verify that the alternative estimator is unbiased
+  n <- 100
+  w <- c(rep((1+0.5)/n, n/2), rep((1-0.5)/n, n/2))
+  sum(w)
+  
+  # Define the alternative estimator mu_tilde
+  mu_tilde <- function(x){sum(w*x)}
+  
+  # Compute repeatedly estimates for both estimators and store the results in est_bar and est_tilde
+  set.seed(123)
+  est_bar <- replicate(expr = mean(rnorm(100, 5, 10)), n = 10000)
+  est_tilde <- replicate(expr = mu_tilde(rnorm(100, 5, 10)), n = 10000)
+  
+  # Compute the sample variances for est_bar and est_tilde
+  var(est_bar)
+  var(est_tilde)
+  
+  </code>
+  <code data-type="sct">
+  test_function_result('sum')
+  test_function_definition('mu_tilde',
+                           function_test = {
+                             test_expression_result("mu_tilde(1:100)")
+                             test_expression_result("mu_tilde(2:101)")
+                           })
+  test_object('est_bar')
+  test_object('est_tilde')
+  test_function_result('var', index = 1)
+  test_function_result('var', index = 2)
+  success_msg('Correct! The sample mean is more efficient (that is, has a lower variance) than the alternative estimator.')
+  </code>
+
+</div>
+
+<!--/html_preserve-->
+
+**Hints:**
+
+  + In order to be an unbiased estimator all weights have to sum up to 1.
+  
+  + Use the function <tt>replicate()</tt> to compute repeatedly estimates of random samples. With the arguments <tt>expr</tt> and <tt>n</tt> you can specify the operation and how often it has to be replicated.
+
+  + To compute sample variances you can use <tt>var()</tt>.
+
+</div>
+
+<div  class = "DCexercise">
+
+#### 4. Hypothesis test - t statistic {-}
+
+Consider the CPS data set from Chapter 3.6 again which is available as <tt>cps</tt> in your working environment.
+
+We suppose that the average hourly earnings (in prices of 2012) <tt>ahe12</tt> exceed 23.50 $\frac{\$}{h}$ and wish to test this hypothesis at a significance level of $\alpha=0.05$. For that reason please do the following:
+
+**Instructions:**
+
+  + Compute the test statistic by hand and assign it to <tt>tstat</tt>.
+  
+  + Use <tt>tstat</tt> to accept or reject the null hypothesis. Please do so using the normal approximation. 
+  
+
+<!--html_preserve-->
+
+<div data-datacamp-exercise data-lang="r">
+
+  <code data-type="pre-exercise-code">
+    cps <- read.table("http://s3.amazonaws.com/assets.datacamp.com/production/course_1276/datasets/cps_ch3.csv", header = T, sep = ";")
+	</code>
+  
+  <code data-type="sample-code">
+  # Compute the t statistic by hand and assign it to tstat
+   
+  
+  # Use tstat to accept or reject the null
+  
+  
+  </code>
+  <code data-type="solution">
+  # Compute the t statistic by hand and assign it to tstat
+  tstat <- (mean(cps$ahe12)-23.5)/(sd(cps$ahe12)/sqrt(length(cps$ahe12)))
+  
+  # Use tstat to accept or reject the null
+  tstat > qnorm(0.95)
+  
+  </code>
+  <code data-type="sct">
+  test_object('tstat')
+  test_function_result('qnorm')
+  test_student_typed('tstat', times = 2)
+  test_or(test_output_contains('T'), test_output_contains('F'))
+  </code>
+
+</div>
+
+<!--/html_preserve-->
+
+**Hints:**
+
+  + We test $H_0:\mu_{Y_{ahe}}\leq 23.5$ vs. $H_1:\mu_{Y_{ahe}}>23.5$. That is, we conduct a right-sided test.
+  
+  + The t statistic is defined as $\frac{\bar{Y}-\mu_{Y,0}}{s_{Y}/\sqrt{n}}$ where $s_Y$ denotes the sample variance.
+
+  + To decide whether the null hypothesis is accepted or rejected you can compare the t statistic with the respective quantile of the standard normal distribution. Use logical operators to check for this.
+
+</div>
+
+<div  class = "DCexercise">
+
+#### 5. Hypothesis test - p-value {-}
+
+Reconsider the test situation from previous exercise. <tt>cps</tt> as well as <tt>tstat</tt> are available in your working environment.
+
+Instead of using the t statistic as decision criterion we can also use the respective p-value. For that reason please do the following:
+
+**Instructions:**
+
+  + Compute the p-value by hand and assign it to <tt>pval</tt>.
+  
+  + Use <tt>pval</tt> to accept or reject the null hypothesis.
+  
+
+<!--html_preserve-->
+
+<div data-datacamp-exercise data-lang="r">
+
+  <code data-type="pre-exercise-code">
+  cps <- read.table("http://s3.amazonaws.com/assets.datacamp.com/production/course_1276/datasets/cps_ch3.csv", header = T, sep = ";")
+  tstat <- (mean(cps$ahe12)-23.5)/(sd(cps$ahe12)/sqrt(length(cps$ahe12)))
+	</code>
+  
+  <code data-type="sample-code">
+  # Compute the p-value by hand and assign it to pval
+  
+  
+  # Use pval to accept or reject the null
+  
+  
+  </code>
+  <code data-type="solution">
+  # Compute the p-value by hand and assign it to pval
+  pval <- 1-pnorm(tstat)
+  
+  # Use pval to accept or reject the null
+  pval < 0.05
+  
+  </code>
+  <code data-type="sct">
+  test_object('pval')
+  test_student_typed('pval', times = 2)
+  test_or(test_output_contains('T'), test_output_contains('F'))
+  </code>
+
+</div>
+
+<!--/html_preserve-->
+
+**Hints:**
+
+  + The p-value for a right-sided test can be computed as $p=P(t>t^{act}|H_0)$.
+  
+  + We reject the null if $p<\alpha$. Use logical operators to check for this.
+
+</div>
+
+<div  class = "DCexercise">
+
+#### 6. Hypothesis test - one sample t-test {-}
+
+In the last two exercises we discovered two ways of conducting a hypothesis test. In practice these approaches seem very cumbersome and so R provides the function <tt>t.test()</tt> which does most of the work automatically for us. In fact it provides t statistics, p-values and even confidence intervals (more on the latter in later exercises). In addition it also uses the t instead of the normal distribution which becomes important especially for small sample sizes. 
+
+The data set <tt>cps</tt> as well as the variable <tt>pval</tt> from Exercise 3.4 are available in your working environment.
+
+**Instructions:**
+
+  + Conduct the hypothesis test from previous exercises with the function <tt>t.test()</tt>.
+  
+  + Extract the t statistic and p-value from the list created by <tt>t.test()</tt>. Assign them to the variables <tt>tstat</tt> and <tt>pvalue</tt>.
+  
+  + Verify that using the normal approximation here is valid as well by computing the difference between both p-values.
+  
+
+<!--html_preserve-->
+
+<div data-datacamp-exercise data-lang="r">
+
+  <code data-type="pre-exercise-code">
+  cps <- read.table("http://s3.amazonaws.com/assets.datacamp.com/production/course_1276/datasets/cps_ch3.csv", header = T, sep =   ";")
+  tstat <- (mean(cps$ahe12)-23.5)/(sd(cps$ahe12)/sqrt(length(cps$ahe12)))
+  pval <- 1-pnorm(tstat)
+	</code>
+  
+  <code data-type="sample-code">
+  # Conduct the hypothesis test from previous exercises with t.test()
+  
+  
+  # Extract t statistic and p-value from list created by t.test()
+  
+  
+  
+  # Verify that using the normal approximation here is valid as well
+  
+  
+  </code>
+  <code data-type="solution">
+  # Conduct the hypothesis test from previous exercises with t.test()
+  t.test(cps$ahe12, alternative = "greater", mu = 23.5)
+  
+  # Extract t statistic and p-value from list created by t.test()
+  tstat <- t.test(cps$ahe12, alternative = "greater", mu = 23.5)$statistic
+  pvalue <- t.test(cps$ahe12, alternative = "greater", mu = 23.5)$p.value
+  
+  # Verify that using the normal approximation here is valid as well
+  pvalue - pval
+  
+  </code>
+  <code data-type="sct">
+  test_function_result('t.test')
+  test_object('tstat')
+  test_object('pvalue')
+  test_or(test_student_typed('pvalue - pval'), test_student_typed('pval - pvalue'))
+  </code>
+
+</div>
+
+<!--/html_preserve-->
+
+**Hints:**
+
+  + The type of the test as well as the null hypothesis can be specified via the arguments <tt>alternative</tt> and <tt>mu</tt>.
+  
+  + t statistic and p-value can be obtained via <tt>$statistic</tt> and <tt>$p.value</tt>, respectively.
+
+</div>
+
+<div  class = "DCexercise">
+
+#### 7. Hypothesis Test - two sample t-test {-}
+
+Consider the annual maximum sea levels at Port Pirie (Southern Australia) and Fremantle (Western Australia) for the last 30 years.
+
+The observations are available in the variables <tt>portpirie</tt> and <tt>fremantle</tt> in your working environment.
+
+**Instructions:**
+
+  + Test whether there is a significant difference in the annual maximum sea levels at a significance level of $\alpha=0.05$.
+
+<!--html_preserve-->
+
+<div data-datacamp-exercise data-lang="r">
+
+  <code data-type="pre-exercise-code">
+  set.seed(123)
+  portpirie <- runif(30, 3.6, 4.6)
+  fremantle <- runif(30, 1.2, 1.8)
+	</code>
+  
+  <code data-type="sample-code">
+  # Conduct a two sample t-test
+  
+  
+  </code>
+  <code data-type="solution">
+  # Conduct a two sample t-test
+  t.test(portpirie, fremantle)
+  
+  </code>
+  <code data-type="sct">
+  test_or(test_output_contains('t.test(portpirie, fremantle)'), test_output_contains('t.test(fremantle, portpirie)'))
+  </code>
+
+</div>
+
+<!--/html_preserve-->
+
+**Hints:**
+
+  + We test $H_0:\mu_{P}-\mu_{F}=0$ vs. $H_1:\mu_{P}-\mu_{F}\ne 0$. That is, we conduct a two sample t-test.
+  
+  + For a two sample t-test <tt>t.test()</tt> expects two vectors containing the data.
+
+</div>
+
+<div  class = "DCexercise">
+
+#### 8. Confidence interval {-}
+
+Reconsider the test situation concerning the annual maximum sea levels at Port Pirie and Fremantle.
+
+The variables <tt>portpirie</tt> and <tt>fremantle</tt> are again available in your working environment.
+
+**Instructions:**
+
+  + Construct a 95%-confidence interval for the difference in the sea levels using <tt>t.test()</tt>.
+
+<!--html_preserve-->
+
+<div data-datacamp-exercise data-lang="r">
+
+  <code data-type="pre-exercise-code">
+  set.seed(123)
+  portpirie <- runif(30, 3.6, 4.6)
+  fremantle <- runif(30, 1.2, 1.8)
+	</code>
+  
+  <code data-type="sample-code">
+  # Construct a 95%-confidence interval using t.test()
+  
+  
+  </code>
+  <code data-type="solution">
+  # Construct a 95%-confidence interval using t.test()
+  t.test(portpirie, fremantle)$conf.int
+  
+  </code>
+  <code data-type="sct">
+  test_or(test_output_contains('t.test(portpirie, fremantle)$conf.int'), test_output_contains('t.test(fremantle,             portpirie)$conf.int'))
+  </code>
+
+</div>
+
+<!--/html_preserve-->
+
+**Hint:**
+
+  + The function <tt>t.test()</tt> computes by default a confidence interval which is accessible via <tt>$conf.int</tt>.
+
+</div>
+
+<div  class = "DCexercise">
+
+#### 9. (Co)variance and Correlation I
+
+Consider a random sample $(X_i, Y_i)$ for $i=1,...,100$.
+
+The respective vectors $X$ and $Y$ are already available in your working environment as <tt>X</tt> and <tt>Y</tt>.
+
+**Instructions:**
+
+  + Compute the variance of $X$ using the function <tt>cov()</tt>.
+  
+  + Compute the covariance of $X$ and $Y$.
+  
+  + Compute the correlation between $X$ and $Y$.
+
+<!--html_preserve-->
+
+<div data-datacamp-exercise data-lang="r">
+
+  <code data-type="pre-exercise-code">
+  custom_seed(123)
+  X <- runif(100, 900, 1000)
+  Y <- 3*X+rnorm(100, 0, 100)
+	</code>
+  
+  <code data-type="sample-code">
+  # Compute the variance of X
+  
+  
+  # Compute the covariance of X and Y
+  
+  
+  # Compute the correlation between X and Y
+  
+  
+  </code>
+  <code data-type="solution">
+  # Compute the variance of X with cov()
+  cov(X, X)
+  
+  # Compute the covariance of X and Y
+  cov(X, Y)
+    
+  # Compute the correlation between X and Y
+  cor(X, Y)
+  
+  </code>
+  <code data-type="sct">
+  test_function_result("cov", index = 1)
+  test_function_result("cov", index = 2)
+  test_function_result("cor")
+  </code>
+
+</div>
+
+<!--/html_preserve-->
+
+**Hints:**
+
+  + The variance is just a special case of the covariance.
+  
+  + <tt>cov()</tt> as well as <tt>cor()</tt> expect a vector for each variable.
+
+</div>
+
+<div  class = "DCexercise">
+
+#### 10. (Co)variance and Correlation II
+
+In this exercise we want to examine the limitations of the correlation as a dependency measure. 
+
+Once the session has initialized you will see the plot of 100 realizations from two random variables $X$ and $Y$.
+
+The respective observations are available in the vectors <tt>X</tt> and <tt>Y</tt> in your working environment.
+
+**Instructions:**
+
+  + Compute the correlation between $X$ and $Y$. Interpret your result critically.
+
+<!--html_preserve-->
+
+<div data-datacamp-exercise data-lang="r">
+
+  <code data-type="pre-exercise-code">
+  custom_seed(123)
+  X <- runif(100, 0, 3)
+  Y <- exp(-X) + rnorm(100, 0, .05)
+  plot(Y ~ X)
+	</code>
+  
+  <code data-type="sample-code">
+  # Compute the correlation between X and Y
+  
+  
+  </code>
+  <code data-type="solution">
+  # Compute the correlation between x and y
+  cor(X, Y)
+  # The correlation is only able to quantify linear relationships which is not the case here.
+  </code>
+  <code data-type="sct">
+  test_function_result("cor")
+  success_msg('Correct! The correlation is able to capture the negative relationship between both variables. However it only measures linear dependencies, whereas the dependency here is clearly nonlinear (exponential).')
+  </code>
+
+</div>
+
+<!--/html_preserve-->
+
+**Hint:**
+
+  + <tt>cor()</tt> expects a vector for each variable.
+
+</div>
