@@ -159,8 +159,8 @@ coeftest(VAR_EQ2, vcov. = NeweyWest(VAR_EQ2, prewhite = F, adjust = T))
 We end up with the following results:
 
 \begin{align*}
- GDPGR_t =& \, \underset{(0.46)}{0.52} + \underset{(0.13)}{0.29} GDPGR_{t-1} + \underset{(0.09)}{0.22} GDPGR_{t-2} \underset{(0.39)}{-0.90} TSpread_{t-1} + \underset{(0.46)}{1.33} TSpread_{t-2} \\
- TSpread_t =& \, \underset{(0.13)}{0.46} + \underset{(0.03)}{0.01} GDPGR_{t-1} \underset{(0.03)}{-0.06} GDPGR_{t-2} + \underset{(0.09)}{1.06} TSpread_{t-1} \underset{(0.08)}{-0.22} TSpread_{t-2} 
+ GDPGR_t =& \, \underset{(0.46)}{0.52} + \underset{(0.13)}{0.29} GDPGR_{t-1} + \underset{(0.09)}{0.22} GDPGR_{t-2} -\underset{(0.39)}{0.90} TSpread_{t-1} + \underset{(0.46)}{1.33} TSpread_{t-2} \\
+ TSpread_t =& \, \underset{(0.13)}{0.46} + \underset{(0.03)}{0.01} GDPGR_{t-1} -\underset{(0.03)}{0.06} GDPGR_{t-2} + \underset{(0.09)}{1.06} TSpread_{t-1} -\underset{(0.08)}{0.22} TSpread_{t-2} 
 \end{align*}
 
 The function <tt>VAR()</tt> can be used to obtain the same coefficient estimates as presented above since it applies OLS per equation, too.
@@ -551,14 +551,18 @@ coeftest(VECM_EQ2, vcov. = NeweyWest(VECM_EQ2, prewhite = F, adjust = T))
 Thus the two estimated equations of the VECM are 
 
 \begin{align*}
- \widehat{\Delta TB3MS}_t =& \, \underset{(0.11)}{-0.06} + \underset{(0.11)}{0.24} \Delta TB3MS_{t-1} \underset{(0.15)}{-0.16} \Delta TB3MS_{t-2} \\ &+ \underset{(0.13)}{0.11} \Delta TB10YS_{t-1} \underset{(0.11)}{-0.15} \Delta TB10YS_{t-2} + \underset{(0.05)}{0.03} ECT_{t-1} \\
+ \widehat{\Delta TB3MS}_t =& \, -\underset{(0.11)}{0.06} + \underset{(0.11)}{0.24} \Delta TB3MS_{t-1} -\underset{(0.15)}{0.16} \Delta TB3MS_{t-2} \\ &+ \underset{(0.13)}{0.11} \Delta TB10YS_{t-1} -\underset{(0.11)}{0.15} \Delta TB10YS_{t-2} + \underset{(0.05)}{0.03} ECT_{t-1} \\
 
- \widehat{\Delta TB10YS}_t =& \, \underset{(0.06)}{0.12} \underset{(0.07)}{-0.00} \Delta TB3MS_{t-1} \underset{(0.04)}{-0.07} \Delta TB3MS_{t-2} \\ &+ \underset{(0.10)}{0.23} \Delta TB10YS_{t-1} \underset{(0.07)}{-0.07} \Delta TB10YS_{t-2} \underset{(0.03)}{-0.09} ECT_{t-1}.
+ \widehat{\Delta TB10YS}_t =& \, \underset{(0.06)}{0.12} -\underset{(0.07)}{0.00} \Delta TB3MS_{t-1} -\underset{(0.04)}{0.07} \Delta TB3MS_{t-2} \\ &+ \underset{(0.10)}{0.23} \Delta TB10YS_{t-1} -\underset{(0.07)}{0.07} \Delta TB10YS_{t-2} -\underset{(0.03)}{0.09} ECT_{t-1}.
 \end{align*}
 
 The output produced by <tt>coeftest()</tt> shows that there is little evidence that lagged values of the differenced interest series' are useful for prediction. This finding is more pronounced for the equation of the differenced series of the 3-month treasury bill rate where the error correction term (the lagged term spread) is not significantly different from zero at any common level of significance. However, for the model equation of the differenced 10-years treasury bonds rate we find that the error correction term is statistically significant at the $1\%$ level with an estimate of $-0.09$. This can be interpreted as follows: although both interest rates are nonstationary, their conintegrating relationship allows to predict the *change* in the 10-years treasury bonds rate using the VECM. In particular, the negative coefficient estimate on the error correction term indicates that there will be a negative change in the next period's 10-years treasury bonds rate when the 10-years treasury bonds rate is higher than the 3-month treasury bill rate in the current period.
 
 ## Volatility Clustering and Autoregressive Conditional Heteroskedasticity
+
+In particular financial time series often exhibit a behaviour that is known as **volatility clustering**: the volatility changes over time but its degree shows a tendency to persist i.e. there are periods of low volatility and some where volatility is high. Econometricians call this the conditional heteroskedasticity. Conditional heteroskedasticity is an intersting property because it can be exploited for forecasting the variance of future periods. A good forecast of a series' variance allows to quantify uncertainty (for example by computing accrurate forecast confidence intervals) which is especially important when it is hard to come up with a good prediction of future realisations (see section 14.4).  
+
+As an example, consider daily changes in the Whilshire 5000 stock index.
 
 ```{r}
 # import data on Wilshire 5000 index
@@ -584,11 +588,37 @@ plot(W5000_PC,
      type="l", col = "steelblue", lwd = 0.5)
 abline(0,0)
 ```
+
+The level of the series of daily percentage changes in the Wilshire Index seems to randomly fluctuate near zero, meaning there is little amount autocorrelation so that it is difficult to predict future outcomes using e.g. an autoregressive model. However there is visual evidence that the series exhibits conditional heteroskedasticity since we observe volatility clustering and for some applications it is useful to measure and forecast these patterns. This can be done using models which assume that the volatility can be described by an autoregressive processe.
+
+### ARCH and GARCH Models {-}
+
+Consider $$Y_t = \beta_0 + \beta_1 Y_{t-1} + \gamma_1 X_{t-1} + u_t$$, a simple ADL($1$,$1$) regression model. The econometrician Robert Engle (1982) proposed to model $\sigma^2_t$, the variance of the normally distributed error $u_t$ by an order $p$ distributive lag model
+
+\begin{align*}
+ \sigma^2_t = \alpha_0 + \alpha_1 u_{t-1}^2 + \alpha_2 u_{t-2}^2 + \dots + \alpha_p u_{t-p}^2, (\#eq:archmodel)
+\end{align*}
+
+which is called the **autoregressive conditional heteroskedasticity** (ARCH) model of order $p$, or short ARCH($p$).^[Although we introduce the ARCH model as a component in an ADL($1$,$1$) model, it can be used for modelling the conditional zero-mean error term of any time series model.] The general idea is apparent from the model structure: positive coefficients $\alpha_0,\alpha_1,\dots,\alpha_p$ imply that recent large squared errors lead to a large variance, and thus large squared errors, in the current period.
+
+The generalized ARCH (GARCH) model, developed by Tim Bollerslev (1986) is an extension of the ARCH model where $\sigma^2_t$ is allowed to depend on its on lags and lags of the squared error term. The GARCH($p$,$q$) model is given by
+
+\begin{align*}
+ \sigma^2_t = \alpha_0 + \alpha_1 u_{t-1}^2 + \alpha_2 u_{t-2}^2 + \dots + \alpha_p u_{t-p}^2 + \phi_1 \sigma^2_{t-1} + \dots + \phi_p \sigma^2_{t-q}. (\#eq:garchmodel)
+\end{align*}
+
+The GARCH model is an ADL($p$,$q$) model and thus can provide more parsimonious parameterizations than an ARCH model (see the discussion in Appendix 15.2 of the book).
+
+### Application to Stock Price Volatility {-}
+
+
+
 ```{r}
 # estimate GARCH(1,1) model of daily percentage changes
 GARCH_Wilshire <- garchFit(data = W5000_PC$Value, trace = F)
 ```
 
+ 
 
 ```{r, fig.align='center'}
 # plot percentage changes
