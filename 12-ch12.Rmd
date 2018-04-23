@@ -64,9 +64,9 @@ See `?CigarettesSW` for a detailed description of variables.
 
 We are interested in estimating $\beta_1$ in 
 
-\begin{align*}
+\begin{align}
   \log(Q_i^{cigarettes}) = \beta_0 + \beta_1 \log(P_i^{cigarettes}) + u_i (\#eq:cigstsls)
-\end{align*}
+\end{align}
 
 where $Q_i^{cigarettes}$ is the number of cigarette packs per capita sold and $P_i^{cigarettes}$ is the after tax average real price per pack of cigarettes in state $i$.
 
@@ -124,9 +124,9 @@ coeftest(cig_s2, vcov = vcovHC(cig_s2))
 
 Thus estimating the model equation \@ref(eq:cigstsls) using TSLS yields 
 
-\begin{align*}
+\begin{align}
   \widehat{\log(Q_i^{cigarettes})} = \underset{(1.70)}{9.72} + \underset{(0.36)}{1.08} \log(P_i^{cigarettes}) (\#eq:ecigstsls)
-\end{align*}
+\end{align}
 
 where we write $\log(P_i^{cigarettes})$ instead of $\widehat{\log(P_i^{cigarettes})}$ for convenience.
 
@@ -141,13 +141,11 @@ coeftest(cig_ivreg, vcov = vcovHC(cig_ivreg, type = "HC1"))
 
 We find that the coefficient estimates obtain coincide for both approaches.
 
-```{block2, ivse, type='rmdknit'}
 **Two notes on calculation of TSLS standard errors**
 
 1. We have demonstrated that running the individual regressions for each stage of TSLS using <tt>lm()</tt> leads to the same coefficient estimates as when using <tt>ivreg()</tt>. However, the standard errors reported for the second-stage regression, e.g. by <tt>coeftest()</tt> or <tt>summary()</tt>, are *invalid*: they *do not* adjust for using predictions from the first-stage regression as regressors in the second-stage regression! Fortunately, <tt>ivreg()</tt> performs the necessary adjustment automatically. This is another advantage over manual step-by-step estimation.
   
 2. Just as in mutliple regression, it is important to compute heteroskedasticity-robust standard errors as we have done above using <tt>vcovHC()</tt>.
-```
 
 The TSLS estimate for $\beta_1$ in \@ref(eq:ecigstsls) means that an increase in cigarette prices by one percent reduces cigarette consumption by roughly $1.08$ percentage points which is fairly elastic. However, we know that this estimate might not be trusworthy although we used IV estimation: there still might be a bias due to omitted variables. Thus a multiple IV regression approach is needed.
 
@@ -160,9 +158,9 @@ The simple IV regression model is easily extended to a multiple regression model
 <h3 class = "right"> Key Concept 12.1 </h3>
 <h3 class = "left"> The General Instrumental Variables Regression Model and Terminology </h3>
 
-\begin{align*}
+\begin{align}
   Y_i = \beta_0 + \beta_1 X_{1i} + \dots + \beta_k X_{ki} + \beta_{k+1} W_{1i} + \beta_{k+r} W_{ri} + u_i, (\#eq:givmodel)
-\end{align*}
+\end{align}
 
 $i=1,\dots,n$ is the general intrumental variables regression model where
 
@@ -245,9 +243,9 @@ For the general IV regression model in Key Concept 12.1 we assume that
 
 The estimated elasticity of demand for cigarettes in \@ref(eq:srm12) is $1.08$. Although \@ref(eq:srm12) was estimated using IV regression it is plausible that this IV estimate is biased: in this model, the TSLS estimator is inconsistent for the true $\beta_1$ if the instrument (the real sales tax per pack) correlates with the error term. This is likely to be the case since there are economic facors like state income which impact the demand for cigarettes and correlate with the sales tax. States with high personal income tend to generate tax revenues more by income taxes and less by sales taxes. Consequently, state income needs to be included in the regression model.
 
-\begin{align*}
+\begin{align}
   \log(Q_i^{cigarettes}) = \beta_0 + \beta_1 \log(P_i^{cigarettes}) + \beta_2 \log(Income_i) + u_i (\#eq:mcigstsls1)
-\end{align*}
+\end{align}
 
 Before estimating \@ref(eq:mcigstsls1) using `ivreg()` we define $Income$ as real per capita income `rincome` and add it to the data set.
 
@@ -267,9 +265,9 @@ coeftest(cig_ivreg2, vcov = vcovHC(cig_ivreg2, type = "HC1"))
 
 We obtain
 
-\begin{align*}
+\begin{align}
   \widehat{\log(Q_i^{cigarettes})} = \underset{(1.26)}{9.42} - \underset{(0.37)}{1.14} \log(P_i^{cigarettes}) + \underset{(0.31)}{0.21} \log(Income_i). (\#eq:emcigstsls2)
-\end{align*}
+\end{align}
 
 Following the book we add the cigarette-specific taxes ($cigtax_i$) as a further instrumental variable and estimate again using TSLS.
 
@@ -288,9 +286,9 @@ coeftest(cig_ivreg3, vcov = vcovHC(cig_ivreg3, type = "HC1"))
 
 Using the two instrumental variables $salestax_i$ and $cigtax_i$ we have $m=2$ and $k=1$ so the coefficient on the endogenous regressor $\log(P_i^{cigarettes})$ is *overidentified*. The TSLS estimate of the regression function \@ref(eq:mcigstsls1) is
 
-\begin{align*}
+\begin{align}
   \widehat{\log(Q_i^{cigarettes})} = \underset{(0.96)}{9.89} - \underset{(0.25)}{1.28} \log(P_i^{cigarettes}) + \underset{(0.25)}{0.28} \log(Income_i). (\#eq:emcigstsls3)
-\end{align*}
+\end{align}
 
 Should we trust the estimates presented in \@ref(eq:emcigstsls2) or rather rely on \@ref(eq:emcigstsls3)? Comparing both equations we find that the estimation based on both instruments is more precise since in \@ref(eq:emcigstsls3) all standard errors reported are smaller than in \@ref(eq:emcigstsls2). In fact, the standard error for the estimator of the demand elasticity is only two thirds of the standard error when the sales tax is the only instrument used. This is due to more information being used in estimation \@ref(eq:emcigstsls3). *If* the instruments are *valid*, \@ref(eq:emcigstsls3) can be considered more reliable. 
 
@@ -334,9 +332,9 @@ If there is correlation between an instrument and the error term IV regression i
 
 Take $\widehat{u}_i^{TSLS} \ , \ i = 1,\dots,n$, the residuals of the TSLS estimation of the general IV regression model \@ref(eq:givmodel). Run the OLS regression
 
-\begin{align*}
+\begin{align}
   \widehat{u}_i^{TSLS} =& \, \delta_0 + \delta_1 Z_{1i} + \dots + \delta_m Z_{mi} + \delta_{m+1} W_{1i} + \dots + \delta_{m+r} W_{ri} + e_i (\#eq:jstatreg)
-\end{align*}
+\end{align}
 
 and test the hypothesis $$H_0: \delta_1 = 0, \dots, \delta_{m} = 0$$ which states that all instruments are exogenous. This can be done using the corresponding $F$-statistic by computing $$J = m  F.$$ This test is the overidentifying restrictions test and the statistic is called the $J$-statistic with $$J \sim \chi^2_{m-k}$$ in large samples and the assumption of homoskedasticity. The degress of freedom $m-k$ state the degree of overidentification since this is the number of instruments $m$ minus the number of endogenous regressors $k$.
 
@@ -356,9 +354,9 @@ However, since the role of the influence of the tabacco and cigarette industry i
 
 The model to be estimated by TSLS using the general sales tax and the cigarette-specific sals tax as instruments hence is
 
-\begin{align*}
+\begin{align}
   \log(Q_{i,1995}^{cigarettes}) - \log(Q_{i,1995}^{cigarettes}) =& \, \beta_0 + \beta_1 \left[\log(P_{i,1995}^{cigarettes}) - \log(P_{i,1985}^{cigarettes}) \right] \\ & \, + \beta_2 \left[\log(Income_{i,1995}) - \log(Income_{i,1985})\right] + u_i (\#eq:diffivreg).
-\end{align*}
+\end{align}
 
 Prior to the estimation using `ivreg()` we define changes from 1985 to 1995 for the dependent variable, the regressors and both instruments. 
 

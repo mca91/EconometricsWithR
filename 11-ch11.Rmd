@@ -50,9 +50,9 @@ summary(HMDA)
 
 The variable we are interesting in modelling is `deny`, an indicator for whether an applicants mortgage application has been accepted (`deny = no`) or denied (`deny = yes`). A regressors that can be presumed to have power in explaining whether a mortgage application has been denied or accepted is `pirat`, the size of the anticipated total monthly loan payments relative to the the applicant's income. It is straightforward to translate this into the simple regression approach 
 
-\begin{align*}
+\begin{align}
   deny = \beta_0 + \beta_1 P/I\ ratio + u. (\#eq:denymod1)
-\end{align*}
+\end{align}
 
 We can estimate this model just as any other linear regression model using `lm()`. Before we do, `deny` must be converted to a numeric variable using `as.numeric()`. Note that `as.numeric(HMDA$deny)` will turn `deny = no` into `deny = 1` and `deny = yes` into `deny = 2`, so using `as.numeric(HMDA$deny)-1` we obtain levels `0` and `1`.
 
@@ -114,9 +114,9 @@ coeftest(denymod2, vcov. = vcovHC(denymod2))
 ```
 
 So the estimated regression function is
-\begin{align*}
+\begin{align}
   \widehat{deny} =& \, \underset{(0.029)}{-0.091} + \underset{(0.089)}{0.559} P/I \ ratio + \underset{(0.025)}{0.177} afam. (\#eq:denymod2)
-\end{align*}
+\end{align}
 
 The coefficient on $black$ is positive and significantly different from zero at the $0.01\%$ level. The interpretation is that, holding constant the $P/I \ ratio$, being black increases the probability of a mortgage application denial by about $17.7\%$. This suggests racial discrimination. However, the estimation might suffer from omitted variable bias so this could be a premature conclusion.
 
@@ -130,9 +130,9 @@ This circumstance demands for approaches that use a *nonlinear* function to mode
 
 In probit regression, the cumulative standard normal distribution function $\Phi$ is used to model the regression function when the dependent variable is binary:
 
-\begin{align*}
+\begin{align}
   E(Y\vert X) = P(Y=1\vert X) = \Phi(\beta_0 + \beta_1 X) (\#eq:probitmodel)
-\end{align*}
+\end{align}
 
 $\beta_0 + \beta_1 X$ in \@ref(eq:probitmodel) plays the role of a quantile $z$. Remember that $$\Phi(z) = P(Z \leq z) \ , \ Z \sim \mathcal{N}(0,1)$$ such that the probit coefficient $\beta_1$ in \@ref(eq:probitmodel) is the change in $z$ associated with a one unit change in $X$. Note that, although the effect on $z$ of a change in $X$ is linear, the link between $z$ and the dependent variable $Y$ is nonlinear since $\Phi$ is a nonlinear function.
 
@@ -176,9 +176,9 @@ coeftest(denyprobit, vcov. = vcovHC(denyprobit, type = "HC1"))
 
 The estimated model equation is
 
-\begin{align*}
+\begin{align}
   \widehat{P(deny\vert P/I \ ratio}) = \Phi(\underset{(0.19)}{-2.19} + \underset{(0.54)}{2.97} P/I \ ratio). (\#eq:denyprobit)
-\end{align*}
+\end{align}
 
 Just as in the linear probability model we find that the relation between the probability of denial and the payments-to-income ratio is positive and that corresponding coefficient is highly significant.
 
@@ -238,9 +238,9 @@ coeftest(denyprobit2, vcov. = vcovHC(denyprobit2, type = "HC1"))
 
 The estimated model equation is
 
-\begin{align*}
+\begin{align}
   \widehat{P(deny\vert P/I \ ratio, black)} = \Phi (\underset{(0.18)}{-2.26} + \underset{(0.50)}{2.74} P/I \ ratio + \underset{(0.08)}{0.71} black). (\#eq:denyprobit2) 
-\end{align*}
+\end{align}
 
 While all coefficients are highly significant, both the estimated coefficients on the payments-to-income ratio and the indicator for African American descent are positive. Again, the coefficients are difficult to interpret but they indicate that first, being black applicants have a higher higher probability of denial than white applicants, holding constant the payments-to-income ratio and second, applicants with a high payments-to-income ratio face a higher risk of being rejected.
 
@@ -338,9 +338,9 @@ coeftest(denylogit2, vcov. = vcovHC(denylogit2, type = "HC1"))
 
 We obtain
 
-\begin{align*}
+\begin{align}
   \widehat{P(deny=1 \vert P/I ratio, black)} = F(\underset{(0.35)}{-4.13} + \underset{(0.96)}{5.37} P/I \ ratio + \underset{(0.15)}{1.27} black). (\#eq:denylogit2)
-\end{align*}
+\end{align}
 
 As for the probit model \@ref(eq:denyprobit2) all model coefficients are highly significant and we obtain postive estimate for the coefficients on $P/I \ ratio$ and $black$. For comparison purposes we compute the predicted probability of denial for two hypothetical applicants that differ in race and have a $P/I \ ratio$ of $0.3$.
 
@@ -369,9 +369,9 @@ So far nothing has been said about *how* logit and probit models are estimated b
 
 Consider the multiple regression probit model 
 
-\begin{align*}
+\begin{align}
   E(Y\vert X_1, \dots, X_k) = P(Y=1\vert X_1, \dots, X_k) = \Phi(\beta_0 + \beta_1 X_1 + \dots + \beta_k X_k). (\#eq:multprobit)
-\end{align*}
+\end{align}
 
 Similarly to OLS, NLS estimates the parameters $\beta_0,\beta_1,\dots,\beta_k$ by minimizing the sum of squared mistakes
 $$\sum_{i=1}^n\left[ Y_i - \Phi(b_0 + b_1 X_{1i} + \dots + b_k X_{ki}) \right]^2.$$

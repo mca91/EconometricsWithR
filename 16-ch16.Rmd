@@ -552,7 +552,6 @@ Thus the two estimated equations of the VECM are
 
 \begin{align*}
  \widehat{\Delta TB3MS}_t =& \, -\underset{(0.11)}{0.06} + \underset{(0.11)}{0.24} \Delta TB3MS_{t-1} -\underset{(0.15)}{0.16} \Delta TB3MS_{t-2} \\ &+ \underset{(0.13)}{0.11} \Delta TB10YS_{t-1} -\underset{(0.11)}{0.15} \Delta TB10YS_{t-2} + \underset{(0.05)}{0.03} ECT_{t-1} \\
-
  \widehat{\Delta TB10YS}_t =& \, \underset{(0.06)}{0.12} -\underset{(0.07)}{0.00} \Delta TB3MS_{t-1} -\underset{(0.04)}{0.07} \Delta TB3MS_{t-2} \\ &+ \underset{(0.10)}{0.23} \Delta TB10YS_{t-1} -\underset{(0.07)}{0.07} \Delta TB10YS_{t-2} -\underset{(0.03)}{0.09} ECT_{t-1}.
 \end{align*}
 
@@ -595,45 +594,67 @@ The level of the series of daily percentage changes in the Wilshire Index seems 
 
 Consider $$Y_t = \beta_0 + \beta_1 Y_{t-1} + \gamma_1 X_{t-1} + u_t$$, a simple ADL($1$,$1$) regression model. The econometrician Robert Engle (1982) proposed to model $\sigma^2_t$, the variance of the normally distributed error $u_t$ by an order $p$ distributive lag model
 
-\begin{align*}
+\begin{align}
  \sigma^2_t = \alpha_0 + \alpha_1 u_{t-1}^2 + \alpha_2 u_{t-2}^2 + \dots + \alpha_p u_{t-p}^2, (\#eq:archmodel)
-\end{align*}
+\end{align}
 
-which is called the **autoregressive conditional heteroskedasticity** (ARCH) model of order $p$, or short ARCH($p$).^[Although we introduce the ARCH model as a component in an ADL($1$,$1$) model, it can be used for modelling the conditional zero-mean error term of any time series model.] The general idea is apparent from the model structure: positive coefficients $\alpha_0,\alpha_1,\dots,\alpha_p$ imply that recent large squared errors lead to a large variance, and thus large squared errors, in the current period.
+which is called the **autoregressive conditional heteroskedasticity** (ARCH) model of order $p$, or short ARCH($p$).^[Although we introduce the ARCH model as a component in an ADL($1$,$1$) model (a model of the conditional error variances), it can be used for modelling the conditional zero-mean error term of any time series model.] The general idea is apparent from the model structure: positive coefficients $\alpha_0,\alpha_1,\dots,\alpha_p$ imply that recent large squared errors lead to a large variance, and thus large squared errors, in the current period.
 
 The generalized ARCH (GARCH) model, developed by Tim Bollerslev (1986) is an extension of the ARCH model where $\sigma^2_t$ is allowed to depend on its on lags and lags of the squared error term. The GARCH($p$,$q$) model is given by
 
-\begin{align*}
+\begin{align}
  \sigma^2_t = \alpha_0 + \alpha_1 u_{t-1}^2 + \alpha_2 u_{t-2}^2 + \dots + \alpha_p u_{t-p}^2 + \phi_1 \sigma^2_{t-1} + \dots + \phi_p \sigma^2_{t-q}. (\#eq:garchmodel)
-\end{align*}
+\end{align}
 
 The GARCH model is an ADL($p$,$q$) model and thus can provide more parsimonious parameterizations than an ARCH model (see the discussion in Appendix 15.2 of the book).
 
 ### Application to Stock Price Volatility {-}
 
+Maximum likelihood estimates of ARCH and GARCH models are efficient and have normal distributions in large samples such that the usual methods for conducting inference about the unknown parameters can be applied. The <tt>R</tt> package <tt>fGARCh</tt> is a collection of function for analyzing and modelling the heteroskedastic behaviour in time series models. In the following application we reproduce the results presented in Chapter 16.5 of the book by means of the function <tt>garchFit()</tt>. This function is somewhat more sophisticated. It allows for different specifications of the optimization procedure, different error distributions and much more (use `?GarchFit` for a detailed description of the arguments), in particular, the reported standard errors are robust.
 
+The GARCH($1$,$1$) model of daily changes in the Wilshire 5000 index we estimate is
+\begin{align}
+  R_t =& \, \beta_0 + u_t \ , \ u_t \sim \mathcal{N}(0,\sigma^2_t) \\
+  \sigma^2_t =& \, \alpha_0 + \alpha_1 u_{t-1}^2 + \phi_1 \sigma_{t-1}^2 + \nu_t (\#eq:w5000g11)
+\end{align}
+where $R_t$ are is the percentage change in period $t$, $\beta_1$, $\alpha_0$, $\alpha_1$ and $\phi_1$ are unknown coefficients and $u_t$ and $\nu_t$ are error terms with conditional mean of zero. We do not include any lagged predictors in the model of $R_t$ because the daily changes in the Wilshire 5000 index reflect daily stock returns wich are essentially unpredictable. Note that $u_t$ is assumed to be normally distributed and the variance $\sigma^2_t$ depends on $t$ as it follows the GARCH($1$,$1$) recursion \@ref(eq:w5000g11).
+
+It is straightforward to estimate this model using <tt>garchFit()</tt>.
 
 ```{r}
 # estimate GARCH(1,1) model of daily percentage changes
 GARCH_Wilshire <- garchFit(data = W5000_PC$Value, trace = F)
 ```
 
- 
+We obtain
+\begin{align}
+  \widehat{R}_t =& \, \underset{(0.010)}{0.068} (\#eq:w5000g11est1) \\
+  \widehat{\sigma}^2_t =& \, \underset{(0.002)}{0.011} + \underset{(0.007)}{0.081} u_{t-1}^2 + \underset{(0.008)}{0.909} \sigma_{t-1}^2 (\#eq:w5000g11est2)
+\end{align}
+so the coefficient on $u_{t-1}^2$ and $\sigma^2_{t-1}$ are statistically significant at any common level of significance. One can show that the persistence of movements in $\sigma^2_t$ is determined by the sum of both coefficients which is $0.99$ here. This indicates that movements in the conditional variance are highly persistent, implying long-lasting periods of high volatility which is consistent with the visual evidence for volatility clustering presented above.  
+
+The estimated conditional variance $\widehat{\sigma}^2_t$ can be computed by plugging the residuals from \@ref(eq:w5000g11est1) into equation \@ref(eq:w5000g11est2). This is performed automatically by <tt>garchFit()</tt> so to obtain a vector of the estimated conditional standard deviations all we have to do is to read out the values from `GARCH_Wilshire` by appending `@sigma.t`.  
+
+Using the vector containing the $\widehat{\sigma}_t$ we plot bands of $\pm$ one conditional standard deviation along with deviations of the series of daily percentage changes in the Wilshire 5000 index from its mean. The following code chunk reproduces Figure 16.4 of the book.
 
 ```{r, fig.align='center'}
-# plot percentage changes
-plot(W5000_PC, 
-     ylab = "Percent", 
-     main = "Daily Percentage Changes in the Wilshire Index",
-     type="l", col = "steelblue", lwd = 0.5)
-abline(0,0)
+# compute deviations of the percentage changes from their mean
+dev_mean_W5000_PC <- W5000_PC$Value - GARCH_Wilshire@fit$coef[1]
 
-mean_W5000_PC <- W5000_PC$Value - GARCH_Wilshire@fit$coef[1]
+# plot deviation of percentage changes from mean
+plot(W5000_PC$Date, dev_mean_W5000_PC, 
+     type = "l", 
+     col = "steelblue",
+     ylab = "Percent", 
+     xlab = "Date",
+     main = "Estimated Bands of +- One Conditional Standard Deviation",
+     lwd = 0.2)
+abline(0, 0)
 
 # add GARCH(1,1) confidence bands (one standard deviation) to the plot
-
 lines(W5000_PC$Date, GARCH_Wilshire@fit$coef[1] + GARCH_Wilshire@sigma.t, col = "darkred", lwd = 0.5)
 lines(W5000_PC$Date, GARCH_Wilshire@fit$coef[1] - GARCH_Wilshire@sigma.t, col = "darkred", lwd = 0.5)
-
 ```
+
+We see that the bands of estimated conditional standard deviation describe the observed heteroskedasticity in the series of daily changes of the Wilshire 5000 index quite well and are useful for quantifying time-varying volatility and the emerging risk for investors holding stocks summarized by the index. This estimated GARCH model may also be used to produce forecast intervals whose widths depend on the volatility of the most recent regression residuals.
 

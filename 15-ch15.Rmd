@@ -93,9 +93,9 @@ coeftest(orange_DLM, vcov. = vcovHAC)
 
 As a result we obtain
 
-\begin{align*}
+\begin{align}
   \widehat{\%ChgOJC_t} =& \, \underset{(0.21)}{-0.69} + \underset{(0.14)}{0.47} FDD_t + \underset{(0.08)}{0.15} FDD_{t-1} + \underset{(0.06)}{0.06} FDD_{t-2} + \underset{(0.05)}{0.07} FDD_{t-3} \\ &\,+ \underset{(0.03)}{0.04} FDD_{t-4} + \underset{(0.03)}{0.05} FDD_{t-5} + \underset{(0.05)}{0.05} FDD_{t-6} (\#eq:orangemod1)
-\end{align*}
+\end{align}
 
 where the coefficient on $FDD_{t-1}$ estimates the price increase in period $t$ caused by an additional freezing degree day in the preceding month, the coefficient on $FDD_{t-2}$ estimates the effect of an additional freezing degree day two month ago and so on. Consequently, the coefficients in \@ref(eq:orangemod1) can be interpreted as price changes in current and future periods due to a unit increase in the current month' freezing degree days.
 
@@ -114,9 +114,9 @@ The two concepts of exogeneity and the distributive lag model are summarized in 
 <p>
 
 The general distributed lag model is
-\begin{align*}
+\begin{align}
   Y_t = \beta_0 + \beta_1 X_t + \beta_2 X_{t-1} + \beta_3 X_{t-2} + \dots + \beta_{r+1} X_{t-r} + u_t (\#eq:dlm)
-\end{align*}
+\end{align}
 where it is assumed that
 
 1. $X$ is an exogenous variable, $$E(u_t\vert X_t, X_{t-1}, X_{t-2},\dots) = 0.$$
@@ -153,9 +153,9 @@ The following terminoligy regarding the coefficients in the distributed lag mode
 + The $h$-period *cumulative dynamic multiplier* of a unit change in $X$ and $Y$ is defined as the cumulative sum of the dynamic multipliers. In particualr, $\beta_1$ is the zero-period cumulative dynamic multiplier, $\beta_1 + \beta_2$ is the one-period cumulative dynamic multiplier and so forth.
 
       Cumulative dynamic multipliers of \@ref(eq:dlm) are the coefficients $\delta_1,\delta_2,\dots,\delta_r,\delta_{r+1}$ in the modified regression
-\begin{align*}
+\begin{align}
   Y_t =& \, \delta_0 + \delta_1 \Delta X_t + \delta_2 \Delta X_{t-1} + \dots + \delta_r \Delta X_{t-r+1} + \delta_{r+1} X_{t-r} + u_t. (\#eq:DCMreg)
-\end{align*} and thus can be directly estimated using OLS wich makes it convenient to compute their HAC standard errors. $\delta_{r+1}$ is called the *long-run dynamic multiplier*.
+\end{align} and thus can be directly estimated using OLS wich makes it convenient to compute their HAC standard errors. $\delta_{r+1}$ is called the *long-run dynamic multiplier*.
 
 It is straightforward to compute the cumulative dynamic multipliers for \@ref(eq:orangemod1), the estimated distributed lag regression of changes in orange juice concentrate prices on freezing degree days, using the corresponding model object `orange_DLM` and the function `cumsum()`.
 
@@ -214,19 +214,19 @@ Consider the distributed lag regression model with no lags and the single regres
   Y_t = \beta_0 + \beta_1 X_t + u_t.
 \end{align*}
 with autocorrelated errors. A brief derivation of 
-\begin{align*}
+\begin{align}
   \overset{\sim}{\sigma}^2_{\widehat{\beta}_1} = \widehat{\sigma}^2_{\widehat{\beta}_1} \widehat{f}_t, (\#eq:nwhac)
-\end{align*}
+\end{align}
 the so-called *Newey-West variance estimator* for the variance of the OLS estimator of $\beta_1$ is presented in Chapter 15.4 of the book. $\widehat{\sigma}^2_{\widehat{\beta}_1}$ in \@ref(eq:nwhac) is the heteroskedasticity-robust variance estimate of $\widehat{\beta}_1$ and 
-\begin{align*}
+\begin{align}
   \widehat{f}_t = 1 + 2 \sum_{j=1}^{m-1} \left(\frac{m-j}{m}\right) \overset{\sim}{\rho}_j (\#eq:nwhacf)
-\end{align*}
+\end{align}
 is a correction factor that adjusts for serially correlated errors and involves estimates of $m-1$ autocovariances $\overset{\sim}{\rho}_j$, whereby $m$ is a truncation parameter to be chosen. A rule of thumb for choosing $m$ is
-\begin{align*}
+\begin{align}
   m = \left \lceil{0.75 \cdot T^{1/3}}\right\rceil. (\#eq:hactruncrot)
-\end{align*}
+\end{align}
 
-In the following we simulate a time series that, as stated above, follows a distributed lag model with autocorrelated errors and then show how to compute the Newey West HAC estimate of $SD(\widehat{\beta}_1)$ using <tt>R</tt>. This is done in two seperat but, as we will see, identical approches: at first we follow the derivation presented in the book step-by-step and compute the estimate \glqq by hand \grqq. Then we prove that the result is exactly the estimate obtained when using the function `NeweyWest()`. 
+In the following we simulate a time series that, as stated above, follows a distributed lag model with autocorrelated errors and then show how to compute the Newey West HAC estimate of $SD(\widehat{\beta}_1)$ using <tt>R</tt>. This is done in two seperat but, as we will see, identical approches: at first we follow the derivation presented in the book step-by-step and compute the estimate manually. We then prove that the result is exactly the estimate obtained when using the function `NeweyWest()`. 
 
 ```{r}
 # function that computes rho tilde
@@ -295,10 +295,10 @@ In general, the errors in a distributed lag model are correlated which necessita
 <p>
 
 Consider the general distributed lag model with $r$ lags and assume that the errors follow an $AR(p)$ process,
-\begin{align*}
+\begin{align}
   Y_t =& \, \beta_0 + \beta_1 X_t + \beta_2 X_{t-1} + \dots + \beta_{r+1} X_{t-r} + u_t \\
   u_t =& \, \phi_1 u_{t-1} + \phi u_{t-2} + \dots + \phi_p u_{t-p} + \overset{\sim}{u}_t. (\#eq:dlmarerrors)
-\end{align*}
+\end{align}
 Assuming strict exogeneity of $X_t$, one may rewrite the above model in the ADL specification
 \begin{align*}
   Y_t =& \, \alpha_0 + \phi_1 Y_{t-1} + \phi_2 Y_{t-2} + \dots + \phi_p Y_{t-p} \\
@@ -316,15 +316,15 @@ On the one han, as demonstrated in Chapter 15.5 of the book, the OLS estimation 
 In what follows we shortly review how different representations of a distribted lag model can be obtained when the causal effect in $Y$ of a change in $X$ lasts for only two periods and show how these specification can be estimated by OLS and GLS using <tt>R</tt>.
 
 The model is
-\begin{align*}
+\begin{align}
   Y_t = \beta_0 + \beta_1 X_t + \beta_2 X_{t-1} + u_t (\#eq:dldynamic)
-\end{align*}
+\end{align}
 so a change in $X$ has a contemporaneous effect on $Y$ ($\beta_1$) and an effect in the next period ($\beta_2$). The error term $u_t$ follows an AR($1$) process,$$u_t = \phi_1 u_{t-1} + \overset{\sim}{u_t}$$ where $\overset{\sim}{u_t}$ is serially uncorrelated.
 
 One can show that the ADL representation of this model is
-\begin{align*}
+\begin{align}
   Y_t = \alpha_0 + \phi_1 Y_{t-1} + \delta_0 X_t + \delta_1 X_{t-1} + \delta_2 X_{t-2} + \overset{\sim}{u}_t (\#eq:adl21dynamic)
-\end{align*}
+\end{align}
 with the restrictions
 \begin{align*}
   \beta_1 =& \, \delta_0, \\
@@ -334,9 +334,9 @@ with the restrictions
 ##### Quasi-Differences {-}
 
 Another way of writing this ADL($1$,$2$) representation is the *quasi-difference* model
-\begin{align*}
+\begin{align}
   \overset{\sim}{Y}_t = \alpha_0 + \beta_1 \overset{\sim}{X}_t + \beta_2   \overset{\sim}{X}_{t-1} + \overset{\sim}{u}_t (\#eq:qdm)
-\end{align*}
+\end{align}
 where $\overset{\sim}{Y}_t = Y_t - \phi_1 Y_{t-1}$ and $\overset{\sim}{X}_t = X_t - \phi_1 X_{t-1}$. Notice that the error term $\overset{\sim}{u}_t$ is uncorrelated in both models and, as shown in Chapter 15.5 of the book, $$E(u_t\vert X_{t+1}, X_t, X_{t-1}, \dots) = 0$$ which is implied by the assumption of strict exogeneity.
 
 We continue by simulation a time series of $500$ observations using the model \@ref(eq:dldynamic) where $\beta_1 = 0.1$, $\beta_2 = 0.25$, $\phi = 0.5$ and $\overset{\sim}{u}_t \sim N(0,1)$ and start by estimating the distributed lag model.
