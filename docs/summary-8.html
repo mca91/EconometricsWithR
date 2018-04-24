@@ -32,8 +32,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   
   
-<link rel="prev" href="vector-autoregressions.html">
-<link rel="next" href="cointegration.html">
+<link rel="prev" href="volatility-clustering-and-autoregressive-conditional-heteroskedasticity.html">
+
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
@@ -358,99 +358,30 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 <div class = rmdreview>
 This book is in <b>Open Review</b>. We want your feedback to make the book better for you and other students. You may annotate some text by <span style="background-color: #3297FD; color: white">selecting it with the cursor</span> and then click the <i class="h-icon-annotate"></i> on the pop-up menu. You can also see the annotations of others: click the <i class="h-icon-chevron-left"></i> in the upper right hand corner of the page <i class="fa fa-arrow-circle-right  fa-rotate-315" aria-hidden="true"></i>
 </div>
-<div id="orders-of-integration-and-the-df-gls-unit-root-test" class="section level2">
-<h2><span class="header-section-number">16.2</span> Orders of Integration and the DF-GLS Unit Root Test</h2>
-<p>Some economic variables have smoother trends than variables that can be described by random walk models. A way to model these time series is <span class="math display">\[\Delta Y_t = \beta_0 + \Delta Y_{t-1} + u_t\]</span>, where <span class="math inline">\(u_t\)</span> is a serially uncorrelated error term. This model states that the first differences of a series follow a random walk. Consequently, the series of second differences of <span class="math inline">\(Y_t\)</span> is stationary. Key Concept 16.4 summarizes the notation.</p>
-<div class="keyconcept">
-<h3 class="right">
-Key Concept <br> 16.4
-</h3>
-<h3 class="left">
-Orders of Integration, Differencing and Stationarity
-</h3>
-<p>
+<div id="summary-8" class="section level2">
+<h2><span class="header-section-number">16.5</span> Summary</h2>
 <ul>
-<li><p>When a time series <span class="math inline">\(Y_t\)</span> has a unit autoregressive root, we say that <span class="math inline">\(Y_t\)</span> is integrated of order one. This is often denoted by <span class="math inline">\(Y_t \sim I(1)\)</span>. We simply say that <span class="math inline">\(Y_t\)</span> is <span class="math inline">\(I(1)\)</span>. If <span class="math inline">\(Y_t\)</span> is <span class="math inline">\(I(1)\)</span>, its first difference <span class="math inline">\(\Delta Y_t\)</span> is stationary.</p></li>
-<li><p>We say that <span class="math inline">\(Y_t\)</span> is <span class="math inline">\(I(2)\)</span> when <span class="math inline">\(Y_t\)</span> needs to be differenced to time to obtain a stationary series. Using the notation introduced here we say that if <span class="math inline">\(Y_t\)</span> is <span class="math inline">\(I(2)\)</span>, it difference first <span class="math inline">\(\Delta Y_t\)</span> is <span class="math inline">\(I(1)\)</span> and its second difference <span class="math inline">\(\Delta^2 Y_t\)</span> is stationary. We say that <span class="math inline">\(Y_t\)</span> is <span class="math inline">\(I(d)\)</span> when <span class="math inline">\(Y_t\)</span> must be differenced <span class="math inline">\(d\)</span> times to obtain a stationary series.</p></li>
-<li><p>When <span class="math inline">\(Y_t\)</span> is stationary, we say it is integrated of order <span class="math inline">\(0\)</span> so <span class="math inline">\(Y_t\)</span> is <span class="math inline">\(I(0)\)</span>.</p></li>
+<li><p>We have discussed how vector autoregressions are conveniently estimated and used for forecasting by means of functions from the <tt>VARS</tt> package.</p></li>
+<li><p>The package <tt>urca</tt> which is a dependency of <tt>VARS</tt> supplies advanced methods for unit root and cointegration analysis like the DF-GLS and the EG-ADF tests. In an application we have found evidence that 3-months and 10-year interest rates have a common stochastic trend (that is they are cointegrated) and thus can be modelled using a vector error correction model.</p></li>
+<li><p>At last we have introduced the concept of volatility clusering and demonstrated how the function <tt>garchFit()</tt> from the package <tt>fGarch</tt> can be employed to estimate a GARCH(<span class="math inline">\(1\)</span>,<span class="math inline">\(1\)</span>) model of the conditional heteroskedasticity inherent to returns of the Wilshire 5000 stock index.</p></li>
 </ul>
-<p>It is fairly easy to obtain differences of time series in <tt>R</tt>. For example, the function <tt>diff()</tt> returns suitably lagged and iterated differences of numeric vectors, matrices and time series objects of the class <tt>ts</tt>.</p>
-</p>
-</div>
-<p>Following the book, we take the price level of the united states measured by the personal consumption expenditures price index as an example.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># define ts object of the United States PCE Price Index</span>
-PCECTPI &lt;-<span class="st"> </span><span class="kw">ts</span>(<span class="kw">log</span>(USMacroSWQ<span class="op">$</span>PCECTPI), <span class="dt">start =</span> <span class="kw">c</span>(<span class="dv">1957</span>,<span class="dv">1</span>), <span class="dt">end =</span> <span class="kw">c</span>(<span class="dv">2012</span>,<span class="dv">4</span>), <span class="dt">freq =</span> <span class="dv">4</span>)
 
-<span class="co"># plot logarithm of the PCE Price Index</span>
-<span class="kw">plot</span>(<span class="kw">log</span>(PCECTPI),
-     <span class="dt">main =</span> <span class="st">&quot;Log of United States PCE Price Index&quot;</span>,
-     <span class="dt">ylab =</span> <span class="st">&quot;Logarithm&quot;</span>,
-     <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>, <span class="dt">lwd =</span> <span class="dv">2</span>)</code></pre></div>
-<p><img src="URFITE_files/figure-html/unnamed-chunk-11-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>We see that the logarithm of the price level has a smoothly varying trend. This is typical for an <span class="math inline">\(I(2)\)</span>. If the price level is indeed <span class="math inline">\(I(2)\)</span>, the first differences of this series should be <span class="math inline">\(I(1)\)</span>. Since we are considering the logarithm of the price level, we obtain growth rates by taking first differences, so the differenced price level series is the series of quarterly inflation rates. This is quickly done in <tt>R</tt> using the function <tt>Delt()</tt> from the package <tt>quantmod</tt> As explained in Chapter 14.2, multiplying the quarterly inflation rates by <span class="math inline">\(400\)</span> yields the quarterly rate of inflation, measuared in percentage points at an annual rate.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># plot United States PCE price inflation</span>
-<span class="kw">plot</span>(<span class="dv">400</span><span class="op">*</span><span class="kw">Delt</span>(PCECTPI),
-     <span class="dt">main =</span> <span class="st">&quot;United States PCE Price Index&quot;</span>,
-     <span class="dt">ylab =</span> <span class="st">&quot;Percent per annum&quot;</span>,
-     <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>, <span class="dt">lwd =</span> <span class="dv">2</span>)
-<span class="kw">abline</span>(<span class="dv">0</span>,<span class="dv">0</span>, <span class="dt">lty =</span> <span class="dv">2</span>)</code></pre></div>
-<p><img src="URFITE_files/figure-html/unnamed-chunk-12-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>Obviously, the rate of inflation behaves much more erratic than the smooth graph of the logarithm of the PCE price index.</p>
-<div id="the-df-gls-test-for-a-unit-root" class="section level5 unnumbered">
-<h5>The DF-GLS Test for a Unit Root</h5>
-<p>The DF-GLS test for a unit root has been developed by Elliot, Rothenberg and Stock (1996) and has higher power than the ADF test when the autoregressive root is large but less than one. That is, the DF-GLS has a higher probability of rejecting the false null hypothesis of a stochastic trend when the sample data stems from time series that is close to being integrated.</p>
-<p>The idea of the DF-GLS test is to test for an autoregressive unit root in the detrended series whereby GLS estimates of the deterministic components are used to obtain the detrended version of the original series. See Chapter 16.3 of the book for a more detailed explanation of the approach.</p>
-<p>A function that performs the DF-GLS test is implemented in the package <tt>urca</tt> (this package is a dependency of the package <tt>vars</tt> so it should be already loaded if <tt>vars</tt> is attached). The function that computes the test statistic is <tt>ur.ers</tt>.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># DF-GLS test for unit root in GDP</span>
-<span class="kw">summary</span>(
- <span class="kw">ur.ers</span>(<span class="kw">log</span>(<span class="kw">window</span>(GDP, <span class="dt">start =</span> <span class="kw">c</span>(<span class="dv">1962</span>,<span class="dv">1</span>), <span class="dt">end =</span> <span class="kw">c</span>(<span class="dv">2012</span>,<span class="dv">4</span>))),
-        <span class="dt">model =</span> <span class="st">&quot;trend&quot;</span>, 
-        <span class="dt">lag.max =</span> <span class="dv">2</span>)
-)</code></pre></div>
-<pre><code>## 
-## ############################################### 
-## # Elliot, Rothenberg and Stock Unit Root Test # 
-## ############################################### 
-## 
-## Test of type DF-GLS 
-## detrending of series with intercept and trend 
-## 
-## 
-## Call:
-## lm(formula = dfgls.form, data = data.dfgls)
-## 
-## Residuals:
-##       Min        1Q    Median        3Q       Max 
-## -0.025739 -0.004054  0.000017  0.004619  0.033620 
-## 
-## Coefficients:
-##              Estimate Std. Error t value Pr(&gt;|t|)    
-## yd.lag       -0.01213    0.01012  -1.199  0.23207    
-## yd.diff.lag1  0.28583    0.07002   4.082 6.47e-05 ***
-## yd.diff.lag2  0.19320    0.07058   2.737  0.00676 ** 
-## ---
-## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
-## 
-## Residual standard error: 0.007807 on 198 degrees of freedom
-## Multiple R-squared:  0.1504, Adjusted R-squared:  0.1376 
-## F-statistic: 11.69 on 3 and 198 DF,  p-value: 4.392e-07
-## 
-## 
-## Value of test-statistic is: -1.1987 
-## 
-## Critical values of DF-GLS are:
-##                  1pct  5pct 10pct
-## critical values -3.48 -2.89 -2.57</code></pre>
-<p>Inspecting the summary of the test we find that the test statistic is about -1.2 which is larger than the <span class="math inline">\(10\%\)</span> critical value of <span class="math inline">\(-2.57\)</span> (this is the appropriate critical value for the ADF test when an intercept and a time trend are included in the Dickey-Fuller regression and the test is left-sided) so we cannot reject the null hypothesis that inflation is nonstationary, using the DF-GLS test.</p>
 </div>
-</div>
+<!-- </div> -->
+
+
+
+
+
+
+
             </section>
 
           </div>
         </div>
       </div>
-<a href="vector-autoregressions.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="cointegration.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="volatility-clustering-and-autoregressive-conditional-heteroskedasticity.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

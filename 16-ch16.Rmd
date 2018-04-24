@@ -1,6 +1,14 @@
 # Additional Topics in Time Series Regression
 
-We focus on using VARs for forecasting. Structural VARs are beyond the scope of this chapter.
+This chapter introduces the following advanced topics in time series regression and demonstrates how core techniques can be applied using <tt>R</tt>:
+
++ Vector autoregressions (VARs). We focus on using VARs for forecasting. Another branch of the literature is concerned with so-called *Structural VARs* which are, however, beyond the scope of this chapter.
++ Multiperiod forecasts. This includes a discussion of iterated and direct (multivariate) forecasts.
++ The DF-GLS test, a more powerful method for unit root testing than the ADF test.
++ Cointegration analysis with an application to short- and long-term interest rates. We demonstrate how to estimate a vector error correction model.
++ Autoregressive conditional heteroskedasticity. We show how a GARCH($1$,$1$) model can be used for quantifying the risk associated with investing in the stock market in terms of estimation and forecasting of the volatility of asset returns.
+
+If you are intersted in reproducing the code examples on your own device, install the <tt>R</tt> packages listed below and make sure that the subsequent code chunk executes without any errors. 
 
 ```{r, warning=FALSE, message=FALSE}
 library(AER)
@@ -561,7 +569,9 @@ The output produced by <tt>coeftest()</tt> shows that there is little evidence t
 
 In particular financial time series often exhibit a behaviour that is known as **volatility clustering**: the volatility changes over time but its degree shows a tendency to persist i.e. there are periods of low volatility and some where volatility is high. Econometricians call this the conditional heteroskedasticity. Conditional heteroskedasticity is an intersting property because it can be exploited for forecasting the variance of future periods. A good forecast of a series' variance allows to quantify uncertainty (for example by computing accrurate forecast confidence intervals) which is especially important when it is hard to come up with a good prediction of future realisations (see section 14.4).  
 
-As an example, consider daily changes in the Whilshire 5000 stock index.
+As an example, we consider daily changes in the Whilshire 5000 stock index. The data is available for download at the [Federal Reserve Economic data Base](https://fred.stlouisfed.org/series/WILL5000INDFC). For consistency with the book we download data from 1989-29-12 to 2013-12-31 (choosing this somewhat larger time span is necessary since later on we will be working with daily changes of the series).
+
+The following code chunk shows how to format the data accordingly and how to reproduce Figure 16.3 of the book.
 
 ```{r}
 # import data on Wilshire 5000 index
@@ -657,4 +667,13 @@ lines(W5000_PC$Date, GARCH_Wilshire@fit$coef[1] - GARCH_Wilshire@sigma.t, col = 
 ```
 
 We see that the bands of estimated conditional standard deviation describe the observed heteroskedasticity in the series of daily changes of the Wilshire 5000 index quite well and are useful for quantifying time-varying volatility and the emerging risk for investors holding stocks summarized by the index. This estimated GARCH model may also be used to produce forecast intervals whose widths depend on the volatility of the most recent regression residuals.
+
+## Summary 
+
++ We have discussed how vector autoregressions are conveniently estimated and used for forecasting in <tt>R</tt> by means of functions from the <tt>VARS</tt> package. 
+
++ The package <tt>urca</tt> which is a dependency of <tt>VARS</tt> supplies advanced methods for unit root and cointegration analysis like the DF-GLS and the EG-ADF tests. In an application we have found evidence that 3-months and 10-year interest rates have a common stochastic trend (that is they are cointegrated) and thus can be modelled using a vector error correction model. 
+
++ At last we have introduced the concept of volatility clusering and demonstrated how the function <tt>garchFit()</tt> from the package <tt>fGarch</tt> can be employed to estimate a GARCH($1$,$1$) model of the conditional heteroskedasticity inherent to returns of the Wilshire 5000 stock index.
+
 
