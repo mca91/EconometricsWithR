@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title></title>
+  <script src="js/d3.v3.min.js"></script>
+  <script src="js/leastsquares.js"></script>
+  <script src="js/d3functions.js"></script>
+
+  <script type="text/javascript" src="MathJax-2.7.2/MathJax.js?config=default">
+  </script>
+
+ <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        extensions: ["tex2jax.js", "TeX/AMSmath.js"],
+        tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+        jax: ["input/TeX","output/SVG"]
+      });
+      MathJax.Hub.processSectionDelay = 0;
+  </script>
+
+</head>
+
+<body>
+
+  <script type="text/javascript">
+
+//Global Variables
+var data = [];
+var resids = [];
+
+//D3 Set up
+var w = 800,
+    height = 400,
+    margin = 30;
+
+//makes scales
+var svg = d3.select("body")
+            .append("svg")
+            .attr("width",w)
+            .attr("height",height);
+
+var x = d3.scale
+          .linear()
+          .domain([0,20])
+          .range([margin,w-250]);
+
+var y = d3.scale
+          .linear()
+          .domain([0,10])
+          .range([height-margin,margin]);
+
+var r = d3.scale
+          .linear()
+          .domain([0,w-250])
+          .range([0,30]);
+
+var o=d3.scale.linear().domain([10000,100000]).range([.5,1]);
+var c=d3.scale.category10().domain(["Africa","America","Asia","Europe","Oceania"]);
+
+//create axis
+var xAxis = d3.svg.axis()
+  .scale(x)
+  .orient("bottom");
+
+var yAxis = d3.svg.axis()
+  .scale(y)
+  .orient("left");
+
+
+// clipping path
+  svg.append("clipPath")
+     .attr("id", "chart-area")
+     .append("rect")
+     .attr("x", margin)
+     .attr("y", margin)
+     .attr("width", w-250)
+     .attr("height", height-2*margin);
+
+// svg background
+svg.append("rect")
+    .attr("rx", 25)
+    .attr("ry", 25)
+    .attr("width", w-250+margin)
+    .attr("height", height)
+    .attr("fill", "lightgrey")
+    .style("opacity", 0.30);
+
+svg.append("rect")
+    .attr("y", 0)
+    .attr("x", w-245+margin)
+    .attr("rx", 25)
+    .attr("ry", 25)
+    .attr("width", 160)
+    .attr("height", height)
+    .attr("fill", "lightgrey")
+    .style("opacity", 0.30);
+
+//draw axis
+
+svg.append("g")
+  .attr("class", "axis")
+  .attr("transform", "translate(0," + (height - margin) + ")")
+  .call(xAxis)
+  .style({
+    "fill":"none",
+    "stroke":"#000",
+    "shape-rendering":"crispEdges",
+    "font-size":"8pt"
+  });
+
+svg.append("g")
+  .attr("class", "axis")
+  .attr("transform", "translate(" + margin + ",0)")
+  .call(yAxis)
+  .style({
+    "fill":"none",
+    "stroke":"#000",
+    "shape-rendering":"crispEdges",
+    "font-size":"8pt"
+  });
+
+  svg.selectAll(".axis")
+   .style({
+        "font-family":"Century Gothic, CenturyGothic, AppleGothic, sans-serif",
+        "font-size": "9px"
+   });
+
+//draw dashed lines
+svg.selectAll("horizontal")
+   .data(d3.range(0,10,2))
+   .enter()
+   .append("line")
+   .attr("x1",margin)
+   .attr("x2",w-250)
+   .attr("y1",y)
+   .attr("y2",y)
+   .style({
+      "stroke":"black",
+      "stroke-dasharray":"4 4",
+      "stroke-width":"1",
+      "stroke-opacity":".5",
+   });
+
+svg.selectAll("vertical")
+   .data(d3.range(0,20,2))
+   .enter()
+   .append("line")
+   .attr("y1",margin)
+   .attr("y2",height-margin)
+   .attr("x1",x)
+   .attr("x2",x)
+   .style({
+      "stroke":"black",
+      "stroke-dasharray":"4 4",
+      "stroke-width":"1",
+      "stroke-opacity":".5"
+   });
+
+var residview = false;
+
+svg.on('dblclick', function() {
+
+
+        svg.selectAll('path.resline').remove();
+        svg.selectAll('path.halfcirc').remove();
+        svg.selectAll('circle')
+           .transition()
+           .duration(1000)
+           .attr("cx", 0)
+           .remove();
+
+        svg.selectAll('#regline').remove();
+        svg.selectAll('foreignObject.equation').remove();
+        svg.selectAll('text.subject').remove();
+        svg.selectAll('foreignObject.n').remove();
+        svg.selectAll('foreignObject.SSR').remove();
+        svg.selectAll('foreignObject.R2').remove();
+        svg.selectAll('foreignObject.cor').remove();
+        svg.selectAll('foreignObject.meany').remove();
+        svg.selectAll('foreignObject.meanx').remove();
+
+        residview = false;
+        data = []
+        resids = []
+
+});
+
+
+//click event: draw new circle
+svg.on('click', function(){
+  if(d3.mouse(this)[0] > (margin + r(200)) &&
+      d3.mouse(this)[0] < (w-250 - r(200)) &&
+      d3.mouse(this)[1] > (margin + r(200)) &&
+      d3.mouse(this)[1] < (height-margin - r(200)))
+  {
+    //push new data point to data array
+    data.push({"x": d3.mouse(this)[0], "y": d3.mouse(this)[1], "radius": 100, "fill": "Europe", "opacity": 90000});
+
+    //select each circle and append the data
+    var selection = svg.selectAll("circle").data(data)
+
+    //update selection and draw new circle
+    selection.enter()
+    .append("circle")
+    .attr("cx",function(d) {return d.x;})
+    .attr("cy",function(d) {return d.y;})
+    .attr("r",function(d) {return r(d.radius);})
+    .style("fill",function(d) {return "steelblue";})
+    .style("opacity",function(d) {
+      if(residview){
+        return 10;
+      } else {
+        return o(+d.opacity);
+      }
+    })
+    .attr('clip-path', "url(#chart-area)");
+
+
+    //exit selection
+    selection.exit().remove()
+
+    if(data.length == 2){
+      drawline(data);
+    } else if(data.length > 2){
+      transitionline(data);
+      if(residview){
+        resids = drawresiduals(data);
+      }
+    }
+  }
+})
+
+</script>
+
+</body>
+
+</html>
