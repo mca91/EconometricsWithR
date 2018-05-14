@@ -3,13 +3,13 @@
 This chapter reviews some basic concepts of probability theory and demonstrates how they can be
 applied in R.
 
-Most of the statistical functionalities in R's standard version are collected in the <tt>stats</tt> package. It provides simple functions which compute descriptive measures and faciliate calculus involving a variety of probability distributions but also holds more sophisticated routines that e.g. enable the user to estimate a large number of models based on the same data or help to conduct extensive simulation studies. Execute `library(help = "stats")` in the console to view the documentation and a complete list of all functions gathered in `stats`.
+Most of the statistical functionalities in <tt>R</tt>'s standard version are collected in the <tt>stats</tt> package. It provides simple functions which compute descriptive measures and faciliate calculus involving a variety of probability distributions. However, it also holds more sophisticated routines that e.g. enable the user to estimate a large number of models based on the same data or help to conduct extensive simulation studies. <tt>stats</tt> is part of the base distribution of <tt>R</tt>, meaning that it is installed by default so there is no need to run `install.packages("stats")` or `library("stats")`. Simply execute `library(help = "stats")` in the console to view the documentation and a complete list of all functions gathered in <tt>stats</tt>.
 
-In what follows, we lay our focus on (some of) the probability distributions that are handled by R and show how to use the relevant functions to solve simple problems. Thereby we will repeat some core concepts of probability theory. Among other things, You will learn how to draw random numbers, how to compute densities, probabilities, quantiles and alike. As we shall see, it is very convenient to rely on these routines, especially when writing Your own functions.
+In what follows, we lay our focus on (some of) the probability distributions that are handled by <tt>R</tt> and show how to use the relevant functions to solve simple problems. Thereby we will repeat some core concepts of probability theory. Among other things, you will learn how to draw random numbers, how to compute densities, probabilities, quantiles and alike. As we shall see, it is very convenient to rely on these routines, especially when writing your own functions.
 
 ## Random Variables and Probability Distributions
 
-For a start, let us briefly review some basic concepts in probability.
+For a start, let us briefly review some basic concepts of probability theory.
 
 - The mutually exclusive results of a random process are called the *outcomes*. 'Mutually exclusive' means that only one of the possible outcomes is observed. 
 - We refer to the *probability* of an outcome as the proportion of the time that the outcome occurs in the long run, that is if the experiment is repeated very often. 
@@ -46,8 +46,8 @@ For the die roll, this is straightforward to set up
 
 | Outcome                             |  1  |  2  |  3  |  4  |  5  |  6  | 
 |-------------------------------------|-----|-----|-----|-----|-----|-----|
-Probability distribution              | 1/6 | 1/6 | 1/6 | 1/6 | 1/6 | 1/6 |
-Cumulative probability distribution   | 1/6 | 2/6 | 3/6 | 4/6 | 5/6 |  1  |
+|Probability distribution             | 1/6 | 1/6 | 1/6 | 1/6 | 1/6 | 1/6 |
+|Cumulative probability distribution  | 1/6 | 2/6 | 3/6 | 4/6 | 5/6 |  1  |
 
 
 We can easily plot both functions using R. Since the probability equals $1/6$
@@ -67,7 +67,7 @@ plot(probability, xlab = "outcomes",
 </div>
 
 For the cumulative probability distribution we need the cumulative
-probabilities i.e. we need the cumulative sums of the vector `probability`. These sums can be computed using `cumsum()`.
+probabilities i.e. we need the cumulative sums of the vector `probability`. These sums can be computed using <tt>cumsum()</tt>.
 
 <div class="unfolded"> 
 ```{r, echo = T, eval = T, message = F, warning = F, fig.align='center'} 
@@ -84,42 +84,40 @@ plot(cum_probability,
 
 ### Bernoulli Trials {-}
 
-The set of elements `sample()` draws from does not have to consist of numbers
-only. We might as well simulate coin tossing with outcomes $H$ (head) and $T$
-(tail).
+The set of elements from which <tt>sample()</tt> draws outcomes does not have to consist of numbers
+only. We might as well simulate coin tossing with outcomes $H$ (heads) and $T$
+(tails).
 
 ```{r, echo = T, eval = T, message = F, warning = F} 
 sample(c("H","T"),1) 
 ```
 
 
-The result of a coin toss is a Bernoulli distributed random variable i.e. a variable with to possible distinct outcomes.
+The result of a single coin toss is a *Bernoulli* distributed random variable i.e. a variable with two possible distinct outcomes.
 
 Imagine you are about to toss a coin $10$ times in a row and wonder how likely it
 is to end up with a sequence of outcomes like
 
 $$ H \, H \, T \, T \,T \,H \,T \,T \, H \, H .$$
 
-This is a typical example of a Bernoulli experiment as it consists of $n=10$
+This is a typical example of what we call a *Bernoulli experiment* as it consists of $n=10$
 Bernoulli trials that are independent of each other and we are interested in the
 likelihood of observing $k=5$ successes $H$ that occur with probability $p=0.5$
-(assuming a fair coin) in each trial.
+(assuming a fair coin) in each trial. Note that the order of the outcomes does not matter here.
 
-It is a well known result that the number of successes $k$ follows a binomial distribution
+It is a well known result that the number of successes $k$ in a Bernoulli experiment follows a binomial distribution. We denote this as
 
-$$ k \sim B(n,p). $$
+$$k \sim B(n,p).$$
 
-The probability of observing $k$ successes in the experiment $B(n,p)$ is hence
-given by
+The probability of observing $k$ successes in the experiment $B(n,p)$ is given by
 
 $$f(k)=P(k)=\begin{pmatrix}n\\ k \end{pmatrix} \cdot p^k \cdot
 q^{n-k}=\frac{n!}{k!(n-k)!} \cdot p^k \cdot q^{n-k}$$
 
+where $\begin{pmatrix}n\\ k \end{pmatrix}$ means the binomial coefficient. 
 
-where $\begin{pmatrix}n\\ k \end{pmatrix}$ is a binomial coefficient. 
-
-In R, we can solve the problem stated above by means of the function `dbinom()` which calculates the probability of the binomial distribution for parameters `x`,
-`size`, and `prob`, see `?binom`.
+In <tt>R</tt>, we can solve the problem stated above by means of the function <tt>dbinom()</tt> which calculates the probability of the binomial distribution given the parameters <tt>x</tt>,
+<tt>size</tt>, and <tt>prob</tt>, see `?binom`.
 
 ```{r, echo = T, eval = T, message = F, warning = F} 
 dbinom(x = 5,
@@ -133,7 +131,7 @@ coin $n=10$ times is about $24.6\%$.
 
 Now assume we are interested in $P(4 \leq k \leq 7)$ i.e. the probability of
 observing $4$, $5$, $6$ or $7$ successes for $B(10,0.5)$. This is easily computed by
-providing a vector as the `x` argument in our call of `dbinom()` and summing up using `sum()`.
+providing a vector as the argument <tt>x</tt> in our call of <tt>dbinom()</tt> and summing up using  <tt>sum()</tt>.
 
 ```{r, echo = T, eval = T, message = F, warning = F} 
 sum(
@@ -144,17 +142,15 @@ sum(
   )
 ```
 
-The Probability distribution of a discrete random variable is nothing but a list
-of all possible outcomes that can occur and their respective probabilities. In
-our coin tossing example, we face $11$ possible outcomes for $k$
+The probability distribution of a discrete random variable is nothing but a list
+of all possible outcomes that can occur and their respective probabilities. In the coin tossing example we face $11$ possible outcomes for $k$.
 
 ```{r, echo = T, eval = T, message = F, warning = F}
 # set up vector of possible outcomes
 k <- 0:10
 ```
 
-To visualize the probability distribution function of $k$ we may therefore
-simply call
+To visualize the probability distribution function of $k$ we may therefore do the following:
 
 <div class="unfolded"> 
 ```{r, echo = T, eval = T, message = F, warning = F, fig.align='center'} 
@@ -167,7 +163,8 @@ probability <- dbinom(x = k,
 # plot outcomes against probabilities
 plot(x = k, 
      y = probability,
-     main = "Probability Distribution Function") 
+     main = "Probability Distribution Function"
+     ) 
 ``` 
 </div>
 
@@ -175,23 +172,24 @@ In a similar fashion we may plot the cumulative distribution function of $k$ by
 executing the following code chunk:
 
 ```{r, echo = T, eval = T, message = F, warning = F, fig.align='center'} 
+# compute cumulative probabilities
 prob <- cumsum(
-              dbinom(x =0:10, 
+              dbinom(x = 0:10, 
                      size = 10, 
                      prob = 0.5
                      )
               )
 
-k <- 0:10 
+# plot the cumulative probabilities
 plot(x = k, 
      y = prob,
-     main = "Cumulative Distribution Function") 
+     main = "Cumulative Distribution Function"
+     ) 
 ```
 
-### Expected Values, Mean and Variance {-}
+### Expected Value, Mean and Variance {-}
 
-The expected value of a random variable is the long-run average value of the
-random variable over many repeated trials. For a discrete random variable, the
+The expected value of a random variable is the long-run average value of its outcomes when the number of repeated trials is large. For a discrete random variable, the
 expected value is computed as a weighted average of its possible outcomes
 whereby the weights are the related probabilities. This is formalized in Key
 Concept 2.1.
@@ -221,7 +219,7 @@ of $E(D)$ by hand:
 
 $$ E(D) = 1/6 \sum_{i=1}^6 d_i = 3.5 $$
 
-Here, this is simply the average of the natural numbers from $1$ to $6$ since all wights $p_i$ are $1/6$. Convince Yourself that this can be easily calculated using the function `mean()` which computes the
+$E(D)$ is simply the average of the natural numbers from $1$ to $6$ since all wights $p_i$ are $1/6$. Convince yourself that this can be easily calculated using the function <tt>mean()</tt> which computes the
 arithmetic mean of a numeric vector.
 
 ```{r, echo = T, eval = T, message = F, warning = F} 
@@ -240,9 +238,9 @@ sample(1:6, 3, replace = T)
 
 Of course we could also consider a much bigger number of trials, $10000$ say.
 Doing so, it would be pointless to simply print the results to the console: by
-default R displays up to $1000$ entries of large vectors and omitts the
+default <tt>R</tt> displays up to $1000$ entries of large vectors and omitts the
 remainder (give it a go). Eyeballing the numbers does not reveal too much.
-Instead let us calculate the sample average of the outcomes using `mean()` and
+Instead let us calculate the sample average of the outcomes using <tt>mean()</tt> and
 see if the result comes close to the expected value $E(D)=3.5$.
 
 ```{r, eval = T, message = F, warning = F} 
@@ -258,8 +256,7 @@ mean(
     )
 ```
 
-We find the sample mean to be fairly close to the expected value. (ref to
-WLLN)
+We find the sample mean to be fairly close to the expected value. (ref to WLLN)
 
 Other frequently encountered measures are the variance and the standard deviation. Both are measures of the *dispersion* of a random variable.
 
@@ -363,7 +360,7 @@ $$ f_X(x) = \frac{3}{x^4}, x>1. $$
 
 So we have shown that the area under the curve equals one, that the expectation is  $E(X)=\frac{3}{2} \ $ and we found the variance to be $\text{Var}(X) = \frac{3}{4}$. However, this was quite tedious and, as we shall see soon, an analytic approach is not applicable for some probability density functions e.g. if integrals have no closed form solutions.
 
-Luckily, R enables us to find the results derived above in an instant. The tool we use for this is the function `integrate()`. First, we have to define the functions we want to calculate integrals for as R functions, i.e. the PDF $f_X(x)$ as well as the expressions $x\cdot f_X(x)$ and $x^2\cdot f_X(x)$.
+Luckily, <tt>R</tt> enables us to find the results derived above in an instant. The tool we use for this is the function `integrate()`. First, we have to define the functions we want to calculate integrals for as <tt>R</tt> functions, i.e. the PDF $f_X(x)$ as well as the expressions $x\cdot f_X(x)$ and $x^2\cdot f_X(x)$.
 
 ```{r, echo = T, eval = T, message = F, warning = F}
 # define functions
@@ -399,18 +396,18 @@ VarX
 
 Although there is a wide variety of distributions, the ones most often
 encountered in econometrics are the normal, chi-squared, Student $t$ and $F$
-distributions. Therefore we will discuss some core R functions that allow to do
+distributions. Therefore we will discuss some core <tt>R</tt> functions that allow to do
 calculations involving densities, probabilities and quantiles of these
 distributions.
 
-Every probability distribution that R handles has four basic functions whose names consist of a prefix followed by a root name. As an example, take the normal distribution. The root name of all four functions associated with the normal distribution is <tt>norm</tt>. The four prefixes are
+Every probability distribution that <tt>R</tt> handles has four basic functions whose names consist of a prefix followed by a root name. As an example, take the normal distribution. The root name of all four functions associated with the normal distribution is <tt>norm</tt>. The four prefixes are
 
 - <tt>d</tt> for "density" - probability function / probability density function
 - <tt>p</tt> for "probability" - cumulative distribution function
 - <tt>q</tt> for "quantile" - quantile function (inverse cumulative distribution function)
 - <tt>r</tt> for "random" - random number generator
 
-Thus, for the normal distribution we have the R functions `dnorm()`, `pnorm()`, `qnorm()` and `rnorm()`.
+Thus, for the normal distribution we have the <tt>R</tt> functions `dnorm()`, `pnorm()`, `qnorm()` and `rnorm()`.
 
 ### The Normal Distribution {-}
 
@@ -455,15 +452,15 @@ curve(pnorm(x),
       )
 ```
 
-We can also use R to calculate the probability of events associated with a standard normal random variate. 
+We can also use <tt>R</tt> to calculate the probability of events associated with a standard normal random variate. 
 
 Let us say we are interested in $P(Z \leq 1.337)$. For some general continuous random variable $Z$ on $[-\infty,\infty]$ with density function $g(x)$ we would have to determine $G(x)$, the antiderivative of $g(x)$ since
 
 $$ P(Z \leq 1,337 ) = G(1,337) = \int_{-\infty}^{1,337} g(x) \mathrm{d}x.  $$
 
-However, if $Z \sim N(0,1)$, we have $g(x)=\phi(x)$ so there is no analytic solution to the integral above and it is cumbersome to come up with an approximation. However, we may circumvent this using R in different ways.
+However, if $Z \sim N(0,1)$, we have $g(x)=\phi(x)$ so there is no analytic solution to the integral above and it is cumbersome to come up with an approximation. However, we may circumvent this using <tt>R</tt> in different ways.
 <br>
-The first approach makes use of the function `integrate()` which allows to solve one-dimensional integration problems using a numerical method. For this, we first define the function we want to compute the integral of as a R function `f`. In our example, `f` needs to be the standard normal density function and hence takes a single argument `x`. Following the definition of $\phi(x)$ we define `f` as
+The first approach makes use of the function `integrate()` which allows to solve one-dimensional integration problems using a numerical method. For this, we first define the function we want to compute the integral of as a <tt>R</tt> function `f`. In our example, `f` needs to be the standard normal density function and hence takes a single argument `x`. Following the definition of $\phi(x)$ we define `f` as
 
 ```{r, echo = T, eval = T, message = F, warning = F} 
 # define the standard normal PDF as a R function
@@ -521,7 +518,7 @@ due to symmetry of the standard normal PDF. Thanks to R, we can abondon the tabl
 1 - 2 * (pnorm(-1.96)) 
 ```
 
-Now consider a random variable $Y$ with $Y \sim N(5,25)$. As You should already know from Your statistics courses it is not possible to make any statement of probability without prior standardizing as shown in Key Concept 2.4.
+Now consider a random variable $Y$ with $Y \sim N(5,25)$. As you should already know from your statistics courses it is not possible to make any statement of probability without prior standardizing as shown in Key Concept 2.4.
 
 <div class = "keyconcept"> 
 <h3 class = "right"> Key Concept 2.4 </h3> 
@@ -561,7 +558,7 @@ Equation \@ref(eq:bivnorm) contains the bivariate normal PDF. Admittedly, it is 
 
 $$ g_{X,Y}(x,y) = f_X(x) f_Y(y) = \frac{1}{2\pi} \cdot \exp \left\{ -\frac{1}{2} \left[x^2 + y^2 \right]  \right\}, \tag{2.2}  $$ 
 
-the PDF of the bivariate standard normal distribution. The next plot provides an interactive three dimensional plot of (<a href="#mjx-eqn-2.2">2.2</a>). By moving the mouse curser over the plot You can see that the density is rotationally invariant. 
+the PDF of the bivariate standard normal distribution. The next plot provides an interactive three dimensional plot of (<a href="#mjx-eqn-2.2">2.2</a>). By moving the mouse curser over the plot you can see that the density is rotationally invariant. 
 
 ```{r, echo=F}
 library("knitr")
@@ -722,7 +719,7 @@ $$ \frac{W/M}{V/n} \sim F_{M,n} \ \ \text{with} \ \ W \sim \chi^2_M \ \ , \ \ V 
 
 By definition, the domain of both PDF and CDF of a $F_{M,n}$ distributed random variable is $\mathbb{R}_{\geq0}$.
 
-Say we have a $F$ distributed random variable $Y$ with numerator degrees of freedom $3$ and denominator degrees of freedom $14$ and are interested in $P(Y \geq 2)$. This can be computed with help of the function `pf()`. By setting the argument `lower.tail` to `TRUE` we ensure that R computes $1- P(Y \leq 2)$, i.e. the probability mass in the tail right of $2$. 
+Say we have a $F$ distributed random variable $Y$ with numerator degrees of freedom $3$ and denominator degrees of freedom $14$ and are interested in $P(Y \geq 2)$. This can be computed with help of the function `pf()`. By setting the argument `lower.tail` to `TRUE` we ensure that <tt>R</tt> computes $1- P(Y \leq 2)$, i.e. the probability mass in the tail right of $2$. 
 
 ```{r, echo = T, eval = T, message = F, warning = F}
 pf(2, 3, 13, lower.tail = F)
@@ -770,7 +767,7 @@ In simple random sampling, $n$ objects are drawn at random from a population. Ea
 </div>
 
 
-What happens if we consider functions of the sample data? Consider the example of rolling a die two times in a row once again. A sample now consists of two independent random draws from the set $\{1,2,3,4,5,6\}$. In view of the aforementioned, it is apparent that any function of these two random variables is also random, e.g. their sum. Convince Yourself by executing the code below several times.
+What happens if we consider functions of the sample data? Consider the example of rolling a die two times in a row once again. A sample now consists of two independent random draws from the set $\{1,2,3,4,5,6\}$. In view of the aforementioned, it is apparent that any function of these two random variables is also random, e.g. their sum. Convince yourself by executing the code below several times.
 
 ```{r, echo = T, eval = T, message = F, warning = F} 
 sum(sample(1:6, 2, replace = T))
@@ -932,7 +929,7 @@ A straightforward approach to examine the distribution of univariate numerical d
 
 By default, `hist()` will give us a frequency histogram i.e. a bar chart where observations are grouped into ranges, also called bins. The ordinate reports the number of observations falling into each of the bins. Instead, we want it to report density estimates for comparison purposes. This is achieved by setting the argument `freq = FALSE`. The number of bins is adjusted by the argument `breaks`. 
 
-Using `curve()`, we overlay the histogram with a red line which represents the theoretical density of a $N(0, 0.1)$ distributed random variable. Remember to use the argument `add = TRUE` to add the curve to the current plot. Otherwise R will open a new graphic device and discard the histogram plot!  
+Using `curve()`, we overlay the histogram with a red line which represents the theoretical density of a $N(0, 0.1)$ distributed random variable. Remember to use the argument `add = TRUE` to add the curve to the current plot. Otherwise <tt>R</tt> will open a new graphic device and discard the histogram plot!  
 
 ```{r, echo = T, eval = T, message = F, warning = F, fig.align='center'}
 # Plot the density histogram
@@ -1043,10 +1040,10 @@ The following application simulates $1000$ coin tosses with a fair coin and comp
 
 <iframe height="570" width="800" frameborder="0" scrolling="no" src="CoinTossingWLLN.html"></iframe>
 
-We can use R to compute and illustrate such paths by simulation. The procedure is as follows:
+We can use <tt>R</tt> to compute and illustrate such paths by simulation. The procedure is as follows:
 
 1. Sample `N` observations from the Bernoulli distribution e.g. using `sample()`.
-2. Calculate the proportion of heads $R_n$ as in (<a href="#mjx-eqn-2.5">2.5</a>). A way to achieve this is to call `cumsum()` on the vector of observations `Y` to obtain its cumulative sum and then divide by the respective number of observations.
+2. Calculate the proportion of heads $R_n$ as in (<a href="#mjx-eqn-2.5">2.5</a>). A way to achieve this is to call <tt>cumsum()</tt> on the vector of observations `Y` to obtain its cumulative sum and then divide by the respective number of observations.
 
 We continue by plotting the path and also add a dashed line for the benchmark $R_n = p = 0.5$.
 ```{r, eval = T, message = F, warning = F, fig.align='center'} 
@@ -1085,7 +1082,7 @@ There are several things to be said about this plot.
 
 - The blue graph shows the observed proportion of heads when tossing a coin $n$ times.
 
-- Since the $Y_i$ are radnom variables, $R_n$ is a random variate, too. The path depicted is only one of many possible realisations of $R_n$ as it is determined by the $30000$ observations sampled from the Bernoulli distribution. Thus, the code chunk above produces a differnt path every time You execute it (try this!).  
+- Since the $Y_i$ are radnom variables, $R_n$ is a random variate, too. The path depicted is only one of many possible realisations of $R_n$ as it is determined by the $30000$ observations sampled from the Bernoulli distribution. Thus, the code chunk above produces a differnt path every time you execute it (try this!).  
 
 - If the number of coin tosses $n$ is small, we observe the proportion of heads to be anything but close to its theoretical value, $\mu_Y = 0.5$. However, as more and more observation are included in the sample we find that the path stabilizes in neighbourhood of $0.5$.<br> This is the message to take away: the average of multiple trials shows a clear tendency to converge to its expected value as the sample size increases, just as claimed by the law of large numbers. 
 
