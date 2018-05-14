@@ -171,6 +171,7 @@ plot(x = k,
 In a similar fashion we may plot the cumulative distribution function of $k$ by
 executing the following code chunk:
 
+<div class="unfolded"> 
 ```{r, echo = T, eval = T, message = F, warning = F, fig.align='center'} 
 # compute cumulative probabilities
 prob <- cumsum(
@@ -186,6 +187,7 @@ plot(x = k,
      main = "Cumulative Distribution Function"
      ) 
 ```
+</div>
 
 ### Expected Value, Mean and Variance {-}
 
@@ -256,7 +258,7 @@ mean(
     )
 ```
 
-We find the sample mean to be fairly close to the expected value. (ref to WLLN)
+We find the sample mean to be fairly close to the expected value. This result will be discussed in Chapter \@ref(RSATDOSA) in more detail. 
 
 Other frequently encountered measures are the variance and the standard deviation. Both are measures of the *dispersion* of a random variable.
 
@@ -271,7 +273,7 @@ The standard deviation of $Y$ is $\sigma_Y$, the square root of the variance. Th
 </p> 
 </div>
 
-The variance as defined in Key Concept 2.2 *is not* implemented as a function in R. Instead we have the function `var()` which computes the *sample variance* 
+The variance as defined in Key Concept 2.2 *is not* implemented as a function in R. Instead we have the function <tt>var()</tt> which computes the *sample variance* 
 
 $$ s^2_Y = \frac{1}{n-1} \sum_{i=1}^n (y_i - \overline{y})^2. $$
 
@@ -282,11 +284,25 @@ $$ \text{Var}(Y) = \frac{1}{N} \sum_{i=1}^N (y_i - \mu_Y)^2, $$
 since it measures how the data is dispersed around the sample average $\overline{y}$ instead of the population mean $\mu_Y$. This becomes clear when we look at our die rolling example. For $D$ we have
 
 $$ \text{Var}(D) = 1/6 \sum_{i=1}^6 (d_i - 3.5)^2 = 2.92  $$
-which is obviously different from the result of $s^2$ as computed by `var()`.
+which is obviously different from the result of $s^2$ as computed by <tt>var()</tt>.
 
 ```{r, echo = 1, eval = T, message = F, warning = F} 
 var(1:6)
 ```
+
+The sample variance as computed by <tt>var()</tt> is an estimator of the population variance.
+
+<!--html_preserve-->
+
+<div data-datacamp-exercise data-lang="r">
+
+<code data-type="sample-code">
+# You may use this widget to play around with the functions presented above
+</code>
+
+</div>
+
+<!--/html_preserve-->
 
 ## Probability Distributions of Continuous Random Variables
 
@@ -307,13 +323,13 @@ For completeness, we present revisions of Key Concepts 2.1 and 2.2 for the conti
 
 <p> 
 
-Let $f_Y(y)$ denote the probability density function of $Y$. Because probabilities cannot be negative, we have $f_Y\geq 0$ for all $y$. The Probability that $Y$ falls between $a$ and $b$, $a < b$ is 
+Let $f_Y(y)$ denote the probability density function of $Y$. Because probabilities cannot be negative, we have $f_Y\geq 0$ for all $y$. The Probability that $Y$ falls between $a$ and $b$ where $a < b$ is 
 $$ P(a \leq Y \leq b) = \int_a^b f_Y(y) \mathrm{d}y. $$
 We further have that $P(-\infty \leq Y \leq \infty) = 1$ and therefore $\int_{-\infty}^{\infty} f_Y(y) \mathrm{d}y = 1$.
 
 As for the discrete case, the expected value of $Y$ is the probability weighted average of its values. Due to continuity, we use intergrals instead of sums.
 
-The expected value of $Y$ is
+The expected value of $Y$ is defined as
 
 $$ E(Y) =  \mu_Y = \int y f_Y(y) \mathrm{d}y. $$
 
@@ -360,7 +376,7 @@ $$ f_X(x) = \frac{3}{x^4}, x>1. $$
 
 So we have shown that the area under the curve equals one, that the expectation is  $E(X)=\frac{3}{2} \ $ and we found the variance to be $\text{Var}(X) = \frac{3}{4}$. However, this was quite tedious and, as we shall see soon, an analytic approach is not applicable for some probability density functions e.g. if integrals have no closed form solutions.
 
-Luckily, <tt>R</tt> enables us to find the results derived above in an instant. The tool we use for this is the function `integrate()`. First, we have to define the functions we want to calculate integrals for as <tt>R</tt> functions, i.e. the PDF $f_X(x)$ as well as the expressions $x\cdot f_X(x)$ and $x^2\cdot f_X(x)$.
+Luckily, <tt>R</tt> enables us to find the results derived above in an instant. The tool we use for this is the function <tt>integrate()</tt>. First, we have to define the functions we want to calculate integrals for as <tt>R</tt> functions, i.e. the PDF $f_X(x)$ as well as the expressions $x\cdot f_X(x)$ and $x^2\cdot f_X(x)$.
 
 ```{r, echo = T, eval = T, message = F, warning = F}
 # define functions
@@ -369,7 +385,7 @@ g <- function(x) x*f(x)
 h <- function(x) x^2*f(x)
 ```
 
-Next, we use `integrate()` and set lower and upper limits of integration to $1$ and $\infty$ using arguments `lower` and `upper`. By default, `integrate()` prints the result along with an estimate of the calculation error to the console. However, the outcome is not a numeric value one can do further calculation with readily. In order to get only a numeric value of the integral, we need to use the `$` operator in conjunction with `value`. 
+Next, we use <tt>integrate()</tt> and set lower and upper limits of integration to $1$ and $\infty$ using arguments <tt>lower</tt> and <tt>upper</tt>. By default, <tt>integrate()</tt> prints the result along with an estimate of the approximation error to the console. However, the outcome is not a numeric value one can do further calculation with readily. In order to get only a numeric value of the integral, we need to use the <tt>$</tt> operator in conjunction with <tt>value</tt>. 
 
 
 ```{r, echo = T, eval = T, message = F, warning = F}
@@ -383,7 +399,8 @@ AUC
 # calculate E(X)
 EX <- integrate(g,
                 lower = 1,
-                upper = Inf)
+                upper = Inf
+                )
 EX
 
 # calculate Var(X)
@@ -407,7 +424,7 @@ Every probability distribution that <tt>R</tt> handles has four basic functions 
 - <tt>q</tt> for "quantile" - quantile function (inverse cumulative distribution function)
 - <tt>r</tt> for "random" - random number generator
 
-Thus, for the normal distribution we have the <tt>R</tt> functions `dnorm()`, `pnorm()`, `qnorm()` and `rnorm()`.
+Thus, for the normal distribution we have the <tt>R</tt> functions <tt>dnorm()</tt>, <tt>pnorm()</tt>, <tt>qnorm()</tt> and <tt>rnorm()</tt>.
 
 ### The Normal Distribution {-}
 
@@ -417,13 +434,14 @@ $N(\mu,\sigma^2)$. The normal distribution has the PDF
 
 $$ f(x) = \frac{1}{\sqrt{2 \pi} \sigma} e^{-(x - μ)^2/(2 σ^2)}. $$
 
-For the standard normal distribution we have $\mu=0$ and $\sigma=1$. Standard normal variates are often denoted $Z$. Usually, the standard normal PDF is denoted by $\phi$ and the standard normal CDF is denoted by $\Phi$. Hence,
+For the standard normal distribution we have $\mu=0$ and $\sigma=1$. Standard normal variates are often denoted by $Z$. Usually, the standard normal PDF is denoted by $\phi$ and the standard normal CDF is denoted by $\Phi$. Hence,
 
 $$ \phi(c) = \Phi'(c) \ \ , \ \ \Phi(c) = P(Z \leq c) \ \ , \ \ Z \sim N(0,1).
-$$ In R, we can conveniently obtain density values of normal distributions using
-the function `dnorm()`. Let us draw a plot of the standard normal density function
-using `curve()` and `dnorm()`.
+$$ In <tt>R</tt>, we can conveniently obtain density values of normal distributions using
+the function <tt>dnorm()</tt>. Let us draw a plot of the standard normal density function
+using <tt>curve()</tt> in conjunction with <tt>dnorm()</tt>.
 
+<div class="unfolded"> 
 ```{r, echo = T, eval = T, message = F, warning = F, fig.align='center'} 
 # draw a plot of the N(0,1) pdf
 curve(dnorm(x),
@@ -432,17 +450,19 @@ curve(dnorm(x),
       main = "Standard Normal Density Function"
       ) 
 ```
+</div>
 
 We can obtain the density at different positions by passing a vector of
-quantiles to `dnorm()`.
+quantiles to <tt>dnorm()</tt>.
 
 ```{r, echo = T, eval = T, message = F, warning = F}
 # compute denstiy at x=-1.96, x=0 and x=1.96
 dnorm(x = c(-1.96, 0, 1.96))
 ```
 
-Similary as for the PDF, we can plot the standard normal CDF using `curve()` and `pnorm()`.
+Similar to the PDF, we can plot the standard normal CDF using <tt>curve()</tt> and <tt>pnorm()</tt>.
 
+<div class="unfolded"> 
 ```{r, echo = T, eval = T, message = F, warning = F, fig.align='center'}
 # plot the standard normal CDF
 curve(pnorm(x), 
@@ -451,16 +471,17 @@ curve(pnorm(x),
       main = "Standard Normal Cumulative Distribution Function"
       )
 ```
+</div>
 
-We can also use <tt>R</tt> to calculate the probability of events associated with a standard normal random variate. 
+We can also use <tt>R</tt> to calculate the probability of events associated with a standard normal variate. 
 
-Let us say we are interested in $P(Z \leq 1.337)$. For some general continuous random variable $Z$ on $[-\infty,\infty]$ with density function $g(x)$ we would have to determine $G(x)$, the antiderivative of $g(x)$ since
+Let us say we are interested in $P(Z \leq 1.337)$. For some continuous random variable $Z$ on $[-\infty,\infty]$ with density function $g(x)$ we would have to determine $G(x)$ which is the antiderivative of $g(x)$ so that
 
 $$ P(Z \leq 1,337 ) = G(1,337) = \int_{-\infty}^{1,337} g(x) \mathrm{d}x.  $$
 
-However, if $Z \sim N(0,1)$, we have $g(x)=\phi(x)$ so there is no analytic solution to the integral above and it is cumbersome to come up with an approximation. However, we may circumvent this using <tt>R</tt> in different ways.
+If $Z \sim N(0,1)$, we have $g(x)=\phi(x)$. There is no analytic solution to the integral above and it is cumbersome to come up with an approximation. However, we may circumvent this using <tt>R</tt> in different ways.
 <br>
-The first approach makes use of the function `integrate()` which allows to solve one-dimensional integration problems using a numerical method. For this, we first define the function we want to compute the integral of as a <tt>R</tt> function `f`. In our example, `f` needs to be the standard normal density function and hence takes a single argument `x`. Following the definition of $\phi(x)$ we define `f` as
+The first approach makes use of the function <tt>integrate()</tt> which allows to solve one-dimensional integration problems using a numerical method. For this, we first define the function we want to compute the integral of as a <tt>R</tt> function <tt>f</tt>. In our example, <tt>f</tt> needs to be the standard normal density function and hence takes a single argument <tt>x</tt>. Following the definition of $\phi(x)$ we define <tt>f</tt> as
 
 ```{r, echo = T, eval = T, message = F, warning = F} 
 # define the standard normal PDF as a R function
@@ -482,9 +503,9 @@ f(quants)
 f(quants) == dnorm(quants)
 ```
 
-Notice that the results produces by `f()` are indeed equivalent to those given by `dnorm()`.
+Notice that the results produced by <tt>f()</tt> are indeed equivalent to those given by <tt>dnorm()</tt>.
 
-Next, we call `integrate()` on `f()` and further specify the arguments `lower` and `upper`, the lower and upper limits of integration.
+Next, we call <tt>integrate()</tt> on <tt>f()</tt> and specify the arguments <tt>lower</tt> and <tt>upper</tt>, the lower and upper limits of integration.
 
 ```{r, echo = T, eval = T, message = F, warning = F}
 # integrate f()
@@ -494,16 +515,16 @@ integrate(f,
           )
 ```
 
-We find that the probability of observing $Z \leq 1,337$ is about $0.9094\%$.
+We find that the probability of observing $Z \leq 1.337$ is about $0.9094\%$.
 
-A second and much more convenient way is to use the function `pnorm()` which also allows calculus involving the standard normal cumulative distribution function.
+A second and much more convenient way is to use the function <tt>pnorm()</tt> which also allows calculus involving the standard normal cumulative distribution function.
 
 ```{r, echo = T, eval = T, message = F, warning = F} 
-# compute a probability using pnorm()
+# compute the probability using pnorm()
 pnorm(1.337)
 ```
 
-The result matches the outcome of the approach using `ìntegrate()`.
+The result matches the outcome of the approach using <tt>ìntegrate()</tt>.
 
 Let us discuss some further examples:
 
@@ -511,14 +532,14 @@ A commonly known result is that $95\%$ probability mass of a standard normal lie
 in the intervall $[-1.96, 1.96]$, that is in a distance of about $2$ standard deviations to the mean. We can easily confirm this by calculating
 
 $$ P(-1.96 \leq Z \leq 1.96) = 1-2\times P(Z \leq -1.96) $$ 
-due to symmetry of the standard normal PDF. Thanks to R, we can abondon the table of the standard normal CDF again and instead solve this by means of the function `pnorm()`.
+due to symmetry of the standard normal PDF. Thanks to <tt>R</tt>, we can abandon the table of the standard normal CDF again and instead solve this by using the function <tt>pnorm()</tt>.
 
 ```{r, echo = T, eval = T, message = F, warning = F} 
 # compute the probability
 1 - 2 * (pnorm(-1.96)) 
 ```
 
-Now consider a random variable $Y$ with $Y \sim N(5,25)$. As you should already know from your statistics courses it is not possible to make any statement of probability without prior standardizing as shown in Key Concept 2.4.
+Now consider a random variable $Y$ with $Y \sim N(5, 25)$. As you should already know from your statistics courses it is not possible to make any statement of probability without prior standardizing as shown in Key Concept 2.4.
 
 <div class = "keyconcept"> 
 <h3 class = "right"> Key Concept 2.4 </h3> 
@@ -541,7 +562,7 @@ P(c_1 \leq Y \leq c_2) =& \, P(d_1 \leq Z \leq d_2) = \Phi(d_2) - \Phi(d_1)
 </p> 
 </div>
 
-R functions that handle the normal distribution can perform this standardization. If we are interested in $P(3 \leq Y \leq 4)$ we can  use `pnorm()` and adjust for a mean and/or a standard deviation that deviate from $\mu=0$ and $\sigma = 1$ by specifying the arguments `mean` and `sd` accordingly. **Attention**: `pnorm()` requires the argument `sd` which is the standard deviation, not the variance! 
+<tt>R</tt> functions that handle the normal distribution can perform this standardization. If we are interested in $P(3 \leq Y \leq 4)$ we can  use <tt>pnorm()</tt> and adjust for a mean and/or a standard deviation that deviate from $\mu=0$ and $\sigma = 1$ by specifying the arguments <tt>mean</tt> and <tt>sd</tt> accordingly. **Attention**: the argument `sd` requires the standard deviation, not the variance! 
 
 ```{r, echo = T, eval = T, message = F, warning = F} 
 pnorm(4, mean = 5, sd = 5) - pnorm(3, mean = 5, sd = 5) 
@@ -558,7 +579,7 @@ Equation \@ref(eq:bivnorm) contains the bivariate normal PDF. Admittedly, it is 
 
 $$ g_{X,Y}(x,y) = f_X(x) f_Y(y) = \frac{1}{2\pi} \cdot \exp \left\{ -\frac{1}{2} \left[x^2 + y^2 \right]  \right\}, \tag{2.2}  $$ 
 
-the PDF of the bivariate standard normal distribution. The next plot provides an interactive three dimensional plot of (<a href="#mjx-eqn-2.2">2.2</a>). By moving the mouse curser over the plot you can see that the density is rotationally invariant. 
+the PDF of the bivariate standard normal distribution. The next plot provides an interactive three dimensional plot of (<a href="#mjx-eqn-2.2">2.2</a>). By moving the curser over the plot you can see that the density is rotationally invariant. 
 
 ```{r, echo=F}
 library("knitr")
@@ -568,6 +589,7 @@ plotly_iframe <- paste("<center><iframe scrolling='no' seamless='seamless' style
     "/800/1200' width='600' height='400'></iframe><center>", sep = "")
 ```
 `r I(plotly_iframe)`
+
 
 <a name="chisquare"></a>
 
@@ -588,51 +610,55 @@ $$ Z_1,Z_2,Z_3 \overset{i.i.d.}{\sim} N(0,1) $$
 it holds that
 
 $$ Z_1^2+Z_2^2+Z_3^3 \sim \chi^2_3. \tag{2.3} $$
-By means of the code below, we can display the PDF and the CDF of a $\chi^2_3$ random variable in a single plot. This is achieved by setting the argument `add = TRUE` in the second call of `curve()`. Further we adjust limits of both axes using `xlim` and `ylim` and choose different colors to make both functions better distinguishable. The plot is completed by adding a legend with help of the function `legend()`.
+Using the code below, we can display the PDF and the CDF of a $\chi^2_3$ random variable in a single plot. This is achieved by setting the argument <tt>add = TRUE</tt> in the second call of <tt>curve()</tt>. Further we adjust limits of both axes using <tt>xlim</tt> and <tt>ylim</tt> and choose different colors to make both functions better distinguishable. The plot is completed by adding a legend with help of the function <tt>legend()</tt>.
 
+<div class="unfolded"> 
 ```{r, echo = T, eval = T, message = F, warning = F, fig.align='center'} 
 # plot the PDF
 curve(dchisq(x, df=3), 
-      xlim=c(0,10), 
-      ylim = c(0,1), 
-      col="blue", 
-      main="p.d.f. and c.d.f of Chi-Squared Distribution, m = 3"
+      xlim = c(0, 10), 
+      ylim = c(0, 1), 
+      col = "blue",
+      ylab = "",
+      main = "p.d.f. and c.d.f of Chi-Squared Distribution, m = 3"
       )
 
 # add the CDF to the plot
-curve(pchisq(x, df=3), 
-      xlim=c(0,10), 
+curve(pchisq(x, df = 3), 
+      xlim=c(0, 10), 
       add = TRUE, 
-      col="red"
+      col = "red"
       )
 
 # add a legend to the plot
 legend("topleft", 
-       c("PDF","CDF"), 
-       col = c("blue","red"), 
-       lty = c(1,1)
+       c("PDF", "CDF"), 
+       col = c("blue", "red"), 
+       lty = c(1, 1)
        )
 ```
+</div>
 
-Notice that, since the outcomes of a $\chi^2_M$ distributed random variable are always positive, the domain of the related PDF and CDF is $\mathbb{R}_{\geq0}$.
+Since the outcomes of a $\chi^2_M$ distributed random variable are always positive, the domain of the related PDF and CDF is $\mathbb{R}_{\geq0}$.
 
-As expectation and variance depend (solely) on the degrees of freedom, the distribution's shape changes drastically if we vary the number of squared standard normals that are summed up. This relation is often depicted by overlaying densities for different $M$, see e.g. the <a href="https://en.wikipedia.org/wiki/Chi-squared_distribution">Wikipedia Article</a>.  
+As expectation and variance depend (solely!) on the degrees of freedom, the distribution's shape changes drastically if we vary the number of squared standard normals that are summed up. This relation is often depicted by overlaying densities for different $M$, see e.g. the <a href="https://en.wikipedia.org/wiki/Chi-squared_distribution">Wikipedia Article</a>.  
 
-Of course, one can easily reproduce such a plot using R. Again we start by plotting the density of the $\chi_1^2$ distribution on the intervall $[0,15]$ with `curve()`. In the next step, we loop over degrees of freedom $m=2,...,7$ and add a density curve for each $m$ to the plot. We also adjust the line color for each iteration of the loop by setting `col = m`. At last, we add a legend that displays degrees of freedom and the associated colors.
+Of course, one can easily reproduce such a plot using <tt>R</tt>. Again we start by plotting the density of the $\chi_1^2$ distribution on the intervall $[0,15]$ with <tt>curve()</tt>. In the next step, we loop over degrees of freedom $m=2,...,7$ and add a density curve for each $m$ to the plot. We also adjust the line color for each iteration of the loop by setting <tt>col = m</tt>. At last, we add a legend that displays degrees of freedom and the associated colors.
 
+<div class="unfolded"> 
 ```{r, echo = T, eval = T, message = F, warning = F, fig.align='center'} 
 # plot the density for m=1
-curve(dchisq(x, df=1), 
-      xlim=c(0,15), 
+curve(dchisq(x, df = 1), 
+      xlim=c(0, 15), 
       xlab = "x", 
       ylab = "Density", 
-      main="Chi-Square Distributed Random Variables"
+      main = "Chi-Square Distributed Random Variables"
       )
 
 # add densities for m=2,...,7 to the plot using a for loop 
 for (m in 2:7) {
   curve(dchisq(x, df = m),
-        xlim = c(0,15), 
+        xlim = c(0, 15), 
         add = T, 
         col = m
         )
@@ -646,9 +672,9 @@ legend("topright",
        title = "D.f."
        )
 ```
+</div>
 
-It is evident that increasing the degrees of freedom shifts the distribution to the right (the modus becomes larger) and increases its dispersion (the distribution's variance grows).
-
+It is evident that increasing the degrees of freedom shifts the distribution to the right (the mode becomes larger) and increases the dispersion (the distribution's variance grows).
 
 ### The Student $t$ Distribution {-#thetdist}
 
@@ -657,11 +683,11 @@ It is evident that increasing the degrees of freedom shifts the distribution to 
 Let $Z$ be a standard normal variate, $W$ a random variable that follows a $\chi^2_M$ distribution with $M$ degrees of freedom and further assume that $Z$ and $W$ are independently distributed. Then it holds that
 
 $$ \frac{Z}{\sqrt{W/M}} =:X \sim t_M $$
-and we say that $X$ follows a student $t$ distribution (or simple $t$ distribution) with $M$ degrees of freedom.
+and we say that $X$ follows a *Student $t$ distribution* (or simply $t$ distribution) with $M$ degrees of freedom.
 
-As for the $\chi^2_M$ distribution, a $t$ distribution depends on the degrees of freedom $M$. $t$ distributions are symmetric, bell-shaped and look very similar to a normal distribution, especially when $M$ is large. This is not a coincidence: for a sufficient large $M$, a $t_M$ distribution can be approximated by the standard normal distribution. This approximation works reasonably well for $M\geq 30$. As we will show later by means of a small simulation study, the $t_{\infty}$ distribution *is* the standard normal distribution.
+As for the $\chi^2_M$ distribution, the shape of a $t_M$ distribution depends on $M$. $t$ distributions are symmetric, bell-shaped and look very similar to a normal distribution, especially when $M$ is large. This is not a coincidence: for a sufficient large $M$, the $t_M$ distribution can be approximated by the standard normal distribution. This approximation works reasonably well for $M\geq 30$. As we will show later by means of a small simulation study, the $t_{\infty}$ distribution *is* the standard normal distribution.
 
-A $t_M$ distributed random variable has an expectation value if $M>1$ and a variance if $n>2$.
+A $t_M$ distributed random variable has an expectation if $M>1$ and it has a variance if $n>2$.
 
 \begin{align}
   E(X) =& 0 \ , \ M>1 \\
@@ -670,63 +696,67 @@ A $t_M$ distributed random variable has an expectation value if $M>1$ and a vari
 
 Let us graph some $t$ distributions with different $M$ and compare them with the standard normal distribution.
 
+<div class="unfolded"> 
 ```{r, echo = T, eval = T, message = F, warning = F, fig.align='center'} 
 # plot the standard normal density
 curve(dnorm(x), 
-      xlim=c(-4,4), 
+      xlim = c(-4,4), 
       xlab = "x", 
-      lty=2, 
+      lty = 2, 
       ylab = "Density", 
-      main="Theoretical Densities of t-Distributions"
+      main = "Theoretical Densities of t-Distributions"
       )
 
 # plot the t density for m=2
-curve(dt(x, df=2), 
-      xlim=c(-4,4), 
-      col=2, 
+curve(dt(x, df = 2), 
+      xlim = c(-4, 4), 
+      col = 2, 
       add = T
       )
 
 # plot the t density for m=4
-curve(dt(x, df=4), 
-      xlim=c(-4,4), 
-      col=3, 
-      add=T
+curve(dt(x, df = 4), 
+      xlim = c(-4, 4), 
+      col = 3, 
+      add = T
       )
 
 # plot the t density for m=25
-curve(dt(x, df=25), 
-      xlim=c(-4,4), 
-      col=4, 
-      add=T
+curve(dt(x, df = 25), 
+      xlim = c(-4, 4), 
+      col = 4, 
+      add = T
       )
 
 # add a legend
 legend("topright", 
        c("N(0,1)","M=2","M=4","M=25"), 
        col = 1:4, 
-       lty = c(2,1,1,1)
+       lty = c(2, 1, 1, 1)
        )
 ```
+</div>
 
-The plot indicates what has been claimed in the previous paragraph: as the degrees of freedom increase, the shape of the $t$ distribution comes closer to that of a standard normal bell. Already for $M=25$ we find little difference to the dashed line which belongs to the standard normal density curve. If $M$ is small, we find the distribution to have slightly havier tails than a standard normal, i.e. it has a "fatter" bell shape.
+The plot indicates what has been claimed in the previous paragraph: as the degrees of freedom increase, the shape of the $t$ distribution comes closer to that of a standard normal bell. Already for $M=25$ we find little difference to the dashed line which is the standard normal density curve. If $M$ is small, we find the distribution to have slightly havier tails than a standard normal, i.e. it has a "fatter" bell shape.
 
 ### The $F$ Distribution {-}
 
-Another ratio of random variables important to econometricians is the ratio of two indpendently $\chi^2$ distributed random variables that are divided by their degrees of freedom. Such a quantity follows a $F$ distribution with numerator degrees of freedom $M$ and denominator degrees of freedom $n$, denoted $F_{M,n}$. The distribution was first derived by George Snedecor but was named in honor of [Sir Ronald Fisher](https://en.wikipedia.org/wiki/Ronald_Fisher).
+Another ratio of random variables important to econometricians is the ratio of two indpendently $\chi^2$ distributed random variables that are divided by their degrees of freedom $M$ and $n$. The quantity 
 
 $$ \frac{W/M}{V/n} \sim F_{M,n} \ \ \text{with} \ \ W \sim \chi^2_M \ \ , \ \ V \sim \chi^2_n $$
+follows an $F$ distribution with numerator degrees of freedom $M$ and denominator degrees of freedom $n$, denoted $F_{M,n}$. The distribution was first derived by George Snedecor but was named in honor of [Sir Ronald Fisher](https://en.wikipedia.org/wiki/Ronald_Fisher).
 
-By definition, the domain of both PDF and CDF of a $F_{M,n}$ distributed random variable is $\mathbb{R}_{\geq0}$.
+By definition, the domain of both PDF and CDF of an $F_{M,n}$ distributed random variable is $\mathbb{R}_{\geq0}$.
 
-Say we have a $F$ distributed random variable $Y$ with numerator degrees of freedom $3$ and denominator degrees of freedom $14$ and are interested in $P(Y \geq 2)$. This can be computed with help of the function `pf()`. By setting the argument `lower.tail` to `TRUE` we ensure that <tt>R</tt> computes $1- P(Y \leq 2)$, i.e. the probability mass in the tail right of $2$. 
+Say we have an $F$ distributed random variable $Y$ with numerator degrees of freedom $3$ and denominator degrees of freedom $14$ and are interested in $P(Y \geq 2)$. This can be computed with help of the function <tt>pf()</tt>. By setting the argument <tt>lower.tail</tt> to <tt>TRUE</tt> we ensure that <tt>R</tt> computes $1- P(Y \leq 2)$, i.e. the probability mass in the tail right of $2$. 
 
 ```{r, echo = T, eval = T, message = F, warning = F}
 pf(2, 3, 13, lower.tail = F)
 ```
 
-We can visualize this probability by drawing a line plot of the related density function and adding a color shading with `polygon()`.
+We can visualize this probability by drawing a line plot of the related density function and adding a color shading with <tt>polygon()</tt>.
 
+<div class="unfolded"> 
 ```{r, echo = T, eval = T, message = F, warning = F, fig.align='center'}
 # define coordinate vectors for vertices of the polygon
 x <- c(2, seq(2, 10, 0.01), 10)
@@ -743,17 +773,30 @@ curve(df(x ,3 ,14),
 # draw the polygon
 polygon(x, y, col="orange")
 ```
+</div>
 
-The $F$ distribution is related to many other distributions. An important special case encountered in econometrics arises if the denominator degrees of freedom are large such that the $F_{M,n}$ distribution can be approximated by the $F_{M,\infty}$ distribution which turns out to be simply the distribution of a $\chi^2_M$ random variable divided by its degrees of freedom $M$.
+The $F$ distribution is related to many other distributions. An important special case encountered in econometrics arises if the denominator degrees of freedom are large such that the $F_{M,n}$ distribution can be approximated by the $F_{M,\infty}$ distribution which turns out to be simply the distribution of a $\chi^2_M$ random variable divided by its degrees of freedom $M$,
 
-$$ W/M \sim F_{M,\infty} \ \ , \ \ W \sim \chi^2_M $$
+$$ W/M \sim F_{M,\infty} \ \ , \ \ W \sim \chi^2_M. $$
+<!--html_preserve-->
 
-## Random Sampling and the Distribution of Sample Averages
+<div data-datacamp-exercise data-lang="r">
+
+<code data-type="sample-code">
+# You may use this widget to play around with the functions presented above
+</code>
+
+</div>
+
+<!--/html_preserve-->
+
+## Random Sampling and the Distribution of Sample Averages {#RSATDOSA}
 
 To clarify the basic idea of random sampling, let us jump back to the die rolling example: 
 
 Suppose we are rolling the die $n$ times. This means we are interested in the outcomes of $n$ random processes $Y_i, \ i=1,...,n$ which are characterized by the same distribution. Since these outcomes are selected randomly, they are *random variables* themselves and their realisations will differ each time we draw a sample, i.e. each time we roll the die $n$ times. Furthermore, each observation is randomly drawn from the same population, that is the numbers from $1$ to $6$, and their individual distribution is the same. Hence we say that $Y_1,\dots,Y_n$ are identically distributed.<br> 
-Moreover, we know that the value of any of the $Y_i$ does not provide any information on the remainder of the sample. In our example, rolling a six as the first observation in our sample does not alter the distributions of $Y_2,\dots,Y_n$: all numbers are equally likely to occur. This means that all $Y_i$ are also independently distributed. Thus, we say that $Y_1,\dots,Y_n$ are independently and identically distributed (*i.i.d*). The die example uses the most simple sampling scheme. That is why it is called *simple random sampling*. This concept is condensed in Key Concept 2.5. 
+Moreover, we know that the value of any of the $Y_i$ does not provide any information on the remainder of the sample. In our example, rolling a six as the first observation in our sample does not alter the distributions of $Y_2,\dots,Y_n$: all numbers are equally likely to occur. This means that all $Y_i$ are also independently distributed. Thus, we say that $Y_1,\dots,Y_n$ are independently and identically distributed (*i.i.d*). 
+The die example uses the most simple sampling scheme. That is why it is called *simple random sampling*. This concept is condensed in Key Concept 2.5. 
 
 <div class = "keyconcept"> 
 <h3 class = "right"> Key Concept 2.5 </h3> 
@@ -761,7 +804,7 @@ Moreover, we know that the value of any of the $Y_i$ does not provide any inform
 
 <p>
 
-In simple random sampling, $n$ objects are drawn at random from a population. Each object is equally likely to end up in the sample. We denote the value of the random variable $Y$ for the $i^{th}$ randomly drawn object as $Y_i$.  Since all objects are equally likely to be drawn and the distribution of $Y_i$ is the same for all $i$, the $Y_i, \dots, Y_n$ are independently and identically distributed (i.i.d.). This means the distribution of $Y_i$ is the same for all $i=1,\dots,n$ and $Y_1$ is distributed independently of $Y_2, \dots, Y_n$ $Y_2$ is distributed independently of $Y_1, Y_3, \dots, Y_n$ and so forth.
+In simple random sampling, $n$ objects are drawn at random from a population. Each object is equally likely to end up in the sample. We denote the value of the random variable $Y$ for the $i^{th}$ randomly drawn object as $Y_i$.  Since all objects are equally likely to be drawn and the distribution of $Y_i$ is the same for all $i$, the $Y_i, \dots, Y_n$ are independently and identically distributed (i.i.d.). This means the distribution of $Y_i$ is the same for all $i=1,\dots,n$ and $Y_1$ is distributed independently of $Y_2, \dots, Y_n$ and $Y_2$ is distributed independently of $Y_1, Y_3, \dots, Y_n$ and so forth.
 
 </p> 
 </div>
@@ -815,19 +858,22 @@ We can also compute $E(S)$ and $\text{Var}(S)$ as stated in Key Concept 2.1 and 
 S <- 2:12
 
 # Vector of probabilities
-PS <- c(1:6,5:1)/36
+PS <- c(1:6, 5:1)/36
 
 # Expectation of S
-ES <- S %*% PS; ES
+ES <- S %*% PS
+ES
 
 # Variance of S
-VarS <- (S - c(ES))^2 %*% PS; VarS
+VarS <- (S - c(ES))^2 %*% PS
+VarS
 ```
 
-(The `%*%` operator is used to compute the scalar product of two vectors.)
+(The <tt>%*%</tt> operator is used to compute the scalar product of two vectors.)
 
 So the distribution of $S$ is known. It is also evident that its distribution differs considerably from the marginal distribution, i.e. the distribution of a single die roll's outcome, $D$ . Let us visualize this using barplots.
 
+<div class="unfolded"> 
 ```{r, echo = T, eval = T, message = F, warning = F, fig.align='center'} 
 # divide the plotting area in one row with two columns
 par(mfrow = c(1, 2))
@@ -835,28 +881,30 @@ par(mfrow = c(1, 2))
 # plot the distribution of S
 names(PS) <- 2:12
 
-barplot(PS, ylim=c(0,0.2), 
+barplot(PS, ylim = c(0, 0.2), 
         xlab = "S", 
-        ylab ="Probability", 
-        col="steelblue", 
-        space=0, 
-        main="Sum of Two Die Rolls"
+        ylab = "Probability", 
+        col = "steelblue", 
+        space = 0, 
+        main = "Sum of Two Die Rolls"
         )
 
 # plot the distribution of D 
-probability <- rep(1/6,6)
+probability <- rep(1/6, 6)
 names(probability) <- 1:6
 
 barplot(probability, 
-        ylim=c(0,0.2), 
+        ylim = c(0, 0.2), 
         xlab = "D", 
-        col="steelblue", 
+        col = "steelblue", 
         space = 0, 
-        main = "Outcome of a single Die Roll"
+        main = "Outcome of a Single Die Roll"
         )
 ```
+</div> 
 
-Many econometric procedures deal with averages of sampled data. It is almost always assumed that observations are drawn randomly from a larger, unkown population. As demonstrated for the sample function $S$, computing an average of a random sample also has the effect to make the average a random variable itself. This random variable in turn has a probability distribution which is called the sampling distribution. Knowledge about the sampling distribution of an average is therefore crucial for understanding the performance of econometric procedures.
+
+Many econometric procedures deal with averages of sampled data. It is almost always assumed that observations are drawn randomly from a larger, unkown population. As demonstrated for the sample function $S$, computing an average of a random sample also has the effect to make the average a random variable itself. This random variable in turn has a probability distribution which is called the sampling distribution. Knowledge about the sampling distribution of the average is therefore crucial for understanding the performance of econometric procedures.
 
 The *sample average* of a sample of $n$ observations $Y_1, \dots, Y_n$ is
 
@@ -895,13 +943,13 @@ For example, if a sample $Y_i$ with $i=1,\dots,10$ is drawn from a standard norm
 
 $$ \overline{Y} \sim N(0,0.1).$$
 
-We can use R's random number generation facilities to verifiy this result. The basic idea is to simulate outcomes of the true distribution of $\overline{Y}$ by repeatedly drawing random samples of 10 observation from the $N(0,1)$ distribution and computing their respective averages. If we do this for a large number of repititions, the simulated dataset of averages should quite accurately reflect the theoretical distribution of $\overline{Y}$ if the theoretical result holds.
+We can use <tt>R</tt>'s random number generation facilities to verifiy this result. The basic idea is to simulate outcomes of the true distribution of $\overline{Y}$ by repeatedly drawing random samples of 10 observation from the $N(0,1)$ distribution and computing their respective averages. If we do this for a large number of repititions, the simulated dataset of averages should quite accurately reflect the theoretical distribution of $\overline{Y}$ if the theoretical result holds.
 
-The approach sketched above is an example of what is commonly known as *Monte Carlo Simulation* or *Monte Carlo Experiment*. To perform this simulation in R, we proceed as follows:
+The approach sketched above is an example of what is commonly known as *Monte Carlo Simulation* or *Monte Carlo Experiment*. To perform this simulation in <tt>R</tt>, we proceed as follows:
 
-1. Choose a sample size `n` and the number of samples to be drawn `reps`.
-2. Use the function `replicate()` in conjunction with `rnorm()` to draw `n` observations from the standard normal distribution `rep` times. **Note**: the outcome of `replicate()` is a matrix with dimensions `n` $\times$ `rep`. It contains the drawn samples as *columns*.
-3. Compute sample means using `colMeans()`. This function computes the mean of each column i.e. of each sample and returns a vector.
+1. Choose a sample size <tt>n</tt> and the number of samples to be drawn <tt>reps</tt>.
+2. Use the function <tt>replicate()</tt> in conjunction with <tt>rnorm()</tt> to draw <tt>n</tt> observations from the standard normal distribution <tt>rep</tt> times. **Note**: the outcome of <tt>replicate()</tt> is a matrix with dimensions <tt>n</tt> $\times$ <tt>rep</tt>. It contains the drawn samples as *columns*.
+3. Compute sample means using <tt>colMeans()</tt>. This function computes the mean of each column i.e. of each sample and returns a vector.
 
 ```{r, echo = T, eval = T, message = F, warning = F} 
 # Set sample size and number of samples
@@ -915,7 +963,7 @@ samples <- replicate(reps, rnorm(n)) # 10 x 10000 sample matrix
 sample.avgs <- colMeans(samples)
 ```
 
-After performing these steps we end up with a vector of sample averages. You can check the vector property of `sample.avgs`:
+After performing these steps we end up with a vector of sample averages. You can check the vector property of <tt>sample.avgs</tt>:
 
 ```{r, echo = T, eval = T, message = F, warning = F} 
 # Check that sample.avgs is a vector
@@ -925,28 +973,30 @@ is.vector(sample.avgs)
 head(sample.avgs)
 ```
 
-A straightforward approach to examine the distribution of univariate numerical data is to plot it as a histogram and compare it to some known or assumed distribution. This comparison can be done with help of a suitable statistical test or by simply eyeballing some graphical representations of these distributions. For our simulated sample averages, we will do the latter by means of the functions `hist()` and `curve()`.
+A straightforward approach to examine the distribution of univariate numerical data is to plot it as a histogram and compare it to some known or assumed distribution. This comparison can be done with help of a suitable statistical test or by simply eyeballing some graphical representations of these distributions. For our simulated sample averages, we will do the latter by means of the functions <tt>hist()</tt> and <tt>curve()</tt>.
 
-By default, `hist()` will give us a frequency histogram i.e. a bar chart where observations are grouped into ranges, also called bins. The ordinate reports the number of observations falling into each of the bins. Instead, we want it to report density estimates for comparison purposes. This is achieved by setting the argument `freq = FALSE`. The number of bins is adjusted by the argument `breaks`. 
+By default, <tt>hist()</tt> will give us a frequency histogram i.e. a bar chart where observations are grouped into ranges, also called bins. The ordinate reports the number of observations falling into each of the bins. Instead, we want it to report density estimates for comparison purposes. This is achieved by setting the argument <tt>freq = FALSE</tt>. The number of bins is adjusted by the argument <tt>breaks</tt>. 
 
-Using `curve()`, we overlay the histogram with a red line which represents the theoretical density of a $N(0, 0.1)$ distributed random variable. Remember to use the argument `add = TRUE` to add the curve to the current plot. Otherwise <tt>R</tt> will open a new graphic device and discard the histogram plot!  
+Using <tt>curve()</tt>, we overlay the histogram with a red line which represents the theoretical density of a $N(0, 0.1)$ distributed random variable. Remember to use the argument <tt>add = TRUE</tt> to add the curve to the current plot. Otherwise <tt>R</tt> will open a new graphic device and discard the previous plot!  
 
+<div class="unfolded"> 
 ```{r, echo = T, eval = T, message = F, warning = F, fig.align='center'}
 # Plot the density histogram
 hist(sample.avgs, 
-     ylim=c(0,1.4), 
-     col="steelblue" , 
+     ylim = c(0, 1.4), 
+     col = "steelblue" , 
      freq = F, 
      breaks = 20
      )
 
 # overlay the theoretical distribution of sample averages on top of the histogram
 curve(dnorm(x, sd = 1/sqrt(n)), 
-      col="red", 
-      lwd="2", 
-      add=T
+      col = "red", 
+      lwd = "2", 
+      add = T
       )
 ```
+</div>
 
 From inspection of the plot we can tell that the distribution of $\overline{Y}$ is indeed very close to that of a $N(0, 0.1)$ distributed random variable so that evidence obained from the Monte Carlo Simulation supports the theoretical claim. 
 
@@ -954,12 +1004,13 @@ Let us discuss another example where using simple random sampling in a simulatio
 
 To visualize the claim stated in equation (<a href="#mjx-eqn-2.3">2.3</a>), we proceed similarly as in the example before:
 
-1. Choose the degrees of freedom `DF` and the number of samples to be drawn `reps`.
-2. Draw `reps` random samples of size `DF` from the standard normal distribution using `replicate()`. 
+1. Choose the degrees of freedom `DF` and the number of samples to be drawn <tt>reps</tt>.
+2. Draw <tt>reps</tt> random samples of size `DF` from the standard normal distribution using <tt>replicate()</tt>. 
 3. For each sample, by squaring the outcomes and summing them up columnwise. Store the results
 
 Again, we produce a density estimate for the distribution underlying our simulated data using a density histogram and overlay it with a line graph of the theoretical density function of the $\chi^2_3$ distribution.
 
+<div class="unfolded"> 
 ```{r, echo = T, eval = T, message = F, warning = F, fig.align='center'} 
 # Number of repititions
 reps <- 10000
@@ -976,20 +1027,21 @@ X <- colSums(Z^2)
 # Histogram of column sums of squares
 hist(X, 
      freq = F, 
-     col="steelblue", 
+     col = "steelblue", 
      breaks = 40, 
-     ylab="Density", 
-     main=""
+     ylab = "Density", 
+     main = ""
      )
 
 # Add theoretical density
 curve(dchisq(x, df = DF), 
       type = 'l', 
       lwd = 2, 
-      col="red", 
+      col = "red", 
       add = T
       )
 ```
+</div>
 
 ### Large Sample Approximations to Sampling Distributions {-}
 
