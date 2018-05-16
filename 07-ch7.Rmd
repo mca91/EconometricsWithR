@@ -442,36 +442,454 @@ What can we conclude from the model comparison?
 
 <div  class = "DCexercise">
 
-#### Inference in the Multiple Regression Model – t-statistics {-}
+#### 1. Hypothesis Testing in a Multiple Regression Model - t statistics and p values {-}
 
-**Instructions**
+Reconsider the <tt>Boston</tt> data set and the following estimated model (with homoscedasticity-only standard errors in parentheses) from the previous chapter:
 
-**Hint**
+$$\widehat{medv}_i = \underset{(0.75)}{32.828} \underset{(0.05)}{-0.994} \times lstat_i \underset{(0.04)}{-0.083} \times crim_i + \underset{(0.01)}{0.038} \times age_i.$$
+
+Just as in the simple linear regression framework we can conduct hypothesis tests for each coefficent in the multiple regression framework as well. To do so assume that we want to test the null $H_0:\beta_j=0$ against the alternative $H_1:\beta_j\ne 0$ for all $j$.
+
+The packages <tt>AER</tt> and <tt>MASS</tt> have been loaded. The coefficients of the model as well as the corresponding standard errors are already available in <tt>coef</tt> and <tt>se</tt>, respectively.
+
+**Instructions:**
+
++ Compute t statistics for each coefficient by using the predefined objects <tt>coef</tt> and <tt>se</tt>. Assign them to <tt>tstat</tt>.
+
++ Compute p values for each coefficient and assign them to <tt>pval</tt>.
+
++ Check with the help of logical operators whether the hypotheses are rejected at a 1% significance level.
 
 <!--html_preserve-->
 
 <div data-datacamp-exercise data-lang="r">
 
 <code data-type="pre-exercise-code">
-library(MASS)
-data("Boston")
-mod <- lm(medv ~ lstat + age + crim, data = Boston)
+  library(AER)
+  library(MASS)
+  coef <- summary(lm(medv ~ lstat + crim + age, data = Boston))$coef[, 1]
+  se   <- summary(lm(medv ~ lstat + crim + age, data = Boston))$coef[, 2]
 </code>
 <code data-type="sample-code">
-
+  # Compute t statistics for each coefficient. Assign them to tstat.
+  
+  
+  # Compute p values for each coefficient. Assign them to pval.
+  
+  
+  # Check whether the hypotheses are rejected at a 1% significance level.
+  
+  
 </code>
 <code data-type="solution">
-
+  # Compute t statistics for each coefficient. Assign them to tstat.
+  tstat <- coef/se
+  
+  # Compute p values for each coefficient. Assign them to pval.
+  pval <- 2*(pnorm(-abs(tstat)))
+  
+  # Check whether the hypotheses are rejected at a 1% significance level.
+  pval < 0.01
+  
 </code>
 <code data-type="sct">
-
+  test_object("tstat")
+  test_object("pval")
+  test_or(test_output_contains("pval < 0.01"), test_output_contains("pval > 0.01"))
+  success_msg("All but the coefficent for the crime rate (crim) can be rejected at a 1% significance level.")
 </code>
 
 </div>
 
 <!--/html_preserve-->
 
+**Hints:**
+
++ The t statistic for each coefficient is defined as $t=\frac{\widehat{\beta}_j-\beta_{j,0}}{SE(\widehat{\beta}_j)}$.
+
++ The p value can be computed as $2\Phi(-|t^{act}|)$ where $t^{act}$ denotes the computed t statistic.
+
 </div>
 
+<div  class = "DCexercise">
 
+#### 2. Hypothesis Testing in a Multiple Regression Model - Confidence Intervals {-}
 
+Again consider the model 
+
+$$\widehat{medv}_i = \underset{(0.75)}{32.828} \underset{(0.05)}{-0.994} \times lstat_i \underset{(0.04)}{-0.083} \times crim_i + \underset{(0.01)}{0.038} \times age_i.$$
+
+which is available as <tt>mod</tt> in your working environment. The packages <tt>AER</tt> and <tt>MASS</tt> have been loaded.
+
+**Instruction:**
+
++ Construct a 99% confidence interval for all model coefficients. Decide whether we can reject the null $H_0:\beta_j=0$ for all $j$.
+
+<!--html_preserve-->
+
+<div data-datacamp-exercise data-lang="r">
+
+<code data-type="pre-exercise-code">
+  library(AER)
+  library(MASS)
+  mod <- lm(medv ~ lstat + crim + age, data = Boston)
+</code>
+<code data-type="sample-code">
+  # Construct a 99% confidence interval for all coefficients
+  
+  
+</code>
+<code data-type="solution">
+  # Construct a 99% confidence interval for all coefficients
+  confint(mod, level = 0.99)
+  
+</code>
+<code data-type="sct">
+  test_function('confint', args = c('object', 'level'))
+  success_msg('Correct! Analogously to the previous exercise we can see that 0 is not an element for all confidence intervals but   for the one of the crime rate. Hence, as expected, the test decision remains the same.')
+</code>
+
+</div>
+
+<!--/html_preserve-->
+
+**Hint:**
+
++ You can use <tt>confint()</tt> to construct confidence intervals. The confidence level can be set via <tt>level</tt>.
+
+</div>
+
+<div  class = "DCexercise">
+
+#### 3. Hypothesis Testing in a Multiple Regression Model - Can we do more robust? {-}
+
+<tt>mod</tt>, the <tt>lm</tt> object with the estimated model
+
+$$\widehat{medv}_i = 32.828 - 0.994 \times lstat_i - 0.083 \times crim_i + 0.038 \times age_i.$$
+
+is available in your working environment. The packages <tt>AER</tt> and <tt>MASS</tt> have been loaded.
+
+**Instructions:**
+
++ Print a coefficient summary using heteroscedasticity-robust standard errors.
+
++ Access entries of the matrix created by <tt>coeftest()</tt> to check with the help of logical operators whether the hypotheses are rejected at a 1% significance level.
+
+<!--html_preserve-->
+
+<div data-datacamp-exercise data-lang="r">
+
+<code data-type="pre-exercise-code">
+  library(AER)
+  library(MASS)
+  mod <- lm(medv ~ lstat + crim + age, data = Boston)
+</code>
+<code data-type="sample-code">
+  # Print a coefficient summary using robust standard errors.
+  
+  
+  # Check whether the hypotheses are rejected at a 1% significance level.
+  
+  
+</code>
+<code data-type="solution">
+  # Print a coefficient summary using robust standard errors.
+  coeftest(mod, vcov. = vcovHC)
+  
+  # Check whether the hypotheses are rejected at a 1% significance level.
+  coeftest(mod, vcov. = vcovHC)[, 4] < 0.01
+  
+</code>
+<code data-type="sct">
+  test_function_result('coeftest')
+  test_or(test_output_contains("coeftest(mod, vcov. = vcovHC)[, 4] < 0.01", incorrect_msg = 'Not correct! Please make sure you     select the correct entries of the matrix.'), test_output_contains("coeftest(mod, vcov. = vcovHC)[, 4] > 0.01", incorrect_msg =   'Not correct! Please make sure you select the correct entries of the matrix.'))
+  success_msg('Correct! We see that by using robust standard errors the coefficient for the crime rate (crim) becomes              significant, whereas the coefficient for the average age of the buildings (age) becomes insignificant at a 1% significance       level.')
+</code>
+
+</div>
+
+<!--/html_preserve-->
+
+**Hints:**
+
++ Inside of <tt>coeftest()</tt> one can set the argument <tt>vcov.</tt> to force the function to use robust standard errors.
+
++ The p values are contained in the fourth column of the matrix. Use square brackets to access them.
+
+</div>
+
+<div  class = "DCexercise">
+
+#### 4. Joint Hypothesis Testing - F Test I {-}
+
+Besides testing single hypotheses we can also test joint hypotheses which impose restrictions on multiple regression coefficients. For example in the model 
+
+$$medv_i = \beta_0 + \beta_1\times lstat_i + \beta_2\times crim_i + \beta_3\times age_i + u_i$$
+
+we could test the null $H_0: \beta_2=\beta_3$ vs. the alternative $H_1: \beta_2\ne\beta_3$ (which in fact is a joint hypothesis as we impose a restriction on two regression coefficients).
+
+The basic idea behind testing such a hypothesis is now to conduct two regressions. For one of the regressions we incorporate the restriction (we call this the restricted model), whereas for the other regression the restriction is left out (we call this the unrestricted model). From this starting point we can then construct a test statistic which, under the null, follows a well known distribution, namely a $F$ distribution (see next exercise).
+However in this exercise we start with the initial steps or computations necessary to construct the test statistic. So please do the following:
+
+The packages <tt>AER</tt> and <tt>MASS</tt> have been loaded.
+
+**Instructions:**
+
++ Estimate the restricted model, that is, the model where the restriction is assumed to be true. Save it in <tt>model_res</tt>.
+
++ Compute the SSR of the restricted model and assign it to <tt>RSSR</tt>.
+
++ Estimate the unrestricted model, that is, the model where the restriction is assumed to be false. Save it in <tt>model_unres</tt>.
+
++ Compute the SSR of the unrestricted model and assign it to <tt>USSR</tt>.
+
+<!--html_preserve-->
+
+<div data-datacamp-exercise data-lang="r">
+
+<code data-type="pre-exercise-code">
+  library(AER)
+  library(MASS)
+</code>
+<code data-type="sample-code">
+  # Estimate the restricted model and save it in model_res.
+  
+  
+  # Compute the SSR of the restricted model and assign it to RSSR.
+  
+  
+  # Estimate the unrestricted model and save it in model_unres.
+  
+  
+  # Compute the SSR of the unrestricted model and assign it to USSR.
+  
+  
+</code>
+<code data-type="solution">
+  # Estimate the restricted model and save it in model_res.
+  model_res <- lm(medv ~ lstat + I(crim + age), data = Boston)
+  
+  # Compute the SSR of the restricted model and assign it to RSSR.
+  RSSR <- sum(model_res$residuals^2)
+  
+  # Estimate the unrestricted model and save it in model_unres.
+  model_unres <- lm(medv ~ lstat + crim + age, data = Boston)
+  
+  # Compute the SSR of the unrestricted model and assign it to USSR.
+  USSR <- sum(model_unres$residuals^2)
+  
+</code>
+<code data-type="sct">
+  test_or({
+  
+  test_function('lm', 
+               args = c('formula', 'data'),
+               not_called_msg = "Funktion nicht oder falsch aufgerufen.",
+               args_not_specified_msg = "Funktion nicht oder falsch aufgerufen."
+               )
+               
+  
+  },{
+  
+  sol <- ex() %>% override_solution("model_res <- lm(medv ~ lstat + I(crim + age), data = Boston)")
+  sol %>% check_function('lm') %>% check_arg('formula') %>% check_equal()
+  
+  },{
+  
+  sol <- ex() %>% override_solution("model_res <- lm(Boston$medv ~ Boston$lstat + I(Boston$crim + Boston$age))")
+  sol %>% check_function('lm') %>% check_arg('formula') %>% check_equal()
+  
+  })
+  test_object("model_res", eval = F)
+  test_object("RSSR")
+  test_or({
+  
+  test_function('lm', 
+               args = c('formula', 'data'),
+               not_called_msg = "Funktion nicht oder falsch aufgerufen.",
+               args_not_specified_msg = "Funktion nicht oder falsch aufgerufen."
+               )
+                
+  
+  },{
+  
+  sol <- ex() %>% override_solution("model_unres <- lm(medv ~ lstat + crim + age, data = Boston)")
+  sol %>% check_function('lm') %>% check_arg('formula') %>% check_equal()
+  
+  },{
+  
+  sol <- ex() %>% override_solution("model_unres <- lm(Boston$medv ~ Boston$lstat + Boston$crim + Boston$age)")
+  sol %>% check_function('lm') %>% check_arg('formula') %>% check_equal()
+  
+  })
+  test_object("model_unres", eval = F)
+  test_object("USSR")
+  success_msg("Correct! Note that the SSR of the restricted model is always greater or equal than the SSR of the unrestricted      model.")
+</code>
+
+</div>
+
+<!--/html_preserve-->
+
+**Hints:**
+
++ The restricted model can be written as $medv_i = \beta_0 + \beta_1\times lstat_i + \beta_2\times crim_i + \beta_2\times age_i + u_i$ which, after rearranging, can be expressed as $medv_i = \beta_0 + \beta_1\times lstat_i + \beta_2\times(crim_i+age_i) + u_i$.
+
++ The SSR is defined as the sum of the squared residuals.
+
++ Note that the residuals of a regression model are available as <tt>residuals</tt> in the corresponding <tt>lm</tt> object. So you can access them as usual via the <tt>$</tt>-operator.
+
+</div>
+
+<div  class = "DCexercise">
+
+#### 5. Joint Hypothesis Testing - F Test II {-}
+
+After estimating the necessary models and computing the SSR we can now compute the test statistic and conduct the hypothesis test. As mentioned in the last exercise the test statistic follows a $F$ distribution or more precisely a $F_{q,n-k-1}$ distribution where $q$ and $k$ denote the number of restrictions under the null and regressors in the unrestricted model, respectively.
+
+The packages <tt>AER</tt> and <tt>MASS</tt> have been loaded. Both models (<tt>model_res</tt> and <tt>model_unres</tt>) as well as their SSR (<tt>RSSR</tt> and <tt>USSR</tt>) are available in your working environment.
+
+**Instructions:**
+
++ Compute the F statistic and assign it to <tt>Fstat</tt>.
+
++ Compute the p value and assign it to <tt>pval</tt>. 
+
++ Check with the help of logical operators whether the null is rejected at a 1% significance level.
+
++ Verify your result by using <tt>linearHypothesis()</tt> and printing out the results. 
+
+<!--html_preserve-->
+
+<div data-datacamp-exercise data-lang="r">
+
+<code data-type="pre-exercise-code">
+  library(AER)
+  library(MASS)
+  model_res <- lm(medv ~ lstat + I(crim + age), data = Boston)
+  RSSR <- sum(model_res$residuals^2)
+  model_unres <- lm(medv ~ lstat + crim + age, data = Boston)
+  USSR <- sum(model_unres$residuals^2)
+</code>
+<code data-type="sample-code">
+  # Compute the F statistic and assign it to Fstat.
+  
+  
+  # Compute the p value and assign it to pval.
+  
+  
+  # Check whether the null is rejected at a 1% significance level.
+  
+  
+  # Verify your result with linearHypothesis().
+  
+  
+</code>
+<code data-type="solution">
+  # Compute the F statistic and assign it to Fstat.
+  Fstat <- ((RSSR-USSR)/1)/(USSR/(nrow(Boston)-3-1))
+  
+  # Compute the p value and assign it to pval.
+  pval <- 1 - pf(Fstat, df1 = 1, df2 = nrow(Boston)-3-1)
+  
+  # Check whether the null is rejected at a 1% significance level.
+  pval < 0.01
+  
+  # Verify your result with linearHypothesis().
+  linearHypothesis(model_unres, "age = crim")
+  
+</code>
+<code data-type="sct">
+  test_object("Fstat")
+  test_object("pval")
+  test_or(test_output_contains("pval < 0.01"), test_output_contains("pval > 0.01"))
+  test_function_result("linearHypothesis")
+  success_msg("Correct! The null hypothesis is rejected at a 1% significance level.")
+</code>
+
+</div>
+
+<!--/html_preserve-->
+
+**Hints:**
+
++ The F statistic is defined as $\frac{RSSR-USSR/q}{USSR/(n-k-1)}$.
+
++ The p value can be computed as $1-F_{q,n-k-1}(F^{act})$ where $F_{q,n-k-1}$ denotes the cdf of the F distribution (<tt>pf()</tt>) with degrees of freedom $q$ and $n-k-1$ and $F^{act}$ the computed F statistic.
+
++ <tt>linearHypothesis()</tt> expects the unrestricted model as well as the null hypothesis.
+
+</div>
+
+<div  class = "DCexercise">
+
+#### 6. Joint Hypothesis Testing - Confidence Set {-}
+
+As you know from previous chapters constructing a confidence set for a single regression coefficient results in a simple confidence interval on the real line. However if we consider $n$ regression coefficients jointly (as we do in a joint hypothesis testing setting) we move from $\mathbb{R}$ to $\mathbb{R}^n$ resulting in a n-dimensional confidence set. For the sake of illustration we then often choose $n=2$, so that we end up with a representable two-dimensional plane.
+
+Now recall the estimated model 
+
+$$\widehat{medv}_i = \underset{(0.75)}{32.828} \underset{(0.05)}{-0.994} \times lstat_i \underset{(0.04)}{-0.083} \times crim_i + \underset{(0.01)}{0.038} \times age_i.$$
+
+which is available as <tt>mod</tt> in your working environment and assume we want to test the null $H_0: \beta_2=\beta_3=0$ vs. $H_1: \beta_2\ne 0$ or $\beta_3\ne 0$.
+
+The packages <tt>AER</tt> and <tt>MASS</tt> have been loaded.
+
+**Instructions:**
+
++ Construct a 99% confidence set for the coefficients of <tt>crim</tt> and <tt>lstat</tt>, that is a two-dimensional confidence set. Can you reject the null stated above?
+
++ Verify your visual inspection by conducting a corresponding F test.
+
+<!--html_preserve-->
+
+<div data-datacamp-exercise data-lang="r">
+
+<code data-type="pre-exercise-code">
+  library(AER)
+  library(MASS)
+  mod <- lm(medv ~ lstat + crim + age, data = Boston)
+</code>
+<code data-type="sample-code">
+  # Construct a 99% confidence set for the coefficents of crim and lstat.
+  
+  
+  # Conduct a corresponding F test.
+  
+    
+</code>
+<code data-type="solution">
+  # Construct a 99% confidence set for crim and lstat.
+  confidenceEllipse(mod, which.coef = c("crim", "lstat"), levels = 0.99)
+  
+  # Conduct a corresponding F test.
+  linearHypothesis(mod, c("crim = 0", "lstat = 0"))
+  
+</code>
+<code data-type="sct">
+  test_or({
+    fun <- ex() %>% check_function('confidenceEllipse')
+    fun %>% check_arg('model') %>% check_equal()
+    fun %>% check_arg('which.coef') %>% check_equal()
+    fun %>% check_arg('levels') %>% check_equal()
+  }, {
+    fun <- ex() %>% override_solution('confidenceEllipse(mod, which.coef = c("lstat", "crim"), levels = 0.99)') %>%                  check_function('confidenceEllipse')
+    fun %>% check_arg('model') %>% check_equal()
+    fun %>% check_arg('which.coef') %>% check_equal()
+    fun %>% check_arg('levels') %>% check_equal()
+  })
+  test_function_result('linearHypothesis')
+  success_msg("Correct! Since (0,0) is not an element of the 99% confidence set, the null hypothesis is rejected at a 1%           significance level.")
+</code>
+
+</div>
+
+<!--/html_preserve-->
+
+**Hints:**
+
++ You can use <tt>confidenceEllipse()</tt> to construct a two dimensional confidence set. Besides the coefficients for which the confidence set shall be constructed (<tt>which.coef</tt>), you have to specify the confidence level (<tt>levels</tt>).
+
++ As usual you can use <tt>linearHypothesis()</tt> to conduct a F test. However note that we test two restrictions now, hence you have to pass a vector consisting of both linear restrictions.
+
+</div>
