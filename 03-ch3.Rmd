@@ -4,11 +4,21 @@ This section reviews important statistical concepts:
 
 - Estimation  
 
-- Hypothesis testing
+- Hypothesis Testing
 
-- Confidence intervals
+- Confidence Intervals
 
-Since these types of statistical methods are heavily used in econometrics, we will discuss them in the context of inference about an unknown population mean and discuss several applications in R.
+Since these types of statistical methods are heavily used in econometrics, we will discuss them in the context of inference about an unknown population mean and discuss several applications in <tt>R</tt>.
+
+The <tt>R</tt> applications presented in this chapter rely on the following packages which are not part of base <tt>R</tt>:
+
++ <tt>readxl</tt> allows to import data from Excel to <tt>R</tt>.
+
++ <tt>dplyr</tt> provides a flexible grammar for data manipulation.
+
++ <tt>MASS</tt> is a collection of functions for applied statistics.
+
+Make sure these are installed before you go ahead and replicate the examples.
 
 ## Estimation of the Population Mean
 
@@ -16,11 +26,11 @@ Since these types of statistical methods are heavily used in econometrics, we wi
 <h3 class = "right"> Key Concept 3.1 </h3>          
 <h3 class = "left"> Estimators and Estimates </h3>
 
-<font color="#004A93"><strong>Estimators</strong></font> are functions of sample data that are drawn randomly from an unknown population. <font color="#004A93"><strong>Estimates</strong></font> are numerical values computed by estimators based on the sample data. Estimators are random variables because they are functions of *random* data. Estimates are nonrandom numbers.
+*Estimators* are functions of sample data that are drawn randomly from an unknown population. *Estimates* are numeric values computed by estimators based on the sample data. Estimators are random variables because they are functions of *random* data. Estimates are nonrandom numbers.
 
 </div>
 
-Think of some economic variable, for example hourly earnings of college graduates, denoted by $Y$. Suppose we are interested in $\mu_Y$ the mean of $Y$. In order to exactly calculate $\mu_Y$ we would have to interview every graduated member of the working population in the economy. We simply cannot do this for time and cost reasons. However, we could draw a random sample from $n$ i.i.d. observations $Y_1, \dots, Y_n$ and estimate $\mu_Y$ using one of the simplest estimators in the sense of Key Concept 3.1 one can think of:
+Think of some economic variable, for example hourly earnings of college graduates, denoted by $Y$. Suppose we are interested in $\mu_Y$ the mean of $Y$. In order to exactly calculate $\mu_Y$ we would have to interview every graduated member of the working population in the economy. We simply cannot do this for time and cost reasons. However, we could draw a random sample of $n$ i.i.d. observations $Y_1, \dots, Y_n$ and estimate $\mu_Y$ using one of the simplest estimators in the sense of Key Concept 3.1 one can think of, that is
 
 $$ \overline{Y} = \frac{1}{n} \sum_{i=1}^n Y_i, $$
 
@@ -28,8 +38,9 @@ the sample mean of $Y$. Then again, we could use an even simpler estimator for $
 
 $$ Y \sim \chi_{12}^2 $$
 
-which is not too unreasonable as the measure is nonnegative and we expect many hourly earnings to be in a range of $5€\,$ to $15€$. Moreover, it is common for income distributions to be skewed to the right.  
+which is not too unreasonable as hourly income is non-negative and we expect many hourly earnings to be in a range of $5€\,$ to $15€$. Moreover, it is common for income distributions to be skewed to the right --- a property of the $\chi^2_{12}$ distribution. 
 
+<div class="unfolded"> 
 ```{r, fig.align='center'}
 # plot the chi_12^2 distribution
 curve(dchisq(x, df=12), 
@@ -39,8 +50,9 @@ curve(dchisq(x, df=12),
       xlab = "hourly earnings in Euro"
       )
 ```
+</div>
 
-We draw a sample of $n=100$ observations and take the first observation $Y_1$ as an estimate for $\mu_Y$
+We now draw a sample of $n=100$ observations and take the first observation $Y_1$ as an estimate for $\mu_Y$
 
 ```{r, fig.align='center'}
 # set seed for reproducibility
@@ -54,28 +66,28 @@ The estimate $8.26$ is not too far away from $\mu_Y = 12$ but it is somewhat int
 
 $$ \text{Var}(Y_1) = \text{Var}(Y) = 2 \cdot 12 = 24 $$
 
-This brings us to the following question: What is a 'good' estimator in the first place? This question is tackled in Key Concepts 3.2 and 3.3
+This brings us to the following question: What is a *good* estimator of an unknown parameter in the first place? This question is tackled in Key Concepts 3.2 and 3.3
 
 <div class = "keyconcept"> 
 <h3 class = "right"> Key Concept 3.2 </h3>          
 <h3 class = "left"> Bias, Consistency and Efficiency </h3>
 
-Disirable characteristics of an estimator are unbiasedness, consitency and Efficiency.
+Desirable characteristics of an estimator are unbiasedness, consistency and efficiency.
 
-<font color="#004A93"><strong>Unbiasedness</strong></font>:  
+**Unbiasedness:**  
 If the mean of the sampling distribution of some estimator $\hat\mu_Y$ for the population mean $\mu_Y$ equals $\mu_Y$
 $$ E(\hat\mu_Y) = \mu_Y $$
 we say that the estimator is unbiased for $\mu_Y$. The *bias* of $\hat\mu_Y$ is $0$:
 
 $$ E(\hat\mu_Y) - \mu_Y = 0$$
 
-<font color="#004A93"><strong>Consistency</strong></font>:
+**Consistency:**
 
-We want the uncertainty of the estimator $\mu_Y$ to decrease as the number of observations in the sample grows. More precisely, we want the proabability that the estimate $\hat\mu_Y$ falls within a small interval of the true value $\mu_Y$ to get increasingly closer to $1$ as $n$ grows. We write this as
+We want the uncertainty of the estimator $\mu_Y$ to decrease as the number of observations in the sample grows. More precisely, we want the probability that the estimate $\hat\mu_Y$ falls within a small interval of the true value $\mu_Y$ to get increasingly closer to $1$ as $n$ grows. We write this as
 
 $$ \hat\mu_Y \xrightarrow{p} \mu_Y. $$
 
-<font color="#004A93"><strong>Variance and efficiency</strong></font>:
+**Variance and efficiency:**
 
 We want the estimator to be efficient. Suppose we have two estimators, $\hat\mu_Y$ and $\overset{\sim}{\mu}_Y$ and for some given sample size $n$ it holds that
 
@@ -89,24 +101,24 @@ We then would prefer to use $\hat\mu_Y$ as it has a lower variance than $\overse
 
 <div class = "keyconcept"> 
 <h3 class = "right"> Key Concept 3.3 </h3>          
-<h3 class = "left"> Efficiency of $\overline{Y}$: The BLUE property </h3>
+<h3 class = "left"> Efficiency of $\overline{Y}$: The BLUE Property </h3>
 
 Let $\hat\mu_Y$ be a linear and unbiased estimator of $\mu_Y$ in the fashion of
 
 $$ \hat\mu_Y = \frac{1}{n} \sum_{i=1}^n a_i Y_i$$
 
-with nonrandom constants $a_i$. We see that $\hat\mu_Y$ is a weighted average of the $Y_i$ and the $a_i$ are weights. For these type of estimators, $\overline{Y}$ with $a_i = 1$ for all $i = 1, \dots, n$ is the most efficient estimator. We say that $\overline{Y}$ is the <font color="#004A93"><strong>B</strong></font>est<font color="#004A93"><strong>L</strong></font>inear <font color="#004A93"><strong>U</strong></font>nbiased <font color="#004A93"><strong>E</strong></font>stimator (BLUE).
+with nonrandom constants $a_i$. We see that $\hat\mu_Y$ is a weighted average of the $Y_i$ and the $a_i$ are weights. For these type of estimators, $\overline{Y}$ with $a_i = 1$ for all $i = 1, \dots, n$ is the most efficient estimator. We say that $\overline{Y}$ is the **B**est **L**inear **U**nbiased **E**stimator (BLUE).
 
 </div>
 
 ## Properties of the Sample Mean
 
-To examine properties of the sample mean as an estimator for the corresponding population mean, consider the following R example.
+To examine properties of the sample mean as an estimator for the corresponding population mean, consider the following <tt>R</tt>example.
 
 We generate a population `pop` which consists observations $Y_i \ , \ i=1,\dots,10000$ that origin from a normal distribution with mean $\mu = 10$ and variance $\sigma^2 = 1$.<br>
-To investigate how the estimator $\hat{\mu} = \bar{Y}$ behaves we can draw random samples from this population and calculate $\bar{Y}$ for each of them. This is easily done by making use of the function `replicate()`. Its argument `expr` is evaluated `n` times. In this case we draw samples of sizes $n=5$ and $n=25$, compute the sample means and repeat this exactly $n=25000$ times.
+To investigate how the estimator $\hat{\mu} = \bar{Y}$ behaves we can draw random samples from this population and calculate $\bar{Y}$ for each of them. This is easily done by making use of the function <tt>replicate()</tt>. The argument <tt>expr</tt> is evaluated <tt>n</tt> times. In this case we draw samples of sizes $n=5$ and $n=25$, compute the sample means and repeat this exactly $n=25000$ times.
 
-For comparison purposes we store results for the estimator $Y_1$, the first observation in a sample for a sample of size $5$ separately.
+For comparison purposes we store results for the estimator $Y_1$, the first observation in a sample for a sample of size $5$, separately.
 
 ```{r, echo = T, eval = T, message = F, warning = F}
 # generate a fictive population
@@ -120,19 +132,19 @@ est2 <- replicate(expr = mean(sample(x = pop, size = 25)), n = 25000)
 fo <- replicate(expr = sample(x = pop, size = 5)[1], n = 25000)
 ```
 
-Check that `est1` and `est2` are vectors of length $25000$:
+Check that <tt>est1</tt> and <tt>est2</tt> are vectors of length $25000$:
 
 ```{r}
 # check if object type is vector
 is.vector(est1)
 is.vector(est2)
 
-# check lengths
+# check length
 length(est1)
 length(est2)
 ```
 
-The code chunk below produces a plot of the sampling distributions of the estimators $\bar{Y}$ and $Y_1$ on the basis of the $25000$ samples in each case. We also plot a curve depicting the density function of the $N(10,1)$ distribution. 
+The code chunk below produces a plot of the sampling distributions of the estimators $\bar{Y}$ and $Y_1$ on the basis of the $25000$ samples in each case. We also plot the density function of the $N(10,1)$ distribution.
 
 <div class="unfolded">
 ```{r, echo = T, eval = T, message = F, warning = F, fig.align='center'}
@@ -140,7 +152,7 @@ The code chunk below produces a plot of the sampling distributions of the estima
 plot(density(fo), 
       col = 'green', 
       lwd = 2,
-      ylim = c(0,2),
+      ylim = c(0, 2),
       xlab = 'estimates',
       main = 'Sampling Distributions of Unbiased Estimators'
       )
@@ -162,7 +174,7 @@ lines(density(est2),
 abline(v = 10, lty = 2)
 
 # add N(10,1) density to the plot
-curve(dnorm(x, mean=10), 
+curve(dnorm(x, mean = 10), 
      lwd = 2,
      lty = 2,
      add = T
@@ -172,8 +184,8 @@ curve(dnorm(x, mean=10),
 legend("topleft",
        legend = c("N(10,1)",
                   expression(Y[1]),
-                  expression(bar(Y) ~ n==5),
-                  expression(bar(Y) ~ n==25)
+                  expression(bar(Y) ~ n == 5),
+                  expression(bar(Y) ~ n == 25)
                   ), 
        lty = c(2, 1, 1, 1), 
        col = c('black','green', 'steelblue', 'red2'),
@@ -182,15 +194,15 @@ legend("topleft",
 ```
 </div>
 
-At first, notice how *all* sampling distributions (represented by the solid lines) are centered around $\mu = 10$. This is evidence for the *unbiasedness* of $Y_1$ and $\overline{Y}$. Of course, the theoretical density the $N(10,1)$ distribution is centered at $10$, too.
+At first, notice that *all* sampling distributions (represented by the solid lines) are centered around $\mu = 10$. This is evidence for the *unbiasedness* of $Y_1$, $\overline{Y}_{n=5}$ and $\overline{Y}_{n=25}$. Of course, the theoretical density the $N(10,1)$ distribution is centered at $10$, too.
 
-Next, have a look add the spread of the sampling distributions. Several things are remarkable:
+Next, have a look at the spread of the sampling distributions. Several things are remarkable:
 
-- First, the sampling distribution of $Y_1$ (green curve) tracks the density of the $N(10,1)$ distribution (black dashed line) pretty closely In fact, the sampling distribution of $Y_1$ *is* the $N(10,1)$ distribution. This is less surprising if You keep in mind that $Y_1$ estimator does nothing but reporting an observation that is randomly selected from a population with $N(10,1)$ distribution. Hence, $Y_1 \sim N(10,1)$. Note that this result is invariant to the sample size $n$: the sampling distribution of $Y_1$ is always the population distribution, no how large the sample is. 
+- the sampling distribution of $Y_1$ (green curve) tracks the density of the $N(10,1)$ distribution (black dashed line) pretty closely In fact, the sampling distribution of $Y_1$ is the $N(10,1)$ distribution. This is less surprising if You keep in mind that the $Y_1$ estimator does nothing but reporting an observation that is randomly selected from a population with $N(10,1)$ distribution. Hence, $Y_1 \sim N(10,1)$. Note that this result does not depend on the sample size $n$: the sampling distribution of $Y_1$ *is always* the population distribution, no matter how large the sample is.
 
-- Second, both sampling distributions of $\overline{Y}$ show less dispersion than the sampling distribution of $Y_1$. This means that $\overline{Y}$ has a lower variance than $Y_1$. In view of Key Concepts 3.2 and 3.3, we find that $\overline{Y}$ is a more efficient estimator than $Y_1$. In fact, one can show that this holds for all $n>1$.
+- Both sampling distributions of $\overline{Y}$ show less dispersion than the sampling distribution of $Y_1$. This means that $\overline{Y}$ has a lower variance than $Y_1$. In view of Key Concepts 3.2 and 3.3, we find that $\overline{Y}$ is a more efficient estimator than $Y_1$. In fact, one can show that this holds for all $n>1$.
 
-- Third, $\overline{Y}$ shows a behaviour that is termed consistency (see Key Concept 3.2). Notice that the blue and the red density curves are much more concentrated around $\mu=10$ then the green one. As the number of observations is increased from $1$ to $5$, the sampling distribution tightens around the true parameter. This effect is more dominant as the sample size is increased to $25$. This implies that the probability of obtaining estimates that are close to the true value increases with $n$. 
+- $\overline{Y}$ shows a behavior that is termed consistency (see Key Concept 3.2). Notice that the blue and the red density curves are much more concentrated around $\mu=10$ then the green one. As the number of observations is increased from $1$ to $5$, the sampling distribution tightens around the true parameter.  Increasing the sample size to $25$ this effect becomes more dominant. This implies that the probability of obtaining estimates that are close to the true value increases with $n$. 
 
 ```{block2, consistency, type='rmdknit'}
 A more precise way to express consitency of an estimator $\hat\mu$ for a parameter $\mu$ is
@@ -198,20 +210,20 @@ A more precise way to express consitency of an estimator $\hat\mu$ for a paramet
 $$ P(|\hat{\mu} - \mu|<\epsilon) \xrightarrow[n \rightarrow \infty]{p} 1 \quad \text{for any}\quad\epsilon>0.$$
 
 This expression says that the probability of observing a deviation from the true value $\mu$ that is smaller than some arbitrary $\epsilon > 0$ converges to $1$ as $n$ grows.<br>
-Note that consistency does not require unbiasedness: 
+Note that consistency does not require unbiasedness. 
 ```
   
-We encourage You to go ahead and modify the code. Try out different values for the sample size and see how the sampling distribution of $\overline{Y}$ changes! 
+We encourage you to go ahead and modify the code. Try out different values for the sample size and see how the sampling distribution of $\overline{Y}$ changes! 
 
-#### $\overline{Y}$ is the least squares estimator of $\mu_Y$ {-}
+#### $\overline{Y}$ is the Least Squares Estimator of $\mu_Y$ {-}
 
-Assume You have some observations $Y_1,\dots,Y_n$ on $Y \sim N(10,1)$ (which is unknown) and would like to find an estimator $m$ that predicts the observations as good as possible where good means to choose $m$ such that the total deviation between the predicted value and the observed values is small. Mathematically this means we want to find an $m$ that minimizes
+Assume you have some observations $Y_1,\dots,Y_n$ on $Y \sim N(10,1)$ (which is unknown) and would like to find an estimator $m$ that predicts the observations as good as possible. Good means to choose $m$ such that the total deviation between the predicted value and the observed values is small. Mathematically this means we want to find an $m$ that minimizes
 
 \begin{equation}
   \sum_{i=1}^n (Y_i - m)^2. (\#eq:sqm)
 \end{equation}
 
-Think of $Y_i - m$ as the comitted mistake when predicting $Y_i$ by $m$. We could just as well minimize the sum of absolute deviations from $m$ but minimizing the sum of squared deviations is mathematically more convenient and leads, roughly speaking, to the same result. That is why the estimator we are looking for is called the *least squares estimator*. As It turns out $m = \overline{Y}$, the estimator of $\mu_Y=10$ is this wanted estimator.
+Think of $Y_i - m$ as the committed mistake when predicting $Y_i$ by $m$. We could just as well minimize the sum of absolute deviations from $m$ but minimizing the sum of squared deviations is mathematically more convenient (and may lead to a different result). That is why the estimator we are looking for is called the *least squares estimator*. As It turns out $m = \overline{Y}$, the estimator of $\mu_Y=10$ is this wanted estimator.
 
 We can show this by generating a random sample of fair size and plotting \@ref(eq:sqm) as a function of $m$. 
 
@@ -225,13 +237,16 @@ sqm <- Vectorize(sqm)
 # draw random sample and compute the mean
 y <- rnorm(100, 10, 1)
 mean(y)
+```
 
+<div class="unfolded">
+```{r, fig.align='center'}
 # plot the objective function
 curve(sqm(x), 
       from = -50, 
       to = 70,
       xlab = "m",
-      ylab ="sqm(m)"
+      ylab = "sqm(m)"
       )
 
 # add vertical line at mean(y)
@@ -239,12 +254,19 @@ abline(v = mean(y),
        lty = 2, 
        col = "darkred"
        )
+
+# add annotation at mean(y)
+text(x = mean(y), 
+     y = 0, 
+     labels = paste(round(mean(y), 2))
+     )
 ```
+</div>
 
 Notice that \@ref(eq:sqm) is a quadratic function so there is only one minimum. The plot shows that this minimum lies exactly at the sample mean of the sample data.
 
 ```{block2, vecfunction, type='rmdknit'}
-Some R functions can only interact with functions that take a vector as input evaluate the function body on every values of the vector, for example <tt>curve()</tt>. We call such functions vectorized functions and it is often a good idea to write vectorized functions although this is cumbersome in some cases. Having a vectorized function in R is never a drawback since these functions work on both single values and vectors.    
+Some <tt>R</tt> functions can only interact with functions that take a vector as an input and evaluate the function body on every values of the vector, for example <tt>curve()</tt>. We call such functions vectorized functions and it is often a good idea to write vectorized functions yourself although this is cumbersome in some cases. Having a vectorized function in <tt>R</tt>is never a drawback since these functions work on both single values and vectors.    
 
 Let us look at the function <tt>sqm()</tt> which is nonvectorized
 
@@ -259,42 +281,43 @@ Providing e.g. <tt>c(1,2,3)</tt> as the argument <tt>m</tt> would cause an error
 Here comes <tt>Vectorize()</tt> into play. It generates a vectorized version of a non-vectorized function.
 ```
 
-#### Why Random Sampling is important {-}
+#### Why Random Sampling is Important {-}
 
-So far, we assumed (somtimes implicitly) that observed data $Y_1, \dots, Y_n$ are the result of a sampling process that satisfies the assumption of i.i.d. random sampling. It is very important that this assumption is fulfilled when estimating a population mean using $\overline{Y}$. If this is not the case, estimates are biased.
+So far, we assumed (sometimes implicitly) that observed data $Y_1, \dots, Y_n$ are the result of a sampling process that satisfies the assumption of i.i.d. random sampling. It is very important that this assumption is fulfilled when estimating a population mean using $\overline{Y}$. If this is not the case, estimates are biased.
 
-Let us fall back to `pop`, the fictive population of $10000$ observations and compute the population mean $\mu_{\texttt{pop}}$:
+Let us fall back to <tt>pop</tt>, the fictive population of $10000$ observations and compute the population mean $\mu_{\texttt{pop}}$:
 
 ```{r}
 # compute the population mean of pop
 mean(pop)
 ```
 
-Next we sample $10$ observations from `pop` with `sample()` and estimate $\mu_{\texttt{pop}}$ using $\overline{Y}$ repeatedly. However this time we use a sampling scheme that deviates from simple random sampling: instead of ensuring that each member of the population has the same chance to end up in a sample, we assign a higher probability of beeing sampled to the $2500$ smallest observations of the population by setting the argument `prop` to a suitable vector of probability weights: 
+Next we sample $10$ observations from <tt>pop</tt> with <tt>sample()</tt> and estimate $\mu_{\texttt{pop}}$ using $\overline{Y}$ repeatedly. However this time we use a sampling scheme that deviates from simple random sampling: instead of ensuring that each member of the population has the same chance to end up in a sample, we assign a higher probability of being sampled to the $2500$ smallest observations of the population by setting the argument <tt>prop</tt> to a suitable vector of probability weights: 
 
 ```{r}
 # simulate outcome for the sample mean when the i.i.d. assumption fails
 est3 <-  replicate(n = 25000, 
-                    expr = mean(sample(x = sort(pop), 
-                                  size = 10, 
-                                  prob = c(rep(4,2500),rep(1,7500))
+                   expr = mean(sample(x = sort(pop), 
+                                      size = 10, 
+                                      prob = c(rep(4, 2500), rep(1, 7500))
                                       )
-                                )
+                          )
                    )
 
 # compute the sample mean of the outcomes
 mean(est3)
 ```
 
-Next we plot the sampling distribution of $\overline{Y}$ for this non-i.i.d. case an compare it to the sampling distribution when the i.i.d. assumption holds.
+Next we plot the sampling distribution of $\overline{Y}$ for this non-i.i.d. case and compare it to the sampling distribution when the i.i.d. assumption holds.
 
-```{r}
+<div class="unfolded">
+```{r, fig.align='center'}
 # sampling distribution of sample mean, i.i.d. holds, n=25
 plot(density(est2), 
       col = 'red2',
       lwd = 2,
-      xlim = c(8,11),
-      xlab = 'estimates',
+      xlim = c(8, 11),
+      xlab = 'Estimates',
       main = 'When the i.i.d. Assumption Fails'
      )
 
@@ -306,28 +329,29 @@ lines(density(est3),
 
 # add a legend
 legend("topleft",
-       legend = c(expression(bar(Y) ~ "," ~ n==25 ~ ", i.i.d. fails"),
-                  expression(bar(Y) ~ "," ~ n==25 ~ ", i.i.d. holds")
+       legend = c(expression(bar(Y) ~ "," ~ n == 25 ~ ", i.i.d. fails"),
+                  expression(bar(Y) ~ "," ~ n == 25 ~ ", i.i.d. holds")
                   ), 
        lty = c(1, 1), 
        col = c('red2', 'steelblue'),
        lwd = 2
        )
 ```
+</div>
 
-We find that in this case failure of the i.i.d. assumption implies that, on average, we underestimate $\mu_Y$ using $\overline{Y}$: the corresponding distribution of $\overline{Y}$ is shifted to the left. In other words, $\overline{Y}$ is a *biased* estimator for $\mu_Y$ if the i.i.d. assumption does not hold.
+We find that in this case failure of the i.i.d. assumption implies that, on average, we *underestimate* $\mu_Y$ using $\overline{Y}$: the corresponding distribution of $\overline{Y}$ is shifted to the left. In other words, $\overline{Y}$ is a *biased* estimator for $\mu_Y$ if the i.i.d. assumption does not hold.
 
 ## Hypothesis Tests Concerning the Population Mean
 
-In this section we briefly review concepts in hypothesis testing and discuss how to conduct hypothesis tests in R. We focus on drawing inference about an unkown population mean.
+In this section we briefly review concepts in hypothesis testing and discuss how to conduct hypothesis tests in <tt>R</tt>. We focus on drawing inferences about an unknown population mean.
 
 #### About Hypotheses and Hypothesis Testing {-}
 
-In a significance test we want to exploit the information contained in a random sample as evidence in favour or against a hypothesis. Essentially, hypotheses are simple question that can be answered by 'yes' or 'no'. When conducting a hypothesis test we always deal with two different hypotheses:
+In a significance test we want to exploit the information contained in a random sample as evidence in favor or against a hypothesis. Essentially, hypotheses are simple questions that can be answered by 'yes' or 'no'. When conducting a hypothesis test we always deal with two different hypotheses:
 
-- The <font color="#004A93"><strong>null hypothesis</strong></font>, denoted $H_0$ is the hypothesis we are interested in testing
+- The **null hypothesis**, denoted $H_0$ is the hypothesis we are interested in testing.
 
-- The <font color="#004A93"><strong>alternative hypothesis</strong></font>, denoted $H_1$, is the hypothesis that holds if the null hypothesis is false 
+- The **alternative hypothesis**, denoted $H_1$, is the hypothesis that holds if the null hypothesis is false. 
 
 The null hypothesis that the population mean of $Y$ equals the value $\mu_{Y,0}$ is written down as
 
@@ -337,26 +361,26 @@ The alternative hypothesis states what holds if the null hypothesis is false. Of
 
 $$ H_1: E(Y) \neq \mu_{Y,0}, $$
 
-meaning that $E(Y)$ may be anything else but the value as the null hypothesis. This is called a two-sided alternative.
+meaning that $E(Y)$ may be anything but the value under the null hypothesis. This is called a *two-sided* alternative.
 
-For brevity, we will only consider the case of a two-sided alternative in the subsequent sections of this chapter.
+For the sake of brevity, we will only consider the case of a two-sided alternative in the subsequent sections of this chapter.
 
-### $p$-Value {-}
+### The p-Value {-}
 
-Assume that the null hypothesis is *true*. The $p$-value is the probability of drawing data and observing a corresponding test statistics that is at least as adverse to what is stated under the null hypothesis as the test statistic actually computed using the sample data.
+Assume that the null hypothesis is *true*. The $p$-value is the probability of drawing data and observing a corresponding test statistic that is at least as adverse to what is stated under the null hypothesis as the test statistic actually computed using the sample data.
 
-In context of population mean and sample mean, this definition can be stated mathematically in the following way:
+In the context of the population mean and the sample mean, this definition can be stated mathematically in the following way:
 
 \begin{equation}
 p \text{-value} = P_{H_0}\left[ \lvert \overline{Y} - \mu_{Y,0} \rvert > \lvert \overline{Y}^{act} - \mu_{Y,0} \rvert \right] (\#eq:pvalue)
 \end{equation}
 
-In \@ref(eq:pvalue), $\overline{Y}^{act}$ is the acutally computed mean of the random sample.<br>
+In \@ref(eq:pvalue), $\overline{Y}^{act}$ is the actually computed mean of the random sample.<br>
 Visualized, the $p$-value is the area in the part of tails of the distribution of $\overline{Y}$ that lies beyond
 
 $$ \mu_{Y,0} \pm \lvert \overline{Y}^{act} - \mu_{Y,0} \rvert. $$
 
-Consequently, in order to compute the $p$-value as in \@ref(eq:pvalue), knowledge about the sampling distribution of $\overline{Y}$ when the null hypothesis is true is required. However in most cases the sampling distribution of $\overline{Y}$ is unkown. Furtunately, due to the large-sample normal approximation (see chapter 3) we know that under the null hypothesis
+Consequently, in order to compute the $p$-value as in \@ref(eq:pvalue), knowledge about the sampling distribution of $\overline{Y}$ when the null hypothesis is true is required. However in most cases the sampling distribution of $\overline{Y}$ is unknown. Fortunately, due to the large-sample normal approximation we know that under the null hypothesis
 
 $$ \overline{Y} \sim N(\mu_{Y,0}, \, \sigma^2_{\overline{Y}}) \ \ , \ \ \sigma^2_{\overline{Y}} = \frac{\sigma_Y^2}{n} $$
 
@@ -364,7 +388,7 @@ and thus
 
 $$ \frac{\overline{Y} - \mu_{Y,0}}{\sigma_Y/\sqrt{n}} \sim N(0,1). $$
 
-So in large samples, the $p$-value can be computed *without* knowledge about the sampling distribution of $\overline{Y}$.
+So in large samples, the $p$-value can be computed *without* knowledge of the exact sampling distribution of $\overline{Y}$.
 
 ### Calculating the $p$-Value When $\sigma_Y$ Is Known {-}
 
@@ -375,19 +399,20 @@ p \text{-value} =& \, P_{H_0}\left[ \left\lvert \frac{\overline{Y} - \mu_{Y,0}}{
 =& \, 2 \cdot \Phi \left[ - \left\lvert \frac{\overline{Y}^{act} - \mu_{Y,0}}{\sigma_{\overline{Y}}}  \right\rvert\right].  (\#eq:pvaluenorm1)
 \end{align}
 
-so the $p$-value can be seen as the area in the tails of the $N(0,1)$ distribution that lies beyond
+The $p$-value can be seen as the area in the tails of the $N(0,1)$ distribution that lies beyond
 
 \begin{equation}
 \pm \left\lvert \frac{\overline{Y}^{act} - \mu_{Y,0}}{\sigma_{\overline{Y}}} \right\rvert (\#eq:pvaluenorm2)
 \end{equation}
 
-Whew, that was a lot of theory. Now we use R to visualize what is stated in \@ref(eq:pvaluenorm1) and \@ref(eq:pvaluenorm2). The next code chunck replicates figure 3.1 of the book.
+We now use <tt>R</tt> to visualize what is stated in \@ref(eq:pvaluenorm1) and \@ref(eq:pvaluenorm2). The next code chunk replicates figure 3.1 of the book.
 
-```{r}
-# plot the standard normal density on the domain [-4,4]
+<div class="unfolded">
+```{r, fig.align='center'}
+# plot the standard normal density on the interval [-4,4]
 curve(dnorm(x),
-      xlim = c(-4,4),
-      main = 'Calculating a p-value',
+      xlim = c(-4, 4),
+      main = 'Calculating a p-Value',
       yaxs = 'i',
       xlab = 'z',
       ylab = '',
@@ -397,26 +422,27 @@ curve(dnorm(x),
 
 # add x-axis
 axis(1, 
-     at = c(-1.5,0,1.5), 
+     at = c(-1.5, 0, 1.5), 
      padj = 0.75,
-     labels = c(expression(-frac(bar(Y)^"act"~-~bar(mu)[Y,0],sigma[bar(Y)])),
+     labels = c(expression(-frac(bar(Y)^"act"~-~bar(mu)[Y,0], sigma[bar(Y)])),
                 0,
-                expression(frac(bar(Y)^"act"~-~bar(mu)[Y,0],sigma[bar(Y)])))
+                expression(frac(bar(Y)^"act"~-~bar(mu)[Y,0], sigma[bar(Y)])))
      )
 
 # shade p-value/2 region in left tail
-polygon(x = c(-6, seq(-6,-1.5,0.01),-1.5),
-        y = c(0, dnorm(seq(-6,-1.5,0.01)),0), 
+polygon(x = c(-6, seq(-6, -1.5, 0.01), -1.5),
+        y = c(0, dnorm(seq(-6, -1.5, 0.01)),0), 
         col = 'steelblue'
         )
 
-## shade p-value/2 region in right tail
+# shade p-value/2 region in right tail
 polygon(x = c(1.5, seq(1.5, 6, 0.01), 6),
         y = c(0, dnorm(seq(1.5, 6, 0.01)), 0), 
         col = 'steelblue'
         )
 
 ```
+</div>
 
 ### Sample Variance, Sample Standard Deviation and Standard Error {-}
 
@@ -429,17 +455,18 @@ s_y^2 = \frac{1}{n-1} \sum_{i=1}^n (Y_i - \overline{Y})^2.
 Furthermore
 
 \begin{equation}
-s_y = \sqrt{\frac{1}{n-1} \sum_{i=1}^n (Y_i - \overline{Y})^2}.
+s_y = \sqrt{\frac{1}{n-1} \sum_{i=1}^n (Y_i - \overline{Y})^2}
 \end{equation}
 
-is a suitable estimator for the standard deviation of $Y$. In R, $s_y$ is implemented in the function `sd()`, see `?sd`.
+is a suitable estimator for the standard deviation of $Y$. In R, $s_y$ is implemented in the function <tt>sd()</tt>, use `?sd`.
 
-Using R we can get a notion that $s_y$ is a consistent estimator for $\sigma_Y$, that is
+Using <tt>R</tt> we can get a notion that $s_y$ is a consistent estimator for $\sigma_Y$, that is
 
 $$ s_Y \overset{p}{\longrightarrow} \sigma_Y. $$
 
-The idea here is to generate a large number of samples $Y_1,\dots,Y_n$ where $Y\sim N(10,10)$, estimate $\sigma_Y$ using $s_y$ and investigate how the distribution of $s_Y$ changes as $n$ grows.
+The idea here is to generate a large number of samples $Y_1,\dots,Y_n$ where, $Y\sim N(10,10)$ say, estimate $\sigma_Y$ using $s_y$ and investigate how the distribution of $s_Y$ changes as $n$ gets larger.
 
+<div class="unfolded">
 ```{r, fig.align='center'}
 # vector of sample sizes
 n <- c(10000, 5000, 2000, 1000, 500)
@@ -453,24 +480,26 @@ plot(density(s2_y),
      )
 
 for (i in 2:length(n)) {
-  s2_y <- replicate(n = 10000, expr = sd(rnorm(n[i],10,10)))
+  s2_y <- replicate(n = 10000, expr = sd(rnorm(n[i], 10, 10)))
   lines(density(s2_y), 
-        col=i, 
-        lwd=2)
+        col = i, 
+        lwd = 2
+        )
 }
 
 # add a legend
 legend("topleft",
-       legend = c(expression(n==10000),
-                  expression(n==5000),
-                  expression(n==2000),
-                  expression(n==1000),
-                  expression(n==500)
+       legend = c(expression(n == 10000),
+                  expression(n == 5000),
+                  expression(n == 2000),
+                  expression(n == 1000),
+                  expression(n == 500)
        ), 
        col = 1:5,
        lwd = 2
 )
 ```
+</div>
 
 The plot shows that the distribution of $s_Y$ tightens around the true value $\sigma_Y = 10$ as $n$ increases.
 
@@ -482,7 +511,7 @@ The function that estimates the standard deviation of an estimator is called the
 
 Take an i.i.d. sample $Y_1, \dots, Y_n$. The mean of $Y$ can be consistently estimated using $\overline{Y}$, the sample mean of the $Y_i$. Since $\overline{Y}$ is a random variable, it has a sampling distribution with variance $\frac{\sigma_Y^2}{n}$.
 
-The standard error of $\overline{Y}$, denoted $SE(\overline{Y})$ is an estimator of the standard deviation $\overline{Y}$:
+The standard error of $\overline{Y}$, denoted $SE(\overline{Y})$ is an estimator of the standard deviation of $\overline{Y}$:
 
 $$ SE(\overline{Y}) = \hat\sigma_{\overline{Y}} = \frac{s_Y}{\sqrt{n}} $$
 
@@ -490,7 +519,7 @@ The caret (^) over $\sigma$ indicates that $\hat\sigma_{\overline{Y}}$ is an est
 
 </div>
 
-As an example to underpin Key Concept 3.4, consider a sample of $n=100$ i.i.d. observations of the bernoulli distributed variable $Y$ with success probability $p=0.1$ and thus $E(Y)=p=0.1$ and $\text{Var}(Y)=p(1-p)$. $E(Y)$ can be estimated by $\overline{Y}$ which then has variance
+As an example to underpin Key Concept 3.4, consider a sample of $n=100$ i.i.d. observations of the Bernoulli distributed variable $Y$ with success probability $p=0.1$ and thus $E(Y)=p=0.1$ and $\text{Var}(Y)=p(1-p)$. $E(Y)$ can be estimated by $\overline{Y}$ which then has variance
 
 $$ \sigma^2_{\overline{Y}} = p(1-p)/n = 0.0009 $$
 
@@ -498,11 +527,11 @@ and standard deviation
 
 $$ \sigma_{\overline{Y}} = \sqrt{p(1-p)/n} = 0.03. $$
 
-In this case the standard error of $\overline{Y}$ is given as
+In this case the standard error of $\overline{Y}$ is given by
 
-$$ SE(\overline{Y}) = \sqrt{\overline{Y}(1-\overline{Y})/n} $$
+$$ SE(\overline{Y}) = \sqrt{\overline{Y}(1-\overline{Y})/n}. $$
 
-Let verify whether $\overline{Y}$ and $SE(\overline{Y})$ estimate the respective true values on average.
+Let us verify whether $\overline{Y}$ and $SE(\overline{Y})$ estimate the respective true values, on average.
 
 ```{r}
 # draw 10000 samples of size 100 and estimate the mean of Y and
@@ -527,19 +556,19 @@ mean(se_estimates)
 
 Both estimators seem to be unbiased for the true parameters.
 
-### Calculating the $p$-value When $\sigma_Y$ is Unknown {-}
+### Calculating the p-value When the Standard Deviation is Unknown {-}
 
-When $\sigma_Y$ is unkown, the $p$-value for a hypothesis test about $\mu_Y$ using $\overline{Y}$ can be computed by replacing $\sigma_{\overline{Y}}$ in \@ref(eq:pvaluenorm1) by the standard error $SE(\overline{Y}) = \hat\sigma_Y$. Then,
+When $\sigma_Y$ is unknown, the $p$-value for a hypothesis test concerning $\mu_Y$ using $\overline{Y}$ can be computed by replacing $\sigma_{\overline{Y}}$ in \@ref(eq:pvaluenorm1) by the standard error $SE(\overline{Y}) = \hat\sigma_Y$. Then,
 
 $$ p\text{-value} = 2\cdot\Phi\left(-\left\lvert \frac{\overline{Y}^{act}-\mu_{Y,0}}{SE(\overline{Y})} \right\rvert \right). $$
 
-This is easily done in R:
+This is easily done in <tt>R</tt>:
 
 ```{r}
 # sample and estimate, compute standard error and make a hypothesis
 samplemean_act <- mean(
   sample(0:1, 
-         prob = c(0.9,0.1), 
+         prob = c(0.9, 0.1), 
          replace = T, 
          size = 100
          )
@@ -549,12 +578,12 @@ SE_samplemean <- sqrt(samplemean_act * (1-samplemean_act)/100)
 
 mean_h0 <- 0.1 #true null hypothesis
 
-# compute the pvalue
-pvalue <- 2 * pnorm(-abs(samplemean_act-mean_h0)/SE_samplemean)
+# compute the p-value
+pvalue <- 2 * pnorm(-abs(samplemean_act - mean_h0)/SE_samplemean)
 pvalue
 ```
 
-### The $t$-statistic {-}
+### The t-statistic {-}
 
 In hypothesis testing, the standardized sample average
 
@@ -562,7 +591,7 @@ In hypothesis testing, the standardized sample average
 t = \frac{\overline{Y} - \mu_{Y,0}}{SE(\overline{Y})} (\#eq:tstat)
 \end{equation}
 
-is called $t$-statistic. This $t$-statistic has an important role when testing hypothesis about $\mu_Y$. It is a prominent example of a test statistic.
+is called $t$-statistic. This $t$-statistic plays an important role in testing hypotheses about $\mu_Y$. It is a prominent example of a test statistic.
 
 Implicitly, we already have computed a $t$-statistic for $\overline{Y}$ in the previous code chunk.
 
@@ -572,10 +601,10 @@ tstatistic <- (samplemean_act - mean_h0) / SE_samplemean
 tstatistic
 ```
 
-Using R we can show that if $\mu_{Y,0}$ equals the true value, that is the null hypothesis is true, \@ref(eq:tstat) is approximately distributed $N(0,1)$ when $n$ is large.
+Using <tt>R</tt>we can show that if $\mu_{Y,0}$ equals the true value, that is the null hypothesis is true, \@ref(eq:tstat) is approximately distributed $N(0,1)$ when $n$ is large.
 
 ```{r}
-# initialize empty vector for t-statistics
+# prepare empty vector for t-statistics
 tstatistics <- numeric(10000)
 
 # set sample size
@@ -590,13 +619,15 @@ for (i in 1:10000) {
               )
   tstatistics[i] <- (mean(s)-0.1)/(sqrt(mean(s)*(1-mean(s))/n))
 }
-
+```
+<div class="unfolded">
+```{r, fig.align='center'}
 # plot density and compare to N(0,1) density
 plot(density(tstatistics),
      xlab = 't-statistic',
      main = 'Distribution of the t-statistic when n=300',
      lwd = 2,
-     xlim = c(-4,4),
+     xlim = c(-4, 4),
      col = 'steelblue'
      )
 
@@ -604,9 +635,10 @@ plot(density(tstatistics),
 curve(dnorm(x), 
       add = T, 
       lty = 2, 
-      lwd= 2
+      lwd = 2
       )
 ```
+</div>
 
 Judging from the plot, the normal approximation works reasonably well for the chosen sample size. This normal approximation has already been used in the definition of the $p$-value, see \@ref(eq:tstat).
 
@@ -622,26 +654,26 @@ In hypothesis testing, two types of mistakes are possible:
 
 2. The null hypothesis *is not* rejected although it is false ($\beta$-error / type-II-error) 
 
-The <font color="#004A93"><strong>significance level</strong></font> of the test is the probability to commit a type-I-error we are willing to accept in advance. E.g. using a prespecified significance level of $0.05$, we reject the null hypothesis if and only if the $p$-value is less than $0.05$. The significance level is chosen before the test is conducted.
+The **significance level** of the test is the probability to commit a type-I-error we are willing to accept in advance. E.g. using a prespecified significance level of $0.05$, we reject the null hypothesis if and only if the $p$-value is less than $0.05$. The significance level is chosen before the test is conducted.
 
-An equivalent procedure is to reject the null hypothesis if the test statistic observed is, in absolute value terms, larger than the <font color="#004A93"><strong>critical value</strong></font> of the test statistic. The critical value is determined by the significance level chosen and defines two disjoint sets of values which are called <font color="#004A93"><strong>acceptance region</strong></font> and <font color="#004A93"><strong>rejection region</strong></font>. The acceptance region contains all values of the test statistic for which the test does not reject while the rejection region contains all the values for which the test does reject.
+An equivalent procedure is to reject the null hypothesis if the test statistic observed is, in absolute value terms, larger than the **critical value** of the test statistic. The critical value is determined by the significance level chosen and defines two disjoint sets of values which are called **acceptance region** and **rejection region**. The acceptance region contains all values of the test statistic for which the test does not reject while the rejection region contains all the values for which the test does reject.
 
-The <font color="#004A93"><strong>$p$-value</strong></font> is the probability that, in repeated sampling under the same conditions, meaning i.i.d. sampling, the same null hypothesis and the same sample size, a test statistic is observed that provides just as much evidence against the null hypothesis as the test statistic actually observed.
+The **$p$-value** is the probability that, in repeated sampling under the same conditions, meaning i.i.d. sampling, the same null hypothesis and the same sample size, a test statistic is observed that provides just as much evidence against the null hypothesis as the test statistic actually observed.
 
-The actual probability that the test rejects the true null hypothesis is called the <font color="#004A93"><strong>size of the test</strong></font>. In an ideal setting, the size does not exceed the significance level.
+The actual probability that the test rejects the true null hypothesis is called the **size of the test**. In an ideal setting, the size does not exceed the significance level.
 
-The probability that the test correctly rejects a false null hypothesis is called <font color="#004A93"><strong>power</strong></font>. 
+The probability that the test correctly rejects a false null hypothesis is called **power**. 
 
 </div>
 
-Reconsider `pvalue` computed further above:
+Reconsider <tt>pvalue</tt> computed further above:
 
 ```{r}
 # check whether p-value < 0.05
 pvalue < 0.05
 ```
 
-The condition is not fulfilled so we do not reject the null hypotheis (remember that the null hypothesis is true in this example).
+The condition is not fulfilled so we do not reject the null hypothesis (remember that the null hypothesis is true in this example).
 
 When working with a $t$-statistic instead, it is equivalent to apply the following rule:
 
@@ -657,7 +689,7 @@ qnorm(p = 0.05)
 abs(tstatistic) > 1.96
 ```
 
-As when using the $p$-value, we cannot reject the null hypothesis using the corresponding $t$-statistic. Key Concept 3.6 summarizes the procedure of performing a two-sided hypothesis about the population mean $E(Y)$.
+Just like using the $p$-value, we cannot reject the null hypothesis using the corresponding $t$-statistic. Key Concept 3.6 summarizes the procedure of performing a two-sided hypothesis about the population mean $E(Y)$.
 
 <div class = "keyconcept"> 
 <h3 class = "right"> Key Concept 3.6 </h3>          
@@ -675,18 +707,19 @@ $$ \left\lvert t^{act} \right\rvert > 1.96. $$
 
 ### One-sided Alternatives {-}
 
-Sometimes we are interested in finding evidence that the mean is bigger or smaller than the some value hypothesized under the null. One can come up with many examples here but, to stick to the book, take the presumed wage differential between good and less educated working individuals. Since we hope that this differential exists, a relevant alternative (to the null hypothesis that there is no wage differential) is that good educated individuals earn more, i.e. that the average hourly wage for this group, $\mu_Y$ is *bigger* than $\mu_{Y,0}$ the know average wage of less educated workers.
+Sometimes we are interested in finding evidence that the mean is bigger or smaller than some value hypothesized under the null. One can come up with many examples here but, to stick to the book, take the presumed wage gap between well and less educated working individuals. Since we hope that this differential exists, a relevant alternative (to the null hypothesis that there is no wage differential) is that good educated individuals earn more, i.e. that the average hourly wage for this group, $\mu_Y$ is *bigger* than $\mu_{Y,0}$ the know average wage of less educated workers.
 
-This is an example of a *right-sided test* and the hypotheses pair is chosen as
+This is an example of a *right-sided test* and the hypotheses pair is chosen to be
 
 $$ H_0: \mu_Y = \mu_{Y,0} \ \ \text{vs} \ \ H_1: \mu_Y > \mu_{Y,0}. $$
 
-We reject the null hypothesis if the computed test-statistic is larger than the critical value $1.64$, the $0.95$-quantile of the $N(0,1)$ distribution. This ensures that $1-0.95=5\%$ probability mass remains in the area to the right of the critical value. Similar as before we can visualize this in R using the function `polygon()`. 
+We reject the null hypothesis if the computed test-statistic is larger than the critical value $1.64$, the $0.95$-quantile of the $N(0,1)$ distribution. This ensures that $1-0.95=5\%$ probability mass remains in the area to the right of the critical value. Similar as before we can visualize this in <tt>R</tt> using the function <tt>polygon()</tt>. 
 
-```{r}
+<div class="unfolded">
+```{r, fig.align='center'}
 # plot the standard normal density on the domain [-4,4]
 curve(dnorm(x),
-      xlim = c(-4,4),
+      xlim = c(-4, 4),
       main = 'Rejection Region of a Right-Sided Test',
       yaxs = 'i',
       xlab = 't-statistic',
@@ -697,30 +730,32 @@ curve(dnorm(x),
 
 # add x-axis
 axis(1, 
-     at = c(-4,0,1.64,4), 
+     at = c(-4, 0, 1.64, 4), 
      padj = 0.5,
-     labels = c('',0,expression(Phi^-1~(.95)==1.64),'')
+     labels = c('', 0, expression(Phi^-1~(.95)==1.64), '')
 )
 
-# shade rejection region in right tail
+# shade rejection region in the left tail
 polygon(x = c(1.64, seq(1.64, 4, 0.01), 4),
         y = c(0, dnorm(seq(1.64, 4, 0.01)), 0), 
         col = 'darkred'
 )
 ```
+</div>
 
-In an analogously manner for the *left-sided test* we have 
+Analogously for the left-sided test we have 
 
 $$ H_0: \mu_Y = \mu_{Y,0} \ \ \text{vs.} \ \ H_1: \mu_Y < \mu_{Y,0}. $$
 
 The null is rejected if the observed test statistic falls short of the critical value which, for a test at the $0.05$ level of significance, is given by $-1.64$, the $0.05$-quantile of the $N(0,1)$ distribution. $5\%$ probability mass lies to the left of the critical value.
 
-It is straight forward to adapt the code chunk above to the case of a left-sided test. We only have to fiddle with the color shading and the tick marks.
+It is straight forward to adapt the code chunk above to the case of a left-sided test. We only have to adjust the color shading and the tick marks.
 
-```{r}
+<div class="unfolded">
+```{r, fig.align='center'}
 # plot the standard normal density on the domain [-4,4]
 curve(dnorm(x),
-      xlim = c(-4,4),
+      xlim = c(-4, 4),
       main = 'Rejection Region of a Left-Sided Test',
       yaxs = 'i',
       xlab = 't-statistic',
@@ -731,9 +766,9 @@ curve(dnorm(x),
 
 # add x-axis
 axis(1, 
-     at = c(-4,0,-1.64,4), 
+     at = c(-4, 0, -1.64, 4), 
      padj = 0.5,
-     labels = c('',0,expression(Phi^-1~(.05)==-1.64),'')
+     labels = c('', 0, expression(Phi^-1~(.05)==-1.64), '')
 )
 
 # shade rejection region in right tail
@@ -742,22 +777,23 @@ polygon(x = c(-4, seq(-4, -1.64, 0.01), -1.64),
         col = 'darkred'
 )
 ```
+</div>
 
-## Confidence intervals for the Population Mean
+## Confidence Intervals for the Population Mean
 
-As stressed before, we will never estimate the exact value of a the population mean of $Y$ using a random sample. However, we can compute confidence intervals for the population mean. In general, a confidence interval for a unkown parameter is a set of values that contains the true parameter with a prespecified probability, the confidence level. Confidence intervals are computed using the information available in the sample. Since this information is the result of a random process, confidence intervals are random variables themselves.
+As stressed before, we will never estimate the *exact* value of the population mean of $Y$ using a random sample. However, we can compute confidence intervals for the population mean. In general, a confidence interval for a unknown parameter is a set of values that contains the true parameter with a prespecified probability, the *confidence level*. Confidence intervals are computed using the information available in the sample. Since this information is the result of a random process, confidence intervals are random variables themselves.
 
 Key Concept 3.7 shows how to compute confidence intervals for the unknown population mean $E(Y)$.
 
 <div class = "keyconcept"> 
-<h3 class = "right"> Key Concept 3.6 </h3>          
+<h3 class = "right"> Key Concept 3.7 </h3>          
 <h3 class = "left"> Confidence Intervals for the Population Mean </h3>
 
-A $95\%$ confidence interval for $\mu_Y$ is a <font color="#004A93"><strong>random variable</strong></font> that contains the true $\mu_Y$ in $95\%$ of all possible random samples. When $n$ is large we can use the normal approximation. Then, $99\%$, $95\%$, $90\%$ confidence intervals are
+A $95\%$ confidence interval for $\mu_Y$ is a <tt>random variable</tt> that contains the true $\mu_Y$ in $95\%$ of all possible random samples. When $n$ is large we can use the normal approximation. Then, $99\%$, $95\%$, $90\%$ confidence intervals are
 
 \begin{align}
-&99\%\text{ confidence interval for } \mu_Y = \left\{ \overline{Y} \pm 2.58 \times SE(\overline{Y}) \right\}. \\
-&95\%\text{ confidence interval for } \mu_Y = \left\{ \overline{Y} \pm 1.96 \times SE(\overline{Y}) \right\}. \\
+&99\%\text{ confidence interval for } \mu_Y = \left\{ \overline{Y} \pm 2.58 \times SE(\overline{Y}) \right\}, \\
+&95\%\text{ confidence interval for } \mu_Y = \left\{ \overline{Y} \pm 1.96 \times SE(\overline{Y}) \right\}, \\
 &90\%\text{ confidence interval for } \mu_Y = \left\{ \overline{Y} \pm 1.64 \times SE(\overline{Y}) \right\}.
 \end{align}
 
@@ -773,19 +809,19 @@ covers the true value of $\mu_Y$ with a probability of $95\%$.
 $$ \left\{ 5.1  \pm 1.96 \times 2.5 \right\} = \left[0.2,10\right] $$ 
 covers the true value of $\mu_Y$ with a probability of $95\%$.
 
-While 1. is right (this is exactly in line with the definition above), 2. is completely wrong and none of Your lecturers wants to read such a sentence in a term paper, written exam or similar, believe us.
+While 1. is right (this is exactly in line with the definition above), 2. is completely wrong and none of your lecturers wants to read such a sentence in a term paper, written exam or similar, believe us.
 The difference is that, while 1. is the definition of a random variable, 2. is one possible *outcome* of this random variable so there is no meaning in making any probabilistic statement about it. Either the computed interval *does cover* $\mu_Y$ or it *does not*!
 
 </div>
 
-In R, testing hypothesis about the mean of a population on the basis of a random sample is very easy due to functions like `t.test()` from the <tt>stats</tt> package. It procudes an object of type <tt>list</tt>. Luckily, one of the most simple ways to use `t.test()` is when You want to obtain a $95\%$ confidence interval for some population mean. We start by generating some random data and calling `t.test()` in conjunction with `ls()` to obtain a breakdown of the output components.
+In <tt>R</tt>, testing of hypotheses about the mean of a population on the basis of a random sample is very easy due to functions like <tt>t.test()</tt> from the <tt>stats</tt> package. It produces an object of type <tt>list</tt>. Luckily, one of the most simple ways to use <tt>t.test()</tt> is when you want to obtain a $95\%$ confidence interval for some population mean. We start by generating some random data and calling <tt>t.test()</tt> in conjunction with <tt>ls()</tt> to obtain a breakdown of the output components.
 
 ```{r}
 # set random seed
 set.seed(1)
 
 # generate some sample data
-sampledata <- rnorm(100,10,10)
+sampledata <- rnorm(100, 10, 10)
 
 # checke type
 typeof(t.test(sampledata))
@@ -796,7 +832,7 @@ ls(
 )
 ```
 
-Though we find that many items are reported, at the moment we are interested in computing a $95\%$ confidence set for the mean.
+Though we find that many items are reported, at the moment we are only interested in computing a $95\%$ confidence set for the mean.
 
 ```{r}
 t.test(sampledata)$"conf.int"
@@ -806,26 +842,26 @@ This tells us that the $95\%$ confidence interval is
 
 $$ \left[9.31, 12.87\right]. $$
 
-In this example, the computed interval does cover the true $\mu_Y$ which we know to be $10$.
+In this example, the computed interval obviously does cover the true $\mu_Y$ which we know to be $10$.
 
-Let us have a look at the whole standard output produced by `t.test()`.
+Let us have a look at the whole standard output produced by <tt>t.test()</tt>.
 
 ```{r}
 t.test(sampledata)
 ```
 
-We see that `t.test()` not only computes a $95\%$ confidence interval but automatically conducts a two-sided significance test of the hypothesis $H_0: \mu_Y = 0$ at the level of $5\%$ and reports relevant parameters thereof: the alternative hypothesis, the estimated mean, the resulting $t$-statistic, the degrees of freedom of the underlying $t$ distribution (`t.test()` does not perform the normal approximation) and the corresponding $p$-value. Very convenient!
+We see that <tt>t.test()</tt> does not only compute a $95\%$ confidence interval but automatically conducts a two-sided significance test of the hypothesis $H_0: \mu_Y = 0$ at the level of $5\%$ and reports relevant parameters thereof: the alternative hypothesis, the estimated mean, the resulting $t$-statistic, the degrees of freedom of the underlying $t$ distribution (<tt>t.test()</tt> does not perform the normal approximation) and the corresponding $p$-value. This is very convenient!
 
-In this example, we come to the conclusion that the population mean *is not* significantly different from $0$ at the level of $5\%$ (which is correct), since $\mu_Y = 0$ is element of the $95\%$ confidence interval
+In this example, we come to the conclusion that the population mean *is not* significantly different from $0$ (which is correct) at the level of $5\%$, since $\mu_Y = 0$ is element of the $95\%$ confidence interval
 
 $$ 0 \in \left[-0.27,0.12\right]. $$
-We come to an equivalent result when using the $p$-value rejection rule:
+We come to an equivalent result when using the $p$-value rejection rule since
 
-$$ p = 0.456 > 0.05 $$
+$$ p = 0.456 > 0.05. $$
 
 ## Comparing Means from Different Populations
 
-Suppose You are interested in the means of two different populations, denote them $\mu_1$ and $\mu_2$. More specifically You are interested whether these population means are different from each other and plan an using a hypothesis test to verifiy this on the basis of independent sample data from both populations. A suitable pair of hypotheses then is
+Suppose you are interested in the means of two different populations, denote them $\mu_1$ and $\mu_2$. More specifically you are interested whether these population means are different from each other and plan using a hypothesis test to verify this on the basis of independent sample data from both populations. A suitable pair of hypotheses is
 
 \begin{equation}
 H_0: \mu_1 - \mu_2 = d_0 \ \ \text{vs.} \ \ H_1: \mu_1 - \mu_2 \neq d_0 (\#eq:hypmeans)
@@ -843,12 +879,13 @@ where
 SE(\overline{Y}_1 - \overline{Y}_2) = \sqrt{\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}}.
 \end{equation}
 
-This is called a two sample $t$-test. For large $n_1$ and $n_2$, \@ref(eq:tstatmeans) is standard normal distributed under the null hypothesis. Anlog to the simple $t$-test we can compute confidence intervals for the true difference in population means:
+This is called a two sample $t$-test. For large $n_1$ and $n_2$, \@ref(eq:tstatmeans) is standard normal distributed under the null hypothesis. Analogously to the simple $t$-test we can compute confidence intervals for the true difference in population means:
 
 $$ (\overline{Y}_1 - \overline{Y}_2) \pm 1.96 \times SE(\overline{Y}_1 - \overline{Y}_2) $$
 
-is a $95\%$ confidence interval for $d$. <br> In R, Hypotheses as in \@ref(eq:hypmeans) can be tested with `t.test()`, too. Note that `t.test()` chooses $d_0 = 0$ by default. This can be changed by setting the argument `mu` accordingly.
+is a $95\%$ confidence interval for $d$. <br> In <tt>R</tt>, hypotheses as in \@ref(eq:hypmeans) can be tested with <tt>t.test()</tt>, too. Note that <tt>t.test()</tt> chooses $d_0 = 0$ by default. This can be changed by setting the argument <tt>mu</tt> accordingly.
 
+The subsequent code chunk demonstrates how to perform a two sample $t$-test in <tt>R</tt> using simulated data.
 ```{r}
 # set random seed
 set.seed(1)
@@ -865,10 +902,10 @@ We find that the two sample $t$-test does not reject the (true) null hypothesis 
 
 ## An Application to the Gender Gap of Earnings
 
-In this section discusses how to reproduce the results presented in the box '*The Gender Gap of Earnings of College Graduates in the United States*' in the book.
+In this section discusses how to reproduce the results presented in the box '*The Gender Gap of Earnings of College Graduates in the United States*' of the book.
 
-In order to reproduce table 3.1 You need to download the replication data which is hosted by Pearson and can be found and downloaded [here](http://wps.aw.com/aw_stock_ie_3/178/45691/11696965.cw/index.html). Download the data for chapter three as an excel spreadsheet (<tt>cps_ch3.xlsx</tt>). This data set contains data that ranges from $1992$ to $2008$ and earnings are reported in prices of $2008$.<br>
-There are several ways to import the <tt>.xlsx</tt>-files into R. Our suggestion is the function `read_excel()` from the <tt>readxl</tt> package. The package is not part of R's standard distribution and has to be installed manually.
+In order to reproduce table 3.1 you need to download the replication data which are hosted by Pearson and can be found and downloaded [here](http://wps.aw.com/aw_stock_ie_3/178/45691/11696965.cw/index.html). Download the data for chapter three as an excel spreadsheet (<tt>cps_ch3.xlsx</tt>). This data set contains data that range from $1992$ to $2008$ and earnings are reported in prices of $2008$.<br>
+There are several ways to import the <tt>.xlsx</tt>-files into <tt>R</tt>. Our suggestion is the function <tt>read_excel()</tt> from the <tt>readxl</tt> package. The package is not part of <tt>R</tt>'s base version and has to be installed manually.
 
 ```{r, eval=c(1,3), message=F, warning=F}
 # install and load the readxl package
@@ -876,14 +913,14 @@ install.packages('readxl')
 library(readxl)
 ```
 
-You are now ready to import the data set. Make sure You use the correct path to the downloaded file! In our example, the file is saved in a subfolder (<tt>data</tt>) of the working directory. If You are not sure what Your current working directory is, use `getwd()`, see also `?getwd()`. This will give You the path that points to the place R is currently looking for files.
+You are now ready to import the data set. Make sure you use the correct path to import the downloaded file! In our example, the file is saved in a sub folder (<tt>data</tt>) of the working directory. If you are not sure what your current working directory is, use <tt>getwd()</tt>, see also <tt>?getwd()</tt>. This will give you the path that points to the place <tt>R</tt>is currently looking for files.
 
 ```{r, message = F, warning = F,}
 # import the data into R
 cps <- read_excel(path = 'data/cps_ch3.xlsx')
 ```
 
-Next, install and load the package <tt>dyplr</tt>. This package provides some handy functions that simplify data wrangling a lot. It makes use of the `%>%` operator.
+Next, install and load the package <tt>dyplr</tt>. This package provides some handy functions that simplify data wrangling a lot. It makes use of the <tt>%>%</tt> operator.
 
 ```{r, eval=c(1,3), message=F, warning=F}
 # install and load the dplyr package
@@ -891,7 +928,7 @@ install.packages('dplyr')
 library('dplyr')
 ```
 
-First, get an overview over the data set. Next, use `%>%` and some functions from the `dplyr` package to group the observations by gender and year and compute descriptive statistics for both groups.
+First, get an overview over the data set. Next, use <tt>%>%</tt> and some functions from the <tt>dplyr</tt> package to group the observations by gender and year and compute descriptive statistics for both groups.
 
 <div class="unfolded">
 ```{r, echo=T, eval=T, fig.align='center'}
@@ -912,7 +949,7 @@ print(avgs)
 ```
 </div>
 
-With the pipe operator `%>%` we simply chain different R functions that produce compatible input and ouput. In the code above, we take the dataset `cps` and use it as an input for the function `group_by()`. The output of `group_by` is subsequently used as an input for `summarise()` and so forth.
+With the pipe operator <tt>%>%</tt> we simply chain different <tt>R</tt> functions that produce compatible input and output. In the code above, we take the data set <tt>cps</tt> and use it as an input for the function <tt>group_by()</tt>. The output of <tt>group_by</tt> is subsequently used as an input for <tt>summarise()</tt> and so forth.
 
 Now that we have computed the statistics of interest for both genders, we can investigate how the gap in earnings between both groups evolves over time.
 
@@ -926,7 +963,7 @@ female <- avgs %>% filter(a_sex == 2)
 colnames(male)   <- c("Sex", "Year", "Y_bar_m", "s_m", "n_m")
 colnames(female) <- c("Sex", "Year", "Y_bar_f", "s_f", "n_f")
 
-# Estimate Gender gaps, compute standard errors and confidence intervals for all dates
+# Estimate gender gaps, compute standard errors and confidence intervals for all dates
 gap <- male$Y_bar_m - female$Y_bar_f
 
 gap_se <- sqrt(male$s_m^2 / male$n_m + female$s_f^2 / female$n_f)
@@ -942,11 +979,11 @@ print(result, digits = 3)
 ```
 </div>
 
-We observe virtually the same results as the ones presented in the book. the computed statistics suggest that there *is* a gender gap in earnings. Note that we can reject the null hypothesis that the gap is zero for all periodes. Further, estimates of the gap and bounds of the 95\% confidence intervals indicate that the gap has been quite stable over the recent past.
+We observe virtually the same results as the ones presented in the book. The computed statistics suggest that there *is* a gender gap in earnings. Note that we can reject the null hypothesis that the gap is zero for all periods. Further, estimates of the gap and limits of the $95\%$ confidence intervals indicate that the gap has been quite stable over the recent past.
 
 ## Scatterplots, Sample Covariance and Sample Correlation
 
-A scatterplot represents two dimensional data, for example $n$ observation on $X_i$ and $Y_i$, by points in a cartesian coordinate system. It is very easy to generate scatterplots using the `plot()` function in R. Let's generate some fictional data on age and earnings of workers and plot it.
+A scatter plot represents two dimensional data, for example $n$ observation on $X_i$ and $Y_i$, by points in a Cartesian coordinate system. It is very easy to generate scatter plots using the <tt>plot()</tt> function in <tt>R</tt>. Let us generate some fictional data on age and earnings of workers and plot it.
 
 ```{r, fig.align='center'}
 # set random seed
@@ -972,13 +1009,13 @@ plot(X,
 ```
 
 
-The plot shows positive correlation between age and earnings. This in line with the assumption that older workers earn more than those that the joined the working population recently.
+The plot shows positive correlation between age and earnings. This is in line with the assumption that older workers earn more than those who joined the working population recently.
 
 #### Sample Covariance and Correlation {-}
 
-By now You should be familiar with the concepts of variance and covariance. If not, we recommend You to work Your way through chapter 2 of the book (again). 
+By now you should be familiar with the concepts of variance and covariance. If not, we recommend you to work your way through chapter 2 of the book (again). 
 
-As for the variance, covariance and correlation of two variables are properties that relate to the (unknown) joint probability distribution of these variable. Just as the individual population variances of both variables, we can estimate covariance and correlation by means of suitable estimators using a random sample $(X_i,Y_i)$, $i=1,\dots,n$. 
+Just like the variance, covariance and correlation of two variables are properties that relate to the (unknown) joint probability distribution of these variables. We can estimate covariance and correlation by means of suitable estimators using a random sample $(X_i,Y_i)$, $i=1,\dots,n$. 
 
 The sample covariance 
 
@@ -989,22 +1026,22 @@ is an estimator for the population variance of $X$ and $Y$ whereas the sample co
 $$ r_{XY} = \frac{s_{XY}}{s_Xs_Y} $$
 can be used to estimate the population correlation, a standardized measure for the strength of the linear relationship between $X$ and $Y$. See chapter 3.7 in the book for a more detailed treatment of these estimators.
 
-As for variance and standard deviation, these estimators are implemented as R functions in the <tt>stats</tt> package. We can use them to estimate population covariance and population correlation the fictional data on age and earnings.
+As for variance and standard deviation, these estimators are implemented as <tt>R</tt> functions in the <tt>stats</tt> package. We can use them to estimate population covariance and population correlation of the fictional data on age and earnings.
 
 ```{r}
 # compute sample covariance of X and Y
-cov(X,Y)
+cov(X, Y)
 
 # compute sample correlation between X and Y
-cor(X,Y)
+cor(X, Y)
 
 # equivalent way to compute the sample correlation
-cov(X,Y)/(sd(X) * sd(Y))
+cov(X, Y)/(sd(X) * sd(Y))
 ```
 
 The estimates indicate that $X$ and $Y$ are moderately correlated.
 
-The next code chunk uses the function `mvnorm()` from package <tt>MASS</tt> to generate bivariate example data with different degree of correlation. 
+The next code chunk uses the function <tt>mvnorm()</tt> from package <tt>MASS</tt> to generate bivariate sample data with different degree of correlation. 
 
 ```{r, fig.align='center'}
 library(MASS)
@@ -1014,42 +1051,38 @@ set.seed(1)
 
 # positive correlation (0.81)
 example1 <- mvrnorm(100,
-                    mu = c(0,0), 
-                    Sigma = matrix(c(2,2,2,3), ncol = 2),
+                    mu = c(0, 0), 
+                    Sigma = matrix(c(2, 2, 2, 3), ncol = 2),
                     empirical = TRUE
                     )
 
 # negative correlation (-0.81)
 example2 <- mvrnorm(100,
-                    mu = c(0,0), 
-                    Sigma = matrix(c(2,-2,-2,3), ncol = 2),
+                    mu = c(0, 0), 
+                    Sigma = matrix(c(2, -2, -2, 3), ncol = 2),
                     empirical = TRUE
                     )
 
 # no correlation 
 example3 <- mvrnorm(100,
-                    mu = c(0,0), 
-                    Sigma = matrix(c(1,0,0,1), ncol = 2),
+                    mu = c(0, 0), 
+                    Sigma = matrix(c(1, 0, 0, 1), ncol = 2),
                     empirical = TRUE
                     )
 
 # no correlation (quadratic relationship)
-X <- seq(-3,3,0.01)
+X <- seq(-3, 3, 0.01)
 Y <- -X^2 + rnorm(length(X))
 
-example4 <- cbind(X,Y)
-
-# estimate
-
-## Plots
+example4 <- cbind(X, Y)
 
 # divide plot area as 2-by-2 array
-par(mfrow=c(2,2))
+par(mfrow = c(2, 2))
 
-plot(example1, col='steelblue', pch=20, xlab = 'X', ylab = 'Y', main="Correlation = 0.81")
-plot(example2, col='steelblue', pch=20, xlab = 'X', ylab = 'Y', main="Correlation = -0.81")
-plot(example3, col='steelblue', pch=20, xlab = 'X', ylab = 'Y', main="Correlation = 0")
-plot(example4, col='steelblue', pch=20, xlab = 'X', ylab = 'Y', main="Correlation = 0")
+plot(example1, col = 'steelblue', pch = 20, xlab = 'X', ylab = 'Y', main = "Correlation = 0.81")
+plot(example2, col = 'steelblue', pch = 20, xlab = 'X', ylab = 'Y', main = "Correlation = -0.81")
+plot(example3, col = 'steelblue', pch = 20, xlab = 'X', ylab = 'Y', main = "Correlation = 0")
+plot(example4, col = 'steelblue', pch = 20, xlab = 'X', ylab = 'Y', main = "Correlation = 0")
 ```
 
 ## Exercises
@@ -1422,7 +1455,7 @@ Instead of using the t statistic as decision criterion we can also use the respe
 
 #### 6. Hypothesis Test --- One Sample $t$-test {-}
 
-In the last two exercises we discovered two ways of conducting a hypothesis test. In practice these approaches seem very cumbersome and so R provides the function <tt>t.test()</tt> which does most of the work automatically for us. In fact it provides t statistics, p-values and even confidence intervals (more on the latter in later exercises). In addition it also uses the t instead of the normal distribution which becomes important especially for small sample sizes. 
+In the last two exercises we discovered two ways of conducting a hypothesis test. In practice these approaches seem very cumbersome and so <tt>R</tt>provides the function <tt>t.test()</tt> which does most of the work automatically for us. In fact it provides t statistics, p-values and even confidence intervals (more on the latter in later exercises). In addition it also uses the t instead of the normal distribution which becomes important especially for small sample sizes. 
 
 The data set <tt>cps</tt> as well as the variable <tt>pval</tt> from Exercise 3.4 are available in your working environment.
 
