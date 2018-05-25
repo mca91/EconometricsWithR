@@ -1,20 +1,22 @@
 # Nonlinear Regression Functions
 
-Until now we assumed the regression function to be linear, i.e. we have treated the slope of the regression function as a constant. This implies that the effect on $Y$ of a one unit change in $X$ does not depend on the level of $X$. If however the effect of a change in $X$ on $Y$ does depend on the value of $X$, we have to use a nonlinear regression function.
+Until now we assumed the regression function to be linear, i.e. we have treated the slope parameter of the regression function as a constant. This implies that the effect on $Y$ of a one unit change in $X$ does not depend on the level of $X$. If however the effect of a change in $X$ on $Y$ does depend on the value of $X$, we have to model the relationship using a nonlinear regression function.
 
-## A General Strategy for Modeling Nonlinear Regression Functions 
+The packages <tt>AER</tt>, <tt>lmtest</tt> and <tt>stargazer</tt> are required for reproduction of the code chunk presented in this chapter.
 
-Let us have a look at an example where in fact using a nonlinear regression function is better suited for estimation of the population relationship between the regressor, $X$, and the regressand, $Y$: the relationship between the income of schooling districts and their test scores.
+## A General Strategy for Modelling Nonlinear Regression Functions 
+
+Let us have a look at an example where in fact using a nonlinear regression function is better suited for the estimation of the population relationship between the regressor, $X$, and the regressand, $Y$: the relationship between the income of schooling districts and their test scores.
 
 ```{r dataset, results='hide', echo=TRUE, message=FALSE}
-#Prepare the data
+# Prepare the data
 library(AER)                                                     
 data(CASchools)
 CASchools$size <- CASchools$students/CASchools$teachers
 CASchools$score <- (CASchools$read + CASchools$math)/2       
 ```
 
-We start our analysis by computing the correlation between the two variables. 
+We start our analysis by computing the correlation between both variables. 
 
 ```{r}
 cor(CASchools$income, CASchools$score)
@@ -33,63 +35,62 @@ plot(CASchools$income, CASchools$score,
      pch = 20,
      xlab = "District Income (thousands of dollars)", 
      ylab = "Test Score",
+     cex.main = 0.9,
      main = "Test Score vs. District Income and a Linear OLS Regression Function")
 
 # Add the regression line to the plot
-abline(linear_model, col="red", lwd=2)
+abline(linear_model, col = "red", lwd = 2)
 ```
 </div>
 
-As Stock and Watson point out, the linear regression line seems to overestimate the true relationship when income is very high or very low and underestimates it in the midrange.    
+As pointed out in the book, the linear regression line seems to overestimate the true relationship when income is very high or very low and underestimates it for the middle income group.    
 
-Fortunately, usage of the OLS is not restricted to linear functions of the regressors. Thus we can for example model test scores as a function of income and the square of income. The corresponding regression model is
+Fortunately, usage of the OLS estimator is not restricted to linear functions of the regressors. Thus we can for example model test scores as a function of income and the square of income. The corresponding regression model is
 
-$$TestScore_i = \beta_0 + \beta_1 Income_i + \beta_2 Income_i^2 + u_i.$$
+$$TestScore_i = \beta_0 + \beta_1 income_i + \beta_2 income_i^2 + u_i.$$
 
-This equation is called the *quadratic regression model*. Note, that $Income^2$ is treated as an additional explanatory variable. Hence, the quadratic model is a special case of a multivariate regression model. When fitting the model with `lm()` we have to use the `^` operator in conjunction with the function `I()` to add the quadratic term as an additional regressor to the `formula` argument. 
+This equation is called the *quadratic regression model*. Note, that $income^2$ is treated as an additional explanatory variable. Hence, the quadratic model is a special case of a multivariate regression model. When fitting the model with <tt>lm()</tt> we have to use the <tt>^</tt> operator in conjunction with the function <tt>I()</tt> to add the quadratic term as an additional regressor to the argument <tt>formula</tt>. 
 
-<div class="unfolded">
-```{r, fig.align = 'center', fig.cap='Figure 8.2'}
+```{r}
 # Fit the quadratic Model
 quadratic_model <- lm(score ~ income + I(income^2), data = CASchools)
 
 # Generate model summary
 summary(quadratic_model)
 ```
-</div>
 
-The output tells us that the estimated model equation is
+The output tells us that the estimated regression function is
 
-$$\widehat{TestScore}_i = \underset{(3.05)}{607.3} + \underset{(0.30)}{3.85} \times Income_i - \underset{(0.01)}{0.0423} \times Income_i^2.$$
+$$\widehat{TestScore}_i = \underset{(3.05)}{607.3} + \underset{(0.30)}{3.85} \times income_i - \underset{(0.01)}{0.0423} \times income_i^2.$$
 
-Notice that this estimated model equation allows us to test the hypothesis that the relationship between test scores and district income is linear against the alternative hypothesis that it is nonlinear. This corresponds to testing
+Notice that this estimated model equation allows us to test the hypothesis that the relationship between test scores and district income is linear against the alternative hypothesis that it is quadratic. This corresponds to testing
 
 $$H_0: \beta_2 = 0 \ \ \text{vs.} \ \  H_1: \beta_2\neq0,$$
 
-since $\beta_2=0$ corresponds to a simple linear equation and $\beta_2\neq0$ implies a quadratic relationship. We find that $t=(\hat\beta_2 - 0)/SE(\hat\beta_2) = -0.0423/0.01 = -4.23$ so the null is rejected at any common level of significance and we conclude that the relationship is nonlinear. This is consistent with our informal inspection of the plotted data.
+since $\beta_2=0$ corresponds to a simple linear equation and $\beta_2\neq0$ implies a quadratic relationship. We find that $t=(\hat\beta_2 - 0)/SE(\hat\beta_2) = -0.0423/0.01 = -4.23$ so the null is rejected at any common level of significance and we conclude that the relationship is nonlinear. This is consistent with the impression gained from inspection of the plotted data.
 
-We can now draw the same scatterplot as for the linear model and add the regression line for the quadratic model. Because `abline()` can only draw straight lines, it cannot be used for this task. A function which can be used to draw lines without being restricted to straight lines is `lines()`, see `?lines`. The most basic call of `lines()` is `lines(x_values, y_values)` where `x_values` and `y_values` are vectors of the same length that provide coordinates of the points to be <it>sequentially</it> connected by a line. This makes it necessary to sort the coordinate pairs according to the X-values. Otherwise You will not get the desired result! In this example we use the function `order()` to sort the fitted values of $TestScore$ according to the observations for $income$.
+We can now draw the same scatter plot as for the linear model and add the regression line for the quadratic model. Because <tt>abline()</tt> can only draw straight lines, it cannot be used for this task. A function which can be used to draw lines without being restricted to straight lines is <tt>lines()</tt>, see `?lines`. The most basic call of <tt>lines()</tt> is <tt>lines(x_values, y_values)</tt> where <tt>x_values</tt> and <tt>y_values</tt> are vectors of the same length that provide coordinates of the points to be *sequentially*</it>* connected by a line. This makes it necessary to sort the coordinate pairs according to the X-values. Otherwise you will not get the desired result! In this example we use the function <tt>order()</tt> to sort the fitted values of <tt>score</tt> according to the observations of <tt>income</tt>.
 
 <div class="unfolded">
 ```{r, fig.align="center"}
-# Scatterplot of observatuib for income and TestScore
+# Scatterplot of observation for income and TestScore
 plot(CASchools$income, CASchools$score,
      col  = "steelblue",
      pch = 20,
      xlab = "District Income (thousands of dollars)",
      ylab = "Test Score",
-     main = "Linear and Quadratic OLS Regression Functions")
+     main = "Estimated Linear and Quadratic Regression Functions")
 
 #Add linear function to the plot
-abline(linear_model , col="black", lwd=2)
+abline(linear_model, col = "black", lwd = 2)
 
 #Add quatratic function to the plot
 order_id <- order(CASchools$income)
 
 lines(x = CASchools$income[order_id], 
       y = fitted(quadratic_model)[order_id],
-      col="red", 
-      lwd=2) 
+      col = "red", 
+      lwd = 2) 
 ```
 </div>
 
@@ -99,10 +100,10 @@ We see that the quadratic model does much better in fitting the data than the li
 
 ### Polynomials {-}
 
-The approach used to obtain a quadratic model can be generalized to polynomial models of arbitrary order $r$. 
+The approach used to obtain a quadratic model can be generalized to polynomial models of arbitrary degree $r$. 
 $$Y_i = \beta_0 + \beta_1 X_i + \beta_2 X_i^2 + \ldots + \beta_r X_i^r + u_i$$
 
-A cubic model ($r=3$) for instance can be estimated in the same way as the quadratic model --- we just have to add ` I(income^3)` to the `formula` argument in our call of `lm()`.
+A cubic model ($r=3$) for instance can be estimated in the same way as the quadratic model; we just have to add <tt>I(income^3)</tt> to the <tt>formula</tt> argument in our call of <tt>lm()</tt>.
 
 ```{r cubic}
 cubic_model <- lm(score ~ income + I(income^2) + I(income^3), data = CASchools)
@@ -112,37 +113,35 @@ In practice the question will arise which polynomial order should be chosen. Fir
 
 $$ H_0: \beta_2=0, \ \beta_3=0,\dots,\beta_r=0 \ \ \ \text{vs.} \ \ \ H_1: \text{at least one} \ \beta_j\neq0, \ j=2,\dots,r $$
 
-This is a joint null hypothesis with $r-1$ restrictions so it can be tested using the $F$-test presented in chapter 7. Remember that the function `linearHypothesis()` can compute such test statistics. If, for example, we would like to test the null hypothesis of a linear model against the alternative of a polynomial of a maximal degree $r=3$ we could simply do the following:
+This is a joint null hypothesis with $r-1$ restrictions so it can be tested using the $F$-test presented in Chapter 7. Remember that the function <tt>linearHypothesis()</tt> can used to conduct such tests. If, for example, we would like to test the null hypothesis of a linear model against the alternative of a polynomial of a maximal degree $r=3$, we could simply do the following:
 
 ```{r, warning=F, message=F}
-library(car)
-
 # test the hypothesis
 linearHypothesis(cubic_model, 
                  c("I(income^2)=0", "I(income^3)=0")
 )
 ```
 
-The $p$-value for this test is very small so that we reject the null hypothesis. However, this does not tell us which $r$ to choose. In practice, one approach to determine degree of the polynomial is to use <it>sequential testing</it>:
+The $p$-value for this test is very small so that we reject the null hypothesis. However, this does not tell us *which* $r$ to choose. In practice, one approach to determine the degree of the polynomial is to use *sequential testing*:
 
 1. Estimate a polynomial model for some maximum value $r$.
 2. Use a $t$-test to test whether $\beta_r = 0$. <b>Rejection</b> of the null means that $X^r$ belongs in the regression equation.
 3. <b>Acceptance</b> of the null in step 2 means that $X^r$ can be eliminated from the model. Continue by repeating step 1 with order $r-1$ and test whether $\beta_{r-1}=0$. If the test rejects, use a polynomial model of order $r-1$.
 4. If the tests from step 3 rejects, continue with the procedure until the coefficient on the highest power is statistically significant.
 
-There is no unambigous guideline how to choose $r$ in step one. However as Stock and Watson point out, economic data is often smooth such that it is appropriate to choose small orders like $2$, $3$, or $4$.
+There is no unambiguous guideline how to choose $r$ in step one. However as Stock and Watson (2014) point out, economic data is often smooth such that it is appropriate to choose small orders like $2$, $3$, or $4$.
 
-We will now demonstrate how to apply <it>sequential testing</it> in the example of a cubic model. 
+We will now demonstrate how to apply <it>sequential testing</it> by the example of the cubic model. 
 
 ```{r}
 summary(cubic_model)
 ```
 
-The estimated cubic model stored in `cubic_model` is
+The estimated cubic model stored in <tt>cubic_model</tt> is
 
-$$ \widehat{TestScore}_i = \underset{(5.83)}{600.1} + \underset{(0.86)}{5.02} \times Income + \underset{(0.03)}{-0.96} \times Income^2 + \underset{(-0.00047)}{0.00069}  \times Income^3. $$
+$$ \widehat{TestScore}_i = \underset{(5.83)}{600.1} + \underset{(0.86)}{5.02} \times income -\underset{(0.03)}{0.96} \times income^2 - \underset{(0.00047)}{0.00069} \times income^3. $$
 
-Summary tells us that the $t$-statistic on $Income^3$ is $1.42$ so the null that the relationship is quadratic cannot be rejected, even at the $10\%$ level. This is contrary to the result of the book which reports robust standard errors throughout so we will also use robust variance-covariance estimation to reproduce these results.
+From the output we can tell that the $t$-statistic on $income^3$ is $1.42$ so the null that the relationship is quadratic cannot be rejected, even at the $10\%$ level. This is contrary to the result presented book which reports robust standard errors throughout so we will also use robust variance-covariance estimation to reproduce these results.
 
 ```{r}
 # load the lmtest package for coeftest()
@@ -152,7 +151,7 @@ library(lmtest)
 coeftest(cubic_model, vcov. = vcovHC(cubic_model, type = "HC1"))
 ```
 
-Notice that the reported standard errors have changed. Furthermore, the coefficient for `income^3` is now significant at the $5\%$ level. This means we reject the hypothesis that the regression function is quadratic against the alternative that it is cubic. Furthermore, we can also test if the coefficients for `income^2` and `income^3` are jointly significant using a robust version of the $F$-test. 
+Notice that the reported standard errors have changed. Furthermore, the coefficient for `income^3` is now significant at the $5\%$ level. This means we reject the hypothesis that the regression function is quadratic against the alternative that it is cubic. Furthermore, we can also test if the coefficients for <tt>income^2</tt> and <tt>income^3</tt> are jointly significant using a robust version of the $F$-test. 
 
 ```{r f-test}
 # robust F-test for 
@@ -162,11 +161,11 @@ linearHypothesis(cubic_model,
                  )
 ```
 
-With a $p$-value of `9.043e-16`, i.e. much less than $0.05$, the null hypothesis of linearity is rejected in favour of the alternative that the relationship is quadratic <it>or</it> cubic. 
+With a $p$-value of $9.043e^{-16}$, i.e. much less than $0.05$, the null hypothesis of linearity is rejected in favor of the alternative that the relationship is quadratic *or* cubic. 
 
 #### Interpretation of Coefficients in Nonlinear Regression Models {-}
 
-The coefficients in polynomial regression do not have a simple interpretation. Think of a quadratic model. It is not helpful to think of the coefficient on $X$ as the expected change in $Y$ associated with a change in $X$ holding the other regressors constant because one other is $X^2$ which changes as $X$ is varied. This is also the case for other deviations from linearity, for example in models where regressors and/or the dependent variable are log-transformed. The best way to approach this is to calculate the estimated effect on $Y$ associated with a change in $X$ for one or more values of $X$. This idea is summarized in Key Concept 8.1.
+The coefficients in polynomial regression models do not have a simple interpretation. Why is that? Think of a quadratic model: it is not helpful to think of the coefficient on $X$ as the expected change in $Y$ associated with a change in $X$ holding the other regressors constant because one other is $X^2$ which changes as $X$ is varied. This is also the case for other deviations from linearity, for example in models where regressors and/or the dependent variable are log-transformed. The best way to approach this is to calculate the estimated effect on $Y$ associated with a change in $X$ for one or more values of $X$. This idea is summarized in Key Concept 8.1.
 
 <div class = "keyconcept"> 
 <h3 class = "right"> Key Concept 8.1 </h3>          
@@ -178,27 +177,27 @@ $$ Y_i = f(X_{1i}, X_{2i}, \dots, X_{ki}) + u_i \ , \ i=1,\dots,n,$$
 
 where $f(X_{1i}, X_{2i}, \dots, X_{ki})$ is the population regression function and $u_i$ is the error term.
 
-<p> The expected change in $Y$, $\Delta Y$, associated with the change in $X_1$, $\Delta X_1$, holding $X_2, \cdots , X_k$ constant. That is, the expected change in $Y$ is the difference: 
+<p> Denote $\Delta Y$ the expected change in $Y$ associated with $\Delta X_1$, the change in $X_1$ while holding $X_2, \cdots , X_k$ constant. That is, the expected change in $Y$ is the difference
 
 $$\Delta Y = f(X_1 + \Delta X_1, X_2, \cdots, X_k) - f(X_1, X_2, \cdots, X_k).$$
 
 The estimator of this unknown population difference is the difference between the predicted values for these two cases. Let $\hat{f}(X_1, X_2, \cdots, X_k)$ be the predicted value of of $Y$ based on the estimator $\hat{f}$ of the population regression function. Then the predicted change in $Y$ is
 
-$$\Delta \hat{Y} = \hat{f}(X_1 + \Delta X_1, X_2, \cdots, X_k) - \hat{f}(X_1, X_2, \cdots, X_k).$$
+$$\Delta \widehat{Y} = \hat{f}(X_1 + \Delta X_1, X_2, \cdots, X_k) - \hat{f}(X_1, X_2, \cdots, X_k).$$
 </p>
 </div>
 
 
-For example, we may ask the following: what is the predicted change in test scores associated with a one unit change (i.e. $\$1000$), based on the estimated quadratic regression function
+For example, we may ask the following: what is the predicted change in test scores associated with a one unit change (i.e. $\$1000$) in income, based on the estimated quadratic regression function
 
-$$\widehat{TestScore} = 607.3 + 3.85 \times Income - 0.0423 \times Income^2\ ?$$
+$$\widehat{TestScore} = 607.3 + 3.85 \times income - 0.0423 \times income^2\ ?$$
 
 Because the regression function is quadratic, this effect depends on the initial district income. We therefore consider two cases: an increase in district income form $10$ to $11$ (i.e. from $\$10000$ per capita to $\$11000$) and an increase in district income from $40$ to $41$ (that is from $\$40000$ to $\$41000$). 
 
-In order to obtain the $\Delta \hat{Y}$ associated with a change in income form $10$ to $11$, we use the following formula: 
+In order to obtain the $\Delta \widehat{Y}$ associated with a change in income form $10$ to $11$, we use the following formula: 
 
-$$\Delta \hat{Y} = \left(\hat{\beta}_0 + \hat{\beta}_1 \times 11 + \hat{\beta}_2 \times 11^2\right) - \left(\hat{\beta}_0 + \hat{\beta}_1 \times 10 + \hat{\beta}_2 \times 10^2\right) $$
-To compute $\hat{Y}$ using <tt>R</tt> we may use `predict()`.
+$$\Delta \widehat{Y} = \left(\hat{\beta}_0 + \hat{\beta}_1 \times 11 + \hat{\beta}_2 \times 11^2\right) - \left(\hat{\beta}_0 + \hat{\beta}_1 \times 10 + \hat{\beta}_2 \times 10^2\right) $$
+To compute $\widehat{Y}$ using <tt>R</tt> we may use <tt>predict()</tt>.
 
 ```{r quadratic}
 # compute and assign the quadratic model
@@ -214,7 +213,7 @@ Y_hat <- predict(quadriatic_model, newdata = new_data)
 diff(Y_hat)
 ```
 
-Analogously we can compute the effect of a change in $income$ from $40$ to $11$:
+Analogously we can compute the effect of a change in district income from $40$ to $41$:
 
 ```{r}
 # set up data to predict
@@ -227,7 +226,7 @@ Y_hat <- predict(quadriatic_model, newdata = new_data)
 diff(Y_hat)
 ```
 
-So for the quadratic model, the expected change in $TestScore$ induced by an increase in $income$ from $10$ to $11$ is about $2.96$ points but an increase in $income$ from $40$ to $41$ increases the predicted score by only $0.42$. Hence the slope of the estimated quadratic regression function is <it>steeper</it> at low levels of income than at the higher levels. 
+So for the quadratic model, the expected change in $TestScore$ induced by an increase in $income$ from $10$ to $11$ is about $2.96$ points but an increase in $income$ from $40$ to $41$ increases the predicted score by only $0.42$. Hence the slope of the estimated quadratic regression function is *steeper* at low levels of income than at higher levels. 
 
 ### Logarithms {-}
 
@@ -240,17 +239,18 @@ There are three different cases in which logarithms might be used.
 
 2. We could transform $Y$ to its logarithm but leave $X$ at level. 
 
-3. A third case is that both $Y$ and $X$ are transformed to their logarithms. The interpretation of the regression coefficients is different in each case.  
+3. A third case is that both $Y$ and $X$ are transformed to their logarithms. 
 
-#### Case I: $X$ is in logarithm, $Y$ is not. {-}
+The interpretation of the regression coefficients is different in each case.  
+
+#### Case I: $X$ is in Logarithm, $Y$ is not. {-}
 
 The regression model then is 
 
 $$Y_i = \beta_0 + \beta_1 \times \ln(X_i) + u_i \text{, } i=1,...,n. $$
 Similar as for polynomial regression we do not have to create a new variable by computing $\ln(X)$. We can simply adjust the 
-`formula` argument of `lm()` to tell <tt>R</tt> that the log-transformation of a variable should be used.    
+<tt>formula</tt> argument of <tt>lm()</tt> to tell <tt>R</tt> that the log-transformation of a variable should be used.    
 
-<div class="unfolded">
 ```{r}
 # estimate a level-log model
 LinearLog_model <- lm(score ~ log(income), data = CASchools)
@@ -260,11 +260,10 @@ coeftest(LinearLog_model,
          vcov = vcovHC(LinearLog_model, type = "HC1")
          )
 ```
-</div>
 
 According to the output the estimated regression function is:
 
-$$\widehat{TestScore} = 557.8 + 36.42 \times \ln(Income).$$
+$$\widehat{TestScore} = 557.8 + 36.42 \times \ln(income).$$
 
 Let us draw a plot of this function.
 
@@ -287,7 +286,7 @@ lines(CASchools$income[order_id],
 ```
 </div>
 
-We can interpret $\hat{\beta}_1$ as follows: a $1\%$ increase in income is associated with an increase in test scores of $0.01 \times 36.42 = 0.36$ points. In order to get the estimated effect of <it>a one unit </it> change in income (that is a change in the original units,thousands of dollars, not in logarithms) on test scores, the method presented in Key Concept 8.1 can be used.
+We can interpret $\hat{\beta}_1$ as follows: a $1\%$ increase in income is associated with an increase in test scores of $0.01 \times 36.42 = 0.36$ points. In order to get the estimated effect of <it>a one unit </it> change in income (that is a change in the original units, thousands of dollars) on test scores, the method presented in Key Concept 8.1 can be used.
 
 
 ```{r}
@@ -299,15 +298,16 @@ Y_hat <- predict(LinearLog_model, newdata = new_data)
 
 # compute expected difference
 changes <- matrix(Y_hat, nrow = 2, byrow = TRUE)
-changes[ ,2] - changes[ ,1]
+changes[, 2] - changes[, 1]
 ```
 
-The estimated model states that for an income increase from $\$10,000$ to $\$11,000$, test scores increase by an expected amount of $3.47$ points. When income increases from $\$40,000$ to $\$41,000$, the expected increase in test scores is only about $0.90$ points.
+The estimated model states that for an income increase from $\$10000$ to $\$11000$, test scores increase by an expected amount of $3.47$ points. When income increases from $\$40000$ to $\$41000$, the expected increase in test scores is only about $0.90$ points.
 
-#### Case II: $Y$ is in logarithm, $X$ is not {-}
-If You want to learn about the absolute impact of an explanatory variable on Your dependent variable, it is not recommended to log-transform the latter. There are, however, cases where we want to learn about $\ln(Y)$ instead of $Y$. 
+#### Case II: $Y$ is in Logarithm, $X$ is not {-}
 
-The corresponding regression then model is 
+If you want to learn about the absolute impact of an explanatory variable on the dependent variable, it is not recommended to log-transform the latter. There are, however, cases where we want to learn about $\ln(Y)$ instead of $Y$. 
+
+The corresponding regression model then is 
 
 $$ \ln(Y_i) = \beta_0 + \beta_1 \times X_i + u_i \ \ , \ \ i=1,...,n. $$
 
@@ -321,16 +321,16 @@ coeftest(LogLinear_model,
          )
 ```
 
-
 The estimated regression function is 
 $$\widehat{\ln(TestScore)} = 6.439 + 0.00284 \times income.$$
-Since we are interested in $\ln(Y)$ rather than $Y$, we <it>do not</it> retransform the dependent variable.   
+Since we are interested in $\ln(Y)$ rather than $Y$, we *do not* re-transform the dependent variable.   
 
+<div class="unfolded">
 ```{r, fig.align="center"}
 # scatterplot
 plot(log(score) ~ income, 
-     col="steelblue", 
-     pch=20, 
+     col = "steelblue", 
+     pch = 20, 
      data = CASchools,
      main = "Log-Linear Regression Function"
      )
@@ -343,29 +343,30 @@ lines(CASchools$income[order_id],
       col = "red", 
       lwd = 2)
 ```
+</div>
 
 Note that the $Y$-Axis is now log-transformed.
 
-In a log-linear model, a one-unit change in $X$ is associated with an estimated $100 \times \hat\beta_1 \%$ change in $Y$. This time we left the $X$ values unchanged. 
+In a log-linear model, a one-unit change in $X$ is associated with an estimated $100 \times \hat\beta_1 \%$ change in $Y$. This time we leave the $X$ values unchanged. 
 
 ```{r}
-# do predictions
+# do the predictions
 Y_hat <- predict(LogLinear_model, newdata = new_data)
 
-# calculate changes
+# compute difference in changes
 changes <- matrix(Y_hat, nrow = 2, byrow = TRUE)
-changes[ ,2] - changes[ ,1]
+changes[, 2] - changes[, 1]
 ```
 
 
-#### Case III: $X$ and $Y$ are in logarithms {-}
+#### Case III: $X$ and $Y$ are in Logarithms {-}
 
 The log-log regression model is
 
 $$\ln(Y_i) = \beta_0 + \beta_1 \times \ln(X_i) + u_i \ \ , \ \ i=1,...,n. $$
 
 ```{r log log}
-# Estimate the log-log model
+# Estimate the Log-Log model
 LogLog_model <- lm(log(score) ~ log(income), data = CASchools)
 
 # print robust summary to the console
@@ -374,9 +375,8 @@ coeftest(LogLog_model,
          )
 ```
 
-
 The estimated regression function hence is 
-$$\widehat{\ln(TestScore)} = 6.336 + 0.0554 \times income.$$
+$$\widehat{\ln(TestScore)} = 6.336 + 0.0554 \times \ln(income).$$
 
 
 <div class="unfolded">
@@ -450,7 +450,7 @@ Of course we can also estimate a <it>polylog</it> model like
 
 $$ TestScore_i = \beta_0 + \beta_1 \times \ln(income_i) + \beta_2 \times \ln(income_i)^2 + \beta_3 \times \ln(income_i)^3 + u_i $$
 
-which models the dependent variable $TestScore$ by a third-degree polynomial of the log-transformed regressor $income$
+which models the dependent variable $TestScore$ by a third-degree polynomial of the log-transformed regressor $income$.
 
 ```{r poly log}
 # estimate the polylog model
@@ -462,8 +462,9 @@ coeftest(polyLog_model,
          vcov = vcovHC(polyLog_model, type = "HC1"))
 ```
 
-Which of the models presented here is the most suitable? Comparing by $\overline{R^2}$ we find that, leaving out the log-linear model, all models have a similar fit. In the class of polynomial models, the cubic specification has the highest $\overline{R^2}$ whereas the linear-log specification is the best of the log-models (check this!). Let us first compare both models graphically by plotting the corresponding estimated regression functions
+Which of the models presented here is the most suitable one? Comparing by $\overline{R^2}$ we find that, leaving out the log-linear model, all models have a similar fit. In the class of polynomial models, the cubic specification has the highest $\overline{R^2}$ whereas the linear-log specification is the best of the log-models (check this!). Let us now compare both models graphically by plotting the corresponding estimated regression functions.
 
+<div class="unfolded">
 ```{r, fig.align='center'}
 # scatter plot
 plot(score ~ income, 
@@ -486,35 +487,36 @@ lines(x = CASchools$income[order_id],
       col="darkred", 
       lwd=2) 
 ```
+</div>
 
-We see that both regression lines are nearly identical. Here the linear-log model is preferable since it has a slightly higher $\overline{R^2}$ and is more parsimonious in terms of regressors: it does not need higher-degree polynomials.
+We see that both regression lines are nearly identical. Here the linear-log model is preferable since it has a slightly higher $\overline{R^2}$ and is more parsimonious in terms of regressors: it does not include higher-degree polynomials.
 
 ## Interactions Between Independent Variables
 
-There are research questions where it is interesting to know how the effect on $Y$ of a change in one independent variables dependends on the value of another independent variable. For example, we could ask if districts with many english learners benefit differentially from a decrease in class sizes than those with few english learning students. To answer this, we need to include an interaction term into a multiple regression model. We will consider three cases:
+There are research questions where it is interesting to learn how the effect on $Y$ of a change in an independent variable depends on the value of another independent variable. For example, we may ask if districts with many English learners benefit differentially from a decrease in class sizes than those with few English learning students. To assess this using a multiple regression model, we need to include an interaction term. We will consider three cases:
 
-1. Interactions between two binary variables
+1. Interactions between two binary variables.
 
-2. Interactions between a binary and a continuous variable
+2. Interactions between a binary and a continuous variable.
 
-3. Interactions between two continuous variables
+3. Interactions between two continuous variables.
 
-The following subsections discuss those cases briefly and demonstrate how to perform such regressions using <tt>R</tt>.
+The following subsections discuss these cases briefly and demonstrate how to perform such regressions using <tt>R</tt>.
 
 #### Interactions Between Two Binary Variables {-}
 
-Take two binary variables $D_1$ and $D_2$ and the population regression 
+Take two binary variables $D_1$ and $D_2$ and the population regression model 
 
 $$ Y_i = \beta_0 + \beta_1 \times D_{1i} + \beta_2 \times D_{2i} + u_i. $$
 
-Now assume
+Now assume that
 
 \begin{align}
   Y_i=& \, \ln(Earnings_i),\\
   \\
   D_{1i} =& \,
    \begin{cases}
-      1 & \text{if $i^{th}$ person has a college degree} \\
+      1 & \text{if $i^{th}$ person has a college degree,} \\
       0 & \text{else},
     \end{cases} \\
     \\
@@ -525,7 +527,7 @@ Now assume
     \end{cases}\\
 \end{align}
 
-By now You should know that $\beta_1$ measures the average difference in $\ln(Earnings)$ between individuals with and without a college degree and $\beta_2$ is the gender differential in $\ln(Earnings)$, ceteris paribus. This model <it>does not</it> allow us to determine if there is a geneder specific effect of heaving a college degree and, if so, how strong this is. Luckily it is easy to come up with a model specification that allows to investigate this:
+We know that $\beta_1$ measures the average difference in $\ln(Earnings)$ between individuals with and without a college degree and $\beta_2$ is the gender differential in $\ln(Earnings)$, ceteris paribus. This model *does not* allow us to determine if there is a gender specific effect of having a college degree and, if so, *how strong* this effect is. It is easy to come up with a model specification that allows to investigate this:
 
 $$ Y_i = \beta_0 + \beta_1 \times D_{1i} + \beta_2 \times D_{2i} + \beta_3 \times (D_{1i} \times D_{2i}) + u_i $$
 
@@ -540,26 +542,26 @@ The coefficients can be expressed either as expected values or as the difference
 
 </div>
 
-Following Key Concepts 8.1 we have
+Following Key Concepts 8.3 we have
 
 \begin{align*}
   E(Y_i\vert D_{1i}=0, D_{2i} = d_2) =& \, \beta_0 + \beta_1 \times 0 + \beta_2 \times d_2 + \beta_3 \times (0 \times d_2) \\
   =& \, \beta_0 + \beta_2 \times d_2.
 \end{align*}
 
-Changing $D_{1i}$ from $0$ to $1$ we obtain
+If $D_{1i}$ switches from $0$ to $1$ we obtain
 
 \begin{align*}
   E(Y_i\vert D_{1i}=1, D_{2i} = d_2) =& \, \beta_0 + \beta_1 \times 1 + \beta_2 \times d_2 + \beta_3 \times (1 \times d_2) \\
-  =& \, \beta_0 + \beta_1 + \beta_2 \times d_2 + \beta_3 d_2
+  =& \, \beta_0 + \beta_1 + \beta_2 \times d_2 + \beta_3 d_2.
 \end{align*}
 
-and hence the overall effect is
+Hence, the overall effect is
 
 $$ E(Y_i\vert D_{1i}=1, D_{2i} = d_2) - E(Y_i\vert D_{1i}=0, D_{2i} = d_2) = \beta_1 + \beta_3 d_2 $$
 so the effect is a difference of expected values.
 
-##### Application to the student-teacher ratio and the percentage of English learners {-}
+##### Application to the Student-Teacher Ratio and the Percentage of English Learners {-}
 
 Now let
 
@@ -577,7 +579,7 @@ Now let
     \end{cases}
 \end{align*}
 
-We may use <tt>R</tt> construct the variables above.
+We may use <tt>R</tt> to construct the variables above as follows.
 
 ```{r}
 # Add HiSTR to CASchools
@@ -591,7 +593,7 @@ We proceed by estimating the model
 
 $$ TestScore_i = \beta_0 + \beta_1 \times HiSTR + \beta_2 \times HiEL + \beta_3 \times (HiSTR \times HiEL) + u_i $$
 
-using `lm()`. There are several ways to add an interaction term to the model `formula` argument of `lm()` but the most intuitive is to use the product of both variables `HiEL * HiSTR`.
+using <tt>lm()</tt>. There are several ways to add an interaction term to the <tt>formula</tt> argument when using <tt>lm()</tt> but the most intuitive way is to use the product of both variables <tt>HiEL * HiSTR</tt>.
 
 ```{r}
 # estimate the model with binary interaction term
@@ -605,9 +607,9 @@ The estimated regression model is
 
 $$ \widehat{TestScore} = 664.1 - 1.9 \times HiSTR - 18.3 \times HiEL - 3.3 \times (HiSTR \times HiEL) $$ 
 
-and it predicts that the effect of moving from a school district with a low student-teacher ratio to a district with a high student-teacher ratio, depending on high or low percentage of english learners is $-1.9-3.3\times HiEL$. So for districts with a low share of english learners ($HiEL = 0$), the estimated effect is a decrease of $1.9$ points in test scores while for districts with a big fraction of english learner ($HiEL = 1$), the predicted decrease in test scores amounts to $1.9 + 3.3 = 5.2$ points.
+and it predicts that the effect of moving from a school district with a low student-teacher ratio to a district with a high student-teacher ratio, depending on high or low percentage of english learners is $-1.9-3.3\times HiEL$. So for districts with a low share of english learners ($HiEL = 0$), the estimated effect is a decrease of $1.9$ points in test scores while for districts with a big fraction of english learner ($HiEL = 1$), the predicted decrease in test scores amounts to $1.9 + 3.3 = 5.2$ points, on average.
 
-We can also use the model to estimate the mean test score for each combination of binary variables.
+We can also use the model to estimate the mean test score for each possible combination of the included binary variables.
 
 ```{r}
 # estimate means for all combinations of HiSTR and HiEL
@@ -619,12 +621,12 @@ predict(bi_model, newdata = data.frame("HiSTR"=1, "HiEL"=1))
 
 #### Interactions Between a Continuous and a Binary Variable {-}
 
-Now consider a continuous variable $X_i$, the years of working experience of person $i$ instead of the gender. We than have
+Now assume that $X_i$ is the years of working experience of person $i$, which is a continuous variable. We than have
 
 \begin{align*}
-  Y_i =& \, \ln(Earnings_i) \\
+  Y_i =& \, \ln(Earnings_i), \\
   \\
-  X_i =& \, \text{working experience of person }i \\
+  X_i =& \, \text{working experience of person }i, \\
   \\
   D_i =& \,  
     \begin{cases}
@@ -635,26 +637,28 @@ Now consider a continuous variable $X_i$, the years of working experience of per
 
 The base model thus is
 
-$$ Y_i = \beta_0 + \beta_1 \times X_i + \beta_2 \times D_i + u_i, $$
+$$ Y_i = \beta_0 + \beta_1 X_i + \beta_2 D_i + u_i, $$
 
-a simple multiple regression model that allows us to estimate the average benefit of having a college degree holding working experience constant and the average effect on earnings of a change in working experience holding college degree constant.
+a simple multiple regression model that allows us to estimate the average benefit of having a college degree holding working experience constant as well as the average effect on earnings of a change in working experience holding college degree constant. 
 
-By adding the interaction term $X_i \times D_i$ we allow the effect of an additional year of work experience to differ for person with and without college degree.
+By adding the interaction term $X_i \times D_i$ we allow the effect of an additional year of work experience to differ for person with and without college degree,
 
-$$ Y_i = \beta_0 + \beta_1 \times X_i + \beta_2 \times D_i + \beta_3 \times (X_i \times D_i) + u_i  $$
+$$ Y_i = \beta_0 + \beta_1 X_i + \beta_2 D_i + \beta_3  (X_i \times D_i) + u_i. $$
 
-Here, $\beta_3$ measures the difference in the effect of an additional year of work experience for college graduates versus nongraduates. A further possible specifications is
+Here, $\beta_3$ is the expected difference in the effect of an additional year of work experience for college graduates versus non-graduates. Another possible specification is
 
 $$ Y_i = \beta_0 + \beta_1 X_i + \beta_2 (X_i \times D_i) + u_i. $$
 
-This model states that the expected impact of an additional year of work experience on earnings is the same for individuals without college degree but differs for college graduates. All three population regression functions can be visualized by straight lines. Key Concept 8.4 summarizes the differences.
+This model states that the expected impact of an additional year of work experience on earnings differs for for college graduates and non-graduates but that graduating on its own does not does not increase earnings. 
+
+All three population regression functions can be visualized by straight lines. Key Concept 8.4 summarizes the differences.
 
 <div class = "keyconcept"> 
 <h3 class = "right"> Key Concept 8.4 </h3>          
 <h3 class = "left"> Interactions Between Binary and Continuous Variables </h3>
 
-An interaction term like $X_i \times D_i$ (where $X$ is continuous and $D$ is binary) allows for the slope to depend on the binary
-variable $D$. There are three possibilities:
+An interaction term like $X_i \times D_i$ (where $X_i$ is continuous and $D_i$ is binary) allows for the slope to depend on the binary
+variable $D_i$. There are three possibilities:
 
 1. Different intercept and same slope:
 $$ Y_i = \beta_0 + \beta_1 X_i + \beta_2 D_i + u_i $$
@@ -665,15 +669,16 @@ $$ Y_i = \beta_0 + \beta_1 X_i + \beta_2 D_i + \beta_3 \times (X_i \times D_i) +
 $$ Y_i = \beta_0 + \beta_1 X_i + \beta_2 (X_i \times D_i) + u_i $$
 </div>
 
-The following code chunk shows how replicate the results shown in Figure 8.8 using fictional data.
+The following code chunk demonstrates how to replicate the results shown in Figure 8.8 of the book using artificial data.
 
+<div class="unfolded">
 ```{r, fig.align='center'}
-# generate fictional data
+# generate artificial data
 set.seed(1)
 
 X <- runif(200,0, 15)
 D <- sample(0:1, 200, replace = T)
-Y <- 450 +  150 * X + 500 * D + 50 * (X * D) + rnorm(200, sd=300)
+Y <- 450 +  150 * X + 500 * D + 50 * (X * D) + rnorm(200, sd = 300)
 
 # divide plotting area
 m <- rbind(c(1, 2), c(3, 0))
@@ -682,7 +687,7 @@ layout(m)
 # Estimate models and plot regression lines
 
 # 1.(base model)
-plot(X,log(Y),
+plot(X, log(Y),
      pch = 20,
      col = "steelblue",
      main = "Different Intercepts, Same Slope"
@@ -701,7 +706,7 @@ abline(coef = c(mod1_coef[1] + mod1_coef[3], mod1_coef[2]),
               
        
 # 2. (base model + interaction term)
-plot(X,log(Y),
+plot(X, log(Y),
      pch = 20,
      col = "steelblue",
      main = "Different Intercepts, Different Slopes"
@@ -720,7 +725,7 @@ abline(coef = c(mod2_coef[1] + mod2_coef[3], mod2_coef[2] + mod2_coef[4]),
 )
 
 # 3. (omission of D as regressor + interaction term)
-plot(X,log(Y),
+plot(X, log(Y),
      pch = 20,
      col = "steelblue",
      main = "Same Intercept, Different Slopes"
@@ -738,10 +743,11 @@ abline(coef = c(mod3_coef[1], mod3_coef[2] + mod3_coef[3]),
        lwd = 1.5
 )
 ```
+</div>
 
 ##### Application to the student-teacher ratio and the percentage of English learners {-}
 
-Using a model specification like 2. in Key Concept 8.3 we may answer the question whether the effect on test scores of decreasing the student-teacher ratio depends on the whether there are many or few English learners. We estimate the regression model
+Using a model specification like the second one discussed in Key Concept 8.3 (different slope, different intercept) we may answer the question whether the effect on test scores of decreasing the student-teacher ratio depends on whether there are many or few English learners. We estimate the regression model
 
 $$ \widehat{TestScore_i} = \beta_0 + \beta_1 \times size_i + \beta_2 \times HiEL_i + \beta_2 (size_i \times HiEL_i) + u_i. $$
 
@@ -765,15 +771,16 @@ For districts with a high fraction of English learners we have
 
 \begin{align} 
   \widehat{TestScore} =& \, 682.2 + 5.6 - 0.97\times size_i - 1.28 \times size_i \\
-   =& \, 687.8 - 2.25 \times size_i
+   =& \, 687.8 - 2.25 \times size_i.
 \end{align}
 
-so the predicted increase in test scores following a reduction of the student-teacher ratio by $1$ is about $0.97$ points in districts where the fraction of English learners is low but $2.25$ in districts with a high share of English learners. The difference between these effects is $1.28$, the magnitude of the coefficient on the interaction term $size \times HiEL$. 
+The predicted increase in test scores following a reduction of the student-teacher ratio by $1$ unit is about $0.97$ points in districts where the fraction of English learners is low but $2.25$ in districts with a high share of English learners. From the coefficient on the interaction term $size \times HiEL$ we see that the difference between both effects is $1.28$.
 
-The next code chunk draws both lines belonging to the model. In order to make observations with $HiEL = 0$ distinguishable from those with $HiEL = 0$, we assign different colors.
+The next code chunk draws both lines belonging to the model. In order to make observations with $HiEL = 0$ distinguishable from those with $HiEL = 1$, we use different colors.
 
+<div class="unfolded">
 ```{r, fig.align = 'center'}
-# identify observations PctEL >= 10
+# identify observations with PctEL >= 10
 id <- CASchools$english >= 10
 
 # plot observations with HiEL = 0 as red dots
@@ -781,8 +788,8 @@ plot(CASchools$size[!id], CASchools$score[!id],
      pch = 20,
      col = "red",
      main = "",
-     xlab = "class size (student-teacher ratio)",
-     ylab = "test score"
+     xlab = "Class Size",
+     ylab = "Test Score"
      )
 
 # plot observations with HiEL = 1 as green dots
@@ -801,40 +808,36 @@ abline(coef = c(coefs[1], coefs[2]),
        )
 
 # Draw the estimated regression line for HiEL = 1
-abline(coef = c(coefs[1]+coefs[3], coefs[2]+coefs[4]),
+abline(coef = c(coefs[1] + coefs[3], coefs[2] + coefs[4]),
        col = "green", 
        lwd = 1.5 
        )
 
 # Add a legend to the plot
 legend("topright", 
-       pch=c(20,20), 
-       col = c("red","green"), 
+       pch = c(20, 20), 
+       col = c("red", "green"), 
        legend = c("HiEL = 0", "HiEL = 1")
        )
 ```
-
+</div>
 
 #### Interactions Between Two Continuous Variables {-}
 
-If we have a regression model with $Y$ the log earnings and two continuous regressors $X_1$, the years of work experience, and $X_2$, the years of schooling, a simple multiple regression model cannot be used to estimate the effect on wages of an additional year of work experience depending on a given level of schooling. This effect can be assessed by including the interaction term $(X_{1i} \times X_{2i})$ in the model:
+If we have a regression model with $Y$ being the log earnings and two continuous regressors $X_1$, the years of work experience, and $X_2$, the years of schooling, a simple multiple regression model cannot be used to estimate the effect on wages of an additional year of work experience depending on a given level of schooling. This effect can be assessed by including the interaction term $(X_{1i} \times X_{2i})$ in the model:
 
 $$ Y_i = \beta_0 + \beta_1 X_{1i} + \beta_2 X_{2i} + \beta_3 \times (X_{1i} \times X_{2i}) + u_i $$
 
 Following Key Concept 8.1 we find that the effect on $Y$ of a change on $X_1$ given $X_2$ is 
 $$ \frac{\Delta Y}{\Delta X_1} = \beta_1 + \beta_3 X_2. $$
 
-In the earnings example, a positive $\beta_3$ implies that the effect on log earnings of an additional year of work experience grows linearly with years of schooling.
-
-Vice versa we have $$ \frac{\Delta Y}{\Delta X_2} = \beta_2 + \beta_3 X_1. $$ as the effect on log earnings of an additional year of schooling holding work experience constant.
+In the earnings example, a positive $\beta_3$ implies that the effect on log earnings of an additional year of work experience grows linearly with years of schooling. Vice versa we have $$ \frac{\Delta Y}{\Delta X_2} = \beta_2 + \beta_3 X_1 $$ as the effect on log earnings of an additional year of schooling holding work experience constant.
 
 Altogether we find that $\beta_3$ measures the effect of a unit increase in $X_1$ and $X_2$ <it>beyond</it> the effects of increasing $X_1$ alone and $X_2$ alone by one unit. The overall change in $Y$ is thus
 
 \begin{align}
 Y_i = (\beta_1 + \beta_3 X_2) \Delta X_1 + (\beta_2 + \beta_3 X_1) \Delta X_2 + \beta_3\Delta X_1 \Delta X_2. (\#eq:generalinteraction)
 \end{align}
-
-
 
 Key Concept 8.5 summarizes interactions between two regressors in multiple regression.
 
@@ -843,17 +846,17 @@ Key Concept 8.5 summarizes interactions between two regressors in multiple regre
 <h3 class = "left"> Interactions in Multiple Regression </h3>
 
 The interaction term between the two regressors $X_1$ and $X_2$ is given by their product $X_1 \times X_2$. Adding this
-interaction term as a regressor to the model $$ Y_i = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + u_i $$ allows the effect of change on $X_2$ to depend on the value of $X_1$ and vice versa. Thus the coefficient $\beta_3$ in the model $$ Y_i = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + \beta_3 (X_1 \times X_2) + u_i $$ measures the effect of a one-unit increase in both $X_1$ <it>and</it> $X_2$ above and beyond the sum of both individual effects. This holds for continuous and binary regressors.
+interaction term as a regressor to the model $$ Y_i = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + u_i $$ allows the effect on $Y$ of a change in $X_2$ to depend on the value of $X_1$ and vice versa. Thus the coefficient $\beta_3$ in the model $$ Y_i = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + \beta_3 (X_1 \times X_2) + u_i $$ measures the effect of a one-unit increase in both $X_1$ <it>and</it> $X_2$ above and beyond the sum of both individual effects. This holds for continuous *and* binary regressors.
 
 </div>
 
-##### Application to the student-teacher ratio and the percentage of English learners
+##### Application to the Student-Teacher Ratio and the Percentage of English Learners
 
 We will now examine the interaction between student-teacher ratio and the percentage of english learners which both are continuous variables. 
 
 ```{r}
 # estimate regression model including the interaction between 'PctEL' and 'size'
-cci_model <- lm(score ~ size + english + english:size, data = CASchools) 
+cci_model <- lm(score ~ size + english + english*size, data = CASchools) 
 
 # print a summary to the console
 summary(cci_model)
@@ -861,18 +864,18 @@ summary(cci_model)
 
 The estimated model equation is $$ \widehat{TestScore} = 686.3 - 1.12 \times STR - 0.67 \times PctEL + 0.0012(STR\times PctEL). $$
 
-For the interpretation, let us consider some quartiles of $PctEL$.
+For the interpretation, let us consider quartiles of $PctEL$.
 
 ```{r}
 summary(CASchools$english)
 ```
 
-According to \@ref(eq:generalinteraction), if $PctEL$ is at its median $8.78$ the slope of the regression function relating test scores and the student teacher ratio is predicted to be $-1.12 + 0.0012 \times 8.78 = -1.11$. This means that increasing $STR$ by one unit deteriorates test scores by estimated $1.11$ points. For the $75\%$ quantile the estimated change on $TestScore$ of a one-unit increase in $STR$ is estimated by $-1.12 + 0.0012 \times 23.0 = -1.09$ so the slope is somewhat lower. The interpretation is that for a school district with $23\%$ english learners, a reduction of the studtent-teacher ratio by one unit is expected to increase the test scores by only $1.09$ points.
+According to \@ref(eq:generalinteraction), if $PctEL$ is at its median value of $8.78$, the slope of the regression function relating test scores and the student teacher ratio is predicted to be $-1.12 + 0.0012 \times 8.78 = -1.11$. This means that increasing the student-teacher ratio by one unit is expected to deteriorate test scores by $1.11$ points. For the $75\%$ quantile, the estimated change on $TestScore$ of a one-unit increase in $STR$ is estimated by $-1.12 + 0.0012 \times 23.0 = -1.09$ so the slope is somewhat lower. The interpretation is that for a school district with a share of $23\%$ English learners, a reduction of the student-teacher ratio by one unit is expected to increase the test scores by only $1.09$ points.
 
-Note, however, that the output produced by summary indicates that the difference of the effect for the median and the $75\%$ quantile is not statistically significant. The $p$-value for the test $H_0: \beta_3 = 0$ cannot be rejected at the $5\%$ level of significance. Using robust standard errors, one can show that $\beta_3$ is not significantly different from zero even at the level of $10\%$ (verify this using <tt>R</tt>!).
+Note, however, that the output produced by <tt>summary()</tt> indicates that the difference of the effect for the median and the $75\%$ quantile is not statistically significant. The $p$-value for the test $H_0: \beta_3 = 0$ cannot be rejected at the $5\%$ level of significance. 
 
 #### Example: The Demand for Economic Journals {-}
-In this section we replicate the empirical example \textit{The Demand for Economic Journals} presented at pages 336 - 337 of the book. The central question is: how elastic is the demand by libraries for economic journals? The idea here is to analyze the relationship between the number of subscription to a journal at U.S. libraries and the journal's subscription price. The study uses the dataset `Journals` wich is provided with the `AER` package and contains observations for $180$ economic journals for the year $2000$. You can use the help function (`?Journals`) to get more information on the data after loading the package. 
+In this section we replicate the empirical example \textit{The Demand for Economic Journals} presented at pages 336 - 337 of the book. The central question is: how elastic is the demand by libraries for economic journals? The idea here is to analyze the relationship between the number of subscription to a journal at U.S. libraries and the journal's subscription price. The study uses the data set <tt>Journals</tt> which is provided with the <tt>AER</tt> package and contains observations for $180$ economic journals for the year 2000. You can use the help function (`?Journals`) to get more information on the data after loading the package. 
 
 ```{r}
 # load package and the dataset
@@ -899,7 +902,7 @@ summary(Journals$PricePerCitation)
 
 The lowest price observed is a mere $0.5$¢ per citation while the highest price is more than $20$¢ per citation.
 
-After loading and preparing the data, we estimate the four different model specifications. All models are log-log models. This is useful because it allows us to directly interpret the ceofficients as elasticities, see Key Concept 8.2. $(I)$ is a simple linear model. To aleviate a possible omitted variable bias, $(II)$ augments $(I)$ by the covariates $\ln(Age)$ and $\ln(Characters)$. The largest model $(III)$ attempts to capture nonlinearities in the relationship of $\ln(Subscriptions)$ and $\ln(PricePerCitation)$ using a cubic regression function of $\ln(PricePerCitation)$ and also adds the interaction term $(PricePerCitation \times Age)$ while specfication $(IV)$ does not include the cubic term.
+After loading and preparing the data, we estimate four different model specifications. All models are log-log models. This is useful because it allows us to directly interpret the coefficients as elasticities, see Key Concept 8.2. $(I)$ is a simple linear model. To alleviate a possible omitted variable bias, $(II)$ augments $(I)$ by the covariates $\ln(Age)$ and $\ln(Characters)$. The largest model $(III)$ attempts to capture non-linearities in the relationship of $\ln(Subscriptions)$ and $\ln(PricePerCitation)$ using a cubic regression function of $\ln(PricePerCitation)$ and also adds the interaction term $(PricePerCitation \times Age)$ while specification $(IV)$ does not include the cubic term.
 
 \begin{align*}
   (I)\quad \ln(Subscriptions_i) =& \, \beta_0 + \beta_1 \ln(PricePerCitation_i) + u_i \\
@@ -923,7 +926,7 @@ Journals_mod3 <- lm(log(Subscriptions) ~ log(PricePerCitation) + I(log(PricePerC
 Journals_mod4 <- lm(log(Subscriptions) ~ log(PricePerCitation) + log(Age) + log(Age):log(PricePerCitation) + log(Characters), data = Journals)
 ```
 
-Using `summary()`, we obtain the following estimated model equations:
+Using <tt>summary()</tt>, we obtain the following estimated model equations:
 
 \begin{align*}
   (I)\quad \widehat{\ln(Subscriptions_i)} =& \, 4.77 - 0.53 \ln(PricePerCitation_i) \\
@@ -938,7 +941,7 @@ Using `summary()`, we obtain the following estimated model equations:
   +&  \, 0.14 \left[\ln(Age_i) \times \ln(PricePerCitation_i)\right] + 0.23 \ln(Characters_i)
 \end{align*}
 
-It is of interest whether the coefficients the nonlinear transformations of $\ln(PricePerCitation)$ in Model $(III)$ are statistically significant. To answer this, we use a $F$-Test:
+It is of interest whether the coefficients the nonlinear transformations of $\ln(PricePerCitation)$ in Model $(III)$ are statistically significant. To answer this, we use an $F$-Test.
 
 ```{r}
 # F-Test for significance of cubic terms
@@ -949,7 +952,7 @@ linearHypothesis(Journals_mod3,
 
 We cannot reject the null hypothesis $H_0: \beta_3=\beta_4=0$ in model $(III)$.
 
-We will now use the `stargazer()` function to generate a verbose tabular representation of all four estimated models.
+We now demonstrate how the function `stargazer()` can be used to generate a verbose tabular representation of all four estimated models.
 
 ```{r, eval=FALSE}
 # load the stargazer package
@@ -977,8 +980,9 @@ stargazer(Journals_mod1, Journals_mod2, Journals_mod3, Journals_mod4,
 
 <!--/html_preserve-->
 
-The subsequent code chunk reproduces figure 8.9 of the book:
+The subsequent code chunk reproduces Figure 8.9 of the book:
 
+<div class="unfolded">
 ```{r}
 # divide plotting area
 m <- rbind(c(1, 2), c(3, 0))
@@ -1036,8 +1040,9 @@ abline(coef = c(JM4C[1] + JM4C[3] * log(5),
        lwd = 1.5
 )
 ```
+</div>
 
-As can be seen from plots (a) and (b), the relation between subscriptions and the citation price is inverse and nonlinear and log-transforming both variables makes it approximately linear. Plot (c) shows that the price elasticity of journal subscriptions depends on the journal's age: the red line shows the estimated relationship for $Age=80$ while the green line represents the prediction from model $(IV)$ for $Age=5$. 
+As can be seen from plots (a) and (b), the relation between subscriptions and the citation price is inverse and nonlinear. Log-transforming both variables makes it approximately linear. Plot (c) shows that the price elasticity of journal subscriptions depends on the journal's age: the red line shows the estimated relationship for $Age=80$ while the green line represents the prediction from model $(IV)$ for $Age=5$. 
 
 Which conclusion can be made?
 
@@ -1047,21 +1052,21 @@ Which conclusion can be made?
 
 3. Demand is greater for Journals with more characters, holding price and age constant.
 
-Hence we have found evidence, that the price elasticity of demand for economic journals depends on the age of the journal. Altogether our estimates suggest that the demand is very inelastic, i.e. the librararies' demand for economic journals is quite insensitve to the price: using model $(IV)$, even for a young journal ($Age=5$) we estimate the price elasticity to be $-0,899+0,374\times\ln(5)+0,141\times\left[\ln(1)\times\ln(5)\right] \approx -0.3$ so that a one percent increase in price is predicted to reduce the demand by only $0.3$ percent.
+Hence we have found evidence, that the price elasticity of demand for economic journals depends on the age of the journal. Altogether our estimates suggest that the demand is very inelastic, i.e. the libraries' demand for economic journals is quite insensitive to the price: using model $(IV)$, even for a young journal ($Age=5$) we estimate the price elasticity to be $-0,899+0,374\times\ln(5)+0,141\times\left[\ln(1)\times\ln(5)\right] \approx -0.3$ so a one percent increase in price is predicted to reduce the demand by only $0.3$ percent.
 
-This finding comes at no surprise since providing the most recent research is a necessity for libraries.
+This finding comes at no surprise since providing the most recent publications is a necessity for libraries.
 
 ## Nonlinear Effects on Test Scores of the Student-Teacher Ratio
 
-In this section we will discuss three specific questions about the relatin between test scores and the student-teacher ratio:
+In this section we will discuss three specific questions about the relationship between test scores and the student-teacher ratio:
 
-1. Does the effect on test scores of decreasing the student-teacher ratio depend on the fraction of english learners when we control for economic idiosyncracies of different districts?
+1. Does the effect on test scores of decreasing the student-teacher ratio depend on the fraction of English learners when we control for economic idiosyncrasies of the different districts?
 
 2. Does this effect depend on the the student-teacher ratio?
 
-3. <it>How</it> strong is the effect of decreasing the student-teacher ratio (by two students per teacher) if we take into account economic characteristics and nonlinearities? 
+3. <it>How</it> strong is the effect of decreasing the student-teacher ratio (by two students per teacher) if we take into account economic characteristics and non-linearities? 
 
-Two answer these questions we will consider a total of seven models, some of which are nonlinear regression specifications of the types that have been discussed before. As measures for the students' economic backgrounds, we will additionally consider the regressors $lunch$ and $\ln(income)$. We use the logarithm of $income$ because the analysis discussed in chapter 8.2 showed that the nonlinear relationship between $income$ and $TestScores$ is approximately logarithmic. We do not include expenditures per pupil ($expenditure$) because doing so allows the expenditures to vary with the student-teacher ratio, see chapter 7.2.
+Two answer these questions we will consider a total of seven models, some of which are nonlinear regression specifications of the types that have been discussed before. As measures for the students' economic backgrounds, we will additionally consider the regressors $lunch$ and $\ln(income)$. We use the logarithm of $income$ because the analysis discussed in chapter 8.2 showed that the nonlinear relationship between $income$ and $TestScores$ is approximately logarithmic. We do not include expenditures per pupil ($expenditure$) because doing so would imply that expenditures do vary with the student-teacher ratio (see Chapter 7.2 for a detailed argument).
 
 ##### Nonlinear Regression Models of Test Scores {-}
 
@@ -1100,7 +1105,7 @@ TestScore_mod6 <- lm(score ~ size + I(size^2) + I(size^3) + HiEL + HiEL:size + H
 TestScore_mod7 <- lm(score ~ size + I(size^2) + I(size^3) + english + lunch + log(income), data = CASchools)
 ```
 
-Next, we may use `summary()` to assess the models. Using `stargazer()` we may also obtain a LATEX-based tabular representation of all regression outputs and which is more convenient for comparison of the models. 
+Next, we may use <tt>summary()</tt> to assess the models. Using <tt>stargazer()</tt> we may also obtain a tabular representation of all regression outputs and which is more convenient for comparison of the models. 
 
 ```{r, tidy=T, eval=FALSE}
 # generate a latex table of regression outputes
@@ -1134,15 +1139,15 @@ stargazer(TestScore_mod1,
 
 <!--/html_preserve-->
 
-Let us summarize what can be concluded from the table above:
+Let us summarize what can be concluded from the table above.
 
-First of all, it is apparent that the student-teacher ratio is statistically significant in all seven models. Adding $\ln(income)$ to model (1) we find that the corresponding coefficient is statistically significant at the level of $1\%$ while all other coefficients remain at their significance level. Furthermore, the estimate for the coefficient on $size$ is roughly $0.27$ points larger which could be a sign of attenuated omitted variable bias. We consider this a reason to include $\ln(income)$ as a regressor in other models, too.
+First of all, it is apparent that the coefficient on $size$ is statistically significant in all seven models. Adding $\ln(income)$ to model (1) we find that the corresponding coefficient is statistically significant at the level of $1\%$ while all other coefficients remain at their significance level. Furthermore, the estimate for the coefficient on $size$ is roughly $0.27$ points larger which could be a sign of attenuated omitted variable bias. We consider this a reason to include $\ln(income)$ as a regressor in other models, too.
 
-Regressions (3) and (4) are regression that aim to assees the effect of allowing for an interaction between $size$ and $HiEL$, without and with economic control variables. In both modesl, the interaction term and the dummy are not statistically significant. Thus, even with economic control variables we cannot the reject the null hypothesis, that the effect of the student-teacher ratios on test scores is the same for districts with high and districts with low share of english learning students.
+Regressions (3) and (4) aim to assess the effect of allowing for an interaction between $size$ and $HiEL$, without and with economic control variables. In both models, both the coefficient on the interaction term and the coefficient on the dummy are not statistically significant. Thus, even with economic control variables we cannot the reject the null hypothesis, that the effect of the student-teacher ratio on test scores is the same for districts with high and districts with low share of English learning students.
 
-Regression (5) includes a cubic term for the student-teacher ratio and omittes the interaction between $size$ and $HiEl$. The estimation results indicate that there is a nonlinear effect of the student-teacher ratio on test scores. (Can You verify this using an $F$-test of $H_0: \beta_2=\beta_3=0$?)
+Regression (5) includes a cubic term for the student-teacher ratio and omits the interaction between $size$ and $HiEl$. The results indicate that there is a nonlinear effect of the student-teacher ratio on test scores (Can you verify this using an $F$-test of $H_0: \beta_2=\beta_3=0$?)
 
-Consequently, regression (6) further explores whether the fraction of english learners is also accountable for the effect of the student-teacher ration by using $HiEL \times size$ and the interactions $HiEL \times size^2$ and $HiEL \times size^3$. All individual $t$-tests indicate that that there are significant effects. We check this using a robust $F$-test of $H_0: \beta_6=\beta_7=\beta_8=0$. 
+Consequently, regression (6) further explores whether the fraction of english learners is also accountable for the effect of the student-teacher ratio by using $HiEL \times size$ and the interactions $HiEL \times size^2$ and $HiEL \times size^3$. All individual $t$-tests indicate that that there are significant effects. We check this using a robust $F$-test of $H_0: \beta_6=\beta_7=\beta_8=0$. 
 ```{r}
 # check joint significance of interactions
 linearHypothesis(TestScore_mod6, 
@@ -1151,21 +1156,22 @@ linearHypothesis(TestScore_mod6,
                  )
 ```
 
-We find that the null can be rejected at the level of $5\%$ and conclude that the regression function differs for districts with high and low percentage of english learners.
+We find that the null can be rejected at the level of $5\%$ and conclude that the regression function differs for districts with high and low percentage of English learners.
 
-Specification (7) uses a continuous measure for the share of english learners instead of a dummy variable (and thus omitts the interaction terms). We observe only small changes to the coefficient estimates on the other regressors and thus conclude that the results observed for specification (5) are not sensitive to the way the percentage of english learners is measured.
+Specification (7) uses a continuous measure for the share of english learners instead of a dummy variable (and thus does not include interaction terms). We observe only small changes to the coefficient estimates on the other regressors and thus conclude that the results observed for specification (5) are not sensitive to the way the percentage of English learners is measured.
 
-We continue by reproducing figure 8.10 of the book using <tt>R</tt> for interpretation of the nonlinear specifications (2), (5) and (7).
+We continue by reproducing Figure 8.10 of the book for interpretation of the nonlinear specifications (2), (5) and (7).
 
+<div class="unfolded">
 ```{r, fig.align='center'}
 # scatterplot
 plot(CASchools$size, 
      CASchools$score, 
-     xlim = c(12,28),
-     ylim = c(600,740),
-     pch=20, 
-     col="gray", 
-     xlab="Student-Teacher Ratio", 
+     xlim = c(12, 28),
+     ylim = c(600, 740),
+     pch = 20, 
+     col = "gray", 
+     xlab = "Student-Teacher Ratio", 
      ylab = "Test Score")
 
 # add a legend
@@ -1173,16 +1179,16 @@ legend("top",
        legend = c("Linear Regression (2)","Cubic Regression (5)", "Cubic Regression (7)"),
        cex = 0.8,
        ncol = 3,
-       lty = c(1,1,2),
-       col = c("blue","red","black")
+       lty = c(1, 1, 2),
+       col = c("blue", "red", "black")
        )
 
 # data for use with predict()
-new_data <- data.frame("size"=seq(16,24,0.05), 
-                       "english"=mean(CASchools$english),
-                       "lunch"=mean(CASchools$lunch),
-                       "income"=mean(CASchools$income),
-                       "HiEL"=mean(CASchools$HiEL)
+new_data <- data.frame("size" = seq(16, 24, 0.05), 
+                       "english" = mean(CASchools$english),
+                       "lunch" = mean(CASchools$lunch),
+                       "income" = mean(CASchools$income),
+                       "HiEL" = mean(CASchools$HiEL)
                        )
 
 # add estimated regression function for model (2)
@@ -1190,65 +1196,67 @@ fitted <- predict(TestScore_mod2, newdata = new_data)
 
 lines(new_data$size, 
       fitted,
-      lwd=1.5,
-      col="blue")
+      lwd = 1.5,
+      col = "blue")
 
 # add estimated regression function for model (5)
 fitted <- predict(TestScore_mod5, newdata = new_data)
 
 lines(new_data$size, 
       fitted, 
-      lwd=1.5,
-      col="red")
+      lwd = 1.5,
+      col = "red")
 
 # add estimated regression function for model (7)
 fitted <- predict(TestScore_mod7, newdata = new_data)
 
 lines(new_data$size, 
       fitted, 
-      col="black",
-      lwd=1.5,
-      lty=2)
+      col = "black",
+      lwd = 1.5,
+      lty = 2)
 ```
+</div>
 
-Note that for the figure above all regressors except for $size$ are set to their sample averages. We see that the cubic regressions (5) and (7) are almost identical. They indicate that the relation between test scores and the student-teacher ratio has only a small amount of nonlinearity since they do not deviate much from the regression function of (2). 
+Note that for the figure above all regressors except for $size$ are set to their sample averages. We see that the cubic regressions (5) and (7) are almost identical. They indicate that the relation between test scores and the student-teacher ratio has only a small amount of non-linearity since they do not deviate much from the regression function of (2). 
 
-The next code chunk reproduces figure 8.11 of the book. We use `plot()` and `points()` to color observations depending on $HiEL$. Again, the regression lines are drawn based on predictions using average sample averages of all regressors except for $size$.
+The next code chunk reproduces Figure 8.11 of the book. We use <tt>plot()</tt> and <tt>points()</tt> to color observations depending on $HiEL$. Again, the regression lines are drawn based on predictions using average sample averages of all regressors except for $size$.
 
+<div class="unfolded">
 ```{r, fig.align='center'}
-# scatterplot
+# draw scatterplot
 
 # observations with HiEL = 0
-plot(CASchools$size[CASchools$HiEL==0], 
-     CASchools$score[CASchools$HiEL==0], 
-     xlim = c(12,28),
-     ylim = c(600,730),
-     pch=20, 
-     col="gray", 
-     xlab="Student-Teacher Ratio", 
+plot(CASchools$size[CASchools$HiEL == 0], 
+     CASchools$score[CASchools$HiEL == 0], 
+     xlim = c(12, 28),
+     ylim = c(600, 730),
+     pch = 20, 
+     col = "gray", 
+     xlab = "Student-Teacher Ratio", 
      ylab = "Test Score")
 
 # observations with HiEL = 1
-points(CASchools$size[CASchools$HiEL==1], 
-       CASchools$score[CASchools$HiEL==1],
-       col="steelblue",
-       pch=20)
+points(CASchools$size[CASchools$HiEL == 1], 
+       CASchools$score[CASchools$HiEL == 1],
+       col = "steelblue",
+       pch = 20)
 
 # add a legend
 legend("top", 
        legend = c("Regression (6) with HiEL=0", "Regression (6) with HiEL=1"),
-       cex = 0.8,
+       cex = 0.7,
        ncol = 2,
-       lty = c(1,1),
-       col = c("green","red")
+       lty = c(1, 1),
+       col = c("green", "red")
        )
 
 # data for use with predict()
-new_data <- data.frame("size"=seq(12,28,0.05), 
-                       "english"=mean(CASchools$english),
-                       "lunch"=mean(CASchools$lunch),
-                       "income"=mean(CASchools$income),
-                       "HiEL"=0
+new_data <- data.frame("size" = seq(12, 28, 0.05), 
+                       "english" = mean(CASchools$english),
+                       "lunch" = mean(CASchools$lunch),
+                       "income" = mean(CASchools$income),
+                       "HiEL" = 0
                        )
 
 # add estimated regression function for model (6) with HiEL=0
@@ -1256,27 +1264,28 @@ fitted <- predict(TestScore_mod6, newdata = new_data)
 
 lines(new_data$size, 
       fitted, 
-      lwd=1.5,
-      col="green")
+      lwd = 1.5,
+      col = "green")
 
 # add estimated regression function for model (6) with HiEL=1
-new_data$HiEL=1
+new_data$HiEL <- 1
 
 fitted <- predict(TestScore_mod6, newdata = new_data)
 
 lines(new_data$size, 
       fitted, 
-      lwd=1.5,
-      col="red")
+      lwd = 1.5,
+      col = "red")
 ```
+</div>
 
-From the regression output we see that (6) finds statistically significant coefficients on the interaction terms $HiEL:size$, $HiEL:size^2$ and $HiEL:size^3$ i.e. there is evidence that the nonlinear relationship connecting test scores and student-teacher ration depends on the amount of English learning students in the district. However, the figure shows that this difference <it>is not/<it> of practical importance and is a good example of why one should be careful when inpreting nonlinear models: though the two regression functions look different, we see that the slope of both functions, that is for both districts with high and districs with low share of English learning students, is almost identical for student-teacher ratios between $17$ and $23$. Since this range includes almost $90\%$ of all observations, we can be confident about this. 
+From the regression output we see that model (6) finds statistically significant coefficients on the interaction terms $HiEL:size$, $HiEL:size^2$ and $HiEL:size^3$, i.e. there is evidence that the nonlinear relationship connecting test scores and student-teacher ration depends on the amount of English learning students in the district. However, the figure above shows that this difference is not of practical importance and is a good example of why one should be careful when interpreting nonlinear models: although the two regression functions look different, we see that the slope of both functions is almost identical for student-teacher ratios between $17$ and $23$. Since this range includes almost $90\%$ of all observations, we can be confident about this. 
 
-One might be tempted to object since both functions show opposing slopes for student-teacher ratios below $15$ and beyond $24$. Two things can be set aginst that:
+One might be tempted to object since both functions show opposing slopes for student-teacher ratios below $15$ and beyond $24$. Two things can be put against that:
 
-1. The data has only few observations with low and high values of the student-teacher ratio so there is only little information to be exploited when estimating the model. This means the estimated function is less precise in the extremes of the dataset
+1. There are only few observations with low and high values of the student-teacher ratio so there is only little information to be exploited when estimating the model. This means the estimated function is less precise in the extremes of the data set.
 
-2. Such a behaviour is a typical caveat when using cubic functions since they generally show extreme behaviour for extreme observations. Think of the graph of $f(x) = x^3$.
+2. Such a behavior is a typical caveat when using cubic functions since they generally show extreme behavior for extreme regressor values. Think of the graph of $f(x) = x^3$.
 
 We thus conclude that there is no dependence of the relation between class size and test scores on the percentage of English learners in the district.
 
@@ -1286,6 +1295,6 @@ We are now able to answer the three question posed at the beginning of this sect
 
 1. Considering the linear models, the percentage of English learners has only little influence on the effect of test scores of changing the student-teacher ratio. This result keeps valid if we control for economic background of the students. While the cubic specification (6) provides evidence, the strength of the effect is negligible.
 
-2. When controlling for the students' economic backgroumd we find evidence of nonlinearities in the relationship between student-teacher ratio and test scores.
+2. When controlling for the students' economic background we find evidence of non-linearities in the relationship between student-teacher ratio and test scores.
 
-3. The linear specification (2) predicts that a reduction of the student-teacher ratio by two students per teacher leads to an improvement in test scores of about $-0.73 \times (-2) = 1.46$ points. Since the model is linear, this effect is independent of the class size. Asssume that the student-teacher ratio is $20$. For example, model (5) predicts that the reduction increases test scores by $$64.33*18+18^2*(-3.42)+18^3*(0.059) - (64.33*20+20^2*(-3.42)+20^3*(0.059)) \approx 3.3$$ points. if the ratio is $22$, a reduction to $20$ leads to a predicted improvement in test scores of $$64.33*20+20^2*(-3.42)+20^3*(0.059) - (64.33*22+22^2*(-3.42)+22^3*(0.059)) \approx 2.4$$ points. This suggests that the effect is stronger in smaller classes.
+3. The linear specification (2) predicts that a reduction of the student-teacher ratio by two students per teacher leads to an improvement in test scores of about $-0.73 \times (-2) = 1.46$ points. Since the model is linear, this effect is independent of the class size. Assume that the student-teacher ratio is $20$. For example, model (5) predicts that the reduction increases test scores by $$64.33*18+18^2*(-3.42)+18^3*(0.059) - (64.33*20+20^2*(-3.42)+20^3*(0.059)) \approx 3.3$$ points. If the ratio is $22$, a reduction to $20$ leads to a predicted improvement in test scores of $$64.33*20+20^2*(-3.42)+20^3*(0.059) - (64.33*22+22^2*(-3.42)+22^3*(0.059)) \approx 2.4$$ points. This suggests that the effect is stronger in smaller classes.
