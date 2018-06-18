@@ -1,33 +1,47 @@
 # Experiments and Quasi-Experiments
 
-This chapter discusses statistical tools that are commonly applied in program evaluation which is a field of study where resarchers are interested in measuring the causal effects of programs, policies or other interventions / treatments. An optimal research design for this purpose is what statisticains call an ideal randomized controlled experiment. The basic idea is to randomly assign subjects in two different groups, one that receives the treatment (treatment group) and one that does not (control group) and to compare outcomes for both groups in order to get an estimate of the average treatment effect. 
+```{r, child="_setup.Rmd"}
+```
 
-Note that *experimental* data is fundamentally different from *observational* data. For example, one might be interested in measuring how much the performance of students in a standardized test differs between two classes where one of which has a student-teacher ratio which is considered regular and the other one has fewer students using a randomized controlled experiment. The data produced by such an experiment would be different from e.g. the observed cross-section data on the students' performance used throughout Chapters 4 to 8 where class sizes are *not randomly assigned* to students but are the results of an economic dicision where educational objectives and budgetary aspects where balanced.
+This chapter discusses statistical tools that are commonly applied in program evaluation, which is a field of study where researchers are interested in measuring the causal effects of programs, policies or other interventions. An optimal research design for this purpose is what statisticians call an ideal randomized controlled experiment. The basic idea is to randomly assign subjects in two different groups, one that receives the treatment (the treatment group) and one that does not (the control group) and to compare outcomes for both groups in order to get an estimate of the average treatment effect. 
 
-For economists, randomized controlled experiments are often difficult to implement or even infeasable. For example, due to ethic, moral and legal reasons it is practically impossible for a business owner to estimate the causal effect the productivity of workers of setting them under psychological stress using an experiment where workers are randomly assigned either to the treament group that is pressed under time or to the control group where work is under regular conditions, at best without knowlegde of beeing in an experiment.^[See the box *The Hawthorne Effect* on page 528 of the book.]
+Note that *experimental* data is fundamentally different from *observational* data. For example, one might be interested in measuring how much the performance of students in a standardized test differs between two classes where one of which has a student-teacher ratio which is considered regular and the other one has fewer students, using a randomized controlled experiment. The data produced by such an experiment would be different from e.g. the observed cross-section data on the students' performance used throughout Chapters 4 to 8 where class sizes are not randomly assigned to students but instead are the results of an economic decision where educational objectives and budgetary aspects were balanced.
 
-However sometimes it is the case that external cirumstances which appear random produce what is called a *quasi-experiment* or *natural experiment*. This "as if" randomness allows for estimation of causal effects that are of interest for economist using tools which are very similar to those valid for ideal randomized controlled experiments. These tools draw heavily on the theory of multiple regression and also on IV regression (see chapter 12). We will review the core aspects of these methods and demonstrate how to apply them in R using the STAR data set.^[See the [description](https://dataverse.harvard.edu/dataset.xhtml?persistentId=hdl:1902.1/10766) of the data set.]
+For economists, randomized controlled experiments are often difficult or even infeasable to implement. For example, due to ethic, moral and legal reasons it is practically impossible for a business owner to estimate the causal effect on the productivity of workers of setting them under psychological stress using an experiment where workers are randomly assigned either to the treatment group that is pressed under time or to the control group where work is under regular conditions, at best without knowledge of being in an experiment.^[See the box *The Hawthorne Effect* on p. 528 of the book.]
+
+However sometimes it is the case that external circumstances which appear random produce what is called a *quasi-experiment* or *natural experiment*. This "as if" randomness allows for estimation of causal effects that are of interest for economist using tools which are very similar to those valid for ideal randomized controlled experiments. These tools draw heavily on the theory of multiple regression and also on IV regression (see Chapter 12). We will review the core aspects of these methods and demonstrate how to apply them in R using the STAR data set.^[See the [description](https://dataverse.harvard.edu/dataset.xhtml?persistentId=hdl:1902.1/10766) of the data set.]
+
+The following packages and their dependencies are needed for reproduction of the code chunks presented throughout this chapter:
+
++ `r ttcode("AER")`
++ `r ttcode("dplyr")`
++ `r ttcode("MASS")`
++ `r ttcode("mvtnorm")`
++ `r ttcode("rddtools")`
++ `r ttcode("scales")`
++ `r ttcode("stargazer")`
++ `r ttcode("tidyr")`
 
 ## Potential Outcomes, Causal Effects and Idealized Experiments
 
-In the following we will briefly recap the idea of the average causal effect and how it can be estimated using the *differences estimator*. We advise You to read through Chapter 13.1 of the book for a better understanding.
+In the following we will briefly recap the idea of the average causal effect and how it can be estimated using the *differences estimator*. We advise you to read through Chapter 13.1 of the book for a better understanding.
 
 #### Potential Outcomes and the average causal Effect {-}
 
-**A potential** outcome is the outcome for an individual under a potential treatment. For this individual, we say that the causal effect of the treatment is the difference in the potential outcome if the indiviual receives the treatment and the potential outcome if she does not. Since this causal effect may be different for different individuals and it is not possible to measure the causal effect for a single individual, one is interested in studying the **average causal effect** of the treatment, hence also called the **average treatment effect.**
+A *potential outcome* is the outcome for an individual under a potential treatment. For this individual, we say that the causal effect of the treatment is the difference between the potential outcome if the individual receives the treatment and the potential outcome if she does not. Since this causal effect may be different for different individuals and it is not possible to measure the causal effect for a single individual, one is interested in studying the *average causal effect* of the treatment, hence also called the *average treatment effect*.
 
 In a ideal randomized controlled experiment the following conditions are fulfilled:
 
-1. The subjects are selected at random from the population 
-2. The subjects are randomly assigned to treatment and control group
+1. The subjects are selected at random from the population. 
+2. The subjects are randomly assigned to treatment and control group.
 
-Condition 1. guarantees that the subjects' potential outcomes are drawn randomly from the same distribution such that the expected value of the causal effect in the sample is equal to the average causual effect in the distribution. Condition 2. ensures that receipt of treamtment is independent from the subjects potential outcomes. If both conditions are fulfilled, the expected causual effect is the expected outcome in the treatment group minus the expected outcome in the control group. Using conditional expecations we have $$\text{Average causal effect} =  E(Y_i\vert X_i=1) -  E(Y_i\vert X_i=0)$$ where $X_i$ is a binary treatment indicator.
+Condition 1 guarantees that the subjects' potential outcomes are drawn randomly from the same distribution such that the expected value of the causal effect in the sample is equal to the average causal effect in the distribution. Condition 2 ensures that the receipt of treatment is independent from the subjects potential outcomes. If both conditions are fulfilled, the expected causal effect is the expected outcome in the treatment group minus the expected outcome in the control group. Using conditional expectations we have $$\text{Average causal effect} =  E(Y_i\vert X_i=1) -  E(Y_i\vert X_i=0),$$ where $X_i$ is a binary treatment indicator.
 
 The average causal effect can be estimated using the *differences estimator*, which is nothing but the OLS estimator in the simple regression model 
 \begin{align}
-  Y_i = \beta_0 + \beta_1 X_i + u_i \ \ , \ \ i=1,\dots,n (\#eq:diffest)
+  Y_i = \beta_0 + \beta_1 X_i + u_i \ \ , \ \ i=1,\dots,n, (\#eq:diffest)
 \end{align}
-where random assignment ensures $E(u_i\vert X_i) = 0$.
+where random assignment ensures that $E(u_i\vert X_i) = 0$.
 
 The OLS estimator in the regression model 
 \begin{align}
@@ -43,7 +57,7 @@ The concepts of internal and external validity discussed in Key Concept 9.1 are 
 
 1. **Failure to randomize**
 
-    If the subjects are not randomly assigned to the treatment group, then the outcomes will be contaminated with the effect of the subjects' individuals characteristics or preferences and it is not possible to obtain an unbiased estimate of the treatment effect. One can test for nonrandom assignment using a significance test (F-Test) on the coefficient in the regression model $$X_i = \beta_0 + \beta_1 W_{1i} + \dots +\beta_2 W_{ri} + u_i \ \ , \ \ i=1,\dots,n.$$
+    If the subjects are not randomly assigned to the treatment group, then the outcomes will be contaminated with the effect of the subjects' individual characteristics or preferences and it is not possible to obtain an unbiased estimate of the treatment effect. One can test for nonrandom assignment using a significance test ($F$-Test) on the coefficients in the regression model $$X_i = \beta_0 + \beta_1 W_{1i} + \dots +\beta_2 W_{ri} + u_i \ \ , \ \ i=1,\dots,n.$$
     
 2. **Failure to follow the treatment protocol**
 
@@ -51,7 +65,7 @@ The concepts of internal and external validity discussed in Key Concept 9.1 are 
 
 3. **Attrition**
 
-    Attrition results in a nonrandomly selected sample. If subjects systematically drop out of the study after beeing assigned to the control or the treatment group, where systematic means that the reason of the drop out is related to the treatment, there will be correlation between $X_i$ and $u_i$ and hence bias in the OLS estimator of the treatment effect.
+    Attrition results in a nonrandomly selected sample. If subjects systematically drop out of the study after beeing assigned to the control or the treatment group ( systematic means that the reason of the drop out is related to the treatment) there will be correlation between $X_i$ and $u_i$ and hence bias in the OLS estimator of the treatment effect.
 
 4. **Experimental effects**
   
@@ -59,7 +73,7 @@ The concepts of internal and external validity discussed in Key Concept 9.1 are 
 
 5. **Small sample sizes**
 
-    As we know from the theory of linear regression, small sample sizes lead to imprecise estimation of coefficients in regression models and thus imply imprecise estimation of the causal effect. Furthermore, confidence intervals and hypothesis test may produce wrong inference when the sample size is small.
+    As we know from the theory of linear regression, small sample sizes lead to imprecise estimation of the coefficients in regression models and thus imply imprecise estimation of the causal effect. Furthermore, confidence intervals and hypothesis test may produce wrong inference when the sample size is small.
 
 #### Threats to External Validity {-}
 
@@ -70,7 +84,7 @@ The concepts of internal and external validity discussed in Key Concept 9.1 are 
 
 2. **Nonrepresentative program or policy**
 
-    If the program or policy differs for the population studied differs considerably from the program (to be) applied to population(s) interest, the results cannot be generalized. For example, a small-scale programm with low funding might have different effects than the widely available scaled-up programm that is actually implemented. There are other factors like duration and the extend of monitoring that should be considered here. 
+    If the program or policy for the population studied differs considerably from the program (to be) applied to population(s) of interest, the results cannot be generalized. For example, a small-scale programm with low funding might have different effects than a widely available scaled-up programm that is actually implemented. There are other factors like duration and the extend of monitoring that should be considered here. 
     
 3. **General equilibrium effects**
 
@@ -80,21 +94,21 @@ The concepts of internal and external validity discussed in Key Concept 9.1 are 
 
 ### Experimental Design and the Data Set {-}
 
-The Project *Sudent-Teacher Achievement Ratio* (*STAR*) was a large randomized controlled experiment with the aim of ascerting whether a class size reduction is effective in improving education. It has been conducted in 80 Tennesse elementary schools over a period of four years during the 1980s by the state Derpartment of Education.
+The Project *Sudent-Teacher Achievement Ratio* (STAR) was a large randomized controlled experiment with the aim of asserting whether a class size reduction is effective in improving education. It has been conducted in 80 Tennessee elementary schools over a period of four years during the 1980s by the state Department of Education.
 
-In the first year, about 6400 students were randomly assigned into one of three interventions: small class (13 to 17 students per teacher), regular class (22 to 25 students per teacher), and regular-with-aide class (22 to 25 students with a full-time teacher's aide). Classroom teachers were also randomly assigned to the classes they would teach. The interventions were initiated as the students entered school in kindergarten and continued through third grade. Thus, we have the following structure of control and treatment groups across grades:
+In the first year, about 6400 students were randomly assigned into one of three interventions: small class (13 to 17 students per teacher), regular class (22 to 25 students per teacher), and regular-with-aide class (22 to 25 students with a full-time teacher's aide). Classroom teachers were also randomly assigned to the classes they would teach. The interventions were initiated as the students entered school in kindergarten and continued through third grade. Control and treatment groups across grades are summarized in Table \@ref(#tab:starstructure).
 
 |                 | K                    | 1                    | 2                    | 3                    |
 |-----------------|----------------------|----------------------|----------------------|----------------------|
-| **Treatment 1** | Small class          | Small class          | Small class          | Small class          |
-| **Treatment 2** | Regular class + aide | Regular class + aide | Regular class + aide | Regular class + aide |
-| **Control**     | Regular class        | Regular class        | Regular class        | Regular class        |
+| Treatment 1 | Small class          | Small class          | Small class          | Small class          |
+| Treatment 2 | Regular class + aide | Regular class + aide | Regular class + aide | Regular class + aide |
+| Control     | Regular class        | Regular class        | Regular class        | Regular class        |
 
 Table: (\#tab:starstructure) Control and treatment groups in the STAR experiment
 
-Each year, the students learning progress was assessed using the sum of the points scored on the math and reading portion of a standardized test (the [Stanford Achievement Test](https://en.wikipedia.org/wiki/Stanford_Achievement_Test_Series)).
+Each year, the students learning progress was assessed using the sum of the points scored on the math and reading parts of a standardized test (the [Stanford Achievement Test](https://en.wikipedia.org/wiki/Stanford_Achievement_Test_Series)).
 
-The *STAR* data set is part of the package <tt>AER</tt>.
+The STAR data set is part of the package `r ttcode("AER")`.
 
 ```{r, message=FALSE}
 # Load the package AER and the STAR data set
@@ -102,42 +116,42 @@ library(AER)
 data(STAR)
 ```
 
-Using `head(STAR)` we find that there is a variety of factor variables that describe student and teacher characteristics as well as various school indicators, all of which seperately recorded for the four different grades. The data is in *wide format*, that is each variable has its own coloumn and for each student, the rows contain observations on these variables. Using `dim(STAR)` we find that there are a total of 11598 observations on 47 variables. 
+Using `r ttcode("head(STAR)")` we find that there is a variety of factor variables that describe student and teacher characteristics as well as various school indicators, all of which separately recorded for the four different grades. The data is in *wide format*, that is each variable has its own column and for each student, the rows contain observations on these variables. Using `r ttcode("dim(STAR)")` we find that there are a total of 11598 observations on 47 variables. 
 
 ```{r}
 # get an overview
 head(STAR, 2)
 dim(STAR)
 ```
+
 ```{r}
 # get variable names
 names(STAR)
 ```
 
-Notice that a majority of the variable names contain a suffix (`k`, `1`, `2` or `3`) stating the grade which the respective variable is refering to. This facilitates regression analysis because it allows to adjust the `formula` argument in `lm()` for each grade by simply changing the variables' suffixes accordingly.
+Notice that a majority of the variable names contain a suffix (`r ttcode("k")`, `r ttcode("1")`, `r ttcode("2")` or `r ttcode("3")`) stating the grade which the respective variable is referring to. This facilitates regression analysis because it allows to adjust the `r ttcode("formula")` argument in `r ttcode("lm()")` for each grade by simply changing the variables' suffixes accordingly.
 
-Inspecting the outcome produced by `head()` we see that some values recorded are `NA` and `<NA>`, i.e. there is no data of this variable for the student under consideration. This lies in the nature of the data: for example, take the first observation `STAR[1,]`. We find that the student entered the experiment in third grade in a regular class which is why the class size is recorded in `star3` and other class type indicator variables are `<NA>`. For the same reason there are no recordings of her math and reading score but for third grade. It is straightforward to get only the non-`NA`/`<NA>` recordings for her: we simply drop the `NA`s using `is.na()`.
+Inspecting the outcome produced by `r ttcode("head()")` we see that some values recorded are `r ttcode("NA")` and `r ttcode("<NA>")`, i.e. there is no data on this variable for the student under consideration. This lies in the nature of the data: for example, take the first observation `STAR[1,]`. We find that the student entered the experiment in third grade in a regular class, which is why the class size is recorded in `r ttcode("star3")` and the other class type indicator variables are `r ttcode("<NA>")`. For the same reason there are no recordings of her math and reading score but for the third grade. It is straightforward to get only the non-`r ttcode("NA")`/`r ttcode("<NA>")` recordings for her: we simply drop the `r ttcode("NA")`s using `r ttcode("is.na()")`.
 
 ```{r}
 # drop NA recordings for the first observation
-STAR[1,!is.na(STAR[1,])]
+STAR[1, !is.na(STAR[1, ])]
 ```
 
-In general it is not necessary to perform such action when doing regression analysis because `lm()` excludes incomplete cases, i.e. rows with missing data, by default. You should be aware that missing data may imply a small sample size and thus may lead to imprecise estimation and wrong inference which is, however, not not an issue for the study at hand since, as we will see below, sample sizes lie beyond 5000 observations for each regression conducted.
+In general it is not necessary to perform such action when doing regression analysis because `r ttcode("lm()")` excludes incomplete cases, i.e. rows with missing data, by default. You should be aware that missing data may imply a small sample size and thus may lead to imprecise estimation and wrong inference which is, however, not an issue for the study at hand since, as we will see below, sample sizes lie beyond 5000 observations for each regression conducted.
 
 ### Analysis of the STAR Data {-}
 
-As can be seen from \@ref(tab:starstructure) there are two treatment groups in each grade, small classes with only 13 to 17 students and regular classes with 22 to 25 students and a teaching aide. Thus, two binary variables, each beeing an indicator for the respective treatment group, are introduced for the differences estimator to capture the treatment effect for both treatment groups seperately. This yields the population regression model 
+As can be seen from Table \@ref(tab:starstructure) there are two treatment groups in each grade, small classes with only 13 to 17 students and regular classes with 22 to 25 students and a teaching aide. Thus, two binary variables, each being an indicator for the respective treatment group, are introduced for the differences estimator to capture the treatment effect for each treatment group separately. This yields the population regression model 
 \begin{align}
   Y_i = \beta_0 + \beta_1 SmallClass_i + \beta_2 RegAide_i + u_i, (\#eq:starpopreg)
 \end{align}
-
 with test score $Y_i$, the small class indicator $SmallClass_i$ and $RegAide_i$, the indicator for a regular class with aide.
 
-We can easily reproduce the results presented in table 13.1 of the book by performing the regression \@ref(eq:starpopreg) for each grade seperately. Note that for each student, the dependent variable is simply the sum of the points scored in the math and reading portion of the test which is why we make use of the function `I()`.
+We can easily reproduce the results presented in Table 13.1 of the book by performing the regression \@ref(eq:starpopreg) for each grade separately. Note that for each student, the dependent variable is simply the sum of the points scored in the math and reading parts of the test which is why we make use of the function `r ttcode("I()")`.
 
 ```{r}
-# Compute differences Estimates for each grades
+# compute differences Estimates for each grades
 fmk <- lm(I(readk + mathk) ~ stark, data = STAR)
 fm1 <- lm(I(read1 + math1) ~ star1, data = STAR)
 fm2 <- lm(I(read2 + math2) ~ star2, data = STAR)
@@ -145,7 +159,7 @@ fm3 <- lm(I(read3 + math3) ~ star3, data = STAR)
 ```
 
 ```{r, eval=FALSE}
-# Obtain coefficient matrix using robust standard errors
+# obtain coefficient matrix using robust standard errors
 coeftest(fmk, vcov = vcovHC(fmk, type= "HC0"))
 coeftest(fm1, vcov = vcovHC(fm1, type= "HC0"))
 coeftest(fm2, vcov = vcovHC(fm2, type= "HC0"))
@@ -153,14 +167,14 @@ coeftest(fm3, vcov = vcovHC(fm3, type= "HC0"))
 ```
 
 ```{r, echo=FALSE}
-# Obtaincoefficient matrix using robust standard errors
+# obtain coefficient matrix using robust standard errors
 coeftest(fmk, vcov = vcovHC(fmk, type= "HC0"))
 coeftest(fm1, vcov = vcovHC(fm1, type= "HC0"))
 coeftest(fm2, vcov = vcovHC(fm2, type= "HC0"))
 coeftest(fm3, vcov = vcovHC(fm3, type= "HC0"))
 ```
 
-We may gather the results and present them in a LaTeX or HTML table using `stargazer()`.
+We gather the results and present them in a LaTeX or HTML table using `r ttcode("stargazer()")`.
 
 ```{r}
 # compute robust standard errors for each model and gather them in a list
@@ -190,7 +204,7 @@ stargazer(fmk,fm1,fm2,fm3,
 
 <!--html_preserve-->
 
-```{r, message=F, warning=F, results='asis', echo=F}
+```{r, message=F, warning=F, results='asis', echo=F, eval=my_output=="html"}
 library(stargazer)
 
 stargazer(fmk,fm1,fm2,fm3,
@@ -208,12 +222,30 @@ stargazer(fmk,fm1,fm2,fm3,
 
 <!--/html_preserve-->
 
-The estimates suggest that the class size reduction does improve performance of the students. Except for grade 1, the estimates of the coefficient on $SmallClass$ are roughly of the same magnitude (the estimates lie between 13.90 and 19.39 points) and statistically significant at the level of $1\%$. Furthermore we see that adding a teaching aide to a regular class has little, possibly zero, effect on the performance of the students. 
+```{r, message=F, warning=F, results='asis', echo=F, eval=my_output=="latex"}
+library(stargazer)
 
-Following the book, we continue by augmenting the population regression \@ref(eq:starpopreg) by different sets of additional regressors for two reasons: 
+stargazer(fmk,fm1,fm2,fm3,
+  title = "Project STAR - Differences Estimates",
+  header = FALSE, 
+  digits = 3,
+  type = "latex",
+  float.env = "sidewaystable",
+  column.sep.width = "-3pt",
+  model.numbers = F,
+  omit.table.layout = "n",
+  column.labels = c("K", "1", "2", "3"),
+  dep.var.caption  = "Grade",
+  dep.var.labels.include = FALSE,
+  se = rob_se_1) 
+```
 
-1. If the additional regressors explain some of the observed variation in the dependent variable we obtain more efficient estimates of the coefficients of interest.
-2. If the treatment is not received at random due to failures to follows the treatment protocol (see section 13.3 of the book) the estimates obtained using the model specification \@ref(eq:starpopreg) may be biased. Adding additional regressors may solve this problem.
+The estimates suggest that the class size reduction does improve performance of the students. Except for grade 1, the estimates of the coefficient on $SmallClass$ are roughly of the same magnitude (the estimates lie between 13.90 and 19.39 points) and they are statistically significant at the level of $1\%$. Furthermore we see that adding a teaching aide to a regular class has little, possibly zero, effect on the performance of the students. 
+
+Following the book, we continue by augmenting the regression model \@ref(eq:starpopreg) by different sets of additional regressors for two reasons: 
+
+1. If the additional regressors explain some of the observed variation in the dependent variable, we obtain more efficient estimates of the coefficients of interest.
+2. If the treatment is not received at random due to failures to follows the treatment protocol (see Chapter 13.3 of the book), the estimates obtained using the model specification \@ref(eq:starpopreg) may be biased. Adding additional regressors may solve this problem.
 
 In particular, we consider the following student and teacher characteristics
 
@@ -225,20 +257,23 @@ In particular, we consider the following student and teacher characteristics
 - $\text{schoolid}$ --- School indicator variables
 
 in four different population regression specifications:
-
 \begin{align}
   Y_i =& \beta_0 + \beta_1 SmallClass_i + \beta_2 RegAide_i + u_i, (\#eq:augstarpopreg1) \\
   Y_i =& \beta_0 + \beta_1 SmallClass_i + \beta_2 RegAide_i + \beta_3 experience_i + u_i, (\#eq:augstarpopreg2) \\
   Y_i =& \beta_0 + \beta_1 SmallClass_i + \beta_2 RegAide_i + \beta_3 experience_i + \text{school indicators} + u_i (\#eq:augstarpopreg3) \\
-  Y_i =& \beta_0 + \beta_1 SmallClass_i + \beta_2 RegAide_i + u_i + \beta_3 experience_i + \beta_4 boy + \beta_5 lunch (\#eq:augstarpopreg4) \\ &+ \beta_6 black + \beta_7 race + \text{schoolid} + u_i 
+  Y_i =& \beta_0 + \beta_1 SmallClass_i + \beta_2 RegAide_i + u_i + \beta_3 experience_i + \beta_4 boy + \beta_5 lunch (\#eq:augstarpopreg4) \\ +& \beta_6 black + \beta_7 race + \text{schoolid} + u_i \notag
 \end{align}
 
-Beforehand to estimation, we apply some subsetting and some data wrangling. We do this using functions from the packages `dplyr` and `tidyr` which are both part of *tidyverse*, a collection of <tt>R</tt> packages designed for data science and handling big data sets.^[See the [official site](https://www.tidyverse.org/) for more on *tidyverse* packages.] The functions `%>%`, `transmute()` and `mutate()` are sufficient for us here. `%>%` allows to chain function calls together. `transmute()` allows to subset the data set by naming the variables to be kept and `mutate()` is convenient for adding new variables based existing ones while preserving the latter.
+Beforehand to estimation, we perform some subsetting and some data wrangling. We do this using functions from the packages `r ttcode("dplyr")` and `r ttcode("tidyr")` which are both part of `r ttcode("tidyverse")`, a collection of `r ttcode("R")` packages designed for data science and handling big data sets.^[See the [official site](https://www.tidyverse.org/) for more on `r ttcode("tidyverse")` packages.] The functions `r ttcode("%>%")`, `r ttcode("transmute()")` and `r ttcode("mutate()")` are sufficient for us here: 
 
-From looking at the regression models \@ref(eq:augstarpopreg1) to \@ref(eq:augstarpopreg4) we find that variables obviously needed to perform the analysis are `gender`, `ethnicity`, `stark`, `readk`, `mathk`, `lunchk`, `experiencek` and `schoolidk`. After dropping the remaining variables using `transmute()` we use `mutate()` to add three additional binary variables which are derivatives of existing ones: `black`, `race` and `boy`. They are generated using logical statements within the function `ifelse()`.
++ `r ttcode("%>%")` allows to chain function calls together.
++ `r ttcode("transmute()")` allows to subset the data set by naming the variables to be kept
++ `r ttcode("mutate()")` is convenient for adding new variables based on existing ones while preserving the latter.
+
+From looking at the regression models \@ref(eq:augstarpopreg1) to \@ref(eq:augstarpopreg4) we find that variables that are needed to perform the analysis are `r ttcode("gender")`, `r ttcode("ethnicity")`, `r ttcode("stark")`, `r ttcode("readk")`, `r ttcode("mathk")`, `r ttcode("lunchk")`, `r ttcode("experiencek")` and `r ttcode("schoolidk")`. After dropping the remaining variables using `r ttcode("transmute()")`, we use `r ttcode("mutate()")` to add three additional binary variables which are derivatives of existing ones: `r ttcode("black")`, `r ttcode("race")` and `r ttcode("boy")`. They are generated using logical statements within the function `r ttcode("ifelse()")`.
 
 ```{r, message=FALSE, warning=FALSE}
-# load packages 'dplyr' and 'tidyr' for data wrangling functionalities
+# load packages `dplyr` and `tidyr` for data wrangling functionalities
 library(dplyr)
 library(tidyr)
 
@@ -263,21 +298,27 @@ STARK <- STAR %>%
 
 ```{r, message=FALSE, warning=FALSE}
 # Estimate models 
-gradeK1 <- lm(I(mathk + readk) ~ stark + experiencek, data = STARK)
-gradeK2 <- lm(I(mathk + readk) ~ stark + experiencek + schoolidk, data = STARK)
-gradeK3 <- lm(I(mathk + readk) ~ stark + experiencek + boy + lunchk + black + race + schoolidk, data = STARK)
+gradeK1 <- lm(I(mathk + readk) ~ stark + experiencek, 
+              data = STARK)
+
+gradeK2 <- lm(I(mathk + readk) ~ stark + experiencek + schoolidk, 
+              data = STARK)
+
+gradeK3 <- lm(I(mathk + readk) ~ stark + experiencek + boy + lunchk 
+              + black + race + schoolidk, 
+              data = STARK)
 ```
 
-Since the models `gradeK2` and `gradeK3` include a constant term, there are a total of 79 school indicator dummies. For brevity, we exclude their estimated coefficients in the output produced by `coeftest()` by subsetting the matrices.
+Since the models `r ttcode("gradeK2")` and `r ttcode("gradeK3")` include a constant term, there are a total of 79 school indicator dummies. For brevity, we exclude their estimated coefficients in the output produced by `r ttcode("coeftest()")` by subsetting the matrices.
 
 ```{r, message=FALSE, warning=FALSE}
 # obtain robust inference on the significance of coefficients
 coeftest(gradeK1, vcov. = vcovHC(gradeK1, type = "HC0"))
-coeftest(gradeK2, vcov. = vcovHC(gradeK2, type = "HC0"))[1:4,]
-coeftest(gradeK3, vcov. = vcovHC(gradeK3, type = "HC0"))[1:7,]
+coeftest(gradeK2, vcov. = vcovHC(gradeK2, type = "HC0"))[1:4, ]
+coeftest(gradeK3, vcov. = vcovHC(gradeK3, type = "HC0"))[1:7, ]
 ```
 
-We use `stargazer()` to gather all relevant information in a structured table.
+We now use `r ttcode("stargazer()")` to gather all relevant information in a structured table.
 
 ```{r}
 # compute robust standard errors for each model and gather them in a list
@@ -290,8 +331,9 @@ rob_se_2 <- list(
 ```
 
 ```{r, message=F, warning=F, results='asis', eval=FALSE}
-stargazer(fmk,fm1,fm2,fm3,
-  title = "Table 13.3: Project STAR - Differences Estimates with Additional Regressors for Kindergarten",
+stargazer(fmk, fm1, fm2, fm3,
+  title = "Table 13.3: Project STAR - Differences Estimates with 
+  Additional Regressors for Kindergarten",
   header = FALSE, 
   type = "latex",
   model.numbers = F,
@@ -305,7 +347,7 @@ stargazer(fmk,fm1,fm2,fm3,
 
 <!--html_preserve-->
 
-```{r, message=F, warning=F, results='asis', echo=F}
+```{r, message=F, warning=F, results='asis', echo=F, eval=my_output=="html"}
 stargazer(fmk,gradeK1,gradeK2,gradeK3,
   title = "Table 13.3: Project STAR - Differences Estimates with Additional Regressors for Kindergarten",
   header = FALSE, 
@@ -327,11 +369,34 @@ stargazer(fmk,gradeK1,gradeK2,gradeK3,
 
 <!--/html_preserve-->
 
-While the results in column (1) of table Table 13.3 are just a repetition of the outcomes obtained for \@ref(eq:starpopreg) before, columns (2) to (4) reveal that adding student characteristics and school fixed effects does not lead to significantly different estimates of the treatment effects. This result makes it more plausible that the estimates of the effects obainted using model \@ref(eq:starpopreg) do not suffer from failure of random assignment. Note that there is some decrease in the standard errors and some increase in $\overline{R}^2$, implying that the estimates are more precise.
+```{r, message=F, warning=F, results='asis', echo=F, eval=my_output=="latex"}
+stargazer(fmk,gradeK1,gradeK2,gradeK3,
+  title = "Project STAR - Differences Estimates with 
+  Additional Regressors for Kindergarten",
+  header = FALSE, 
+  digits = 3,
+  type = "latex",
+  float.env = "sidewaystable",
+  column.sep.width = "-5pt",
+  model.numbers = F,
+  omit.table.layout = "n",
+  column.labels = c("(1)", "(2)", "(3)", "(4)"),
+  dep.var.caption  = "Test Score in Kindergarten",
+  dep.var.labels.include = FALSE,
+  se = rob_se_2,
+  omit = "schoolid",
+  nobs = TRUE,
+  add.lines = list(
+                   c("School indicators?","no", "no", "yes", "yes")
+                   )
+  ) 
+```
 
-Because teachers where randomly assigned to classes, inclusion of school fixed effect allows us to estimate the effect of a teacher's experience on test scores of students in kindergarten. For regression (3) we find that the average effect of 10 years experience on test scores is predicted to be $10*0.74=7.4$ points. It is important to be aware of the fact that the other estimates on student characteristics used in regression (4) *do not* have causal interpretation due to nonrandom assignment.^[See Chapter 13.3 of the book for a detailed discussion.]
+While the results in column (1) of table Table 13.3 are just a repetition of the outcomes obtained for \@ref(eq:starpopreg) before, columns (2) to (4) reveal that adding student characteristics and school fixed effects does not lead to significantly different estimates of the treatment effects. This result makes it more plausible that the estimates of the effects obtained using model \@ref(eq:starpopreg) do not suffer from failure of random assignment. Note that there is some decrease in the standard errors and some increase in $\overline{R}^2$, implying that the estimates are more precise.
 
-To answer the question whether the estimated effect presented in table 13.2 are large or small in a practical sense, we translate the predicted changes in test scores to units of standard deviation in order to allow for a comparison (see Section 9.4).
+Because teachers where randomly assigned to classes, inclusion of school fixed effect allows us to estimate the causal effect of a teacher's experience on test scores of students in kindergarten. For regression (3) we find that the average effect of 10 years experience on test scores is predicted to be $10*0.74=7.4$ points. It is important to be aware of the fact that the other estimates on student characteristics used in regression (4) *do not* have causal interpretation due to nonrandom assignment.^[See Chapter 13.3 of the book for a detailed discussion.]
+
+To answer the question whether the estimated effects presented in Table 13.2 are large or small in a practical sense, we translate the predicted changes in test scores to units of standard deviation in order to allow for a comparison (see Section 9.4 for a similar argument).
 
 ```{r}
 # compute sample standard deviations of test scores
@@ -384,35 +449,45 @@ df <- t(
     )
   )
 ```
-It is fairly easy to turn the <tt>data.frame</tt> `df` into a LaTeX table.
+It is fairly easy to turn the `r ttcode("data.frame")` `r ttcode("df")` into a LaTeX table.
 ```{r, eval=FALSE}
-# generate simply LaTeX table using stargazer
+# generate simple LaTeX table using stargazer
 stargazer(df,
-          title = "Table 13.4: Estimated Class Size Effects (in Units of Standard Deviations)",
+          title = "Table 13.4: Estimated Class Size Effects 
+          (in Units of Standard Deviations)",
           type = "html", 
           summary = FALSE)
 ```
 
 <!--html_preserve-->
 
-```{r, message=F, warning=F, results='asis', echo=F}
+```{r, message=F, warning=F, results='asis', echo=F, eval=my_output=="html"}
 stargazer(df,
-          title = "Table 13.4: Estimated Class Size Effects (in Units of Standard Deviations)",
+          title = "Table 13.4: Estimated Class Size Effects 
+          (in Units of Standard Deviations)",
           type = "html", 
           summary = FALSE)
 ```
 
 <!--/html_preserve-->
 
-On the one hand, we find that the estimated effects of a small classes is largest for grade 1. As pointed out in the book, this is probably because student in the control group for grade 1 did poorly on the test for some unknown reason or simply due to random variation. On the other hand, the difference between the estimated effect of beeing in a small class and beeing in a regular classes with an aide is roughly 0.2 standard deviations for all grades. This leads to the conclusion that the effect of beeing in a regular sized class with an aide is zero and the effect of beeing in a small class is roughly the same for all grades.
+```{r, message=F, warning=F, results='asis', echo=F, eval=my_output=="latex"}
+stargazer(df,
+          title = "Estimated Class Size Effects 
+          (in Units of Standard Deviations)",
+          type = "latex", 
+          summary = FALSE)
+```
 
-The remainder of Chapter 13.3 in the book discusses to what extent these experimental estimates are comparable with observational estimates obtained using data on school districts in California and Massachusetts in Chapter 9. It turns out that the estimates are indeed very similar. Please refer to the aforementioned section in the book for the a discussion.
+On the one hand, we find that the estimated effect of a small classes is largest for grade 1. As pointed out in the book, this is probably because students in the control group for grade 1 did poorly on the test for some unknown reason or simply due to random variation. On the other hand, the difference between the estimated effect of being in a small class and being in a regular classes with an aide is roughly 0.2 standard deviations for all grades. This leads to the conclusion that the effect of being in a regular sized class with an aide is zero and the effect of being in a small class is roughly the same for all grades.
+
+The remainder of Chapter 13.3 in the book discusses to what extent these experimental estimates are comparable with observational estimates obtained using data on school districts in California and Massachusetts in Chapter 9. It turns out that the estimates are indeed very similar. Please refer to the aforementioned section in the book a more lengthy discussion.
 
 ## Quasi Experiments
 
 In quasi-experiments, "as if" randomness is exploited to use methods similar to those that have been discussed in the previous Chapter. There are two types of quasi-experiments:^[See chapter 13.4 of the book for some example studies that are based on quasi-experiments.]
 
-1. Random variations in individual circumstances allows to view the treatment "as if" it was randomly determined.
+1. Random variations in individual circumstances allow to view the treatment "as if" it was randomly determined.
 
 2. The treatment is only partially determined by "as if" random variation.
 
@@ -420,13 +495,13 @@ The former allows to estimate the effect using either model \@ref(eq:diffestwar)
 
 Some more advanced techniques that are helpful in settings where the treatment assignment is (partially) determined by a threshold in a so-called running variable are *sharp regression discontinuity design* (RDD) and *fuzzy regression discontinuity design* (FRDD).
 
-We will briefly review these techniques and, since the book does not provide any empirical examples in this section, we will use our own simulated data in a minimal example to discuss how DiD, RDD and FRDD can be applied in <tt>R</tt>.
+We will briefly review these techniques and, since the book does not provide any empirical examples in this section, we will use our own simulated data in a minimal example to discuss how DID, RDD and FRDD can be applied in `r ttcode("R")`.
 
 ### The Differences-in-Differences Estimator {-} 
 
-In quasi-experiments is often the case that the source of "as if" randomness in treatment assignment cannot entirely prevent systematic differences between control and treatment group. This problem was encountered by Card and Krüger (1994) who used geography as the "as if" random treatment assignment to study the effect on employment of workers in the fast-food restaurants caused by an increase in the state minimum wage in New Jersey in the year of 1992. Their idea was to use the fact that the increase in minimum wage applied to employees in New Jersey (treatment group) but not to those living in the neighbouring Pennsylvania (control group). 
+In quasi-experiments it is often the case that the source of "as if" randomness in treatment assignment cannot entirely prevent systematic differences between control and treatment group. This problem was encountered by Card and Krüger (1994) who used geography as the "as if" random treatment assignment to study the effect on employment of workers in the fast-food restaurants caused by an increase in the state minimum wage in New Jersey in the year of 1992. Their idea was to use the fact that the increase in minimum wage applied to employees in New Jersey (treatment group) but not to those living in the neighboring Pennsylvania (control group). 
 
-It is quite conceivable that such a wage hike is not correlated with other determinants of employment. However, there still might by some state-specific differences an thus differences between control and treatment group. This would render the *differences estimator* biased and inconsistent. Card and Krüger (1994) solved this by using a DID estimator: they collected data in February 1992 (before the treatment) and November 1992 (after the treatment) for the same restaurants and estimated the effect of the wage hike by analyzing differences in the differences in employment for New Jersey and Pensilvania before and after the increase.^[See also the box *What is the Effect on Employment of the Minimum Wage?* in Chapter 13.4 of the book.] The DID estimator is
+It is quite conceivable that such a wage hike is not correlated with other determinants of employment. However, there still might be some state-specific differences and thus differences between control and treatment group. This would render the *differences estimator* biased and inconsistent. Card and Krüger (1994) solved this by using a DID estimator: they collected data in February 1992 (before the treatment) and November 1992 (after the treatment) for the same restaurants and estimated the effect of the wage hike by analyzing differences in the differences in employment for New Jersey and Pennsylvania before and after the increase.^[See also the box *What is the Effect on Employment of the Minimum Wage?* in Chapter 13.4 of the book.] The DID estimator is
 
 \begin{align}
   \widehat{\beta}_1^{\text{diffs-in-diffs}} =& \, (\overline{Y}^{\text{treatment,after}} - \overline{Y}^{\text{treatment,before}}) - (\overline{Y}^{\text{control,after}} - \overline{Y}^{\text{control,before}}) \\
@@ -435,22 +510,23 @@ It is quite conceivable that such a wage hike is not correlated with other deter
 
 with
 
-- $\overline{Y}^{\text{treatment,before}}$ - the sample average in the treatment group, before the treatment,
++ $\overline{Y}^{\text{treatment,before}}$ - the sample average in the treatment group before the treatment
 
-- $\overline{Y}^{\text{treatment,after}}$ - the sample average in the treatment group, after the treatment,
++ $\overline{Y}^{\text{treatment,after}}$ - the sample average in the treatment group after the treatment
 
-- $\overline{Y}^{\text{treatment,before}}$ - the sample average in the control group, before the treatment,
++ $\overline{Y}^{\text{treatment,before}}$ - the sample average in the control group before the treatment
 
-- $\overline{Y}^{\text{treatment,after}}$ - the sample average in the control group, after the treatment.
++ $\overline{Y}^{\text{treatment,after}}$ - the sample average in the control group after the treatment.
 
-We may use <tt>R</tt> to reproduce figure 13.1 of the book.
+We now use `r ttcode("R")` to reproduce Figure 13.1 of the book.
 
+<div class="unfolded">
 ```{r, fig.align='center'}
 # initialize plot and add control group
-plot(c(0,1), c(6,8), 
+plot(c(0, 1), c(6, 8), 
      type = "p",
-     ylim = c(5,12),
-     xlim = c(-0.3,1.3),
+     ylim = c(5, 12),
+     xlim = c(-0.3, 1.3),
      main = "The Differences-in-Differences Estimator",
      xlab = "Period",
      ylab = "Y",
@@ -459,20 +535,20 @@ plot(c(0,1), c(6,8),
      xaxt = "n",
      yaxt = "n"
 )
-axis(1, at = c(0,1), labels = c("before","after"))
-axis(2, at = c(0,13))
+axis(1, at = c(0, 1), labels = c("before", "after"))
+axis(2, at = c(0, 13))
 
 # add treatment group
-points(c(0,1,1), c(7,9,11), 
+points(c(0, 1, 1), c(7, 9, 11), 
        col = "darkred",
        pch = 20
 )
 
 # add line segments
-lines(c(0,1),c(7,11), col = "darkred")
-lines(c(0,1),c(6,8), col = "steelblue")
-lines(c(0,1),c(7,9), col = "darkred", lty = 2)
-lines(c(1,1),c(9,11), col = "black", lty = 2, lwd = 2)
+lines(c(0, 1), c(7, 11), col = "darkred")
+lines(c(0, 1), c(6, 8), col = "steelblue")
+lines(c(0, 1), c(7, 9), col = "darkred", lty = 2)
+lines(c(1, 1), c(9, 11), col = "black", lty = 2, lwd = 2)
 
 # add annotations
 text(1, 10, expression(hat(beta)[1]^{DID}), cex = 0.8, pos = 4)
@@ -481,10 +557,11 @@ text(0, 6.8, "s. mean treatment", cex = 0.8 , pos = 4)
 text(1, 7.9, "s. mean control", cex = 0.8 , pos = 4)
 text(1, 11.1, "s. mean treatment", cex = 0.8 , pos = 4)
 ```
+</div>
 
-The DID estimator \@ref(eq:DID) can als be written in regression notation: $\widehat{\beta}_1^{\text{DID}}$ is the OLS estimator of $\beta_1$ in the model 
+The DID estimator \@ref(eq:DID) can also be written in regression notation: $\widehat{\beta}_1^{\text{DID}}$ is the OLS estimator of $\beta_1$ in the model 
 \begin{align}
-  \Delta Y_i = \beta_0 + \beta_1 X_i + u_i (\#eq:did)
+  \Delta Y_i = \beta_0 + \beta_1 X_i + u_i, (\#eq:did)
 \end{align}
 where $\Delta Y_i$ denotes the difference in pre- and post-treatment outcomes of individual $i$ and $X_i$ is the treatment indicator.
 
@@ -494,8 +571,8 @@ Adding additional regressors that measure pre-treatment characteristics to \@ref
 \end{align}
 the *difference-in-differences estimator* with additional regressors. The additional regressors may lead to a more precise estimate of $\beta_1$. 
 
-We will keep things simple and focus on estimation of the treatment effect using DID in the most simplest case, that is a control and a treatment group observed for two time periods --- one before and one after the treatment. In particular, we will see that there are three different ways to proceed.
-
+We will keep things simple and focus on estimation of the treatment effect using DID in the simplest case, that is a control and a treatment group observed for two time periods --- one before and one after the treatment. In particular, we will see that there are three different ways to proceed.
+\pagebreak
 First, we simulate pre- and post-treatment data using R. 
 
 ```{r}
@@ -515,8 +592,9 @@ y_post <- 7 + 2 + TEffect * TDummy + rnorm(n)
 y_post[1:n/2] <- y_post[1:n/2] - 1 
 ```
 
-We continue by plotting the data. The function `jitter()` is used to add some artificial dispersion in the horizontal component of the points so that there is less overplotting. `alpha()` from the package `scales` allows to adjust the opacity of colors.
+We continue by plotting the data. The function `r ttcode("jitter()")` is used to add some artificial dispersion in the horizontal component of the points so that there is less overplotting. The function `r ttcode("alpha()")` from the package `r ttcode("scales")` allows to adjust the opacity of colors used in plots.
 
+<div class="unfolded">
 ```{r, fig.align='center'}
 library(scales)
 
@@ -526,28 +604,28 @@ post <- rep(1, length(y_pre[TDummy==0]))
 # plot control group in t=1
 plot(jitter(pre, 0.6), 
      y_pre[TDummy==0], 
-     ylim = c(0,16), 
-     col = "steelblue", 
+     ylim = c(0, 16), 
+     col = alpha("steelblue", 0.3),
      pch = 20, 
-     xlim = c(0,1),
+     xlim = c(-0.5, 1.5),
      ylab = "Y",
      xlab = "Period",
      xaxt = "n",
      main = "Artificial Data for DID Estimation"
      )
-axis(1, at = c(0,1), labels = c("before","after"))
+axis(1, at = c(0, 1), labels = c("before", "after"))
 
 # add treatment group in t=1
 points(jitter(pre, 0.6), 
        y_pre[TDummy==1], 
-       col = alpha("darkred", 0.5), 
+       col = alpha("darkred", 0.3), 
        pch = 20
        )
 
 # add control group in t=2
 points(jitter(post, 0.6),
        y_post[TDummy==0], 
-       col = "steelblue", 
+       col = alpha("steelblue", 0.5),
        pch = 20
        )
 
@@ -558,31 +636,32 @@ points(jitter(post, 0.6),
        pch = 20
        )
 ```
+</div>
 
 Notice that both observations from control and treatment group have a higher sample mean after the treatment but that the increase is stronger for the treatment group. Using DID we may estimate how much of that difference in the difference between groups is due to the treatment.
 
 It is straightforward to compute the DID estimate in the fashion of \@ref(eq:DID).
 
 ```{r}
-# Compute the DID estimator for the treatment effect 'by hand'
+# compute the DID estimator for the treatment effect 'by hand'
 mean(y_post[TDummy==1]) - mean(y_pre[TDummy==1]) - 
 (mean(y_post[TDummy==0]) - mean(y_pre[TDummy==0]))
 ```
 
-Notice that the estimate is close to $4$, the value chosen as the treatment effect `TEffect` above. Since \@ref(eq:did) is a simple linear model, we may perform OLS estimation of this regression specification using `lm()`.
+Notice that the estimate is close to $4$, the value chosen as the treatment effect `r ttcode("TEffect")` above. Since \@ref(eq:did) is a simple linear model, we may perform OLS estimation of this regression specification using `r ttcode("lm()")`.
 
 ```{r}
-# Compute the DiD estimator using a linear model
+# compute the DiD estimator using a linear model
 lm(I(y_post - y_pre) ~ TDummy)
 ```
 
-We find that the estimates conincide. Furthermore, one can show that the DID estimate obained by estimating specification \@ref(eq:did) OLS is the same as the OLS estimate of $\beta_{TE}$ in 
+We find that the estimates coincide. Furthermore, one can show that the DID estimate obtained by estimating specification \@ref(eq:did) OLS is the same as the OLS estimate of $\beta_{TE}$ in 
 \begin{align}
   Y_i =& \beta_0 + \beta_1 D_i + \beta_2 Period_i + \beta_{TE} (Period_i \times D_i) (\#eq:DIDint)
 \end{align}
-where $D_i$ is the binary treatment indicator, $Period_i$ is a binary indicator for the after treatment period and the $Period_i \times D_i$ is the interaction of both.
+where $D_i$ is the binary treatment indicator, $Period_i$ is a binary indicator for the after-treatment period and the $Period_i \times D_i$ is the interaction of both.
 
-As for \@ref(eq:did), estimation of \@ref(eq:DIDint) using <tt>R</tt> is straightforward. See Chapter 8 for a discussion of interaction terms in regression models.
+As for \@ref(eq:did), estimation of \@ref(eq:DIDint) using `r ttcode("R")` is straightforward. See Chapter 8 for a discussion of interaction terms in regression models.
 
 ```{r}
 # prepare Data for DID regression using interaction term 
@@ -595,7 +674,7 @@ d <- data.frame("Y" = c(y_pre,y_post),
 lm(Y ~ Treatment * Period, data = d)
 ```
 
-As expected, the estimate of the coefficient on the interaction of the treatment dummy and the time dummy coincides with the estimates obtained using the approach \@ref(eq:DID) and OLS estimation of \@ref(eq:did).
+As expected, the estimate of the coefficient on the interaction of the treatment dummy and the time dummy coincide with the estimates obtained using the approach \@ref(eq:DID) and OLS estimation of \@ref(eq:did).
 
 ### Regression Discontinuity Estimators {-}
 
@@ -613,9 +692,9 @@ X_i =&
   \end{cases}
 \end{align*}
 
-so that the receipt of treatment, $X_i$, is determined by some threshold $c$ of a continuous variable $W_i$, the so called running variable. The idea of *regression discontinuity design* is to use observations with a $W_i$ close to $c$ for estimation of $\beta_1$, the average treatment effect for individuals with $W_i = c$ which is assumed to be a good approximation to the treatment effect in the population. \@ref(eq:SRDDsetting) is called a *sharp regression discontinuity design* because treatment assignment is deterministic and discontinuous at the cutoff: all observations with $W_i < c$ do not receive treatment and all observations where $W_i \geq c$ are treated.   
+so that the receipt of treatment, $X_i$, is determined by some threshold $c$ of a continuous variable $W_i$, the so called running variable. The idea of *regression discontinuity design* is to use observations with a $W_i$ close to $c$ for estimation of $\beta_1$. $\beta_1$ is the average treatment effect for individuals with $W_i = c$ which is assumed to be a good approximation to the treatment effect in the population. \@ref(eq:SRDDsetting) is called a *sharp regression discontinuity design* because treatment assignment is deterministic and discontinuous at the cutoff: all observations with $W_i < c$ do not receive treatment and all observations where $W_i \geq c$ are treated.   
 
-The subsequent code chunks show how to estimate a linear SRDD using <tt>R</tt> and how to produce plots in the way of Figure 13.2 of the book.
+The subsequent code chunks show how to estimate a linear SRDD using `r ttcode("R")` and how to produce plots in the way of Figure 13.2 of the book.
 
 ```{r, message=FALSE}
 # generate sample data
@@ -623,6 +702,7 @@ W <- runif(1000, -1, 1)
 y <- 3 + 2 * W + 10 * (W>=0) + rnorm(1000)
 ```
 
+<div class="unfolded">
 ```{r, fig.align='center', message=FALSE}
 # load the package 'rddtools'
 library(rddtools)
@@ -638,10 +718,11 @@ plot(data,
      ylab = "Y"
      )
 ```
+</div>
 
-The argument `nbins` sets the number of bins the running variable is devided in. The dots represent bin averages of the outcome variable.
+The argument `r ttcode("nbins")` sets the number of bins the running variable is divided in for aggregation. The dots represent bin averages of the outcome variable.
 
-We may use the function `rdd_reg_lm()` to estimate the treatment effect using model \@ref(eq:SRDDsetting) for the artificial data generated above. By choosing `slope = "same"` we restrict the slopes of the estimated regression function to be the same on both sides of the jump. 
+We may use the function `r ttcode("rdd_reg_lm()")` to estimate the treatment effect using model \@ref(eq:SRDDsetting) for the artificial data generated above. By choosing `r ttcode('slope = "same"')` we restrict the slopes of the estimated regression function to be the same on both sides of the jump at the cutpoint $W=0$. 
 
 ```{r, message=FALSE, warning=FALSE}
 # estimate the sharp RDD model
@@ -650,10 +731,11 @@ rdd_mod <- rdd_reg_lm(rdd_object = data,
 summary(rdd_mod)
 ```
 
-The coefficient estimate of interest is labeled <tt>D</tt>. Note that the estimate is very close to the treatment effect chosen in the DGP above. 
+The coefficient estimate of interest is labeled `r ttcode("D")`. Note that the estimate is very close to the treatment effect chosen in the DGP above. 
 
-It is easy to visualize the result: simply call `plot()` on the estimated model object.
+It is easy to visualize the result: simply call `r ttcode("plot()")` on the estimated model object.
 
+<div class="unfolded">
 ```{r fig.align='center'}
 plot(rdd_mod,
      cex = 0.35, 
@@ -661,54 +743,56 @@ plot(rdd_mod,
      xlab = "W", 
      ylab = "Y")
 ```
+</div>
 
 Note that, as above, the dots represent averages of binned observations.
 
 So far we have assumed that crossing of the threshold determines receipt of treatment so that the jump of the population regression functions at the threshold can be regarded as the causal effect of the treatment.
 
-When crossing of the threshold $c$ is not the only cause for receipt of the treatment and instead other, treatment is not a deterministic function of $W_i$. Instead, it is useful to think of the $c$ as a threshold where the *probability of receiving* the treatment jumps.
+When crossing of the threshold $c$ is not the only cause for receipt of the treatment and instead other, treatment is not a deterministic function of $W_i$. Instead, it is useful to think of the $c$ as a threshold where the *probability* of receiving the treatment jumps.
 
-This jump may be due to unobservable variables that have impact on the *probability* of being treated. Thus, $X_i$ in \@ref(eq:SRDDsetting) will be correlated with the error $u_i$ and it becomes more difficult to consistently estimate the treatment effect. In this setting, using a *fuzzy regression discontinuity design* which is based an IV approach may be a remedy: take the binary variable $Z_i$ as an indicator for crossing of the threshold,
+This jump may be due to unobservable variables that have impact on the probability of being treated. Thus, $X_i$ in \@ref(eq:SRDDsetting) will be correlated with the error $u_i$ and it becomes more difficult to consistently estimate the treatment effect. In this setting, using a *fuzzy regression discontinuity design* which is based an IV approach may be a remedy: take the binary variable $Z_i$ as an indicator for crossing of the threshold,
 \begin{align*}
   Z_i = \begin{cases}
     1, & W_i \geq c \\
     0, & W_i < c,
   \end{cases}
 \end{align*}
-and that $Z_i$ relates to $Y_i$ only through the treatment indicator $X_i$. Then $Z_i$ and $u_i$ are uncorrelated but $Z_i$ influences receipt of treatment so it is correlated with $X_i$. Thus, $Z_i$ is a valid instrument for $X_i$ and \@ref(eq:SRDDsetting) can be estimated using TSLS.  
+and assume that $Z_i$ relates to $Y_i$ only through the treatment indicator $X_i$. Then $Z_i$ and $u_i$ are uncorrelated but $Z_i$ influences receipt of treatment so it is correlated with $X_i$. Thus, $Z_i$ is a valid instrument for $X_i$ and \@ref(eq:SRDDsetting) can be estimated using TSLS.  
 
-The following code chunk generates sample data where observations with a value of the running variable $W_i$ below the cutoff $c=0$ do not receive treatment and observations with $W_i \geq 0$ do receive treatment with a probability of $80\%$ so that treatment status is only partially determined by the running variable and the cutoff. Treatment leads to an increase in $Y$ by $2$ units. Observations with $W_i \geq 0$ that do not receive treatment are called *no-shows*: think of an individual that was assigned to receive the treatment but somehow managed to avoid it.
+The following code chunk generates sample data where observations with a value of the running variable $W_i$ below the cutoff $c=0$ do not receive treatment and observations with $W_i \geq 0$ do receive treatment with a probability of $80\%$ so that treatment status is only partially determined by the running variable and the cutoff. Treatment leads to an increase in $Y$ by $2$ units. Observations with $W_i \geq 0$ that do not receive treatment are called *no-shows*: think of an individual that was assigned to receive the treatment but somehow manages to avoid it.
 
 ```{r, message=FALSE}
 library(MASS)
 
 # generate sample data
-mu <- c(0,0)
+mu <- c(0, 0)
 sigma <- matrix(c(1, 0.7, 0.7, 1), ncol = 2)
 
 set.seed(1234)
 d <- as.data.frame(mvrnorm(2000, mu, sigma))
 colnames(d) <- c("W", "Y")
 
-# Introduce fuzziness
+# introduce fuzziness
 d$treatProb <- ifelse(d$W < 0, 0, 0.8)
 
 fuzz <- sapply(d$treatProb, function(x) rbinom(1, 1, prob = x))
 
-# Treatment effect
+# treatment effect
 d$Y <- d$Y + fuzz * 2
 ```
 
-We plot all observations and use blue color to mark individuals that did not receive the treatment and use red for those that received the treatment. 
+We plot all observations and use blue color to mark individuals that did not receive the treatment and use red color for those who received the treatment. 
 
+<div class="unfolded">
 ```{r, fig.align='center'}
-# Colored plot of tretment and control group
+# colored plot of tretment and control group
 plot(d$W, d$Y,
-     col = c("steelblue","darkred")[factor(fuzz)], 
+     col = c("steelblue", "darkred")[factor(fuzz)], 
      pch= 20, 
      cex = 0.5,
-     xlim = c(-3,3),
-     ylim = c(-3.5,5),
+     xlim = c(-3, 3),
+     ylim = c(-3.5, 5),
      xlab = "W",
      ylab = "Y"
 )
@@ -716,8 +800,9 @@ plot(d$W, d$Y,
 # add dashed vertical line at cutoff
 abline(v = 0, lty = 2)
 ```
+</div>
 
-Obviously, receipt of treatment is no longer a deterministic function of the running variable $W$. Some observations with $W\geq0$ *did not* receive the treatment. We may estimate a FRDD by additionally setting `treatProb` as the assignment variable `z` in `rdd_data()`. Then `rdd_reg_lm()` applies the folling TSLS procedure: treatment is predicted using $W_i$ and the cutoff dummy $Z_i$, the instrumental variable, in the first stage regression. The fitted values from the first stage regression are used to obtain an unbiased estimate of the treatment effect using the second stage where the outcome $Y$ is regressed on the fitted values and the running variable $W_i$.
+Obviously, receipt of treatment is no longer a deterministic function of the running variable $W$. Some observations with $W\geq0$ *did not* receive the treatment. We may estimate a FRDD by additionally setting `r ttcode("treatProb")` as the assignment variable `r ttcode("z")` in `r ttcode("rdd_data()")`. Then `r ttcode("rdd_reg_lm()")` applies the following TSLS procedure: treatment is predicted using $W_i$ and the cutoff dummy $Z_i$, the instrumental variable, in the first stage regression. The fitted values from the first stage regression are used to obtain an unbiased estimate of the treatment effect using the second stage where the outcome $Y$ is regressed on the fitted values and the running variable $W_i$.
 
 ```{r}
 # Estimate the Fuzzy RDD
@@ -730,23 +815,26 @@ frdd_mod <- rdd_reg_lm(rdd_object = data,
 frdd_mod
 ```
 
-The estimate is close to $2$, the population treatment effect. We may call `plot()` on the model object to obtain a graph consisting of binned data and the estimated regression function. 
+The estimate is close to $2$, the population treatment effect. We may call `r ttcode("plot()")` on the model object to obtain a graph consisting of binned data and the estimated regression function. 
 
+<div class="unfolded">
 ```{r, fig.align='center'}
+# plot estimated FRDD function
 plot(frdd_mod, 
      cex = 0.5, 
      lwd = 0.4,
-     xlim = c(-4,4),
-     ylim = c(-3.5,5),
+     xlim = c(-4, 4),
+     ylim = c(-3.5, 5),
      xlab = "W",
      ylab = "Y"
      )
 ```
+</div>
 
-What if we would use a SRDD instead, therby ignoring the fact that treatment is not perfectly determined by the cutoff in $W$? 
+What if we would use a SRDD instead, thereby ignoring the fact that treatment is not perfectly determined by the cutoff in $W$? We may get an impression of the consequences by estimating an SRDD using the previously simulated data.
 
 ```{r}
-# Estimate Sharp RDD
+# estimate SRDD
 data <- rdd_data(d$Y, d$W, 
                  cutpoint = 0
 )
@@ -757,15 +845,15 @@ srdd_mod
 
 The estimate obtained using a SRDD shows a substantial downward bias. In fact this procedure is inconsistent for the true causal effect so enlarging the sample does not alleviate the bias.
 
-Hereinafter the book continues with a discussion of potential problems with quasi-experiments. As for all empirical studies, these potential problems relate to internal and external validity. This part is followed by a thechnical discussion of treatment effect estimation when the causal effect of treatment is heterogeneous in the population. We encourage you to work on these sections on your own.
+Hereinafter the book continues with a discussion of potential problems with quasi-experiments. As for all empirical studies, these potential problems are related to internal and external validity. This part is followed by a technical discussion of treatment effect estimation when the causal effect of treatment is heterogeneous in the population. We encourage you to work on these sections on your own.
 
 #### Summary {-}
 
-In this chapter we have introduced the concept of causal effect in randomized controlled experiments and quasi-experiments where variations in circumstances or accidents of nature are treated as sources of "as if" random assignment to treatment. We have also discussed methods that allow for unbiased and consistent estimation of these effects in both settings. This included the *differences estimator*, the *differences-in-differences estimator* as well as *sharp* and *fuzzy regression discontinuity design* estimators. It was shown how to apply these estimation techniques in <tt>R</tt>.
+In this chapter we have introduced the concept of causal effect in randomized controlled experiments and quasi-experiments where variations in circumstances or accidents of nature are treated as sources of "as if" random assignment to treatment. We have also discussed methods that allow for unbiased and consistent estimation of these effects in both settings. This included the *differences estimator*, the *differences-in-differences estimator* as well as *sharp* and *fuzzy regression discontinuity design* estimators. It was shown how to apply these estimation techniques in `r ttcode("R")`.
 
-In an empirical application we have shown how to replicate the results of the analysis of the STAR data presented in Chapter 13.3 of the book using <tt>R</tt>. This study uses a randomized controlled experiment to assess whether smaller classes improve students' performance on standardized tests. We have stressed that, being related to a randomized controlled experiment, the data produced by this study are fundamentally different than those used in the cross-section studies Chapters 4 to 8 are concerned with and thus motivated usage of a *differences estimator*.
+In an empirical application we have shown how to replicate the results of the analysis of the STAR data presented in Chapter 13.3 of the book using `r ttcode("R")`. This study uses a randomized controlled experiment to assess whether smaller classes improve students' performance on standardized tests. We have stressed that, being related to a randomized controlled experiment, the data produced by this study are fundamentally different to those used in the cross-section studies Chapters 4 to 8 and therefore we have motivated usage of a *differences estimator*.
 
-Chapter 13.4 demonstrated how estimates of treatment effects can be obtained when the design of the study is a quasi-experiment that allows for *differences-in-differences* or *regression discontinuity design* estimators. In particular, we have introduced core functions of the package `rddtools` that are convenient for estimation as well as graphical analysis of the research design before and after estimating a discontinuity design. 
+Chapter 13.4 demonstrated how estimates of treatment effects can be obtained when the design of the study is a quasi-experiment that allows for *differences-in-differences* or *regression discontinuity design* estimators. In particular, we have introduced core functions of the package `r ttcode("rddtools")` that are convenient for estimation as well as graphical analysis of the research design before and after estimating a discontinuity design. 
 
 
 
