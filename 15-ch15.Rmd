@@ -1,6 +1,9 @@
 # Estimation of Dynamic Causal Effects
 
-For answering some questions in economic research it interesting to know how large the effect on $Y$ now and in the future of a change in $X$ is. This called the *dynamic causal effect* on $Y$ of a change in $X$. In this section we will see how to estimate dynamic causal effects using several <tt>R</tt> applications where we investigate the dynamic effect of cold weather in Florida on the price of orange juice concentrate.
+```{r, child="_setup.Rmd"}
+```
+
+In economic research it sometimes is of interest to know how large the effect on $Y$ now and in the future of a change in $X$ is. This is called the *dynamic causal effect* on $Y$ of a change in $X$. In this section we will discuss how to estimate dynamic causal effects by means of several `r ttcode("R")` applications, where we investigate the dynamic effect of cold weather in Florida on the price of orange juice concentrate.
 
 The discussion covers:
 
@@ -8,7 +11,7 @@ The discussion covers:
 + Heteroskedasticity- and autocorrelation-consistent (HAC) standard errors
 + Generalized least squares (GLS) of ADL models
 
-If you would like to reproduce code examples, install the <tt>R</tt> packages listed below and make sure that the subsequent code chunk executes without any errors. 
+If you would like to reproduce code examples, install the `r ttcode("R")` packages listed below beforehand and make sure that the subsequent code chunk executes without any errors. 
 
 ```{r, warning=FALSE, message=FALSE}
 library(AER)
@@ -21,23 +24,24 @@ library(stargazer)
 
 ## The Orange Juice Data 
 
-The largest cultivation region for oranges in the U.S. is located in state of Florida which usually has ideal climate for the fruit growth and thus makes Florida the source of almost all frozen juice contentrate produced in the country However, from time to time and depening on their severeness, cold snaps cause loss of harvests such that the supply of oranges decreases and consequently the price of frozen juice conzentrate rises. The timing of the price increases is complicated: a cut in today's supply of concentrate influences not today's price but also future prices because supply in future periods will be lower, too. Clearly, the magnitude of today's and future price increases due to a freeze is an empirical question that can be investigated using a distributed lag model --- a model that relates price changes to weather conditions.
+The largest cultivation region for oranges in the U.S. is located in state of Florida which usually has ideal climate for the fruit growth and thus makes Florida the source of almost all frozen juice concentrate produced in the country. However, from time to time and depending on their severeness, cold snaps cause a loss of harvests such that the supply of oranges decreases and consequently the price of frozen juice concentrate rises. The timing of the price increases is complicated: a cut in today's supply of concentrate influences not just today's price but also future prices because supply in future periods will be diminished, too. Clearly, the magnitude of today's and the future price increases due to freeze is an empirical question that can be investigated using a distributed lag model --- a time series model that relates price changes to weather conditions.
 
-To begin with the analysis, we reproduce Figure 15.1 of the book which displays plots of the price index for frozen concentrated orange juice, percent changes in the price as well as monthly freezing degree days in Orlando, the center of Florida's orange-growing region.
+To begin with the analysis, we reproduce Figure 15.1 of the book which displays plots of the price index for frozen concentrated orange juice, percentage changes in the price as well as monthly freezing degree days in Orlando, the center of Florida's orange-growing region.
 
 ```{r}
-# Load the frozen orange juice data set
+# load the frozen orange juice data set
 data("FrozenJuice")
 
-# price index for frozen concentrated juice
-FOJCPI <- FrozenJuice[,"price"]/FrozenJuice[,"ppi"]
+# compute the price index for frozen concentrated juice
+FOJCPI <- FrozenJuice[, "price"]/FrozenJuice[, "ppi"]
 FOJC_pctc <- 100 * diff(log(FOJCPI))
 FDD <- FrozenJuice[, "fdd"]
 ```
 
 ```{r, fig.align='center'}
+# convert series to xts objects
 FOJCPI_xts <- as.xts(FOJCPI)
-FDD_xts <- as.xts(FrozenJuice[,3])
+FDD_xts <- as.xts(FrozenJuice[, 3])
 
 # Plot orange juice price index
 plot(as.zoo(FOJCPI),
@@ -48,7 +52,7 @@ plot(as.zoo(FOJCPI),
      main = "Frozen Concentrated Orange Juice"
 )
 
-# Plot percent changes in prices
+# Plot percentage changes in prices
 plot(as.zoo(FOJC_pctc),
      col = "steelblue", 
      lwd = 2,
@@ -67,23 +71,23 @@ plot(as.zoo(FDD),
 )
 ```
 
-It is conspicious that periods with a high amount of freezing degree days are followed by large month-to-month price changes. These coindciding movements give rise to run a simple regression of price changes $\%ChgOJC_t$ on freezing degree days ($FDD_t$) to estimate the effect of an additional freezing degree day one the price in the current month. For this, as for all other regressions in this chapter, we use $T=611$ observations (January 1950 to December 200).
+It is conspicuous that periods with a high amount of freezing degree days are followed by large month-to-month price changes. These coinciding movements motivate to run a simple regression of price changes ($\%ChgOJC_t$) on freezing degree days ($FDD_t$) to estimate the effect of an additional freezing degree day one the price in the current month. For this, as for all other regressions in this chapter, we use $T=611$ observations (January 1950 to December 2000).
 
 ```{r}
-# simple regression of percent changes on freezing degree days
+# simple regression of percentage changes on freezing degree days
 orange_SR <- dynlm(FOJC_pctc ~ FDD)
 coeftest(orange_SR, vcov. = vcovHAC)
 ```
 
-Notice that the standard errors are computed using a HAC estimator of the model variance-covariance matrix, a matter that will not be further commented at this point, see Chapter 14.5.
+Notice that the standard errors are computed using a HAC estimator of the model variance-covariance matrix, a matter that will not be further commented at this point, see Chapter 14.5 for a discussion of this estimator.
 
 \begin{align*}
-  \widehat{\%ChgOJC_t} = \underset{(0.19)}{-0.42} + \underset{(0.13)}{0.47} FDD_t
+  \widehat{\%ChgOJC_t} = -\underset{(0.19)}{0.42} + \underset{(0.13)}{0.47} FDD_t
 \end{align*}
 
 The estimated coefficient on $FDD_t$ has the following interpretation: an additional freezing degree day in month $t$ leads to a price increase 0f $0.47\%$ in the same month.  
 
-To consider effects of cold snaps on the orange juice price over following, we include lagged values of $FDD_t$ in our model which leads to a so-called *distributed lag regression*. We estimate a specification of a contemporeneous and six lagged values of $FDD_t$.
+To consider effects of cold snaps on the orange juice price over the subsequent periods, we include lagged values of $FDD_t$ in our model which leads to a so-called *distributed lag regression model*. We estimate a specification using a contemporaneous and six lagged values of $FDD_t$ as regressors.
 
 ```{r}
 # distributed lag model with 6 lags of freezing degree days
@@ -91,19 +95,22 @@ orange_DLM <- dynlm(FOJC_pctc ~ FDD + L(FDD, 1:6))
 coeftest(orange_DLM, vcov. = vcovHAC)
 ```
 
-As a result we obtain
+As the result we obtain
 
 \begin{align}
-  \widehat{\%ChgOJC_t} =& \, \underset{(0.21)}{-0.69} + \underset{(0.14)}{0.47} FDD_t + \underset{(0.08)}{0.15} FDD_{t-1} + \underset{(0.06)}{0.06} FDD_{t-2} + \underset{(0.05)}{0.07} FDD_{t-3} \\ &\,+ \underset{(0.03)}{0.04} FDD_{t-4} + \underset{(0.03)}{0.05} FDD_{t-5} + \underset{(0.05)}{0.05} FDD_{t-6} (\#eq:orangemod1)
+  \begin{split}
+  \widehat{\%ChgOJC_t} =& \, -\underset{(0.21)}{0.69} + \underset{(0.14)}{0.47} FDD_t + \underset{(0.08)}{0.15} FDD_{t-1} + \underset{(0.06)}{0.06} FDD_{t-2} + \underset{(0.05)}{0.07} FDD_{t-3} \\ &\,+ \underset{(0.03)}{0.04} FDD_{t-4} + \underset{(0.03)}{0.05} FDD_{t-5} + \underset{(0.05)}{0.05} FDD_{t-6},
+  \end{split}
+  (\#eq:orangemod1)
 \end{align}
 
 where the coefficient on $FDD_{t-1}$ estimates the price increase in period $t$ caused by an additional freezing degree day in the preceding month, the coefficient on $FDD_{t-2}$ estimates the effect of an additional freezing degree day two month ago and so on. Consequently, the coefficients in \@ref(eq:orangemod1) can be interpreted as price changes in current and future periods due to a unit increase in the current month' freezing degree days.
 
 ## Dynamic Causal Effects
 
-This section of the book describes the general idea of a dynamic causal effect and how the concept of a randomized controlled experiment which (as has been discussed in Chapter 13) constitutes and ideal study design can be translated to time series applications, using several examples. For brevity we will not go into the details but note once again that the distributed lag model mentionted above can often be used to estimate a dynamic causal relationship. 
+This section of the book describes the general idea of a dynamic causal effect and how the concept of a randomized controlled experiment, which (as has been discussed in Chapter 13) constitutes an ideal study design can be translated to time series applications using several examples. For brevity we will not go into the details but note once again that the distributed lag model mentioned above can often be used to estimate a dynamic causal relationship. 
 
-In general, for empirical attempts to measure a dynamic causal effect, the assumptions of stationarity (see Key Concept 14.5) and exogeneity must hold. In the time series appliaction up until here we have assumed that the model error term has conditional mean zero given current and past values of the regressors. For estimation of a dynamic causal effect using a distributed lag model, assuming a stronger form termed *strict exogeneity* may be useful. Strict exogeneity states that the error term has mean zero conditional on past, present *and future* values of the independent variables. 
+In general, for empirical attempts to measure a dynamic causal effect, the assumptions of stationarity (see Key Concept 14.5) and exogeneity must hold. In time series applications up until here we have assumed that the model error term has conditional mean zero given current and past values of the regressors. For estimation of a dynamic causal effect using a distributed lag model, assuming a stronger form termed *strict exogeneity* may be useful. Strict exogeneity states that the error term has mean zero conditional on past, present *and future* values of the independent variables. 
 
 The two concepts of exogeneity and the distributive lag model are summarized in Key Concept 15.1
 
@@ -115,7 +122,7 @@ The two concepts of exogeneity and the distributive lag model are summarized in 
 
 The general distributed lag model is
 \begin{align}
-  Y_t = \beta_0 + \beta_1 X_t + \beta_2 X_{t-1} + \beta_3 X_{t-2} + \dots + \beta_{r+1} X_{t-r} + u_t (\#eq:dlm)
+  Y_t = \beta_0 + \beta_1 X_t + \beta_2 X_{t-1} + \beta_3 X_{t-2} + \dots + \beta_{r+1} X_{t-r} + u_t, (\#eq:dlm)
 \end{align}
 where it is assumed that
 
@@ -125,17 +132,17 @@ where it is assumed that
      (a) $X_t,Y_t$ have a stationary distribution.
      (b) $(Y_t,X_t)$ and $(Y_{t-j},X_{t-j})$ become independently distributed as $j$ gets large.
 
-3. Large outliers are unlikely. In particular, we need that the all variables have more than eight nonzero and finite moments --- a stronger assumption than before (four finite nonzero moments) that is required for computation of the HAC covariance matrix estimator.
+3. Large outliers are unlikely. In particular, we need that all the variables have more than eight nonzero and finite moments --- a stronger assumption than before (four finite nonzero moments) that is required for computation of the HAC covariance matrix estimator.
 
 4. There is no perfect multicollinearity.
 
- The distributed lag model may be extended to include contempoarneous and past values of additional regressors.
+ The distributed lag model may be extended to include contemporaneous and past values of additional regressors.
 
 **On the assumption of exogeneity**
 
-+ There is another form of exogeneity termed *strict exogeneity* which assumes $$E(u_t\vert \dots X_{t+2},X_{t+1},X_t,X_{t-1},X_{t-2},\dots)=0,$$ that is the error term is has mean zero conditional on past, present and future values of $X$. Strict exogeneity implies exogeneity (as defined in 1.) but not the other way around. From this point we will therefore distinguish between exogeneity and strict exogeneity. 
++ There is another form of exogeneity termed *strict exogeneity* which assumes $$E(u_t\vert \dots X_{t+2},X_{t+1},X_t,X_{t-1},X_{t-2},\dots)=0,$$ that is the error term has mean zero conditional on past, present and future values of $X$. Strict exogeneity implies exogeneity (as defined in 1.) but not the other way around. From this point on we will therefore distinguish between exogeneity and strict exogeneity. 
 
-+ Exogeneity as in 1. suffices for OLS estimators of the coefficient in distributed lag models to be consistent. However, if the the assumption of strict exogeneity can be made, more efficient estimators can be applied.
++ Exogeneity as in 1. suffices for the OLS estimators of the coefficient in distributed lag models to be consistent. However, if the the assumption of strict exogeneity can be made, more efficient estimators can be applied.
 
 </p>
 
@@ -144,20 +151,20 @@ where it is assumed that
 
 ## Dynamic Multipliers and Cumulative Dynamic Multipliers
 
-The following terminoligy regarding the coefficients in the distributed lag model \@ref(eq:dlm) are useful for upcoming applications:
+The following terminology regarding the coefficients in the distributed lag model \@ref(eq:dlm) is useful for upcoming applications:
 
-+ The dynamic causal effect is also termed the *dynamic multiplier*. We say that $\beta_{h+1}$ in \@ref(eq:dlm) is the $h$-period dynamic multiplier. 
++ The dynamic causal effect is also called the *dynamic multiplier*. We say that $\beta_{h+1}$ in \@ref(eq:dlm) is the $h$-period dynamic multiplier. 
 
-+ The contemporaneous effect of $X$ ond $Y$, $\beta_1$, is termed the *impact effect*. 
++ The contemporaneous effect of $X$ on $Y$, $\beta_1$, is termed the *impact effect*. 
 
-+ The $h$-period *cumulative dynamic multiplier* of a unit change in $X$ and $Y$ is defined as the cumulative sum of the dynamic multipliers. In particualr, $\beta_1$ is the zero-period cumulative dynamic multiplier, $\beta_1 + \beta_2$ is the one-period cumulative dynamic multiplier and so forth.
++ The $h$-period *cumulative dynamic multiplier* of a unit change in $X$ and $Y$ is defined as the cumulative sum of the dynamic multipliers. In particular, $\beta_1$ is the zero-period cumulative dynamic multiplier, $\beta_1 + \beta_2$ is the one-period cumulative dynamic multiplier and so forth.
 
-      Cumulative dynamic multipliers of \@ref(eq:dlm) are the coefficients $\delta_1,\delta_2,\dots,\delta_r,\delta_{r+1}$ in the modified regression
+     The cumulative dynamic multipliers of the distributed lag model \@ref(eq:dlm) are the coefficients $\delta_1,\delta_2,\dots,\delta_r,\delta_{r+1}$ in the modified regression
 \begin{align}
-  Y_t =& \, \delta_0 + \delta_1 \Delta X_t + \delta_2 \Delta X_{t-1} + \dots + \delta_r \Delta X_{t-r+1} + \delta_{r+1} X_{t-r} + u_t. (\#eq:DCMreg)
-\end{align} and thus can be directly estimated using OLS wich makes it convenient to compute their HAC standard errors. $\delta_{r+1}$ is called the *long-run dynamic multiplier*.
+  Y_t =& \, \delta_0 + \delta_1 \Delta X_t + \delta_2 \Delta X_{t-1} + \dots + \delta_r \Delta X_{t-r+1} + \delta_{r+1} X_{t-r} + u_t (\#eq:DCMreg)
+\end{align} and thus can be directly estimated using OLS which makes it convenient to compute their HAC standard errors. $\delta_{r+1}$ is called the *long-run dynamic multiplier*.
 
-It is straightforward to compute the cumulative dynamic multipliers for \@ref(eq:orangemod1), the estimated distributed lag regression of changes in orange juice concentrate prices on freezing degree days, using the corresponding model object `orange_DLM` and the function `cumsum()`.
+It is straightforward to compute the cumulative dynamic multipliers for \@ref(eq:orangemod1), the estimated distributed lag regression of changes in orange juice concentrate prices on freezing degree days, using the corresponding model object `r ttcode("orange_DLM")` and the function `r ttcode("cumsum()")`.
 
 ```{r}
 # compute cumulative multipliers
@@ -169,7 +176,7 @@ names(cum_mult) <- paste(0:6, sep = "-", "period CDM")
 cum_mult
 ```
 
-Translating the distributed lag model with six lags of $FDD$ to \@ref(eq:DCMreg), we see that the OLS coefficient estimates in this model coincide with the multipliers stored in `cum_mult`.
+Translating the distributed lag model with six lags of $FDD$ to \@ref(eq:DCMreg), we see that the OLS coefficient estimates in this model coincide with the multipliers stored in `r ttcode("cum_mult")`.
 
 ```{r}
 # estimate cumulative dynamic multipliers using the modified regression
@@ -177,9 +184,10 @@ cum_mult_reg <-dynlm(FOJC_pctc ~ d(FDD) + d(L(FDD,1:5)) + L(FDD,6))
 coef(cum_mult_reg)[-1]
 ```
 
-As noted above, this spcification of model allows to obtain standard errors for the estimated dynamic cumulative multipliers.
+As noted above, using a model specification as in \@ref(eq:DCMreg) allows to easily obtain standard errors for the estimated dynamic cumulative multipliers. 
 
 ```{r}
+# obtain coefficient summary that reports HAC standard errors
 coeftest(cum_mult_reg, vcov. = vcovHAC)
 ```
 
@@ -187,7 +195,7 @@ coeftest(cum_mult_reg, vcov. = vcovHAC)
 
 The error term $u_t$ in the distributed lag model \@ref(eq:dlm) may be serially correlated due to serially correlated determinants of $Y_t$ that are not included as regressors. When these factors are not correlated with the regressors included in the model, serially correlated errors do not violate the assumption of exogeneity such that the OLS estimator remains unbiased and consistent.
 
-Instead, autocorrelated standard errors render the usual homoskedasticity-only *and* heteroskedasticity-robust standard errrors invalid and may lead to misleading statistical inference. HAC errors are a remedy for this issue. Key Concept 15.2
+However, autocorrelated standard errors render the usual homoskedasticity-only *and* heteroskedasticity-robust standard errors invalid and may cause misleading inference. HAC errors are a remedy for this issue.
 
 <div class = "keyconcept"> 
 <h3 class = "right"> Key Concept 15.2 </h3>
@@ -197,25 +205,25 @@ Instead, autocorrelated standard errors render the usual homoskedasticity-only *
 
 **Problem**:
 
-If the error term $u_t$ in the distributed lag model \@ref(eq:dlm) is serially correlated, satistical inference that rests on usual (heteroskedasticity-robust) standard errors can be strongly misleading.
+If the error term $u_t$ in the distributed lag model \@ref(eq:dlm) is serially correlated, statistical inference that rests on usual (heteroskedasticity-robust) standard errors can be strongly misleading.
 
 **Solution**:
 
-Heteroskedasticity- and autocorrelation-consistent (HAC) estimators of the variance-covariance matrix circumvent this issue. There are <tt>R</tt> functions like `vcovHAC()` from the package <tt>sandwich</tt> which are convinient for computation of such estimators.
+Heteroskedasticity- and autocorrelation-consistent (HAC) estimators of the variance-covariance matrix circumvent this issue. There are `r ttcode("R")` functions like `r ttcode("vcovHAC()")` from the package `r ttcode("sandwich")` which are convenient for computation of such estimators.
 
-The package <tt>sandwich</tt> also contains the function `NeweyWest()`, an implementation of the HAC variace-covariance estimator proposed by Newey and West (1987).
+The package `r ttcode("sandwich")` also contains the function `r ttcode("NeweyWest()")`, an implementation of the HAC variance-covariance estimator proposed by Newey and West (1987).
 
 </p>
 
 </div>
 
-Consider the distributed lag regression model with no lags and the single regressor $X_t$ 
+Consider the distributed lag regression model with no lags and a single regressor $X_t$ 
 \begin{align*}
   Y_t = \beta_0 + \beta_1 X_t + u_t.
 \end{align*}
 with autocorrelated errors. A brief derivation of 
 \begin{align}
-  \overset{\sim}{\sigma}^2_{\widehat{\beta}_1} = \widehat{\sigma}^2_{\widehat{\beta}_1} \widehat{f}_t, (\#eq:nwhac)
+  \overset{\sim}{\sigma}^2_{\widehat{\beta}_1} = \widehat{\sigma}^2_{\widehat{\beta}_1} \widehat{f}_t (\#eq:nwhac)
 \end{align}
 the so-called *Newey-West variance estimator* for the variance of the OLS estimator of $\beta_1$ is presented in Chapter 15.4 of the book. $\widehat{\sigma}^2_{\widehat{\beta}_1}$ in \@ref(eq:nwhac) is the heteroskedasticity-robust variance estimate of $\widehat{\beta}_1$ and 
 \begin{align}
@@ -226,11 +234,11 @@ is a correction factor that adjusts for serially correlated errors and involves 
   m = \left \lceil{0.75 \cdot T^{1/3}}\right\rceil. (\#eq:hactruncrot)
 \end{align}
 
-In the following we simulate a time series that, as stated above, follows a distributed lag model with autocorrelated errors and then show how to compute the Newey West HAC estimate of $SD(\widehat{\beta}_1)$ using <tt>R</tt>. This is done in two seperat but, as we will see, identical approches: at first we follow the derivation presented in the book step-by-step and compute the estimate manually. We then prove that the result is exactly the estimate obtained when using the function `NeweyWest()`. 
+In the following we simulate a time series that, as stated above, follows a distributed lag model with autocorrelated errors and then show how to compute the Newey-West HAC estimate of $SD(\widehat{\beta}_1)$ using `r ttcode("R")`. This is done in two separate but, as we will see, identical approaches: at first we follow the derivation presented in the book step-by-step and compute the estimate manually. We then show that the result is exactly the estimate obtained when using the function `r ttcode("NeweyWest()")`. 
 
 ```{r}
 # function that computes rho tilde
-acf_c <- function(x,j) {
+acf_c <- function(x, j) {
   return(
     t(x[-c(1:j)]) %*% na.omit(Lag(x, j)) / t(x) %*% x
   )
@@ -265,7 +273,7 @@ f_hat_T <- 1 + 2 * sum(
 sqrt(var_beta_hat * f_hat_T)
 ```
 
-By choosing `lag = m-1` it is ensured that the maximum order of autocorrelations used is $m-1$ --- just as in equation \@ref(eq:nwhacf). Notice that we further set the arguments `prewhite = F` and `adjust = T` to ensure that the formula \@ref(eq:nwhac) is used and finite sample adjustments are made.
+By choosing `r ttcode("lag = m-1")` we ensure that the maximum order of autocorrelations used is $m-1$ --- just as in equation \@ref(eq:nwhacf). Notice that we set the arguments `r ttcode("prewhite = F")` and `r ttcode("adjust = T")` to ensure that the formula \@ref(eq:nwhac) is used and finite sample adjustments are made.
 
 ```{r}
 # Using NeweyWest():
@@ -278,7 +286,7 @@ NW_VCOV <- NeweyWest(lm(Y ~ X),
 sqrt(diag(NW_VCOV))[2]
 ```
 
-We find that the computed standard errors coincide. Of course, a variance-covariance matrix estimate as computed by `NeweyWest()` can be supplied as the argument `vcov` in `coeftest()` such that HAC $t$-statistics and $p$-values are provided.
+We find that the computed standard errors coincide. Of course, a variance-covariance matrix estimate as computed by `r ttcode("NeweyWest()")` can be supplied as the argument `r ttcode("vcov")` in `r ttcode("coeftest()")` such that HAC $t$-statistics and $p$-values are provided by the latter.
 
 ```{r}
 example_mod <- lm(Y ~ X)
@@ -287,14 +295,14 @@ coeftest(example_mod, vcov = NW_VCOV)
 
 ## Estimation of Dynamic Causal Effects with Strictly Exogeneous Regressors
 
-In general, the errors in a distributed lag model are correlated which necessitates usage of HAC standard errors for valid inference. If, however, the assumption of exogeneity (the frist assumption stated in Key Concept 15.1) is replaced by strict exogeneity, that is $$E(u_t\vert \dots, X_{t+1}, X_{t}, X_{t-1}, \dots),$$ more efficient approaches than OLS estimation of the coefficients may be available. For a general distributed lag model with $r$ lags and AR($p$) errors, these approaches are summarized in Key Concept 15.4.
+In general, the errors in a distributed lag model are correlated which necessitates usage of HAC standard errors for valid inference. If, however, the assumption of exogeneity (the first assumption stated in Key Concept 15.1) is replaced by strict exogeneity, that is $$E(u_t\vert \dots, X_{t+1}, X_{t}, X_{t-1}, \dots) = 0,$$ more efficient approaches than OLS estimation of the coefficients are available. For a general distributed lag model with $r$ lags and AR($p$) errors, these approaches are summarized in Key Concept 15.4.
 
 <div class = "keyconcept"> 
 <h3 class = "right"> Key Concept 15.4 </h3>
 <h3 class = "left"> Estimation of Dynamic Multipliers Under Strict Exogeneity </h3>
 <p>
 
-Consider the general distributed lag model with $r$ lags and assume that the errors follow an $AR(p)$ process,
+Consider the general distributed lag model with $r$ lags and assume that the errors follow an AR($p$) process,
 \begin{align}
   Y_t =& \, \beta_0 + \beta_1 X_t + \beta_2 X_{t-1} + \dots + \beta_{r+1} X_{t-r} + u_t \\
   u_t =& \, \phi_1 u_{t-1} + \phi u_{t-2} + \dots + \phi_p u_{t-p} + \overset{\sim}{u}_t. (\#eq:dlmarerrors)
@@ -306,24 +314,24 @@ Assuming strict exogeneity of $X_t$, one may rewrite the above model in the ADL 
 \end{align*}
 where $q=r+p$ and compute estimates of the dynamic multipliers $\beta_1, \beta_2, \dots, \beta_{r+1}$ using OLS estimates of $\phi_1, \phi_2, \dots, \phi_p, \delta_0, \delta_1, \dots, \delta_q$. 
 
-An alternative is to estimate the dynamic multipliers using feasible GLS, that is to apply the OLS estimator to a quasi-differenced specification of \@ref(eq:dlmarerrors). Under strict exogeneity, the feasible GLS approach is the BLUE estimator for the dynamic multipliers in large samples.
+An alternative is to estimate the dynamic multipliers using feasible GLS, that is to apply the OLS estimator to a quasi-difference specification of \@ref(eq:dlmarerrors). Under strict exogeneity, the feasible GLS approach is the BLUE estimator for the dynamic multipliers in large samples.
 
-On the one han, as demonstrated in Chapter 15.5 of the book, the OLS estimation of the ADL representation can be beneficial for estimation of dynamic multipliers in large distributed lag model beacause it allows for a more parsimonious model that may be a good approximation to a large distributed lag model. On the other hand, the GLS approach is more efficient than the ADL estimator if the sample size is large.
+On the one hand, as demonstrated in Chapter 15.5 of the book, the OLS estimation of the ADL representation can be beneficial for estimation of the dynamic multipliers in large distributed lag models because it allows for a more parsimonious model that may be a good approximation to a large distributed lag model. On the other hand, the GLS approach is more efficient than the ADL estimator if the sample size is large.
 
 </p>
 </div>
 
-In what follows we shortly review how different representations of a distribted lag model can be obtained when the causal effect in $Y$ of a change in $X$ lasts for only two periods and show how these specification can be estimated by OLS and GLS using <tt>R</tt>.
+In what follows we shortly review how the different representations of a distributed lag model can be obtained when the causal effect in $Y$ of a change in $X$ lasts for only two periods and show how these specification can be estimated by OLS and GLS using `r ttcode("R")`.
 
 The model is
 \begin{align}
-  Y_t = \beta_0 + \beta_1 X_t + \beta_2 X_{t-1} + u_t (\#eq:dldynamic)
+  Y_t = \beta_0 + \beta_1 X_t + \beta_2 X_{t-1} + u_t, (\#eq:dldynamic)
 \end{align}
-so a change in $X$ has a contemporaneous effect on $Y$ ($\beta_1$) and an effect in the next period ($\beta_2$). The error term $u_t$ follows an AR($1$) process,$$u_t = \phi_1 u_{t-1} + \overset{\sim}{u_t}$$ where $\overset{\sim}{u_t}$ is serially uncorrelated.
+so a change in $X$ is modeled to effect $Y$ contemporaneously ($\beta_1$) and in the next period ($\beta_2$). The error term $u_t$ is assumed to follow an AR($1$) process,$$u_t = \phi_1 u_{t-1} + \overset{\sim}{u_t},$$ where $\overset{\sim}{u_t}$ is serially uncorrelated.
 
 One can show that the ADL representation of this model is
 \begin{align}
-  Y_t = \alpha_0 + \phi_1 Y_{t-1} + \delta_0 X_t + \delta_1 X_{t-1} + \delta_2 X_{t-2} + \overset{\sim}{u}_t (\#eq:adl21dynamic)
+  Y_t = \alpha_0 + \phi_1 Y_{t-1} + \delta_0 X_t + \delta_1 X_{t-1} + \delta_2 X_{t-2} + \overset{\sim}{u}_t, (\#eq:adl21dynamic)
 \end{align}
 with the restrictions
 \begin{align*}
@@ -333,20 +341,20 @@ with the restrictions
 
 ##### Quasi-Differences {-}
 
-Another way of writing this ADL($1$,$2$) representation is the *quasi-difference* model
+Another way of writing the ADL($1$,$2$) representation \@ref(eq:adl21dynamic) is the *quasi-difference model*
 \begin{align}
-  \overset{\sim}{Y}_t = \alpha_0 + \beta_1 \overset{\sim}{X}_t + \beta_2   \overset{\sim}{X}_{t-1} + \overset{\sim}{u}_t (\#eq:qdm)
+  \overset{\sim}{Y}_t = \alpha_0 + \beta_1 \overset{\sim}{X}_t + \beta_2   \overset{\sim}{X}_{t-1} + \overset{\sim}{u}_t, (\#eq:qdm)
 \end{align}
-where $\overset{\sim}{Y}_t = Y_t - \phi_1 Y_{t-1}$ and $\overset{\sim}{X}_t = X_t - \phi_1 X_{t-1}$. Notice that the error term $\overset{\sim}{u}_t$ is uncorrelated in both models and, as shown in Chapter 15.5 of the book, $$E(u_t\vert X_{t+1}, X_t, X_{t-1}, \dots) = 0$$ which is implied by the assumption of strict exogeneity.
+where $\overset{\sim}{Y}_t = Y_t - \phi_1 Y_{t-1}$ and $\overset{\sim}{X}_t = X_t - \phi_1 X_{t-1}$. Notice that the error term $\overset{\sim}{u}_t$ is uncorrelated in both models and, as shown in Chapter 15.5 of the book, $$E(u_t\vert X_{t+1}, X_t, X_{t-1}, \dots) = 0,$$ which is implied by the assumption of strict exogeneity.
 
-We continue by simulation a time series of $500$ observations using the model \@ref(eq:dldynamic) where $\beta_1 = 0.1$, $\beta_2 = 0.25$, $\phi = 0.5$ and $\overset{\sim}{u}_t \sim N(0,1)$ and start by estimating the distributed lag model.
+We continue by simulating a time series of $500$ observations using the model \@ref(eq:dldynamic) with $\beta_1 = 0.1$, $\beta_2 = 0.25$, $\phi = 0.5$ and $\overset{\sim}{u}_t \sim N(0,1)$ and estimate the different representations, starting with the distributed lag model \@ref(eq:dldynamic).
 
 ```{r}
-# simulate time series with serially correlated errors
+# set random seed for reproducibility
 set.seed(1)
 
+# simulate time series with serially correlated errors
 obs <- 501
-
 eps <- arima.sim(n = obs-1 , model = list(ar = 0.5))
 X <- arima.sim(n = obs, model = list(ar = 0.25))
 Y <- 0.1 * X[-1] + 0.25 * X[-obs] + eps
@@ -356,7 +364,7 @@ X <- ts(X[-1])
 dlm <- dynlm(Y ~ X + L(X))
 ```
 
-It is straightforward to check whether the residuals of this model exhibit autocorrelation by using `acf()`.
+It is straightforward to check whether the residuals of this model exhibit autocorrelation by using the function `r ttcode("acf()")`.
 
 ```{r, fig.align='center'}
 # check that the residuals are serially correlated
@@ -365,10 +373,10 @@ acf(
 )
 ```
 
-The plot indicates that the residuals are autocorrelated. In particular, the pattern reveals that the residuals follow an autoregressive process, as the sample autocorrelation function decays quickly for the first few lags and is probably zero for higher lag orders. At any case, HAC standard errors should be used.
+The plot indicates that the residuals are autocorrelated. In particular, the pattern observed reveals that the residuals follow an autoregressive process, as the sample autocorrelation function decays quickly for the first few lags and is probably zero for higher lag orders. At any case, HAC standard errors should be used.
 
 ```{r}
-# coefficient summary using NeweyWest estimator
+# coefficient summary using the Newey-West SE estimates
 coeftest(dlm, vcov = NeweyWest(dlm, prewhite = F, adjust = T))
 ```
 
@@ -377,20 +385,20 @@ coeftest(dlm, vcov = NeweyWest(dlm, prewhite = F, adjust = T))
 Next, we estimate the ADL($1$,$2$) model \@ref(eq:adl21dynamic) using OLS. Notice that the errors are uncorrelated in this representation of the model. This statement is supported by a plot of the sample autocorrelation function of the residual series.
 
 ```{r, fig.align='center'}
-# Estimate ADL(2, 1) representation
+# Estimate ADL(2, 1) representation of the distributed lag model
 adl21_dynamic <- dynlm(Y ~ L(Y) + X + L(X, 1:2))
 
 # plot sample autocorrelaltions of residuals
 acf(adl21_dynamic$residuals)
 ```
 
-The estimated coefficients in `adl21_dynamic$coefficients` *are not* the dynamic multiplers we are interested in but can be computed according to the restrictions in \@ref(eq:adl21dynamic) where the true coefficients are replaced by their OLS estimates.
+Note that the estimated coefficients reported by `adl21_dynamic$coefficients` are *not* the dynamic multipliers we are interested in, but instead can be computed according to the restrictions in \@ref(eq:adl21dynamic), where the true coefficients are replaced by the OLS estimates.
 
 ```{r}
-t <- adl21_dynamic$coefficients
-
 # compute estimated dynamic effects using coefficient restrictions
 # in the ADL(2,1) representation
+t <- adl21_dynamic$coefficients
+
 c(
   "hat_beta_1" = t[3],
   "hat_beta_2" = t[4] + t[3] * t[2]
@@ -399,20 +407,22 @@ c(
 
 ##### GLS Estimation {-}
 
-Strict exogeneity allows OLS estimation of the quasi-difference model \@ref(eq:qdm). The idea of applying the OLS estimator to a model where the variables are linearly transformed such that the model errors are uncorrelated and homoskedastic is called *generalized least squares* (GLS)
+Strict exogeneity allows OLS estimation of the quasi-difference model \@ref(eq:qdm). The idea of applying the OLS estimator to a model where the variables are linearly transformed, such that the model errors are uncorrelated and homoskedastic, is called *generalized least squares* (GLS)
 
-The OLS estimator in \@ref(eq:qdm) is called the *infeasible GLS* estimator because we $\overset{\sim}{Y}$ and $\overset{\sim}{X}$ cannot be computed without knowledge of $\phi_1$, the autoregressive coefficient in the error AR($1$) model, which is generally unknown in practice.
+The OLS estimator in \@ref(eq:qdm) is called the *infeasible GLS* estimator because $\overset{\sim}{Y}$ and $\overset{\sim}{X}$ cannot be computed without knowing $\phi_1$, the autoregressive coefficient in the error AR($1$) model, which is generally unknown in practice.
 
-Suppose $\phi = 0.5$ was known. The infeasible GLS estimates of the dynamic multipliers in \@ref(eq:dldynamic) are obtained by applying OLS to the transformed data. 
+Suppose we know that $\phi = 0.5$. We then may obtain the infeasible GLS estimates of the dynamic multipliers in \@ref(eq:dldynamic) by applying OLS to the transformed data. 
 
 ```{r}
 # GLS: estimate quasi-differenced specification by OLS
-iGLS_dynamic <- dynlm(I(Y- 0.5 * L(Y)) ~ I(X - 0.5* L(X)) + I(L(X) - 0.5* L(X,2)) )
+iGLS_dynamic <- dynlm(
+  I(Y- 0.5 * L(Y)) ~ I(X - 0.5* L(X)) + I(L(X) - 0.5* L(X, 2)) 
+  )
 
 summary(iGLS_dynamic)
 ```
 
-The *feasible GLS* estimator uses preliminary estimation of the coefficients in the presumed error term model, computes the quasi-differenced data and then estimates the model using OLS. This idea was introduced by Cochrance and Orcutt (1949) and can be extended by continuing this process iteratively. Such a procedure is implemented in the function <tt>cochrane.orcutt()</tt> from the package <tt>orcutt</tt>.
+The *feasible GLS* estimator uses preliminary estimation of the coefficients in the presumed error term model, computes the quasi-differenced data and then estimates the model using OLS. This idea was introduced by Cochrance and Orcutt (1949) and can be extended by continuing this process iteratively. Such a procedure is implemented in the function `r ttcode("cochrane.orcutt()")` from the package `r ttcode("orcutt")`.
 
 ```{r}
 X_t <- c(X[-1])
@@ -425,7 +435,7 @@ summary(
 )
 ```
 
-Some more sophisticated methods are provided with the package <tt>nlme</tt>. The function <tt>gls()</tt> can be used to fit linear models by maximum likelihood estimation algorithms and allows to specify a correlation structure for the error term. 
+Some more sophisticated methods for GLS estimation are provided with the package `r ttcode("nlme")`. The function `r ttcode("gls()")` can be used to fit linear models by maximum likelihood estimation algorithms and allows to specify a correlation structure for the error term. 
 
 ```{r}
 # feasible GLS maximum likelihood estimation procedure
@@ -438,13 +448,13 @@ Feasible GLS is the BLUE of the dynamic multipliers when there is serial correla
 
 ## Orange Juice Prices and Cold Weather
 
-In this section we investigate the following two questions using the time series regression methods discussed before:
+In this section we investigate the following two questions using the time series regression methods discussed in the previous sections:
 
-+ How persistent is the effect of a single freeze on prices?
++ How persistent is the effect of a single freeze on orange juice concentrate prices?
 
-+ Has this effect been stable over the whole time span considered?
++ Has the effect been stable over the whole time span?
 
-We start by estimating dynamic causal effects with a distributed lag model where $\%ChgOJC_t$ is regressed on $FDD_t$ and 18 lags of it. A second model specification is a transformation of the the distributed lag model which allows to estimate the 19 cumulative dynamic multipliers using OLS. In a third model, we add 11 binary variables (one for each of the months from February to December) to adjust for a possible omitted variable bias arising from correllation of $FDD_t$ and seasons by adding `season(FDD)` to the right hand side of the formula of the second model. 
+We start by estimating dynamic causal effects with a distributed lag model where $\%ChgOJC_t$ is regressed on $FDD_t$ and 18 lags of it. A second model specification we consider is a transformation of the the distributed lag model which allows to estimate the 19 cumulative dynamic multipliers using OLS. In a third model, we add 11 binary variables (one for each of the months from February to December) to adjust for a possible omitted variable bias arising from correlation of $FDD_t$ and seasons by adding `r ttcode("season(FDD)")` to the right hand side of the formula of the second model. 
 
 ```{r}
 # estimate distributed lag models of frozen orange juice price changes
@@ -453,26 +463,26 @@ FOJC_mod_CM1 <- dynlm(FOJC_pctc ~ L(d(FDD), 0:17) + L(FDD, 18))
 FOJC_mod_CM2 <- dynlm(FOJC_pctc ~ L(d(FDD), 0:17) + L(FDD, 18) + season(FDD))
 ```
 
-The models above include a large number of lags with default labels that correspond to the degree of differencing and the lag orders which makes it somewhat cumbersome to read the outcomes. The regressor labels of a model object may be altered by overriding the attribute `names` of the coefficient section using the function `attr()`. Thus, for better readability we use the lag orders as regressor labels.
+The models above include a large number of lags with default labels that correspond to the degree of differencing and the lag orders which makes it somewhat cumbersome to read the outcomes. The regressor labels of a model object may be altered by overriding the attribute `r ttcode("names")` of the coefficient section using the function `r ttcode("attr()")`. Thus, for better readability we use the lag orders as regressor labels.
 
-```{r, echo=F}
-# lag orders as regressor labels 
+```{r, echo=T}
+# set lag orders as regressor labels 
 attr(FOJC_mod_DM$coefficients, "names")[1:20] <- c("(Intercept)", as.character(0:18))
 attr(FOJC_mod_CM1$coefficients, "names")[1:20] <- c("(Intercept)", as.character(0:18))
 attr(FOJC_mod_CM2$coefficients, "names")[1:20] <- c("(Intercept)", as.character(0:18))
 ```
 
 
-Next, we compute HAC standard errors standard errors for each model using $NeweyWest()$ and gather the results in a list which is then supplied as the argument `se` to the function `stargazer()`, see below. Note that the sample consists of 612 observations.
+Next, we compute HAC standard errors standard errors for each model using $NeweyWest()$ and gather the results in a list which is then supplied as the argument `r ttcode("se")` to the function `r ttcode("stargazer()")`, see below. Note that the sample consists of 612 observations.
 ```{r}
 length(FDD)
 ```
 According to \@ref(eq:hactruncrot), the rule of thumb for choosing the HAC standard error truncation parameter $m$, we choose
 $$m = \left\lceil0.75 \cdot 612^{1/3} \right\rceil = \lceil6.37\rceil = 7.$$
-To check for sensitivity of the standard errors to different choices of the truncation parameter in the model that is used to estimate the cumulative multipliers, we also compute the Newey and West estimator for $m=14$.
+To check for sensitivity of the standard errors to different choices of the truncation parameter in the model that is used to estimate the cumulative multipliers, we also compute the Newey-West estimator for $m=14$.
 
 ```{r}
-# gather hAC standard error errors in a list
+# gather HAC standard error errors in a list
 SEs <- list(
   sqrt(
     diag(
@@ -505,7 +515,7 @@ stargazer(FOJC_mod_DM , FOJC_mod_CM1, FOJC_mod_CM1, FOJC_mod_CM2,
   title = "Dynamic Effects of a Freezing Degree Day on the Price of Orange Juice",
   header = FALSE, 
   digits = 2, 
-  column.labels = c("Dynamic Multipliers", rep("Dynamic Cumulative Multipliers",3)),
+  column.labels = c("Dynamic Multipliers", rep("Dynamic Cumulative Multipliers", 3)),
   dep.var.caption  = "Monthly Percentage Change in Orange Juice Price",
   dep.var.labels.include = FALSE,
   covariate.labels = as.character(0:18),
@@ -522,7 +532,7 @@ stargazer(FOJC_mod_DM , FOJC_mod_CM1, FOJC_mod_CM1, FOJC_mod_CM2,
 
 <!--html_preserve-->
 
-```{r, message=F, warning=F, results='asis', echo=F}
+```{r, message=F, warning=F, results='asis', echo=F, eval=my_output=="html"}
 stargazer(FOJC_mod_DM , FOJC_mod_CM1, FOJC_mod_CM1, FOJC_mod_CM2,
   title = "Dynamic Effects of a Freezing Degree Day on the Price of Orange Juice",
   header = FALSE, 
@@ -545,22 +555,45 @@ stargazer(FOJC_mod_DM , FOJC_mod_CM1, FOJC_mod_CM1, FOJC_mod_CM2,
 
 <!--/html_preserve-->
 
-Acording to coloumn (1), the contemporaneous effect of a freezing degree day is an increase of $0.5\%$ in orange juice prices. The estimated effect is only $0.17\%$ for the next month and close to zero for subsequent months. In fact, for all lags larger than 1, we cannot reject the individual null hypotheses that the respective coefficients are zero. Notice also that the model `FOJC_mod_DM` does only explain little variation in the dependent variable ($\overline{R}^2 = 0.11$). 
+```{r, message=F, warning=F, results='asis', echo=F, eval=my_output=="latex"}
+stargazer(FOJC_mod_DM , FOJC_mod_CM1, FOJC_mod_CM1, FOJC_mod_CM2,
+  title = "Dynamic Effects of a Freezing Degree Day on the Price of Orange Juice",
+  header = FALSE, 
+  type = "latex",
+  column.sep.width = "20pt",
+  float.env = "sidewaystable",
+  single.row = T,
+  digits = 2, 
+  column.labels = c("Dyn. Mult.", rep("Dyn. Cum. Mult.", 3)),
+  dep.var.caption  = "Monthly Percentage Change in Orange Juice Price",
+  dep.var.labels.include = FALSE,
+  covariate.labels = paste("lag",as.character(0:18)),
+  omit = "season",
+  se = SEs,
+  no.space = T,
+  add.lines = list(
+                   c("Monthly indicators?","no", "no", "no", "yes"),
+                   c("HAC truncation","7", "7", "14", "7")
+                   ),
+  omit.stat = c("rsq", "f","ser")
+  ) 
+```
 
-Columns (2) and (3) present estimates of the dynamic cumulative multipliers of model `FOJC_mod_CM1`. Apparently, it does not matter whether we choose $m=7$ or $m=14$ when computing HAC standard errors so we stick with $m=7$ and the standard errors reported in column (2). 
+According to column (1), the contemporaneous effect of a freezing degree day is an increase of $0.5\%$ in orange juice prices. The estimated effect is only $0.17\%$ for the next month and close to zero for subsequent months. In fact, for all lags larger than 1, we cannot reject the null hypotheses that the respective coefficients are zero using individual $t$-tests. Notice also that the model `r ttcode("FOJC_mod_DM")` does only explain little of the variation in the dependent variable ($\overline{R}^2 = 0.11$). 
 
-If demand for orange juice is higher in winter, $FDD_t$ would be correlated with the error term since since freezes occur rather in winter so we would face omitted variable bias. The third model estimate, `FOJC_mod_CM2`, accounts for this possible issue by using an additional set of 11 monthly dummies. For brevity, estimates of the dummy coefficients are excluded from the output produced by stargazer (this is achieved by setting `omit = "season"`). We may check that the dummy for January was omitted to prevent perfect multicollinearity.
+Columns (2) and (3) present estimates of the dynamic cumulative multipliers of model `r ttcode("FOJC_mod_CM1")`. Apparently, it does not matter whether we choose $m=7$ or $m=14$ when computing HAC standard errors so we stick with $m=7$ and the standard errors reported in column (2). 
+
+If the demand for orange juice is higher in winter, $FDD_t$ would be correlated with the error term since freezes occur rather in winter so we would face omitted variable bias. The third model estimate, `r ttcode("FOJC_mod_CM2")`, accounts for this possible issue by using an additional set of 11 monthly dummies. For brevity, estimates of the dummy coefficients are excluded from the output produced by stargazer (this is achieved by setting `r ttcode("omit = 'season'")`). We may check that the dummy for January was omitted to prevent perfect multicollinearity.
 
 ```{r}
 # estimates on mothly dummies
 FOJC_mod_CM2$coefficients[-c(1:20)]
 ```
 
-A comparison of the estimates presented in columns (3) and (4) indicates that adding monthly dummies has a negligible effect. Further evidence for this comes from a test of the hypothesis that the 11 dummy coefficients are jointly zero. Instead of using `linearHypothesis()` which requires that all 11 restrictions are provided in a matrix, we use the function `waldtest()` and supply two model objects instead: `unres_model`, the unrestricted model object which is the same as `FOJC_mod_CM2` (except for the coefficient names since we have modified them above) and `res_model`, the model where the restriction that all dummy coefficients are zero is imposed. `res_model` is conveniently obtained using the function `update()`. It extracts the argument <tt>formula</tt> of a model object, updates it as specified and then re-fits the model. By setting `formula = . ~ . - season(FDD)` we impose that the monthly dummies do not enter the model.
+A comparison of the estimates presented in columns (3) and (4) indicates that adding monthly dummies has a negligible effect. Further evidence for this comes from a joint test of the hypothesis that the 11 dummy coefficients are zero. Instead of using `r ttcode("linearHypothesis()")` which requires that all 11 restrictions are provided in a matrix, we use the function `r ttcode("waldtest()")` and supply two model objects instead: `r ttcode("unres_model")`, the unrestricted model object which is the same as `r ttcode("FOJC_mod_CM2")` (except for the coefficient names since we have modified them above) and `r ttcode("res_model")`, the model where the restriction that all dummy coefficients are zero is imposed. `r ttcode("res_model")` is conveniently obtained using the function `r ttcode("update()")`. It extracts the argument `r ttcode("formula")` of a model object, updates it as specified and then re-fits the model. By setting `r ttcode("formula = . ~ . - season(FDD)")` we impose that the monthly dummies do not enter the model.
 
 ```{r}
 # test if coefficients on monthly dummies are zero
-
 unres_model <- dynlm(FOJC_pctc ~ L(d(FDD), 0:17) + L(FDD, 18) + season(FDD))
 
 res_model <- update(unres_model, formula = . ~ . - season(FDD))
@@ -634,17 +667,17 @@ lines(0:18, CI_bounds[, 1], col = "darkred")
 lines(0:18, CI_bounds[, 2], col = "darkred")
 ```
 
-As can be seen from Figure \@ref(fig:DCM), the estimated dynamic cumulative multipliers grow through the seventh month up to a price increase of about $0.91\%$ and then decrease slighly to the estimated long-run cumulative multiplier of $0.37\%$ which, however, is not significantly different from zero at the $5\%$ level.
+As can be seen from Figure \@ref(fig:DCM), the estimated dynamic cumulative multipliers grow until the seventh month up to a price increase of about $0.91\%$ and then decrease slightly to the estimated long-run cumulative multiplier of $0.37\%$ which, however, is not significantly different from zero at the $5\%$ level.
 
-Have the dynamic multipliers been stable over time? One way to see this is the estimate them for different subperiods of the sample. For example, consider periods 1950 - 1966, 1967 - 1983 and 1984 - 2000. If the multipliers are the same for all three periods the estimates should be close and thus the estimated cumulative multipliers should be similar, too. We investigate this by re-estimating `FOJC_mod_CM1` for the three different time spans and then plot the estimated cumulative dynamic multipliers for the comparison.
+Have the dynamic multipliers been stable over time? One way to see this is to estimate these multipliers for different subperiods of the sample span. For example, consider periods 1950 - 1966, 1967 - 1983 and 1984 - 2000. If the multipliers are the same for all three periods the estimates should be close and thus the estimated cumulative multipliers should be similar, too. We investigate this by re-estimating `r ttcode("FOJC_mod_CM1")` for the three different time spans and then plot the estimated cumulative dynamic multipliers for the comparison.
 
 ```{r}
 # estimate cumulative multiplieres using different sample periods
-FOJC_mod_CM1950 <- update(FOJC_mod_CM1, start = c(1950,1), end = c(1966,12))
+FOJC_mod_CM1950 <- update(FOJC_mod_CM1, start = c(1950, 1), end = c(1966, 12))
 
-FOJC_mod_CM1967 <- update(FOJC_mod_CM1, start = c(1967,1), end = c(1983,12))
+FOJC_mod_CM1967 <- update(FOJC_mod_CM1, start = c(1967, 1), end = c(1983, 12))
 
-FOJC_mod_CM1984 <- update(FOJC_mod_CM1, start = c(1984,1), end = c(2000,12))
+FOJC_mod_CM1984 <- update(FOJC_mod_CM1, start = c(1984, 1), end = c(2000, 12))
 ```
 
 
@@ -654,7 +687,7 @@ plot(0:18, FOJC_mod_CM1950$coefficients[-1],
      type = "l", 
      lwd = 2, 
      col = "steelblue",
-     xlim = c(0,20),
+     xlim = c(0, 20),
      ylim = c(-0.5, 2),
      xlab = "Lag",
      ylab = "Cumulative dynamic multiplier",
@@ -676,9 +709,9 @@ text(18, 0.6, "1967 - 1983")
 text(18, 1.2, "1950 - 1966")
 ```
 
-Clearly, the cumulative dynamic multipliers have changed considerarbly over time. Notice that the effect of a freeze was stronger an more persistent in the 1950s and 1960s. For the 1970s the magnitude of the effect was lower but still highly persistent. We observe an even lower magnitude for the final third of the sample (1984 - 2000) where the long-run effect is much less persist and essentialy zero after a year. 
+Clearly, the cumulative dynamic multipliers have changed considerably over time. Notice that the effect of a freeze was stronger and more persistent in the 1950s and 1960s. For the 1970s the magnitude of the effect was lower but still highly persistent. We observe an even lower magnitude for the final third of the sample span (1984 - 2000) where the long-run effect is much less persistent and essentially zero after a year. 
 
-Evidence of a QLR test for a break in the population distributed lag regression of column (1) with $15\%$ trimming and HAC variance-covariance matrix estimator supports the conjection that the population regression coefficients have changed over time.
+Evidence of a QLR test for a break in the population distributed lag regression of column (1) with $15\%$ trimming using a HAC variance-covariance matrix estimate supports the conjecture that the population regression coefficients have changed over time.
 
 ```{r, cache=TRUE}
 # set up a range of possible break dates
@@ -714,24 +747,24 @@ for(i in 1:length(tau)) {
 }
 ```
 
-Note that this code takes a couple of seconds to run since a total of `r length(tau)` regressions with 40 model coefficients each are estimated.
+Note that this code takes a couple of seconds to run since a total of `r ttcode("length(tau)")` regressions with $40$ model coefficients each are estimated.
 
 ```{r}
 # QLR test statistic
 max(Fstats)
 ```
 
-The QLR statistic is $36.77$. From table 14.5 of the book we see that the $1\%$ critical value for the QLR test with $15\%$ trimming and $q=20$ restrictions is $2.43$. Since this is a right-sided test, the QLR statistic clearly lies in the region of rejection so we can discard the null hypothesis of no break in the population regression function.
+The QLR statistic is $36.77$. From Table 14.5 of the book we see that the $1\%$ critical value for the QLR test with $15\%$ trimming and $q=20$ restrictions is $2.43$. Since this is a right-sided test, the QLR statistic clearly lies in the region of rejection so we can discard the null hypothesis of no break in the population regression function.
 
-See Chapter 15.7 of the book for a discussion of empirical examples where it is questionable whether the assumption of (past and present) exogeneity of regressors is plausible.
+See Chapter 15.7 of the book for a discussion of empirical examples where it is questionable whether the assumption of (past and present) exogeneity of the regressors is plausible.
 
 ## Summary
 
-+ We have seen how <tt>R</tt> can be used to estimate the time path of the effect on $Y$ of a change in $X$ (the dynamic causal effect on $Y$ of a change in $X$) using time series data on both. The corresponding model is called the *distributed lag model*. Distributed lag models are conveniently estimated using the function <tt>dynlm()</tt> from the package <tt>dynlm</tt>.
++ We have seen how `r ttcode("R")` can be used to estimate the time path of the effect on $Y$ of a change in $X$ (the dynamic causal effect on $Y$ of a change in $X$) using time series data on both. The corresponding model is called the distributed lag model. Distributed lag models are conveniently estimated using the function `r ttcode("dynlm()")` from the package `r ttcode("dynlm")`.
 
-+ The regression error in distributed lag models is often serially correlated such that standard errors which are robust to heteroskedasticity and autocorrelation should be used to obtain valid inference based on $t$-statistics and confidence intervals. The package <tt>sandwich</tt> has functions for compuation of so-called HAC covariance matrix estimators, for example <tt>vcovHAC()</tt> and <tt>NeweyWest()</tt>.
++ The regression error in distributed lag models is often serially correlated such that standard errors which are robust to heteroskedasticity *and* autocorrelation should be used to obtain valid inference based on $t$-statistics and confidence intervals. The package `r ttcode("sandwich")` provides functions for computation of so-called HAC covariance matrix estimators, for example `r ttcode("vcovHAC()")` and `r ttcode("NeweyWest()")`.
 
-+ When $X$ is *strictly exogeneous*, more efficient estimates can be obtained using an ADL model or by GLS estimation. Feasible GLS algorithms can be found in the <tt>R</tt> packages <tt>orcutt</tt> and <tt>nlme</tt>. We have stressed that the assumption of strict exogeneity is often implausible in empirical applications. See chapter 15.7 of the book for further examples.
++ When $X$ is *strictly exogeneous*, more efficient estimates can be obtained using an ADL model or by GLS estimation. Feasible GLS algorithms can be found in the `r ttcode("R")` packages `r ttcode("orcutt")` and `r ttcode("nlme")`. We have stressed that the assumption of strict exogeneity is often implausible in empirical applications. See chapter 15.7 of the book for further examples.
 
 
 

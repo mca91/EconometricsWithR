@@ -25,7 +25,7 @@
 <meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber and Martin Schmelzer">
 
 
-<meta name="date" content="2018-06-18">
+<meta name="date" content="2018-06-22">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -364,17 +364,18 @@ This book is in <b>Open Review</b>. We want your feedback to make the book bette
 </div>
 <div id="the-orange-juice-data" class="section level2">
 <h2><span class="header-section-number">15.1</span> The Orange Juice Data</h2>
-<p>The largest cultivation region for oranges in the U.S. is located in state of Florida which usually has ideal climate for the fruit growth and thus makes Florida the source of almost all frozen juice contentrate produced in the country However, from time to time and depening on their severeness, cold snaps cause loss of harvests such that the supply of oranges decreases and consequently the price of frozen juice conzentrate rises. The timing of the price increases is complicated: a cut in today’s supply of concentrate influences not today’s price but also future prices because supply in future periods will be lower, too. Clearly, the magnitude of today’s and future price increases due to a freeze is an empirical question that can be investigated using a distributed lag model — a model that relates price changes to weather conditions.</p>
-<p>To begin with the analysis, we reproduce Figure 15.1 of the book which displays plots of the price index for frozen concentrated orange juice, percent changes in the price as well as monthly freezing degree days in Orlando, the center of Florida’s orange-growing region.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Load the frozen orange juice data set</span>
+<p>The largest cultivation region for oranges in the U.S. is located in state of Florida which usually has ideal climate for the fruit growth and thus makes Florida the source of almost all frozen juice concentrate produced in the country. However, from time to time and depending on their severeness, cold snaps cause a loss of harvests such that the supply of oranges decreases and consequently the price of frozen juice concentrate rises. The timing of the price increases is complicated: a cut in today’s supply of concentrate influences not just today’s price but also future prices because supply in future periods will be diminished, too. Clearly, the magnitude of today’s and the future price increases due to freeze is an empirical question that can be investigated using a distributed lag model — a time series model that relates price changes to weather conditions.</p>
+<p>To begin with the analysis, we reproduce Figure 15.1 of the book which displays plots of the price index for frozen concentrated orange juice, percentage changes in the price as well as monthly freezing degree days in Orlando, the center of Florida’s orange-growing region.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># load the frozen orange juice data set</span>
 <span class="kw">data</span>(<span class="st">&quot;FrozenJuice&quot;</span>)
 
-<span class="co"># price index for frozen concentrated juice</span>
-FOJCPI &lt;-<span class="st"> </span>FrozenJuice[,<span class="st">&quot;price&quot;</span>]<span class="op">/</span>FrozenJuice[,<span class="st">&quot;ppi&quot;</span>]
+<span class="co"># compute the price index for frozen concentrated juice</span>
+FOJCPI &lt;-<span class="st"> </span>FrozenJuice[, <span class="st">&quot;price&quot;</span>]<span class="op">/</span>FrozenJuice[, <span class="st">&quot;ppi&quot;</span>]
 FOJC_pctc &lt;-<span class="st"> </span><span class="dv">100</span> <span class="op">*</span><span class="st"> </span><span class="kw">diff</span>(<span class="kw">log</span>(FOJCPI))
 FDD &lt;-<span class="st"> </span>FrozenJuice[, <span class="st">&quot;fdd&quot;</span>]</code></pre></div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">FOJCPI_xts &lt;-<span class="st"> </span><span class="kw">as.xts</span>(FOJCPI)
-FDD_xts &lt;-<span class="st"> </span><span class="kw">as.xts</span>(FrozenJuice[,<span class="dv">3</span>])
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># convert series to xts objects</span>
+FOJCPI_xts &lt;-<span class="st"> </span><span class="kw">as.xts</span>(FOJCPI)
+FDD_xts &lt;-<span class="st"> </span><span class="kw">as.xts</span>(FrozenJuice[, <span class="dv">3</span>])
 
 <span class="co"># Plot orange juice price index</span>
 <span class="kw">plot</span>(<span class="kw">as.zoo</span>(FOJCPI),
@@ -384,8 +385,8 @@ FDD_xts &lt;-<span class="st"> </span><span class="kw">as.xts</span>(FrozenJuice
      <span class="dt">ylab =</span> <span class="st">&quot;Price index&quot;</span>, 
      <span class="dt">main =</span> <span class="st">&quot;Frozen Concentrated Orange Juice&quot;</span>
 )</code></pre></div>
-<p><img src="URFITE_files/figure-html/unnamed-chunk-471-1.png" width="672" style="display: block; margin: auto;" /></p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Plot percent changes in prices</span>
+<p><img src="URFITE_files/figure-html/unnamed-chunk-472-1.png" width="672" style="display: block; margin: auto;" /></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Plot percentage changes in prices</span>
 <span class="kw">plot</span>(<span class="kw">as.zoo</span>(FOJC_pctc),
      <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>, 
      <span class="dt">lwd =</span> <span class="dv">2</span>,
@@ -393,7 +394,7 @@ FDD_xts &lt;-<span class="st"> </span><span class="kw">as.xts</span>(FrozenJuice
      <span class="dt">ylab =</span> <span class="st">&quot;Percent&quot;</span>,
      <span class="dt">main =</span> <span class="st">&quot;Monthly Changes in the Price of Frozen Conentrated Orange Juice&quot;</span>
 )</code></pre></div>
-<p><img src="URFITE_files/figure-html/unnamed-chunk-471-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="URFITE_files/figure-html/unnamed-chunk-472-2.png" width="672" style="display: block; margin: auto;" /></p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># plot freezing degree days</span>
 <span class="kw">plot</span>(<span class="kw">as.zoo</span>(FDD),
      <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>, 
@@ -402,9 +403,9 @@ FDD_xts &lt;-<span class="st"> </span><span class="kw">as.xts</span>(FrozenJuice
      <span class="dt">ylab =</span> <span class="st">&quot;Freezing degree days&quot;</span>,
      <span class="dt">main =</span> <span class="st">&quot;Monthly Freezing Degree Days in Orlando, FL&quot;</span>
 )</code></pre></div>
-<p><img src="URFITE_files/figure-html/unnamed-chunk-471-3.png" width="672" style="display: block; margin: auto;" /></p>
-<p>It is conspicious that periods with a high amount of freezing degree days are followed by large month-to-month price changes. These coindciding movements give rise to run a simple regression of price changes <span class="math inline">\(\%ChgOJC_t\)</span> on freezing degree days (<span class="math inline">\(FDD_t\)</span>) to estimate the effect of an additional freezing degree day one the price in the current month. For this, as for all other regressions in this chapter, we use <span class="math inline">\(T=611\)</span> observations (January 1950 to December 200).</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># simple regression of percent changes on freezing degree days</span>
+<p><img src="URFITE_files/figure-html/unnamed-chunk-472-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>It is conspicuous that periods with a high amount of freezing degree days are followed by large month-to-month price changes. These coinciding movements motivate to run a simple regression of price changes (<span class="math inline">\(\%ChgOJC_t\)</span>) on freezing degree days (<span class="math inline">\(FDD_t\)</span>) to estimate the effect of an additional freezing degree day one the price in the current month. For this, as for all other regressions in this chapter, we use <span class="math inline">\(T=611\)</span> observations (January 1950 to December 2000).</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># simple regression of percentage changes on freezing degree days</span>
 orange_SR &lt;-<span class="st"> </span><span class="kw">dynlm</span>(FOJC_pctc <span class="op">~</span><span class="st"> </span>FDD)
 <span class="kw">coeftest</span>(orange_SR, <span class="dt">vcov. =</span> vcovHAC)</code></pre></div>
 <pre><code>## 
@@ -415,12 +416,12 @@ orange_SR &lt;-<span class="st"> </span><span class="kw">dynlm</span>(FOJC_pctc 
 ## FDD          0.46724    0.13385  3.4906 0.0005167 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
-<p>Notice that the standard errors are computed using a HAC estimator of the model variance-covariance matrix, a matter that will not be further commented at this point, see Chapter 14.5.</p>
+<p>Notice that the standard errors are computed using a HAC estimator of the model variance-covariance matrix, a matter that will not be further commented at this point, see Chapter 14.5 for a discussion of this estimator.</p>
 <span class="math display">\[\begin{align*}
-  \widehat{\%ChgOJC_t} = \underset{(0.19)}{-0.42} + \underset{(0.13)}{0.47} FDD_t
+  \widehat{\%ChgOJC_t} = -\underset{(0.19)}{0.42} + \underset{(0.13)}{0.47} FDD_t
 \end{align*}\]</span>
 <p>The estimated coefficient on <span class="math inline">\(FDD_t\)</span> has the following interpretation: an additional freezing degree day in month <span class="math inline">\(t\)</span> leads to a price increase 0f <span class="math inline">\(0.47\%\)</span> in the same month.</p>
-<p>To consider effects of cold snaps on the orange juice price over following, we include lagged values of <span class="math inline">\(FDD_t\)</span> in our model which leads to a so-called <em>distributed lag regression</em>. We estimate a specification of a contemporeneous and six lagged values of <span class="math inline">\(FDD_t\)</span>.</p>
+<p>To consider effects of cold snaps on the orange juice price over the subsequent periods, we include lagged values of <span class="math inline">\(FDD_t\)</span> in our model which leads to a so-called <em>distributed lag regression model</em>. We estimate a specification using a contemporaneous and six lagged values of <span class="math inline">\(FDD_t\)</span> as regressors.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># distributed lag model with 6 lags of freezing degree days</span>
 orange_DLM &lt;-<span class="st"> </span><span class="kw">dynlm</span>(FOJC_pctc <span class="op">~</span><span class="st"> </span>FDD <span class="op">+</span><span class="st"> </span><span class="kw">L</span>(FDD, <span class="dv">1</span><span class="op">:</span><span class="dv">6</span>))
 <span class="kw">coeftest</span>(orange_DLM, <span class="dt">vcov. =</span> vcovHAC)</code></pre></div>
@@ -438,9 +439,12 @@ orange_DLM &lt;-<span class="st"> </span><span class="kw">dynlm</span>(FOJC_pctc
 ## L(FDD, 1:6)6  0.050246   0.045129  1.1134 0.2659919    
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
-<p>As a result we obtain</p>
+<p>As the result we obtain</p>
 <span class="math display" id="eq:orangemod1">\[\begin{align}
-  \widehat{\%ChgOJC_t} =&amp; \, \underset{(0.21)}{-0.69} + \underset{(0.14)}{0.47} FDD_t + \underset{(0.08)}{0.15} FDD_{t-1} + \underset{(0.06)}{0.06} FDD_{t-2} + \underset{(0.05)}{0.07} FDD_{t-3} \\ &amp;\,+ \underset{(0.03)}{0.04} FDD_{t-4} + \underset{(0.03)}{0.05} FDD_{t-5} + \underset{(0.05)}{0.05} FDD_{t-6} \tag{15.1}
+  \begin{split}
+  \widehat{\%ChgOJC_t} =&amp; \, -\underset{(0.21)}{0.69} + \underset{(0.14)}{0.47} FDD_t + \underset{(0.08)}{0.15} FDD_{t-1} + \underset{(0.06)}{0.06} FDD_{t-2} + \underset{(0.05)}{0.07} FDD_{t-3} \\ &amp;\,+ \underset{(0.03)}{0.04} FDD_{t-4} + \underset{(0.03)}{0.05} FDD_{t-5} + \underset{(0.05)}{0.05} FDD_{t-6},
+  \end{split}
+  \tag{15.1}
 \end{align}\]</span>
 <p>where the coefficient on <span class="math inline">\(FDD_{t-1}\)</span> estimates the price increase in period <span class="math inline">\(t\)</span> caused by an additional freezing degree day in the preceding month, the coefficient on <span class="math inline">\(FDD_{t-2}\)</span> estimates the effect of an additional freezing degree day two month ago and so on. Consequently, the coefficients in <a href="the-orange-juice-data.html#eq:orangemod1">(15.1)</a> can be interpreted as price changes in current and future periods due to a unit increase in the current month’ freezing degree days.</p>
 </div>

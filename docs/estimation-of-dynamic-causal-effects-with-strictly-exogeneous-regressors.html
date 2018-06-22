@@ -25,7 +25,7 @@
 <meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber and Martin Schmelzer">
 
 
-<meta name="date" content="2018-06-18">
+<meta name="date" content="2018-06-22">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -364,7 +364,7 @@ This book is in <b>Open Review</b>. We want your feedback to make the book bette
 </div>
 <div id="estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors" class="section level2">
 <h2><span class="header-section-number">15.5</span> Estimation of Dynamic Causal Effects with Strictly Exogeneous Regressors</h2>
-<p>In general, the errors in a distributed lag model are correlated which necessitates usage of HAC standard errors for valid inference. If, however, the assumption of exogeneity (the frist assumption stated in Key Concept 15.1) is replaced by strict exogeneity, that is <span class="math display">\[E(u_t\vert \dots, X_{t+1}, X_{t}, X_{t-1}, \dots),\]</span> more efficient approaches than OLS estimation of the coefficients may be available. For a general distributed lag model with <span class="math inline">\(r\)</span> lags and AR(<span class="math inline">\(p\)</span>) errors, these approaches are summarized in Key Concept 15.4.</p>
+<p>In general, the errors in a distributed lag model are correlated which necessitates usage of HAC standard errors for valid inference. If, however, the assumption of exogeneity (the first assumption stated in Key Concept 15.1) is replaced by strict exogeneity, that is <span class="math display">\[E(u_t\vert \dots, X_{t+1}, X_{t}, X_{t-1}, \dots) = 0,\]</span> more efficient approaches than OLS estimation of the coefficients are available. For a general distributed lag model with <span class="math inline">\(r\)</span> lags and AR(<span class="math inline">\(p\)</span>) errors, these approaches are summarized in Key Concept 15.4.</p>
 <div class="keyconcept">
 <h3 class="right">
 Key Concept 15.4
@@ -373,7 +373,7 @@ Key Concept 15.4
 Estimation of Dynamic Multipliers Under Strict Exogeneity
 </h3>
 <p>
-Consider the general distributed lag model with <span class="math inline">\(r\)</span> lags and assume that the errors follow an <span class="math inline">\(AR(p)\)</span> process,
+Consider the general distributed lag model with <span class="math inline">\(r\)</span> lags and assume that the errors follow an AR(<span class="math inline">\(p\)</span>) process,
 <span class="math display" id="eq:dlmarerrors">\[\begin{align}
   Y_t =&amp; \, \beta_0 + \beta_1 X_t + \beta_2 X_{t-1} + \dots + \beta_{r+1} X_{t-r} + u_t \\
   u_t =&amp; \, \phi_1 u_{t-1} + \phi u_{t-2} + \dots + \phi_p u_{t-p} + \overset{\sim}{u}_t. \tag{15.7}
@@ -384,19 +384,19 @@ Assuming strict exogeneity of <span class="math inline">\(X_t\)</span>, one may 
       &amp;+ \, \delta_0 X_t + \delta_1 X_{t-1} + \dots + \delta_q X_{t-q} + \overset{\sim}{u}_t
 \end{align*}\]</span>
 <p>where <span class="math inline">\(q=r+p\)</span> and compute estimates of the dynamic multipliers <span class="math inline">\(\beta_1, \beta_2, \dots, \beta_{r+1}\)</span> using OLS estimates of <span class="math inline">\(\phi_1, \phi_2, \dots, \phi_p, \delta_0, \delta_1, \dots, \delta_q\)</span>.</p>
-<p>An alternative is to estimate the dynamic multipliers using feasible GLS, that is to apply the OLS estimator to a quasi-differenced specification of <a href="estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#eq:dlmarerrors">(15.7)</a>. Under strict exogeneity, the feasible GLS approach is the BLUE estimator for the dynamic multipliers in large samples.</p>
-<p>On the one han, as demonstrated in Chapter 15.5 of the book, the OLS estimation of the ADL representation can be beneficial for estimation of dynamic multipliers in large distributed lag model beacause it allows for a more parsimonious model that may be a good approximation to a large distributed lag model. On the other hand, the GLS approach is more efficient than the ADL estimator if the sample size is large.</p>
+<p>An alternative is to estimate the dynamic multipliers using feasible GLS, that is to apply the OLS estimator to a quasi-difference specification of <a href="estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#eq:dlmarerrors">(15.7)</a>. Under strict exogeneity, the feasible GLS approach is the BLUE estimator for the dynamic multipliers in large samples.</p>
+<p>On the one hand, as demonstrated in Chapter 15.5 of the book, the OLS estimation of the ADL representation can be beneficial for estimation of the dynamic multipliers in large distributed lag models because it allows for a more parsimonious model that may be a good approximation to a large distributed lag model. On the other hand, the GLS approach is more efficient than the ADL estimator if the sample size is large.</p>
 </p>
 </div>
-<p>In what follows we shortly review how different representations of a distribted lag model can be obtained when the causal effect in <span class="math inline">\(Y\)</span> of a change in <span class="math inline">\(X\)</span> lasts for only two periods and show how these specification can be estimated by OLS and GLS using <tt>R</tt>.</p>
+<p>In what follows we shortly review how the different representations of a distributed lag model can be obtained when the causal effect in <span class="math inline">\(Y\)</span> of a change in <span class="math inline">\(X\)</span> lasts for only two periods and show how these specification can be estimated by OLS and GLS using <tt>R</tt>.</p>
 The model is
 <span class="math display" id="eq:dldynamic">\[\begin{align}
-  Y_t = \beta_0 + \beta_1 X_t + \beta_2 X_{t-1} + u_t \tag{15.8}
+  Y_t = \beta_0 + \beta_1 X_t + \beta_2 X_{t-1} + u_t, \tag{15.8}
 \end{align}\]</span>
-<p>so a change in <span class="math inline">\(X\)</span> has a contemporaneous effect on <span class="math inline">\(Y\)</span> (<span class="math inline">\(\beta_1\)</span>) and an effect in the next period (<span class="math inline">\(\beta_2\)</span>). The error term <span class="math inline">\(u_t\)</span> follows an AR(<span class="math inline">\(1\)</span>) process,<span class="math display">\[u_t = \phi_1 u_{t-1} + \overset{\sim}{u_t}\]</span> where <span class="math inline">\(\overset{\sim}{u_t}\)</span> is serially uncorrelated.</p>
+<p>so a change in <span class="math inline">\(X\)</span> is modeled to effect <span class="math inline">\(Y\)</span> contemporaneously (<span class="math inline">\(\beta_1\)</span>) and in the next period (<span class="math inline">\(\beta_2\)</span>). The error term <span class="math inline">\(u_t\)</span> is assumed to follow an AR(<span class="math inline">\(1\)</span>) process,<span class="math display">\[u_t = \phi_1 u_{t-1} + \overset{\sim}{u_t},\]</span> where <span class="math inline">\(\overset{\sim}{u_t}\)</span> is serially uncorrelated.</p>
 One can show that the ADL representation of this model is
 <span class="math display" id="eq:adl21dynamic">\[\begin{align}
-  Y_t = \alpha_0 + \phi_1 Y_{t-1} + \delta_0 X_t + \delta_1 X_{t-1} + \delta_2 X_{t-2} + \overset{\sim}{u}_t \tag{15.9}
+  Y_t = \alpha_0 + \phi_1 Y_{t-1} + \delta_0 X_t + \delta_1 X_{t-1} + \delta_2 X_{t-2} + \overset{\sim}{u}_t, \tag{15.9}
 \end{align}\]</span>
 with the restrictions
 <span class="math display">\[\begin{align*}
@@ -405,17 +405,17 @@ with the restrictions
 \end{align*}\]</span>
 <div id="quasi-differences" class="section level5 unnumbered">
 <h5>Quasi-Differences</h5>
-Another way of writing this ADL(<span class="math inline">\(1\)</span>,<span class="math inline">\(2\)</span>) representation is the <em>quasi-difference</em> model
+Another way of writing the ADL(<span class="math inline">\(1\)</span>,<span class="math inline">\(2\)</span>) representation <a href="estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#eq:adl21dynamic">(15.9)</a> is the <em>quasi-difference model</em>
 <span class="math display" id="eq:qdm">\[\begin{align}
-  \overset{\sim}{Y}_t = \alpha_0 + \beta_1 \overset{\sim}{X}_t + \beta_2   \overset{\sim}{X}_{t-1} + \overset{\sim}{u}_t \tag{15.10}
+  \overset{\sim}{Y}_t = \alpha_0 + \beta_1 \overset{\sim}{X}_t + \beta_2   \overset{\sim}{X}_{t-1} + \overset{\sim}{u}_t, \tag{15.10}
 \end{align}\]</span>
-<p>where <span class="math inline">\(\overset{\sim}{Y}_t = Y_t - \phi_1 Y_{t-1}\)</span> and <span class="math inline">\(\overset{\sim}{X}_t = X_t - \phi_1 X_{t-1}\)</span>. Notice that the error term <span class="math inline">\(\overset{\sim}{u}_t\)</span> is uncorrelated in both models and, as shown in Chapter 15.5 of the book, <span class="math display">\[E(u_t\vert X_{t+1}, X_t, X_{t-1}, \dots) = 0\]</span> which is implied by the assumption of strict exogeneity.</p>
-<p>We continue by simulation a time series of <span class="math inline">\(500\)</span> observations using the model <a href="estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#eq:dldynamic">(15.8)</a> where <span class="math inline">\(\beta_1 = 0.1\)</span>, <span class="math inline">\(\beta_2 = 0.25\)</span>, <span class="math inline">\(\phi = 0.5\)</span> and <span class="math inline">\(\overset{\sim}{u}_t \sim N(0,1)\)</span> and start by estimating the distributed lag model.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># simulate time series with serially correlated errors</span>
+<p>where <span class="math inline">\(\overset{\sim}{Y}_t = Y_t - \phi_1 Y_{t-1}\)</span> and <span class="math inline">\(\overset{\sim}{X}_t = X_t - \phi_1 X_{t-1}\)</span>. Notice that the error term <span class="math inline">\(\overset{\sim}{u}_t\)</span> is uncorrelated in both models and, as shown in Chapter 15.5 of the book, <span class="math display">\[E(u_t\vert X_{t+1}, X_t, X_{t-1}, \dots) = 0,\]</span> which is implied by the assumption of strict exogeneity.</p>
+<p>We continue by simulating a time series of <span class="math inline">\(500\)</span> observations using the model <a href="estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#eq:dldynamic">(15.8)</a> with <span class="math inline">\(\beta_1 = 0.1\)</span>, <span class="math inline">\(\beta_2 = 0.25\)</span>, <span class="math inline">\(\phi = 0.5\)</span> and <span class="math inline">\(\overset{\sim}{u}_t \sim N(0,1)\)</span> and estimate the different representations, starting with the distributed lag model <a href="estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#eq:dldynamic">(15.8)</a>.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># set random seed for reproducibility</span>
 <span class="kw">set.seed</span>(<span class="dv">1</span>)
 
+<span class="co"># simulate time series with serially correlated errors</span>
 obs &lt;-<span class="st"> </span><span class="dv">501</span>
-
 eps &lt;-<span class="st"> </span><span class="kw">arima.sim</span>(<span class="dt">n =</span> obs<span class="op">-</span><span class="dv">1</span> , <span class="dt">model =</span> <span class="kw">list</span>(<span class="dt">ar =</span> <span class="fl">0.5</span>))
 X &lt;-<span class="st"> </span><span class="kw">arima.sim</span>(<span class="dt">n =</span> obs, <span class="dt">model =</span> <span class="kw">list</span>(<span class="dt">ar =</span> <span class="fl">0.25</span>))
 Y &lt;-<span class="st"> </span><span class="fl">0.1</span> <span class="op">*</span><span class="st"> </span>X[<span class="op">-</span><span class="dv">1</span>] <span class="op">+</span><span class="st"> </span><span class="fl">0.25</span> <span class="op">*</span><span class="st"> </span>X[<span class="op">-</span>obs] <span class="op">+</span><span class="st"> </span>eps
@@ -423,14 +423,14 @@ X &lt;-<span class="st"> </span><span class="kw">ts</span>(X[<span class="op">-<
 
 <span class="co"># estimate the distributed lag model</span>
 dlm &lt;-<span class="st"> </span><span class="kw">dynlm</span>(Y <span class="op">~</span><span class="st"> </span>X <span class="op">+</span><span class="st"> </span><span class="kw">L</span>(X))</code></pre></div>
-<p>It is straightforward to check whether the residuals of this model exhibit autocorrelation by using <code>acf()</code>.</p>
+<p>It is straightforward to check whether the residuals of this model exhibit autocorrelation by using the function <tt>acf()</tt>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># check that the residuals are serially correlated</span>
 <span class="kw">acf</span>(
   <span class="kw">residuals</span>(dlm)
 )</code></pre></div>
-<p><img src="URFITE_files/figure-html/unnamed-chunk-481-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>The plot indicates that the residuals are autocorrelated. In particular, the pattern reveals that the residuals follow an autoregressive process, as the sample autocorrelation function decays quickly for the first few lags and is probably zero for higher lag orders. At any case, HAC standard errors should be used.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># coefficient summary using NeweyWest estimator</span>
+<p><img src="URFITE_files/figure-html/unnamed-chunk-482-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>The plot indicates that the residuals are autocorrelated. In particular, the pattern observed reveals that the residuals follow an autoregressive process, as the sample autocorrelation function decays quickly for the first few lags and is probably zero for higher lag orders. At any case, HAC standard errors should be used.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># coefficient summary using the Newey-West SE estimates</span>
 <span class="kw">coeftest</span>(dlm, <span class="dt">vcov =</span> <span class="kw">NeweyWest</span>(dlm, <span class="dt">prewhite =</span> F, <span class="dt">adjust =</span> T))</code></pre></div>
 <pre><code>## 
 ## t test of coefficients:
@@ -445,17 +445,17 @@ dlm &lt;-<span class="st"> </span><span class="kw">dynlm</span>(Y <span class="o
 <div id="ols-estimation-of-the-adl-model" class="section level5 unnumbered">
 <h5>OLS Estimation of the ADL Model</h5>
 <p>Next, we estimate the ADL(<span class="math inline">\(1\)</span>,<span class="math inline">\(2\)</span>) model <a href="estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#eq:adl21dynamic">(15.9)</a> using OLS. Notice that the errors are uncorrelated in this representation of the model. This statement is supported by a plot of the sample autocorrelation function of the residual series.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Estimate ADL(2, 1) representation</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Estimate ADL(2, 1) representation of the distributed lag model</span>
 adl21_dynamic &lt;-<span class="st"> </span><span class="kw">dynlm</span>(Y <span class="op">~</span><span class="st"> </span><span class="kw">L</span>(Y) <span class="op">+</span><span class="st"> </span>X <span class="op">+</span><span class="st"> </span><span class="kw">L</span>(X, <span class="dv">1</span><span class="op">:</span><span class="dv">2</span>))
 
 <span class="co"># plot sample autocorrelaltions of residuals</span>
 <span class="kw">acf</span>(adl21_dynamic<span class="op">$</span>residuals)</code></pre></div>
-<p><img src="URFITE_files/figure-html/unnamed-chunk-483-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>The estimated coefficients in <code>adl21_dynamic$coefficients</code> <em>are not</em> the dynamic multiplers we are interested in but can be computed according to the restrictions in <a href="estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#eq:adl21dynamic">(15.9)</a> where the true coefficients are replaced by their OLS estimates.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">t &lt;-<span class="st"> </span>adl21_dynamic<span class="op">$</span>coefficients
-
-<span class="co"># compute estimated dynamic effects using coefficient restrictions</span>
+<p><img src="URFITE_files/figure-html/unnamed-chunk-484-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Note that the estimated coefficients reported by <code>adl21_dynamic$coefficients</code> are <em>not</em> the dynamic multipliers we are interested in, but instead can be computed according to the restrictions in <a href="estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#eq:adl21dynamic">(15.9)</a>, where the true coefficients are replaced by the OLS estimates.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># compute estimated dynamic effects using coefficient restrictions</span>
 <span class="co"># in the ADL(2,1) representation</span>
+t &lt;-<span class="st"> </span>adl21_dynamic<span class="op">$</span>coefficients
+
 <span class="kw">c</span>(
   <span class="st">&quot;hat_beta_1&quot;</span> =<span class="st"> </span>t[<span class="dv">3</span>],
   <span class="st">&quot;hat_beta_2&quot;</span> =<span class="st"> </span>t[<span class="dv">4</span>] <span class="op">+</span><span class="st"> </span>t[<span class="dv">3</span>] <span class="op">*</span><span class="st"> </span>t[<span class="dv">2</span>]
@@ -465,11 +465,13 @@ adl21_dynamic &lt;-<span class="st"> </span><span class="kw">dynlm</span>(Y <spa
 </div>
 <div id="gls-estimation" class="section level5 unnumbered">
 <h5>GLS Estimation</h5>
-<p>Strict exogeneity allows OLS estimation of the quasi-difference model <a href="estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#eq:qdm">(15.10)</a>. The idea of applying the OLS estimator to a model where the variables are linearly transformed such that the model errors are uncorrelated and homoskedastic is called <em>generalized least squares</em> (GLS)</p>
-<p>The OLS estimator in <a href="estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#eq:qdm">(15.10)</a> is called the <em>infeasible GLS</em> estimator because we <span class="math inline">\(\overset{\sim}{Y}\)</span> and <span class="math inline">\(\overset{\sim}{X}\)</span> cannot be computed without knowledge of <span class="math inline">\(\phi_1\)</span>, the autoregressive coefficient in the error AR(<span class="math inline">\(1\)</span>) model, which is generally unknown in practice.</p>
-<p>Suppose <span class="math inline">\(\phi = 0.5\)</span> was known. The infeasible GLS estimates of the dynamic multipliers in <a href="estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#eq:dldynamic">(15.8)</a> are obtained by applying OLS to the transformed data.</p>
+<p>Strict exogeneity allows OLS estimation of the quasi-difference model <a href="estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#eq:qdm">(15.10)</a>. The idea of applying the OLS estimator to a model where the variables are linearly transformed, such that the model errors are uncorrelated and homoskedastic, is called <em>generalized least squares</em> (GLS)</p>
+<p>The OLS estimator in <a href="estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#eq:qdm">(15.10)</a> is called the <em>infeasible GLS</em> estimator because <span class="math inline">\(\overset{\sim}{Y}\)</span> and <span class="math inline">\(\overset{\sim}{X}\)</span> cannot be computed without knowing <span class="math inline">\(\phi_1\)</span>, the autoregressive coefficient in the error AR(<span class="math inline">\(1\)</span>) model, which is generally unknown in practice.</p>
+<p>Suppose we know that <span class="math inline">\(\phi = 0.5\)</span>. We then may obtain the infeasible GLS estimates of the dynamic multipliers in <a href="estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#eq:dldynamic">(15.8)</a> by applying OLS to the transformed data.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># GLS: estimate quasi-differenced specification by OLS</span>
-iGLS_dynamic &lt;-<span class="st"> </span><span class="kw">dynlm</span>(<span class="kw">I</span>(Y<span class="op">-</span><span class="st"> </span><span class="fl">0.5</span> <span class="op">*</span><span class="st"> </span><span class="kw">L</span>(Y)) <span class="op">~</span><span class="st"> </span><span class="kw">I</span>(X <span class="op">-</span><span class="st"> </span><span class="fl">0.5</span><span class="op">*</span><span class="st"> </span><span class="kw">L</span>(X)) <span class="op">+</span><span class="st"> </span><span class="kw">I</span>(<span class="kw">L</span>(X) <span class="op">-</span><span class="st"> </span><span class="fl">0.5</span><span class="op">*</span><span class="st"> </span><span class="kw">L</span>(X,<span class="dv">2</span>)) )
+iGLS_dynamic &lt;-<span class="st"> </span><span class="kw">dynlm</span>(
+  <span class="kw">I</span>(Y<span class="op">-</span><span class="st"> </span><span class="fl">0.5</span> <span class="op">*</span><span class="st"> </span><span class="kw">L</span>(Y)) <span class="op">~</span><span class="st"> </span><span class="kw">I</span>(X <span class="op">-</span><span class="st"> </span><span class="fl">0.5</span><span class="op">*</span><span class="st"> </span><span class="kw">L</span>(X)) <span class="op">+</span><span class="st"> </span><span class="kw">I</span>(<span class="kw">L</span>(X) <span class="op">-</span><span class="st"> </span><span class="fl">0.5</span><span class="op">*</span><span class="st"> </span><span class="kw">L</span>(X, <span class="dv">2</span>)) 
+  )
 
 <span class="kw">summary</span>(iGLS_dynamic)</code></pre></div>
 <pre><code>## 
@@ -521,7 +523,7 @@ Y_t &lt;-<span class="st"> </span><span class="kw">c</span>(Y[<span class="op">-
 ## Durbin-Watson statistic 
 ## (original):    1.06907 , p-value: 1.05e-25
 ## (transformed): 1.98192 , p-value: 4.246e-01</code></pre>
-<p>Some more sophisticated methods are provided with the package <tt>nlme</tt>. The function <tt>gls()</tt> can be used to fit linear models by maximum likelihood estimation algorithms and allows to specify a correlation structure for the error term.</p>
+<p>Some more sophisticated methods for GLS estimation are provided with the package <tt>nlme</tt>. The function <tt>gls()</tt> can be used to fit linear models by maximum likelihood estimation algorithms and allows to specify a correlation structure for the error term.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># feasible GLS maximum likelihood estimation procedure</span>
 <span class="kw">summary</span>(
   <span class="kw">gls</span>(Y_t <span class="op">~</span><span class="st"> </span>X_t <span class="op">+</span><span class="st"> </span>X_l1, <span class="dt">correlation =</span> <span class="kw">corAR1</span>())
