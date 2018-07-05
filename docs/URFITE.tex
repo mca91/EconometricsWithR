@@ -30,7 +30,7 @@
             breaklinks=true}
 \urlstyle{same}  % don't use monospace font for urls
 \usepackage{natbib}
-\bibliographystyle{apalike}
+\bibliographystyle{apa}
 \usepackage{color}
 \usepackage{fancyvrb}
 \newcommand{\VerbBar}{|}
@@ -124,13 +124,20 @@
   \postauthor{\par}
   \predate{\centering\large\emph}
   \postdate{\par}
-  \date{2018-06-22}
+  \date{2018-07-05}
 
 \usepackage{booktabs}
 %\usepackage{amsmath}
 \usepackage{amsthm}
 \usepackage{rotating, graphicx}
 \usepackage{multirow}
+
+\PassOptionsToPackage{table}{xcolor}
+
+\usepackage{tcolorbox}
+ 
+\definecolor{kcblue}{HTML}{D7DDEF}
+\definecolor{kcdarkblue}{HTML}{2B4E70}
 
 \makeatletter
 \def\thm@space@setup{%
@@ -165,6 +172,9 @@
     \end{tabular}
     \end{center}
     }
+    
+\newtcolorbox[auto counter, number within=section]{keyconcepts}[2][]{%
+colback=kcblue,colframe=kcdarkblue,fonttitle=\bfseries, title=#1, after title={\hfill Key Concept~#2}, beforeafter skip=15pt}
 \usepackage{booktabs}
 \usepackage{longtable}
 \usepackage{array}
@@ -216,18 +226,18 @@ providing cutting-edge methods) were made available on the Comprehensive
 an extensive network of FTP servers around the world that store
 identical and up-to-date versions of \texttt{R} code and its
 documentation. \texttt{R} dominates other (commercial) software for
-statistical computing in most fields of research in applied statistics
-but the benefits of it being freely available, open source and having a
+statistical computing in most fields of research in applied statistics.
+The benefits of it being freely available, open source and having a
 large and constantly growing community of users that contribute to CRAN
 render \texttt{R} more and more appealing for empirical economists and
-econometricians.
+econometricians as well.
 
 A striking advantage of using \texttt{R} in econometrics courses is that
 it enables students to explicitly document their analysis step-by-step
 such that it is easy to update and to expand. This allows to re-use code
 for similar applications with different data. Furthermore, \texttt{R}
 programs are fully reproducible which makes it straightforward for
-others to comprehend and validate the results.
+others to comprehend and validate results.
 
 Over the recent years, \texttt{R} has thus become an integral part of
 the curricula of econometrics classes we teach at University of
@@ -239,27 +249,26 @@ programming on their own. This is why we offer tutorials where both
 econometric theory and its applications using \texttt{R} are introduced,
 for some time now. As for accompanying literature, there are some
 excellent books that deal with \texttt{R} and its applications to
-econometrics like Kleiber \& Zeilis (2008) and Hetekar (2010). However,
-we have found that these works are somewhat difficult to access,
-especially for undergraduate students in economics having little
-understanding of econometric methods and predominantly no experience in
-programming at all. Consequently, we have started to compile a
-collection of reproducible reports for use in class. These reports
-provide guidance on how to implement selected applications from the
-textbook \emph{Introduction to Econometrics} by Stock \& Watson (2014)
-which serves as a basis for the lecture and the accompanying tutorials.
-The process has been facilitated considerably with the release of
-\texttt{knitr} (2018) in 2012. \texttt{knitr} is an \texttt{R} package
-for dynamic report generation which allows to seamlessly combine pure
-text, LaTeX, \texttt{R} code and its output in a variety of formats,
-including PDF and HTML. Being inspired by \emph{Using R for Introductory
-Econometrics} (Heiss, 2016)\footnote{Heiss (2016) builds on the popular
-  \emph{Introductory Econometrics} by Wooldridge (2015) and demonstrates
-  how to replicate the applications discussed therein using \texttt{R}.}
-and with this powerful toolkit at hand we decided to write up our own
-empirical companion to Stock \& Watson (2014) which resulted in
-\textbf{U}sing \textbf{R} \textbf{f}or \textbf{I}ntroduction \textbf{t}o
-\textbf{E}conometrics (\emph{URFITE}).
+econometrics like \citet{kleiber2008}. However, we have found that these
+works are somewhat difficult to access, especially for undergraduate
+students in economics having little understanding of econometric methods
+and predominantly no experience in programming at all. Consequently, we
+have started to compile a collection of reproducible reports for use in
+class. These reports provide guidance on how to implement selected
+applications from the textbook \emph{Introduction to Econometrics}
+\citep{stock2015} which serves as a basis for the lecture and the
+accompanying tutorials. The process has been facilitated considerably
+with the release of \texttt{knitr} (2018). \texttt{knitr} is an
+\texttt{R} package for dynamic report generation which allows to
+seamlessly combine pure text, LaTeX, \texttt{R} code and its output in a
+variety of formats, including PDF and HTML. Being inspired by
+\emph{Using R for Introductory Econometrics} (Heiss, 2016)\footnote{Heiss
+  (2016) builds on the popular \emph{Introductory Econometrics} by
+  Wooldridge (2015) and demonstrates how to replicate the applications
+  discussed therein using \texttt{R}.} and with this powerful toolkit at
+hand we decided to write up our own empirical companion to Stock \&
+Watson (2014) which resulted in \textbf{U}sing \textbf{R} \textbf{f}or
+\textbf{I}ntroduction \textbf{t}o \textbf{E}conometrics (\emph{URFITE}).
 
 Similarly to the book by Heiss (2016) this project is neither a
 comprehensive econometrics textbook nor is it intended to be a general
@@ -313,7 +322,7 @@ on \texttt{CRAN}. The code chunk is followed by the output produced.
 \end{Shaded}
 
 \begin{verbatim}
-## [1] 12598
+## [1] 12648
 \end{verbatim}
 
 Each code chunk is equipped with a button on the outer right hand side
@@ -490,7 +499,7 @@ On the bottom of almost every help page you find examples on how to use
 the corresponding functions. This is very helpful for beginners and we
 recommend to look out for those.
 
-\chapter{Probability Theory}\label{probability-theory}
+\chapter{Probability Theory}\label{pt}
 
 This chapter reviews some basic concepts of probability theory and
 demonstrates how they can be applied in \texttt{R}.
@@ -507,7 +516,11 @@ there is no need to run \texttt{install.packages("stats")} or
 \texttt{library("stats")}. Simply execute
 \texttt{library(help\ =\ "stats")} in the console to view the
 documentation and a complete list of all functions gathered in
-\texttt{stats}.
+\texttt{stats}. For most packages a documentation that can be viewed
+within \emph{RStudio} is available. Documentations can be invoked using
+the \texttt{?} operator, e.g.~upon execution of \texttt{?stats} the
+documentation of the \texttt{stats} package is shown in the help tab of
+the bottom-right pane
 
 In what follows, we lay our focus on (some of) the probability
 distributions that are handled by \texttt{R} and show how to use the
@@ -586,7 +599,7 @@ to \(1\). The cumulative probability distribution function states the
 probability that the random variable is less than or equal to a
 particular value.
 
-For the die roll, this is straightforward to set up
+For the die roll, this is straightforward to summarize in a table:
 
 \begin{longtable}[]{@{}lllllll@{}}
 \toprule
@@ -602,16 +615,17 @@ Cumulative probability distribution & 1/6 & 2/6 & 3/6 & 4/6 & 5/6 &
 
 We can easily plot both functions using R. Since the probability equals
 \(1/6\) for each outcome, we set up the vector \texttt{probability} by
-using the \texttt{rep()} function which replicates a given value a
+using the function \texttt{rep()} which replicates a given value a
 specified number of times.
 
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{# generate the vector of probabilities }
-\NormalTok{probability <-}\StringTok{ }\KeywordTok{rep}\NormalTok{(}\DecValTok{1}\OperatorTok{/}\DecValTok{6}\NormalTok{,}\DecValTok{6}\NormalTok{) }
+\NormalTok{probability <-}\StringTok{ }\KeywordTok{rep}\NormalTok{(}\DecValTok{1}\OperatorTok{/}\DecValTok{6}\NormalTok{, }\DecValTok{6}\NormalTok{) }
 
 \CommentTok{# plot the probabilites }
-\KeywordTok{plot}\NormalTok{(probability, }\DataTypeTok{xlab =} \StringTok{"outcomes"}\NormalTok{, }
+\KeywordTok{plot}\NormalTok{(probability, }
+     \DataTypeTok{xlab =} \StringTok{"outcomes"}\NormalTok{, }
      \DataTypeTok{main =} \StringTok{"Probability Distribution"}
 \NormalTok{     ) }
 \end{Highlighting}
@@ -648,12 +662,12 @@ with outcomes \(H\) (heads) and \(T\) (tails).
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\KeywordTok{sample}\NormalTok{(}\KeywordTok{c}\NormalTok{(}\StringTok{"H"}\NormalTok{,}\StringTok{"T"}\NormalTok{),}\DecValTok{1}\NormalTok{) }
+\KeywordTok{sample}\NormalTok{(}\KeywordTok{c}\NormalTok{(}\StringTok{"H"}\NormalTok{, }\StringTok{"T"}\NormalTok{), }\DecValTok{1}\NormalTok{) }
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-## [1] "H"
+## [1] "T"
 \end{verbatim}
 
 The result of a single coin toss is a \emph{Bernoulli} distributed
@@ -884,16 +898,11 @@ Other frequently encountered measures are the variance and the standard
 deviation. Both are measures of the \emph{dispersion} of a random
 variable.
 
-Key Concept 2.2
-
-Variance and Standard Deviation
-
-The Variance of the discrete \emph{random variable} \(Y\), denoted
-\(\sigma^2_Y\), is
-\[ \sigma^2_Y = \text{Var}(Y) = E\left[(Y-\mu_y)^2\right] = \sum_{i=1}^k (y_i - \mu_y)^2 p_i \]
-The standard deviation of \(Y\) is \(\sigma_Y\), the square root of the
-variance. The units of the standard deviation are the same as the units
-of \(Y\).
+\begin{keyconcepts}[Variance and Standard Deviation]{2.2}
+The Variance of the discrete *random variable* $Y$, denoted $\sigma^2_Y$, is
+$$ \sigma^2_Y = \text{Var}(Y) = E\left[(Y-\mu_y)^2\right] = \sum_{i=1}^k (y_i - \mu_y)^2 p_i $$
+The standard deviation of $Y$ is $\sigma_Y$, the square root of the variance. The units of the standard deviation are the same as the units of $Y$.
+\end{keyconcepts}
 
 The variance as defined in Key Concept 2.2 \emph{is not} implemented as
 a function in R. Instead we have the function \texttt{var()} which
@@ -1163,7 +1172,7 @@ conjunction with \texttt{dnorm()}.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-27-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-29-1} \end{center}
 
 We can obtain the density at different positions by passing a vector of
 quantiles to \texttt{dnorm()}.
@@ -1193,7 +1202,7 @@ Similar to the PDF, we can plot the standard normal CDF using
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-29-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-31-1} \end{center}
 
 We can also use \texttt{R} to calculate the probability of events
 associated with a standard normal variate.
@@ -1446,7 +1455,7 @@ The plot is completed by adding a legend with help of the function
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-37-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-39-1} \end{center}
 
 Since the outcomes of a \(\chi^2_M\) distributed random variable are
 always positive, the domain of the related PDF and CDF is
@@ -1495,7 +1504,7 @@ displays degrees of freedom and the associated colors.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-38-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-40-1} \end{center}
 
 It is evident that increasing the degrees of freedom shifts the
 distribution to the right (the mode becomes larger) and increases the
@@ -1576,7 +1585,7 @@ them with the standard normal distribution.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-39-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-41-1} \end{center}
 
 The plot indicates what has been claimed in the previous paragraph: as
 the degrees of freedom increase, the shape of the \(t\) distribution
@@ -1643,7 +1652,7 @@ density function and adding a color shading with \texttt{polygon()}.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-41-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-43-1} \end{center}
 
 The \(F\) distribution is related to many other distributions. An
 important special case encountered in econometrics arises if the
@@ -1825,7 +1834,7 @@ visualize this using bar plots.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-44-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-46-1} \end{center}
 
 Many econometric procedures deal with averages of sampled data. It is
 almost always assumed that observations are drawn randomly from a
@@ -2000,7 +2009,7 @@ device and discard the previous plot!
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-47-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-49-1} \end{center}
 
 From inspection of the plot we can tell that the distribution of
 \(\overline{Y}\) is indeed very close to that of a \(N(0, 0.1)\)
@@ -2068,7 +2077,7 @@ distribution.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-48-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-50-1} \end{center}
 
 \subsection*{Large Sample Approximations to Sampling
 Distributions}\label{large-sample-approximations-to-sampling-distributions}
@@ -2229,7 +2238,7 @@ benchmark probability \(R_n = p = 0.5\).
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-49-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-51-1} \end{center}
 
 There are several things to be said about this plot.
 
@@ -2367,7 +2376,7 @@ In R, we realized this as follows:
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-50-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-52-1} \end{center}
 
 We see that the simulated sampling distribution of the standardized
 average tends to deviate strongly from the standard normal distribution
@@ -2380,38 +2389,46 @@ as seen for \(n=100\).
 
 \begin{center}\textit{This interactive part of URFITE is only available in the HTML version}\end{center}
 
-\chapter{A Review of Statistics using
-R}\label{a-review-of-statistics-using-r}
+\chapter{A Review of Statistics using R}\label{arosur}
 
 This section reviews important statistical concepts:
 
 \begin{itemize}
 \item
-  Estimation
+  Estimation of unknown population parameters
 \item
-  Hypothesis Testing
+  Hypothesis testing
 \item
-  Confidence Intervals
+  Confidence intervals
 \end{itemize}
 
 Since these types of statistical methods are heavily used in
 econometrics, we will discuss them in the context of inference about an
 unknown population mean and discuss several applications in \texttt{R}.
-
-The \texttt{R} applications presented in this chapter rely on the
-following packages which are not part of base \texttt{R}:
+These \texttt{R} applications rely on the following packages which are
+not part of the base version of \texttt{R}:
 
 \begin{itemize}
 \item
-  \texttt{readxl} allows to import data from Excel to \texttt{R}.
+  \texttt{readxl} - allows to import data from \emph{Excel} to
+  \texttt{R}.
 \item
-  \texttt{dplyr} provides a flexible grammar for data manipulation.
+  \texttt{dplyr} - provides a flexible grammar for data manipulation.
 \item
-  \texttt{MASS} is a collection of functions for applied statistics.
+  \texttt{MASS} - a collection of functions for applied statistics.
 \end{itemize}
 
-Make sure these are installed before you go ahead and replicate the
-examples.
+Make sure these are installed before you go ahead and try to replicate
+the examples. The savest way to do so is by checking whether the
+following code chunk executes without any errors.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(dplyr)}
+\KeywordTok{library}\NormalTok{(MASS)}
+\KeywordTok{library}\NormalTok{(readxl)}
+\end{Highlighting}
+\end{Shaded}
 
 \section{Estimation of the Population
 Mean}\label{estimation-of-the-population-mean}
@@ -2460,7 +2477,7 @@ right --- a property of the \(\chi^2_{12}\) distribution.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-65-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-68-1} \end{center}
 
 We now draw a sample of \(n=100\) observations and take the first
 observation \(Y_1\) as an estimate for \(\mu_Y\)
@@ -2545,8 +2562,7 @@ type of estimators, \(\overline{Y}\) with \(a_i = 1\) for all
 \(\overline{Y}\) is the \textbf{B}est \textbf{L}inear \textbf{U}nbiased
 \textbf{E}stimator (BLUE).
 
-\section{Properties of the Sample
-Mean}\label{properties-of-the-sample-mean}
+\section{Properties of the Sample Mean}\label{potsm}
 
 To examine properties of the sample mean as an estimator for the
 corresponding population mean, consider the following \texttt{R}example.
@@ -2676,7 +2692,7 @@ samples in each case. We also plot the density function of the
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-69-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-72-1} \end{center}
 
 At first, notice that \emph{all} sampling distributions (represented by
 the solid lines) are centered around \(\mu = 10\). This is evidence for
@@ -2803,7 +2819,7 @@ We can show this by generating a random sample of fair size and plotting
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-71-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-74-1} \end{center}
 
 Notice that \eqref{eq:sqm} is a quadratic function so there is only one
 minimum. The plot shows that this minimum lies exactly at the sample
@@ -2920,7 +2936,7 @@ i.i.d. assumption holds.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-74-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-77-1} \end{center}
 
 We find that in this case failure of the i.i.d. assumption implies that,
 on average, we \emph{underestimate} \(\mu_Y\) using \(\overline{Y}\):
@@ -3030,7 +3046,7 @@ distribution that lies beyond
 
 We now use \texttt{R} to visualize what is stated in
 \eqref{eq:pvaluenorm1} and \eqref{eq:pvaluenorm2}. The next code chunk
-replicates figure 3.1 of the book.
+replicates Figure 3.1 of the book.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -3068,7 +3084,7 @@ replicates figure 3.1 of the book.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-75-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-78-1} \end{center}
 
 \hypertarget{SVSSDASE}{\subsection*{Sample Variance, Sample Standard
 Deviation and Standard Error}\label{SVSSDASE}}
@@ -3136,7 +3152,7 @@ larger.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-76-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-79-1} \end{center}
 
 The plot shows that the distribution of \(s_Y\) tightens around the true
 value \(\sigma_Y = 10\) as \(n\) increases.
@@ -3331,7 +3347,7 @@ distributed \(N(0,1)\) when \(n\) is large.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-81-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-84-1} \end{center}
 
 Judging from the plot, the normal approximation works reasonably well
 for the chosen sample size. This normal approximation has already been
@@ -3512,7 +3528,7 @@ before we can visualize this in \texttt{R} using the function
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-84-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-87-1} \end{center}
 
 Analogously for the left-sided test we have
 \[H_0: \mu_Y = \mu_{Y,0} \ \ \text{vs.} \ \ H_1: \mu_Y < \mu_{Y,0}.\]
@@ -3554,7 +3570,7 @@ marks.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-85-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-88-1} \end{center}
 
 \section{Confidence Intervals for the Population
 Mean}\label{confidence-intervals-for-the-population-mean}
@@ -3790,17 +3806,16 @@ The subsequent code chunk demonstrates how to perform a two sample
 We find that the two sample \(t\)-test does not reject the (true) null
 hypothesis that \(d_0 = 0\).
 
-\section{An Application to the Gender Gap of
-Earnings}\label{an-application-to-the-gender-gap-of-earnings}
+\section{An Application to the Gender Gap of Earnings}\label{aattggoe}
 
-In this section discusses how to reproduce the results presented in the
-box \emph{The Gender Gap of Earnings of College Graduates in the United
+This section discusses how to reproduce the results presented in the box
+\emph{The Gender Gap of Earnings of College Graduates in the United
 States} of the book.
 
-In order to reproduce table 3.1 you need to download the replication
-data which are hosted by Pearson and can be found and downloaded
+In order to reproduce Table 3.1 of the book you need to download the
+replication data which are hosted by Pearson and can be downloaded
 \href{http://wps.aw.com/aw_stock_ie_3/178/45691/11696965.cw/index.html}{here}.
-Download the data for chapter three as an excel spreadsheet
+Download the data for Chapter 3 as an excel spreadsheet
 (\texttt{cps\_ch3.xlsx}). This data set contains data that range from
 \(1992\) to \(2008\) and earnings are reported in prices of \(2008\).
 There are several ways to import the \texttt{.xlsx}-files into
@@ -3982,7 +3997,7 @@ data on age and earnings of workers and plot it.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-95-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-98-1} \end{center}
 
 The plot shows positive correlation between age and earnings. This is in
 line with the assumption that older workers earn more than those who
@@ -3993,8 +4008,8 @@ Correlation}\label{sample-covariance-and-correlation}
 \addcontentsline{toc}{subsubsection}{Sample Covariance and Correlation}
 
 By now you should be familiar with the concepts of variance and
-covariance. If not, we recommend you to work your way through chapter 2
-of the book (again).
+covariance. If not, we recommend you to work your way through Chapter 2
+of the book.
 
 Just like the variance, covariance and correlation of two variables are
 properties that relate to the (unknown) joint probability distribution
@@ -4011,7 +4026,7 @@ the sample correlation
 
 \[ r_{XY} = \frac{s_{XY}}{s_Xs_Y} \] can be used to estimate the
 population correlation, a standardized measure for the strength of the
-linear relationship between \(X\) and \(Y\). See chapter 3.7 in the book
+linear relationship between \(X\) and \(Y\). See Chapter 3.7 in the book
 for a more detailed treatment of these estimators.
 
 As for variance and standard deviation, these estimators are implemented
@@ -4110,14 +4125,13 @@ correlation.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-97-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-100-1} \end{center}
 
 \section{Exercises}\label{exercises-1}
 
 \begin{center}\textit{This interactive part of URFITE is only available in the HTML version.}\end{center}
 
-\hypertarget{lrwor}{\chapter{Linear Regression with One
-Regressor}\label{lrwor}}
+\chapter{Linear Regression with One Regressor}\label{lrwor}
 
 This chapter introduces the basics in linear regression and shows how to
 perform regression analysis in \texttt{R}. In linear regression, the aim
@@ -4139,11 +4153,22 @@ this chapter:
 
 \begin{itemize}
 \item
-  \texttt{AER} accompanies the Book \emph{Applied Econometrics with R}
-  and provides useful functions and data sets.
+  \texttt{AER} - accompanies the Book \emph{Applied Econometrics with R}
+  by Zeileis (2008) and provides useful functions and data sets.
 \item
-  \texttt{MASS} is a collection of functions for applied statistics.
+  \texttt{MASS} - a collection of functions for applied statistics.
 \end{itemize}
+
+Make sure these are installed before you go ahead and try to replicate
+the examples. The savest way to do so is by checking whether the
+following code chunk executes without any errors.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(AER)}
+\KeywordTok{library}\NormalTok{(MASS)}
+\end{Highlighting}
+\end{Shaded}
 
 \section{Simple Linear Regression}\label{simple-linear-regression}
 
@@ -4264,7 +4289,7 @@ The following code reproduces figure 4.1 from the textbook.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-109-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-113-1} \end{center}
 
 We find that the line does not touch any of the points although we
 claimed that it represents the true relationship. The reason for this is
@@ -4548,7 +4573,7 @@ both axes.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-115-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-119-1} \end{center}
 
 The plot (figure 4.2 in the book) shows the scatter plot of all
 observations on student-teacher ratio and Test score. We see that the
@@ -4732,7 +4757,7 @@ enlarge ranges of both axes by setting the arguments \texttt{xlim} and
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-119-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-123-1} \end{center}
 
 Did you notice that this time, we did not pass the intercept and slope
 parameters to \texttt{abline}? If you call \texttt{abline()} on an
@@ -4888,8 +4913,7 @@ We find that the results coincide. Note that the values provided by
 \texttt{summary()} are rounded to two decimal places. Can you do so
 using \texttt{R}?
 
-\section{The Least Squares
-Assumptions}\label{the-least-squares-assumptions}
+\section{The Least Squares Assumptions}\label{tlsa}
 
 OLS performs well under a quite broad variety of different
 circumstances. However, there are some assumptions which are posed on
@@ -4981,7 +5005,7 @@ quadratic model to compare the fit graphically.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-122-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-126-1} \end{center}
 
 The plot shows what is meant by \(E(u_i|X_i) = 0\) and why it does not
 hold for the linear model:
@@ -5044,7 +5068,7 @@ exhibits a downward trend and has normally distributed errors:\footnote{See
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-123-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-127-1} \end{center}
 
 It is evident that the observations on the number of employees cannot be
 independent in this example: the level of today's employment is
@@ -5060,7 +5084,7 @@ It is easy to come up with situations where extreme observations,
 i.e.~observations that deviate considerably from the usual range of the
 data, may occur. Such observations are called outliers. Technically
 speaking, assumption \#3 requires that \(X\) and \(Y\) have a finite
-kurtosis.\footnote{See chapter 4.4 in the book.}
+kurtosis.\footnote{See Chapter 4.4 of the book.}
 
 Common cases where we want to exclude or (if possible) correct such
 outliers is when they are apparently typos, conversion errors or
@@ -5118,7 +5142,7 @@ which sorts the entries of a numeric vector in ascending order.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-124-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-128-1} \end{center}
 
 \hypertarget{tsdotoe}{\section{The Sampling Distribution of the OLS
 Estimator}\label{tsdotoe}}
@@ -5335,7 +5359,7 @@ To achieve this in R, we employ the following approach:
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-129-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-133-1} \end{center}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -5350,7 +5374,7 @@ To achieve this in R, we employ the following approach:
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-129-2} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-133-2} \end{center}
 
 We are now able to say the following: first, our variance estimates are
 in favor of the claims made in Key Concept 4.4 since they come close to
@@ -5412,7 +5436,7 @@ have a total of four distinct simulations using different sample sizes.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-130-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-134-1} \end{center}
 
 We find that, as \(n\) increases, the distribution of \(\hat\beta_1\)
 concentrates around its mean, i.e.~its variance decreases. Put
@@ -5494,7 +5518,7 @@ sets and use different colors to make the observations distinguishable.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-131-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-135-1} \end{center}
 
 It is clear that observations that are close to the sample average of
 the \(X_i\) have less variance than those that are farther away. Now, if
@@ -5521,7 +5545,7 @@ then plot the observations along with both regression lines.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-132-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-136-1} \end{center}
 
 Evidently, the green regression line does far better in describing data
 sampled from the bivariate normal distribution stated in (4.3) than the
@@ -5535,8 +5559,7 @@ benefits.
 \begin{center}\textit{This interactive part of URFITE is only available in the HTML version.}\end{center}
 
 \chapter{Hypothesis Tests and Confidence Intervals in the Simple Linear
-Regression
-Model}\label{hypothesis-tests-and-confidence-intervals-in-the-simple-linear-regression-model}
+Regression Model}\label{htaciitslrm}
 
 In this chapter, we continue our treatment of the simple linear
 regression model. The following subsections discuss how we may use our
@@ -5547,17 +5570,28 @@ These subsections cover the following topics:
 
 \begin{itemize}
 \item
-  Testing Hypotheses regarding regression coefficients
+  Testing Hypotheses regarding regression coefficients.
 \item
-  Confidence intervals for regression coefficients
+  Confidence intervals for regression coefficients.
 \item
-  Regression when \(X\) is a dummy variable
+  Regression when \(X\) is a dummy variable.
 \item
-  Heteroskedasticity and Homoskedasticity
+  Heteroskedasticity and Homoskedasticity.
 \end{itemize}
 
 The packages \texttt{AER} and \texttt{scales} are required for
-reproduction of the code chunks presented throughout this chapter.
+reproduction of the code chunks presented throughout this chapter. The
+package \texttt{scales} provides additional generic plot scaling
+methods. Make sure both packages are installed before you procedd. The
+savest way to do so is by checking whether the following code chunk
+executes without any errors.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(AER)}
+\KeywordTok{library}\NormalTok{(scales)}
+\end{Highlighting}
+\end{Shaded}
 
 \section{Testing Two-Sided Hypotheses Concerning the Slope
 Coefficient}\label{testing-two-sided-hypotheses-concerning-the-slope-coefficient}
@@ -5565,13 +5599,14 @@ Coefficient}\label{testing-two-sided-hypotheses-concerning-the-slope-coefficient
 Using the fact that \(\hat{\beta}_1\) is approximately normally
 distributed in large samples (see \protect\hyperlink{tsdotoe}{Key
 Concept 4.4}), testing hypotheses about the true value \(\beta_1\) can
-be done with the same approach as discussed in chapter 3.2.
+be done with the same approach as discussed in Chapter \ref{potsm}.
 
 Key Concept 5.1
 
 General Form of the \(t\)-Statistic
 
-Remember from chapter 3 that a general \(t\)-statistic has the form
+Remember from Chapter \ref{arosur} that a general \(t\)-statistic has
+the form
 
 \[
   t = \frac{\text{estimated value} - \text{hypothesized value}}{\text{standard error of the estimator}}.
@@ -5626,7 +5661,7 @@ perform the following steps:
 samples.
 
 Consider again the OLS regression stored in \texttt{linear\_model} from
-Chapter 4 that gave us the regression line
+Chapter \ref{lrwor} that gave us the regression line
 
 \[ \widehat{TestScore} \ = \underset{(9.47)}{698.9} - \underset{(0.49)}{2.28} \times STR \ , \ R^2=0.051 \ , \ SER=18.6. \]
 
@@ -5805,7 +5840,7 @@ see how the graph is augmented with the annotations.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-151-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-156-1} \end{center}
 
 The \(p\)-Value is the area under the curve to left of \(-4.75\) plus
 the area under the curve to the right of \(4.75\). As we already know
@@ -5815,11 +5850,11 @@ from the calculations above, this value is very small.
 Coefficients}\label{confidence-intervals-for-regression-coefficients}
 
 As we already know, estimates of the regression coefficients \(\beta_0\)
-and \(\beta_1\) are afflicted with sampling uncertainty, see
-\protect\hyperlink{lrwor}{Chapter 4}. Therefore, we will \emph{never}
-estimate the exact true value of these parameters from sample data in an
-empirical application. However, we may construct confidence intervals
-for the intercept and the slope parameter.
+and \(\beta_1\) are afflicted with sampling uncertainty, see Chapter
+\ref{lrwor}. Therefore, we will \emph{never} estimate the exact true
+value of these parameters from sample data in an empirical application.
+However, we may construct confidence intervals for the intercept and the
+slope parameter.
 
 A \(95\%\) confidence interval for \(\beta_i\) has two equivalent
 definitions:
@@ -5881,7 +5916,7 @@ the following sample of \(n=100\) observations on a single variable
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-152-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-157-1} \end{center}
 
 We assume that the data is generated by the model
 
@@ -5898,7 +5933,7 @@ further holds that
 
 \[ SE(\hat\mu) = \frac{\sigma_{\epsilon}}{\sqrt{n}} = \frac{5}{\sqrt{100}} \]
 
-(see \protect\hyperlink{SVSSDASE}{Chapter 3.3}) A large sample \(95\%\)
+(see Chapter \protect\hyperlink{SVSSDASE}{2}) A large sample \(95\%\)
 confidence interval for \(\mu\) is then given by
 
 \begin{equation} 
@@ -6021,7 +6056,7 @@ intervals on top of each other.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-156-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-161-1} \end{center}
 
 We find that for the first \(100\) samples, the true null hypothesis is
 rejected in four cases so these intervals do not cover \(\mu=5\). We
@@ -6029,13 +6064,14 @@ have indicated the intervals which lead to a rejection of the true null
 hypothesis by red color.
 
 Let us now turn back to the example of test scores and class sizes. The
-regression model from Chapter 4 is stored in \texttt{linear\_model}. An
-easy way to get \(95\%\) confidence intervals for \(\beta_0\) and
-\(\beta_1\), the coefficients on \texttt{(intercept)} and \texttt{STR},
-is to use the function \texttt{confint()}. We only have to provide a
-fitted model object as an to this function. The confidence level is set
-to \(95\%\) by default but can be modified by setting the argument
-\texttt{level}, see \texttt{?confint}.
+regression model from Chapter \ref{lrwor} is stored in
+\texttt{linear\_model}. An easy way to get \(95\%\) confidence intervals
+for \(\beta_0\) and \(\beta_1\), the coefficients on
+\texttt{(intercept)} and \texttt{STR}, is to use the function
+\texttt{confint()}. We only have to provide a fitted model object as an
+to this function. The confidence level is set to \(95\%\) by default but
+can be modified by setting the argument \texttt{level}, see
+\texttt{?confint}.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -6060,8 +6096,7 @@ so this actually leads to the same interval. Obviously, this interval
 the previous section, leads to the rejection of the null hypothesis
 \(\beta_{1,0} = 0\).
 
-\section{Regression when X is a Binary
-Variable}\label{regression-when-x-is-a-binary-variable}
+\section{Regression when X is a Binary Variable}\label{rwxiabv}
 
 Instead of using a continuous regressor \(X\), we might be interested in
 running the regression
@@ -6100,7 +6135,7 @@ Let us see how these data look like in a scatter plot:
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-159-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-164-1} \end{center}
 
 We see that with \(D\) as the regressor, it is not useful to think of
 \(\beta_1\) as a slope parameter since \(D_i \in \{0,1\}\), i.e.~we only
@@ -6290,7 +6325,7 @@ residuals.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-163-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-168-1} \end{center}
 
 For this artificial data it is clear to see that we face unequal
 conditional error variances. Specifically, we observe that the variance
@@ -6371,7 +6406,7 @@ book.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-164-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-169-1} \end{center}
 
 From inspecting the plot we can tell that the mean of the distribution
 of earnings increases with the level of education. This is also
@@ -6528,10 +6563,7 @@ in \texttt{linear\_model}.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{# load the sandwich package}
-\KeywordTok{library}\NormalTok{(sandwich)}
-
-\CommentTok{# compute robust standard error estimates}
+\CommentTok{# compute heteroskedasticity-robust standard errors}
 \NormalTok{vcov <-}\StringTok{ }\KeywordTok{vcovHC}\NormalTok{(linear_model, }\DataTypeTok{type =} \StringTok{"HC0"}\NormalTok{)}
 \NormalTok{vcov}
 \end{Highlighting}
@@ -6669,7 +6701,7 @@ We plot the data and add the regression line.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-172-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-177-1} \end{center}
 
 The plot shows that the data are heteroskedastic as the variance of
 \(Y\) grows with \(X\). We continue by conducting a significance test of
@@ -6917,7 +6949,7 @@ either half of the sample \(Y_1, \dots, Y_n\) instead of using
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-175-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-180-1} \end{center}
 
 What conclusion can we draw from the result?
 
@@ -6939,18 +6971,18 @@ Theorem.
 \section{Using the t-Statistic in Regression When the Sample Size Is
 Small}\label{using-the-t-statistic-in-regression-when-the-sample-size-is-small}
 
-The three OLS assumptions discussed in \protect\hyperlink{lrwor}{Chapter
-4} (see Key Concept 4.3) are the foundation for the results on the large
-sample distribution of the OLS estimators in the simple regression
-model. What can be said about the distribution of the estimators and
-their \(t\)-statistics when the sample size is small and the population
+The three OLS assumptions discussed in Chapter \ref{lrwor} (see Key
+Concept 4.3) are the foundation for the results on the large sample
+distribution of the OLS estimators in the simple regression model. What
+can be said about the distribution of the estimators and their
+\(t\)-statistics when the sample size is small and the population
 distribution of the data is unknown? Provided that the three least
 squares assumptions hold and the errors are normally distributed and
 homoskedastic (we refer to these conditions as the homoskedastic normal
 regression assumptions), we have normally distributed estimators and
 \(t\)-distributed test statistics in small samples.
 
-Recall the \protect\hyperlink{thetdist}{definition} on a
+Recall the \protect\hyperlink{thetdist}{definition} of a
 \(t\)-distributed variable
 
 \[ \frac{Z}{\sqrt{W/m}} \sim t_m\]
@@ -7020,7 +7052,7 @@ theoretical distribution which should be \(t_{18}\), the
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-176-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-181-1} \end{center}
 
 The outcomes are consistent with our expectations: the empirical
 distributions of both estimators seem to track the theoretical
@@ -7030,8 +7062,7 @@ distributions of both estimators seem to track the theoretical
 
 \begin{center}\textit{This interactive part of URFITE is only available in the HTML version.}\end{center}
 
-\chapter{Regression Models with Multiple
-Regressors}\label{regression-models-with-multiple-regressors}
+\chapter{Regression Models with Multiple Regressors}\label{rmwmr}
 
 In what follows we introduce linear regression models that use more than
 just one explanatory variable and discuss important key concepts in
@@ -7051,19 +7082,20 @@ in this chapter.
 
 \section{Omitted Variable Bias}\label{omitted-variable-bias}
 
-Previous analysis of the relationship between test score and class size
-discussed in Chapters 4 and 5 has a major flaw: we ignored other
-determinants of the dependent variable (test score) that correlate with
-the regressor (class size). Remember that influences on the dependent
-variable which are not captured by the model are collected in the error
-term which we assume to be uncorrelated with the regressor. However,
-this assumption is violated if we exclude determinants of the dependent
-variable which vary with the regressor. This might induce an estimation
-bias, i.e.~the mean of the OLS estimator's sampling distribution is no
-longer equal to the true mean. In our example we therefore estimate the
-effect on test scores of a unit change in the student-teacher ratio
-wrongly, on average. This issue is called \emph{omitted variable bias}
-and is summarized by Key Concept 6.1.
+The previous analysis of the relationship between test score and class
+size discussed in Chapters \ref{lrwor} and \ref{htaciitslrm} has a major
+flaw: we ignored other determinants of the dependent variable (test
+score) that correlate with the regressor (class size). Remember that
+influences on the dependent variable which are not captured by the model
+are collected in the error term which we assume to be uncorrelated with
+the regressor. However, this assumption is violated if we exclude
+determinants of the dependent variable which vary with the regressor.
+This might induce an estimation bias, i.e.~the mean of the OLS
+estimator's sampling distribution is no longer equal to the true mean.
+In our example we therefore estimate the effect on test scores of a unit
+change in the student-teacher ratio wrongly, on average. This issue is
+called \emph{omitted variable bias} and is summarized by Key Concept
+6.1.
 
 Key Concept 6.1
 
@@ -7223,15 +7255,15 @@ models.
 Model}\label{the-multiple-regression-model}
 
 In the multiple regression model we extend the basic concept of the
-simple regression model discussed in Chapters 4 and 5. A multiple
-regression model enables us to estimate the effect on \(Y_i\) of
-changing a regressor \(X_{1i}\) if the remaining regressors
-\(X_{2i},X_{3i}\dots,X_{ki}\) \emph{do not vary}. In fact we already
-have performed estimation of the multiple regression model (6.2) using R
-in the previous section. Recall that the interpretation of the
-coefficient on student-teacher ratio is the effect on test scores of a
-one unit change student-teacher ratio if the percentage of English
-learners is kept constant.
+simple regression model discussed in Chapters \ref{lrwor} and
+\ref{htaciitslrm}. A multiple regression model enables us to estimate
+the effect on \(Y_i\) of changing a regressor \(X_{1i}\) if the
+remaining regressors \(X_{2i},X_{3i}\dots,X_{ki}\) \emph{do not vary}.
+In fact we already have performed estimation of the multiple regression
+model (6.2) using R in the previous section. Recall that the
+interpretation of the coefficient on student-teacher ratio is the effect
+on test scores of a one unit change student-teacher ratio if the
+percentage of English learners is kept constant.
 
 Just like in the simple regression model, we assume the true
 relationship between \(Y\) and \(X_{1i},X_{2i}\dots\dots,X_{ki}\) to be
@@ -7306,7 +7338,7 @@ called the OLS residual of observation \(i\):
 \(\hat{u} = Y_i - \hat{Y}_i\).
 
 For further information regarding the theory behind multiple regression,
-see Chapter 18.1 in the book which inter alia presents a derivation of
+see Chapter 18.1 of the book which inter alia presents a derivation of
 the OLS estimator in the multiple regression model using matrix
 notation.
 
@@ -7362,8 +7394,7 @@ dispersion of regression errors made, i.e.~the distance of observations
 to the regression plane shows a tendency to decrease as the share of
 English learning students increases.
 
-\section{Measures of Fit in Multiple
-Regression}\label{measures-of-fit-in-multiple-regression}
+\section{Measures of Fit in Multiple Regression}\label{mofimr}
 
 In multiple regression, common summary statistics are \(SER\), \(R^2\)
 and the adjusted \(R^2\).
@@ -7389,7 +7420,7 @@ This is due to \(R^2\) becoming larger every time an additional
 regressor is added to the model since adding a regressor decreases the
 \(SSR\) --- at least unless the respective estimated coefficient is
 exactly zero what practically never happens to be the case (see Chapter
-6.4 in the book for a detailed argument). The adjusted \(R^2\) takes
+6.4 of the book for a detailed argument). The adjusted \(R^2\) takes
 this into consideration by ``punishing'' the addition of regressors
 using a correction factor. So the adjusted \(R^2\), or simply
 \(\overline{R^2}\), is a modified version of \(R^2\). It is defined as
@@ -7522,20 +7553,19 @@ You will not find any serious study that does so. Instead it is more
 favorable to include regressors that improve the estimation of the
 causal effect of interest which is \emph{not} assessed by means of a low
 \(SSR\) of the model. The issue of variable selection is covered in
-Chapter 8 of this script and Chapter 7 in the book.
+Chapter \ref{nrf} of this script and Chapter 7 in the book.
 
 \section{OLS Assumptions in Multiple
 Regression}\label{ols-assumptions-in-multiple-regression}
 
 In the multiple regression model we extend the three least squares
-assumptions imposed for the simple regression model (see
-\protect\hyperlink{ch4}{Chapter 5}, Key Concept 5.3) and add a fourth
-assumption. These assumptions are presented in Key Concept 6.4. While we
-will not go into the details of assumptions 1, 2 and 3 since their ideas
-have been discussed before and are easily generalized to the case of
-multiple regressors, we will focus on the fourth assumption. This forth
-assumption forbids the occurrence of perfect correlation between the
-regressors.
+assumptions imposed for the simple regression model (see Chapter
+\ref{lrwor}) and add a fourth assumption. These assumptions are
+presented in Key Concept 6.4. While we will not go into the details of
+assumptions 1, 2 and 3 since their ideas have been discussed before and
+are easily generalized to the case of multiple regressors, we will focus
+on the fourth assumption. This forth assumption forbids the occurrence
+of perfect correlation between the regressors.
 
 Key Concept 6.4
 
@@ -8200,15 +8230,15 @@ coefficient estimates \(\hat\beta_1\) and \(\hat\beta_2\).
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-204-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-209-1} \end{center}
 
 From the plot above we can see that the density estimate has some
-similarity to a bivariate normal distribution (see \href{Ch2}{Chapter
-2}) though it is not very pretty and probably a little rough.
-Furthermore, there is a correlation between the estimates such that
-\(\rho\neq0\) in (2.1). Also, the distribution's shape deviates from the
-symmetric bell shape of the bivariate standard normal distribution and
-has an elliptical surface area instead.
+similarity to a bivariate normal distribution (see Chapter \ref{pt})
+though it is not very pretty and probably a little rough. Furthermore,
+there is a correlation between the estimates such that \(\rho\neq0\) in
+(2.1). Also, the distribution's shape deviates from the symmetric bell
+shape of the bivariate standard normal distribution and has an
+elliptical surface area instead.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -8327,8 +8357,8 @@ Housing Prices I}
 Now, let us expand the idea from the previous exercise by adding
 additional regressors to the model and estimate it again.
 
-As has been discussed in chapter 6.3, adding regressors to the model
-improves the fit, that is the \(SER\) decreases and the \(R^2\)
+As has been discussed in Chapter \ref{mofimr}, adding regressors to the
+model improves the fit, that is the \(SER\) decreases and the \(R^2\)
 increases.
 
 The packages AER and MASS have been loaded. The model object bh\_mod is
@@ -8417,11 +8447,11 @@ environment.
 
 \textbf{Instructions}
 
-As has been stressed in Chapter 6.3, it is not meaningful to use \(R^2\)
-when comparing regression models with a different number of regressors.
-Instead, the \(\overline{R}^2\) should be used. \(\overline{R}^2\)
-adjusts for the circumstance that the \(SSR\) reduces when a regressor
-is added to the model.
+As has been stressed in Chapter \ref{mofimr}, it is not meaningful to
+use \(R^2\) when comparing regression models with a different number of
+regressors. Instead, the \(\overline{R}^2\) should be used.
+\(\overline{R}^2\) adjusts for the circumstance that the \(SSR\) reduces
+when a regressor is added to the model.
 
 \begin{itemize}
 \item
@@ -8587,7 +8617,7 @@ terms of adj. R\^{}2. However, the increase in adj. R\^{}2 is very small
 and the model is not `the best' of all conceivable models.'')
 
 \chapter{Hypothesis Tests and Confidence Intervals in Multiple
-Regression}\label{hypothesis-tests-and-confidence-intervals-in-multiple-regression}
+Regression}\label{htaciimr}
 
 This chapter discusses methods that allow to quantify the sampling
 uncertainty inherent to the OLS estimator of the coefficients in
@@ -8637,7 +8667,7 @@ regression model
 
 \[ TestScore = \beta_0 - \beta_1 \times size - \beta_2 \times english + u \]
 
-already discussed in Chapter 6. Let us review this:
+already discussed in Chapter \ref{rmwmr}. Let us review this:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -9015,7 +9045,7 @@ colored.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-215-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-220-1} \end{center}
 
 We see that the ellipse is centered around \((-0.29, 3.87)\), the pair
 of coefficients estimates on \(size\) and \(expenditure\). What is more,
@@ -9415,7 +9445,7 @@ generate some relatively realistic data.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-217-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-222-1} \end{center}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -9472,9 +9502,9 @@ generate more learning success!
 \section{Analysis of the Test Score Data
 Set}\label{analysis-of-the-test-score-data-set}
 
-Chapter 6 and some of the previous sections have stressed that it is
-important to include control variables in regression models if it is
-plausible that there are omitted factors that cannot be measured
+Chapter \ref{rmwmr} and some of the previous sections have stressed that
+it is important to include control variables in regression models if it
+is plausible that there are omitted factors that cannot be measured
 directly. Recall that in our example of test scores we are interested in
 estimating the causal effect of a change in the student-teacher ratio on
 test scores. In what follows, we will provide an example how to use
@@ -9551,7 +9581,7 @@ For a start, we plot student characteristics against test scores.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-219-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-224-1} \end{center}
 
 We see that all relationships are negative. We can use R to estimate the
 correlation coefficients.
@@ -9624,8 +9654,8 @@ stargazer().
 \end{Shaded}
 
 \% Table created by stargazer v.5.2 by Marek Hlavac, Harvard University.
-E-mail: hlavac at fas.harvard.edu \% Date and time: Fr, Jun 22, 2018 -
-17:02:59 \% Requires LaTeX packages: rotating
+E-mail: hlavac at fas.harvard.edu \% Date and time: Do, Jul 05, 2018 -
+13:44:16 \% Requires LaTeX packages: rotating
 
 \begin{sidewaystable}[!htbp] \centering 
   \caption{} 
@@ -10168,8 +10198,7 @@ is rejected at a 1\% significance level.'')
   vector consisting of both linear restrictions.
 \end{itemize}
 
-\chapter{Nonlinear Regression
-Functions}\label{nonlinear-regression-functions}
+\chapter{Nonlinear Regression Functions}\label{nrf}
 
 Until now we assumed the regression function to be linear, i.e.~we have
 treated the slope parameter of the regression function as a constant.
@@ -10240,7 +10269,7 @@ plot.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-224-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-229-1} \end{center}
 
 As pointed out in the book, the linear regression line seems to
 overestimate the true relationship when income is very high or very low
@@ -10346,13 +10375,13 @@ income.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-226-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-231-1} \end{center}
 
 We see that the quadratic model does much better in fitting the data
 than the linear model.
 
 \section{Nonlinear Functions of a Single Independent
-Variable}\label{nonlinear-functions-of-a-single-independent-variable}
+Variable}\label{nfoasiv}
 
 \subsection*{Polynomials}\label{polynomials}
 \addcontentsline{toc}{subsection}{Polynomials}
@@ -10379,11 +10408,11 @@ hypothesis that the relationship is a polynomial of degree \(r\):
 \[ H_0: \beta_2=0, \ \beta_3=0,\dots,\beta_r=0 \ \ \ \text{vs.} \ \ \ H_1: \text{at least one} \ \beta_j\neq0, \ j=2,\dots,r \]
 
 This is a joint null hypothesis with \(r-1\) restrictions so it can be
-tested using the \(F\)-test presented in Chapter 7. Remember that the
-function linearHypothesis() can used to conduct such tests. If, for
-example, we would like to test the null hypothesis of a linear model
-against the alternative of a polynomial of a maximal degree \(r=3\), we
-could simply do the following:
+tested using the \(F\)-test presented in Chapter \ref{htaciimr}.
+Remember that the function linearHypothesis() can used to conduct such
+tests. If, for example, we would like to test the null hypothesis of a
+linear model against the alternative of a polynomial of a maximal degree
+\(r=3\), we could simply do the following:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -10740,7 +10769,7 @@ Let us draw a plot of this function.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-232-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-237-1} \end{center}
 
 We can interpret \(\hat{\beta}_1\) as follows: a \(1\%\) increase in
 income is associated with an increase in test scores of
@@ -10834,7 +10863,7 @@ re-transform the dependent variable.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-235-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-240-1} \end{center}
 
 Note that the \(Y\)-Axis is now log-transformed.
 
@@ -10909,7 +10938,7 @@ The estimated regression function hence is
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-237-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-242-1} \end{center}
 
 In a log-log model, a \(1\%\) change in \(X\) is associated with an
 estimated \(\hat\beta_1 \%\) change in \(Y\).
@@ -11034,7 +11063,7 @@ estimated regression functions.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-239-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-244-1} \end{center}
 
 We see that both regression lines are nearly identical. Here the
 linear-log model is preferable since it has a slightly higher
@@ -11419,7 +11448,7 @@ in Figure 8.8 of the book using artificial data.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-243-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-248-1} \end{center}
 
 \paragraph{Application to the student-teacher ratio and the percentage
 of English
@@ -11539,7 +11568,7 @@ make observations with \(HiEL = 0\) distinguishable from those with
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-245-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-250-1} \end{center}
 
 \subsubsection*{Interactions Between Two Continuous
 Variables}\label{interactions-between-two-continuous-variables}
@@ -12040,7 +12069,7 @@ The subsequent code chunk reproduces Figure 8.9 of the book:
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-255-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-260-1} \end{center}
 
 As can be seen from plots (a) and (b), the relation between
 subscriptions and the citation price is inverse and nonlinear.
@@ -12106,11 +12135,11 @@ some of which are nonlinear regression specifications of the types that
 have been discussed before. As measures for the students' economic
 backgrounds, we will additionally consider the regressors \(lunch\) and
 \(\ln(income)\). We use the logarithm of \(income\) because the analysis
-discussed in chapter 8.2 showed that the nonlinear relationship between
+in Chapter \ref{nfoasiv} showed that the nonlinear relationship between
 \(income\) and \(TestScores\) is approximately logarithmic. We do not
 include expenditures per pupil (\(expenditure\)) because doing so would
 imply that expenditures do vary with the student-teacher ratio (see
-Chapter 7.2 for a detailed argument).
+Chapter 7.2 of the book for a detailed argument).
 
 \paragraph{Nonlinear Regression Models of Test
 Scores}\label{nonlinear-regression-models-of-test-scores}
@@ -12601,7 +12630,7 @@ the nonlinear specifications (2), (5) and (7).
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-260-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-265-1} \end{center}
 
 Note that for the figure above all regressors except for \(size\) are
 set to their sample averages. We see that the cubic regressions (5) and
@@ -12672,7 +12701,7 @@ averages of all regressors except for \(size\).
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-261-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-266-1} \end{center}
 
 From the regression output we see that model (6) finds statistically
 significant coefficients on the interaction terms \(HiEL:size\),
@@ -12741,8 +12770,7 @@ this section.
   points. This suggests that the effect is stronger in smaller classes.
 \end{enumerate}
 
-\hypertarget{asbomr}{\chapter{Assessing Studies Based on Multiple
-Regression}\label{asbomr}}
+\chapter{Assessing Studies Based on Multiple Regression}\label{asbomr}
 
 The majority of Chapter 9 of the book is of a theoretical nature.
 Therefore this section briefly reviews the concepts of internal and
@@ -12912,11 +12940,13 @@ different approaches to solve the problem:
 
 \begin{itemize}
 \item
-  Usage of panel data methods (discussed in Chapter 10).
+  Usage of panel data methods (discussed in Chapter \ref{rwpd})
 \item
-  Usage of instrumental variables regression (discussed in Chapter 12).
+  Usage of instrumental variables regression (discussed in Chapter
+  \ref{ivr})
 \item
-  Usage of a randomized control experiment (discussed in Chapter 13).
+  Usage of a randomized control experiment (discussed in Chapter
+  \ref{eaqe})
 \end{itemize}
 
 \subsubsection*{Misspecification of the Functional Form of the
@@ -12989,7 +13019,7 @@ is misspecified here. We now simulate data and visualize this.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-265-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-270-1} \end{center}
 
 It is evident that the regression errors are relatively small for
 observations close to \(X=-3\) and \(X=3\) but that the errors increase
@@ -13196,7 +13226,7 @@ regression function.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-268-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-273-1} \end{center}
 
 Notice that in the situation without measurement error, the estimated
 regression function is close to the population regression function.
@@ -13305,7 +13335,7 @@ Therefore, missing data do not introduce an estimation bias.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-269-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-274-1} \end{center}
 
 The gray dots represent the \(500\) discarded observations. When using
 the remaining observations, the estimation results deviate only
@@ -13371,7 +13401,7 @@ model again and compare.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-270-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-275-1} \end{center}
 
 Note that although we dropped more than \(90\%\) of all observations,
 the estimated regression function is very close to the line estimated
@@ -13439,7 +13469,7 @@ and logical operators:
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-271-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-276-1} \end{center}
 
 We see that the selection process leads to biased estimation results.
 
@@ -13516,11 +13546,11 @@ regression model.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-273-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-278-1} \end{center}
 
-Remember from Chapter 8 that, due to the log-log specification, in the
-population regression the coefficient on the logarithm of price is
-interpreted as the price elasticity of consumption. The estimated
+Remember from Chapter \ref{nrf} that, due to the log-log specification,
+in the population regression the coefficient on the logarithm of price
+is interpreted as the price elasticity of consumption. The estimated
 coefficient suggests that a \(1\%\) increase in cigarettes prices
 reduces cigarette consumption by about \(1.2\%\), on average. Have we
 estimated a demand curve? The answer is no: this is a classic example of
@@ -13530,9 +13560,9 @@ demand. Therefore the price is correlated with the error term and the
 OLS estimator is biased. We can neither estimate a demand nor a supply
 curve consistently using this approach.
 
-We will return to this issue in Chapter 12 which treats instrumental
-variables regression, an approach that allows consistent estimation when
-there is simultaneous causality.
+We will return to this issue in Chapter \ref{ivr} which treats
+instrumental variables regression, an approach that allows consistent
+estimation when there is simultaneous causality.
 
 \subsubsection*{Sources of Inconsistency of OLS Standard
 Errors}\label{sources-of-inconsistency-of-ols-standard-errors}
@@ -13546,9 +13576,9 @@ errors:
 \def\labelenumi{\arabic{enumi}.}
 \item
   Heteroskedasticity: implications of heteroskedasticiy have been
-  discussed in Chapter 5. Heteroskedasticity-robust standard errors as
-  computed by the function \texttt{vcovHC()} from the package
-  \texttt{sandwich} produce valid standard errors under
+  discussed in Chapter \ref{htaciitslrm}. Heteroskedasticity-robust
+  standard errors as computed by the function \texttt{vcovHC()} from the
+  package \texttt{sandwich} produce valid standard errors under
   heteroskedasticity.
 \item
   Serial correlation: if the population regression error is correlated
@@ -13601,7 +13631,7 @@ be a threat to internal validity of the study.
 Forecasting}\label{internal-and-external-validity-when-the-regression-is-used-for-forecasting}
 
 Recall the regression of test scores on the student-teacher ratio
-(\(STR\)) performed in Chapter 4:
+(\(STR\)) performed in Chapter \ref{lrwor}:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -13649,8 +13679,7 @@ suffer from the threats listed in Key Concept 9.7.
 
 Consult Chapter 9.3 of the book for the corresponding discussion.
 
-\section{Example: Test Scores and Class
-Size}\label{example-test-scores-and-class-size}
+\section{Example: Test Scores and Class Size}\label{etsacs}
 
 This section discusses internal and external validity of the results
 gained from analyzing the California test score data using multiple
@@ -13759,8 +13788,8 @@ averages computed for California. There are also notable differences in
 the observed dispersion of the variables.
 
 Following the book we examine the relationship between district income
-and test scores in Massachusetts as we have done before in Chapter 8 for
-the California data and reproduce Figure 9.2 of the book.
+and test scores in Massachusetts as we have done before in Chapter
+\ref{nrf} for the California data and reproduce Figure 9.2 of the book.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -13853,7 +13882,7 @@ the California data and reproduce Figure 9.2 of the book.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-278-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-283-1} \end{center}
 
 The plot indicates that the cubic specification fits the data best.
 Interestingly, this is different from the \texttt{CASchools} data where
@@ -13861,7 +13890,7 @@ the pattern of nonlinearity is better described by the linear-log
 specification.
 
 We continue by estimating most of the model specifications used for
-analysis of the \texttt{CASchools} data set in Chapter 8 and use
+analysis of the \texttt{CASchools} data set in Chapter \ref{nrf} and use
 \texttt{stargazer()} to generate a tabular representation of the
 regression results.
 
@@ -13914,8 +13943,8 @@ regression results.
 \end{Shaded}
 
 \% Table created by stargazer v.5.2 by Marek Hlavac, Harvard University.
-E-mail: hlavac at fas.harvard.edu \% Date and time: Fr, Jun 22, 2018 -
-17:03:05 \% Requires LaTeX packages: rotating
+E-mail: hlavac at fas.harvard.edu \% Date and time: Do, Jul 05, 2018 -
+13:44:21 \% Requires LaTeX packages: rotating
 
 \begin{sidewaystable}[!htbp] \centering 
   \caption{Regressions Using Massachusetts Test Score Data} 
@@ -14361,15 +14390,16 @@ the threats to internal validity named in Key Concept 9.7 if multiple
 regression alone is insufficient. This includes regression using panel
 data and approaches that employ instrumental variables.
 
-\chapter{Regression with Panel Data}\label{regression-with-panel-data}
+\chapter{Regression with Panel Data}\label{rwpd}
 
-Regression using panel data may mititgate omitted variable bias when
+Regression using panel data may mitigate omitted variable bias when
 there is no information on variables available that correlate with both
 the regressors of interest and the independent variable and if these
 variables are constant in the time dimension or across entities.
 Provided that panel data is availabe, panel regression methods may
 improve upon multiple regression models which, as discussed in Chapter
-9, produce results that are not internally valid in such a setting.
+\ref{asbomr}, produce results that are not internally valid in such a
+setting.
 
 This chapter covers the following topics:
 
@@ -14387,7 +14417,7 @@ Following the book, for applications we make use of the data set
 \texttt{Fatalities} from the \texttt{AER} package which is a panel data
 set reporting annually state level observations on U.S. traffic
 fatalities for the period 1982 through 1988. The applications are
-concered with the question if there are effects of alcohol taxes and
+concerned with the question if there are effects of alcohol taxes and
 drunk driving laws on road fatalities and, if present, \emph{how strong}
 these effects are.
 
@@ -14409,7 +14439,7 @@ subjects (entities), panel data has observations on \(n\) entities at
 \(T\geq2\) time periods. This is denoted
 
 \[(X_{it},Y_{it}), \ i=1,\dots,n \ \ \ \text{and} \ \ \ t=1,\dots,T \]
-where the index \(i\) refers to the entity beeing observed while \(t\)
+where the index \(i\) refers to the entity being observed while \(t\)
 refers to the time period.
 
 Sometimes panel data is also called longitudinal data as it adds a
@@ -14551,7 +14581,7 @@ the first few observations.
 
 We find that the data set consists of 336 observations on 34 variables.
 Notice that the variable \texttt{state} is a factor variable with 48
-levels (one for each of the 48 contigous US states). The varaible
+levels (one for each of the 48 contiguous US states). The variable
 \texttt{year} is also a factor variable that has 7 levels identifying
 the time period when the observation was made which gives us
 \(7\times48 = 336\) observations in total. Since all variables are
@@ -14569,8 +14599,8 @@ Coming to the question of how the alcohol taxes and traffic fatalities
 are related, we start by reproducing Figure 10.1 of the book. For this
 we estimate simple regressions using data for years 1982 and 1988 that
 model the relationship between beer tax (adjusted for 1988 dollars) and
-the traffic fatility rate. Beforehand we define the latter as the number
-of fatalitites per 10000 inhabitants and choose subsets of the
+the traffic fatality rate. Beforehand we define the latter as the number
+of fatalities per 10000 inhabitants and choose subsets of the
 observations made for years 1982 and 1988. Afterwards, we plot both
 subsets and add the corresponding estimated regression functions.
 
@@ -14649,7 +14679,7 @@ The estimated regression functions are:
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-288-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-293-1} \end{center}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -14667,27 +14697,27 @@ The estimated regression functions are:
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-288-2} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-293-2} \end{center}
 
 In both plots, each point represents observations of beer tax and
 fatality rate for a given state in the respective year. The regression
-results indicate a postive relationship between the beer tax and the
-fatality rate for both years, wherby the estimated coefficient on beer
+results indicate a positive relationship between the beer tax and the
+fatality rate for both years, whereby the estimated coefficient on beer
 tax for the 1988 data is almost three times as large as for the 1988
 data set. This is contrary to our expectations: alcohol taxes are
 supposed to \emph{lower} the rate of traffic fatalities. As known from
-Chapter 6, this is possibly due to omitted variable bias, since both
-models do not include any covariates, e.g.~economic conditions. This
-could be corrected for using a multiple regression approach. However,
-both models cannot account for omitted \emph{unobservable} factors that
-differ from state to state but can be assumed to be constant over the
-observation span, e.g.~the populations attitude towas drunk driving. As
-shown in the next section, panel data allow us to hold such factors
-constant.
+Chapter \ref{rmwmr}, this is possibly due to omitted variable bias,
+since both models do not include any covariates, e.g.~economic
+conditions. This could be corrected for using a multiple regression
+approach. However, both models cannot account for omitted
+\emph{unobservable} factors that differ from state to state but can be
+assumed to be constant over the observation span, e.g.~the populations
+attitude towards drunk driving. As shown in the next section, panel data
+allow us to hold such factors constant.
 
-\hypertarget{PDWTTP}{\section{\texorpdfstring{Panel Data with Two Time
-Periods: ``Before and After''
-Comparisons}{Panel Data with Two Time Periods: Before and After Comparisons}}\label{PDWTTP}}
+\section{\texorpdfstring{Panel Data with Two Time Periods: ``Before and
+After''
+Comparisons}{Panel Data with Two Time Periods: Before and After Comparisons}}\label{PDWTTP}
 
 Suppose there are only \(T=2\) time periods \(t=1982,1988\). This allows
 us to analyze differences in changes of the the fatality rate from year
@@ -14761,11 +14791,11 @@ We obtain the OLS estimated regression function
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-290-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-295-1} \end{center}
 
 We observe that the estimated coefficient on beer tax is now negative
 and significantly different from zero at the level of \(5\%\). Its
-interpretation is that raising the beer tax by \(\$1\) causes trafic
+interpretation is that raising the beer tax by \(\$1\) causes traffic
 fatalities to decrease by \(1.04\) per \(10000\) people. This is rather
 large as the average fatality rate is approximately \(2\) persons per
 \(10000\) people.
@@ -14808,19 +14838,19 @@ the model
 Y_{it} = \alpha_i + \beta_1 X_{it} + u_{it} \label{eq:femodel}.
 \end{align}
 
-Having invidual specific intercepts \(\alpha_i\), \(i=1,\dots,n\), where
-each of these can be understood as the fixed effect of entity \(i\),
-this model is called the \emph{fixed effects regression model}. The
-variation in the \(\alpha_i\), \(i=1,\dots,n\) comes from the \(Z_i\).
-\eqref{eq:femodel} can be rewritten as a regression model containing
-\(n-1\) dummy regressors and a constant:
+Having individual specific intercepts \(\alpha_i\), \(i=1,\dots,n\),
+where each of these can be understood as the fixed effect of entity
+\(i\), this model is called the \emph{fixed effects regression model}.
+The variation in the \(\alpha_i\), \(i=1,\dots,n\) comes from the
+\(Z_i\). \eqref{eq:femodel} can be rewritten as a regression model
+containing \(n-1\) dummy regressors and a constant:
 
 \begin{align}
 Y_{it} = \beta_i + \beta_1 X_{it} + \gamma_2 D2_i + \gamma_3 D3_i + \cdots + \gamma_n Dn_i + u_{it} \label{eq:drmodel}.
 \end{align}
 
 Model \eqref{eq:drmodel} has \(n\) different intercepts --- one for every
-entity. Both \eqref{eq:femodel} and \eqref{eq:drmodel} are equivalnt
+entity. Both \eqref{eq:femodel} and \eqref{eq:drmodel} are equivalent
 representations of the fixed effects regression model.
 
 The fixed effects regression model can be generalized to contain more
@@ -14863,7 +14893,7 @@ Taking averages on both sides of \eqref{eq:femodel} we obtain
 \overline{Y} =& \, \beta_1 \overline{X}_i + \alpha_i + \overline{u}_i. 
 \end{align*}
 
-Substraction from \eqref{eq:femodel} gives
+Subtraction from \eqref{eq:femodel} gives
 
 \begin{align}
 Y_{it} - \overline{Y}_i =& \, \beta_1(X_{it}-\overline{X}_i) + (u_{it} - \overline{u}_i) \\
@@ -14908,7 +14938,7 @@ taxes is
 \widehat{FatalityRate}_{it} = \beta_1 BeerTax_{it} + StateFixedEffects + u_{it}, \label{eq:fatsemod}
 \end{align}
 
-the regression of the traffic fatalaty rate on beer tax and 48 binary
+the regression of the traffic fatality rate on beer tax and 48 binary
 regressor --- one for each state.
 
 We can simply use the function \texttt{lm()} to obtain an estimate of
@@ -15004,7 +15034,7 @@ robust standard errors.
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 \end{verbatim}
 
-Agian, we find that the estimated coefficient is \(-0.6559\). Notice
+Again, we find that the estimated coefficient is \(-0.6559\). Notice
 that \texttt{plm()} uses the entity-demeaned OLS algorithm and does not
 report dummy coefficients. The estimated regression function is
 
@@ -15012,13 +15042,13 @@ report dummy coefficients. The estimated regression function is
 \widehat{FatalityRate} = \underset{(0.29)}{-0.66} \times BeerTax + StateFixedEffects. \label{eq:efemod}
 \end{align}
 
-We conclude that the coefficient on \(BeerTax\) is nagative and highly
+We conclude that the coefficient on \(BeerTax\) is negative and highly
 significant. The interpretation is that the estimated reduction in
 traffic fatalities due to a \(\$1\) increase in the real beer tax is
 \(0.66\) per \(10000\) people which is still pretty high. Though
 including state fixed effects eliminates the risk of a bias due to
 omitted factors that vary across states but not over time, we suspect
-that there are other omitted varibales that vary over time and thus
+that there are other omitted variables that vary over time and thus
 cause a bias.
 
 \section{Regression with Time Fixed
@@ -15031,7 +15061,7 @@ becomes
 \[Y_{it} = \beta_0 + \beta_1 X_{it} + \delta_2 B2_t + \cdots + \delta_T BT_t + u_{it},\]
 where only \(T-1\) dummies are included (\(B1\) is omitted) since the
 model includes an intercept. This model eliminates omitted variables
-bias caused by exluding unobserved varaibles that evolve over time but
+bias caused by excluding unobserved variables that evolve over time but
 are constant across entities only.
 
 In some applications it is meaningful to include entity and time fixed
@@ -15134,10 +15164,9 @@ is not affected by omitted variable bias due to factors that are
 constant over time.
 
 \section{The Fixed Effects Regression Assumptions and Standard Errors
-for Fixed Effects
-Regression}\label{the-fixed-effects-regression-assumptions-and-standard-errors-for-fixed-effects-regression}
+for Fixed Effects Regression}\label{tferaaseffer}
 
-This section focusses on the entity fixed effects regression model and
+This section focuses on the entity fixed effects regression model and
 presents model assumptions that need to hold in order for OLS to produce
 unbiased estimates that are normally distributed for large \(n\). These
 assumptions are an extension of the assumptions made for the multiple
@@ -15181,12 +15210,12 @@ assumption ensures that variables are i.i.d. \emph{across} entities
 be uncorrelated \emph{within} an entity. We say that the \(X_{it}\) are
 allowed to be \textbf{autocorrelated} or \textbf{serially correlated}
 within entities. This is a common property of time series data. The same
-is allowed for errors \(u_{it}\). Consult Chapter 10.5 of the book for a
-detailed explanation for why autocorrelation is a plausible
-characteristic in panel applications. The second assumption is granted
-if the entities are selected by simple random sampling. The third and
-fourth assumptions are analagous to the multiple regression assumptions
-made in Key Concept 6.4.
+is allowed for errors \(u_{it}\). Consult Chapter \ref{tferaaseffer} of
+the book for a detailed explanation for why autocorrelation is a
+plausible characteristic in panel applications. The second assumption is
+granted if the entities are selected by simple random sampling. The
+third and fourth assumptions are analogous to the multiple regression
+assumptions made in Key Concept 6.4.
 
 \subsubsection*{Standard Errors for Fixed Effects
 Regression}\label{standard-errors-for-fixed-effects-regression}
@@ -15194,10 +15223,10 @@ Regression}\label{standard-errors-for-fixed-effects-regression}
 Regression}
 
 Similar as for heteroskedasticity, autocorrelation invalidates the usual
-standard error fomulas and also alters the way heteroskedasticity-robust
-standard errors must be computed since these are derived under the
-assumption that there is no autocorrelation. In the context of
-heteroskedasticity \emph{and} autocorrelation so-called
+standard error formulas and also alters the way
+heteroskedasticity-robust standard errors must be computed since these
+are derived under the assumption that there is no autocorrelation. In
+the context of heteroskedasticity \emph{and} autocorrelation so-called
 \emph{heteroskedasticity and autocorrelation-consistent (HAC) standard
 errors} need to be used. \emph{Clustered standard errors} belong to
 these type of standard errors. They allow for heteroskedasticity and
@@ -15206,17 +15235,17 @@ correlation across entities.
 
 As shown in the examples throughout this chapter, it is fairly easy to
 specify usage of clustered standard errors in regression summaries
-procuced by function like \texttt{coeftest()} in conjunction with
+produced by function like \texttt{coeftest()} in conjunction with
 \texttt{vcovHC()} from the \texttt{sandwich} package. Conveniently,
 \texttt{vcovHC()} recognizes panel model objects (objects of class
-\texttt{plm}) and computes clusterd standard errors by default.
+\texttt{plm}) and computes clustered standard errors by default.
 
 The regressions conducted during this chapter are a good examples for
 why usage of clustered standard errors is crucial in fixed effects
 models. For example, consider the entity and time fixed effects
 regression model for fatalities. Since \texttt{fatal\_tefe\_lm\_mod} is
 an object of class \texttt{lm}, \texttt{coeftest()} does not compute
-clustered standard errros but uses robust standard errors that are only
+clustered standard errors but uses robust standard errors that are only
 valid in the absence of autocorrelated errors.
 
 \begin{Shaded}
@@ -15271,9 +15300,9 @@ valid in the absence of autocorrelated errors.
 \end{verbatim}
 
 The outcomes deviate rather strongly: imposing no autocorrelation we
-obtain a standard error of \(0.25\) which implyies significance of
+obtain a standard error of \(0.25\) which implies significance of
 \(\beta_1\), the coefficient on \(BeerTax\) at the level of \(5\%\). On
-the contrary, using the clusterd standard error (\(0.35\)) leads to
+the contrary, using the clustered standard error (\(0.35\)) leads to
 acceptance of the hypothesis \(H_0: \beta_1 = 0\) at the same level of
 significance, see equation \eqref{eq:cbnfemod}. Consult Appendix 10.2 of
 the book for insights on the computation of clustered standard errors.
@@ -15282,13 +15311,13 @@ the book for insights on the computation of clustered standard errors.
 Deaths}\label{drunk-driving-laws-and-traffic-deaths}
 
 There are two major sources of omitted variable bias that are not
-accounted for by all of the models of the relation between trafic
-fatalitites and beer taxes that we have considered so far: economic
+accounted for by all of the models of the relation between traffic
+fatalities and beer taxes that we have considered so far: economic
 conditions and driving laws. Fortunately, \texttt{Fatalities} has
 recordings on state specific legal drinking age (\texttt{drinkage}),
 punishment (\texttt{jail}, \texttt{service}) and various economic
 indicators like unemployment rate (\texttt{unemp}) and per capita income
-(\texttt{income}). We may use this data to extend the preceeding
+(\texttt{income}). We may use this data to extend the preceding
 analysis.
 
 At first, we define the variables according to the regression results
@@ -15390,8 +15419,8 @@ tabular presentation of the results.
 \end{Shaded}
 
 \% Table created by stargazer v.5.2 by Marek Hlavac, Harvard University.
-E-mail: hlavac at fas.harvard.edu \% Date and time: Fr, Jun 22, 2018 -
-17:08:58 \% Requires LaTeX packages: rotating
+E-mail: hlavac at fas.harvard.edu \% Date and time: Do, Jul 05, 2018 -
+13:54:33 \% Requires LaTeX packages: rotating
 
 \begin{sidewaystable}[!htbp] \centering 
   \caption{} 
@@ -15473,7 +15502,7 @@ legal framework. These covariates are as follows:
 \item
   \texttt{miles}: average miles per driver.
 \item
-  \texttt{drinkage}: state specifiy minimum legal drinking age.
+  \texttt{drinkage}: state specify minimum legal drinking age.
 \item
   \texttt{drinkagc}: a discretized version of \texttt{drinkage} that
   classifies states into four categories of minimal drinking age;
@@ -15544,7 +15573,7 @@ results:
   deterring effects on drunk driving: the corresponding coefficient is
   not significant at the \(10\%\) level.
 \item
-  The economic variables have power in explaning traffic fatalities. We
+  The economic variables have power in explaining traffic fatalities. We
   can check that the employment rate and per capita income are jointly
   significant at the level of \(0.1\%\).
 \end{enumerate}
@@ -15579,16 +15608,16 @@ results:
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 \end{verbatim}
 
-Model (5) omitts the economic factors. The result supports the
+Model (5) omits the economic factors. The result supports the
 presumption that economic indicators should remain part of the model as
 the coefficient on beer tax is sensitive to the inclusion of the latter.
 
-Results for model (6) are in favour of the presumption that legal
+Results for model (6) are in favor of the presumption that legal
 drinking age has little explanatory power and that the coefficient of
-interest is not senstive to changes in the functional form of the
+interest is not sensitive to changes in the functional form of the
 relation between drinking age and traffic fatalities.
 
-Estimation outcomes for spefcification (7) reveals that reducing the
+Estimation outcomes for specification (7) reveals that reducing the
 amount of available information inflates standard errors but does not
 lead to drastic changes in coefficient estimates.
 
@@ -15608,10 +15637,9 @@ that change across entities \emph{and} over time.
 
 A powerful method that can be used if common panel regression approaches
 fail is instrumental variables regression. We will return to this
-concept in Chapter 12.
+concept in Chapter \ref{ivr}.
 
-\chapter{Regression with a Binary Dependent
-Variable}\label{regression-with-a-binary-dependent-variable}
+\chapter{Regression with a Binary Dependent Variable}\label{rwabdv}
 
 In this chapter, we discuss a special class of regression models that
 aims to explain a limited dependent variable by multiple regressors.
@@ -15815,7 +15843,7 @@ book next.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-309-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-314-1} \end{center}
 
 We observe that, according to the estimated model equation, a
 payment-to-income ratio of \(1\) is associated with an expected
@@ -16060,7 +16088,7 @@ The following code chunk reproduces Figure 11.2 of the book.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-313-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-318-1} \end{center}
 
 Notice that the estimated regression function has a stretched
 ``S''-shape which is typical for the CDF of a of continuous random
@@ -16249,7 +16277,7 @@ The subsequent code chunk reproduces Figure 11.3 of the book.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-318-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-323-1} \end{center}
 
 Notice that both models produce very similar estimates of the
 probability that a mortgage application will be denied depending on the
@@ -16770,8 +16798,8 @@ type \texttt{list} which is then supplied as the argument \texttt{se} in
 \end{Shaded}
 
 \% Table created by stargazer v.5.2 by Marek Hlavac, Harvard University.
-E-mail: hlavac at fas.harvard.edu \% Date and time: Fr, Jun 22, 2018 -
-17:09:02 \% Requires LaTeX packages: rotating
+E-mail: hlavac at fas.harvard.edu \% Date and time: Do, Jul 05, 2018 -
+13:54:36 \% Requires LaTeX packages: rotating
 
 \begin{sidewaystable}[!htbp] \centering 
   \caption{HMDA Data: LPM, Probit and Logit Models} 
@@ -17060,21 +17088,20 @@ See Chapters 11.4 and 11.5 of the book for a discussion of external and
 internal validity of this study and some concluding remarks on
 regression models where the dependent variable is binary.
 
-\chapter{Instrumental Variables
-Regression}\label{instrumental-variables-regression}
+\chapter{Instrumental Variables Regression}\label{ivr}
 
-As discussed in \protect\hyperlink{asbomr}{Chapter 9}, regression models
-may suffer from problems like omitted variables, measurement errors and
-simultaneous causality. If so, the error term is correlated with the
-regressor of interest and there is a bias in estimation of the
-corresponding coefficient. So far we have assumed that we can add the
-omitted variables to the regression to mitigate the risk of biased
-estimation of the causal effect of interest. However, if omitted factors
-cannot be measured or are not available for other reasons, multiple
-regression cannot solve the problem. The same issue arises if there is
-simultaneous causality. When causality runs from \(X\) to \(Y\) and vice
-versa, there will be an estimation bias that cannot be corrected for by
-multiple regression.
+As discussed in Chapter \ref{asbomr}, regression models may suffer from
+problems like omitted variables, measurement errors and simultaneous
+causality. If so, the error term is correlated with the regressor of
+interest and there is a bias in estimation of the corresponding
+coefficient. So far we have assumed that we can add the omitted
+variables to the regression to mitigate the risk of biased estimation of
+the causal effect of interest. However, if omitted factors cannot be
+measured or are not available for other reasons, multiple regression
+cannot solve the problem. The same issue arises if there is simultaneous
+causality. When causality runs from \(X\) to \(Y\) and vice versa, there
+will be an estimation bias that cannot be corrected for by multiple
+regression.
 
 A general technique for obtaining a consistent estimate of the
 coefficient of interest is instrumental variables (IV) regression. In
@@ -17086,8 +17113,8 @@ for estimating the elasticity of the demand for cigarettes --- a
 classical example where multiple regression fails to do the job because
 of simultaneous causality.
 
-\hypertarget{TIVEWASRAASI}{\section{The IV Estimator with a Single
-Regressor and a Single Instrument}\label{TIVEWASRAASI}}
+\section{The IV Estimator with a Single Regressor and a Single
+Instrument}\label{TIVEWASRAASI}
 
 Consider the simple regression model
 
@@ -17435,8 +17462,7 @@ trustworthy although we used IV estimation: there still might be a bias
 due to omitted variables. Thus a multiple IV regression approach is
 needed.
 
-\hypertarget{TGIVRM}{\section{The General IV Regression
-Model}\label{TGIVRM}}
+\section{The General IV Regression Model}\label{TGIVRM}
 
 The simple IV regression model is easily extended to a multiple
 regression model which we refer to as the general IV regression model.
@@ -17730,14 +17756,13 @@ considered more reliable.
 
 However, without any inference on validity of both instruments it is not
 sensible to make a statement like that. This stresses why checking
-instrument validity is essential. Chapter 12.3 briefly discusses
+instrument validity is essential. Chapter \ref{civ} briefly discusses
 guidelines in checking instrument validity and presents approaches that
 allow to test for instrument relevance and exogeneity under certain
 conditions. These are then used in an application to the demand for
-cigarettes in Chapter 12.4.
+cigarettes in Chapter \ref{attdfc}.
 
-\section{Checking Instrument
-Validity}\label{checking-instrument-validity}
+\section{Checking Instrument Validity}\label{civ}
 
 \subsubsection*{Instrument Relevance}\label{instrument-relevance}
 \addcontentsline{toc}{subsubsection}{Instrument Relevance}
@@ -17782,7 +17807,8 @@ The rule of thumb stated in Key Concept 12.5 is easily implemented in
 \texttt{R}. One simply has to run the first-stage regression using
 \texttt{lm()} and subsequently compute the heteroskedasticity-robust
 \(F\)-statistic by means of \texttt{linearHypothesis()}. This is part of
-the application to the demand for cigarettes discussed in Chapter 12.4.
+the application to the demand for cigarettes discussed in Chapter
+\ref{attdfc}.
 
 \subsubsection*{If Instruments are Weak}\label{if-instruments-are-weak}
 \addcontentsline{toc}{subsubsection}{If Instruments are Weak}
@@ -17853,16 +17879,14 @@ applying the \(J\)-test using the function \texttt{linearHypothesis()}
 in \texttt{R}, which will be shown in context of estimation of the
 demand elasticity for cigarettes discussed in the next chapter.
 
-\section{Application to the Demand for
-Cigarettes}\label{application-to-the-demand-for-cigarettes-2}
+\section{Application to the Demand for Cigarettes}\label{attdfc}
 
 Are the general sales tax and the cigarette-specific tax valid
 instruments? If not, the TSLS attempt to estimate the demand elasticity
-for cigarettes discussed in \protect\hyperlink{TGIVRM}{Chapter 12.2} is
-not meaningful and we need to rethink the design of the study. As
-discussed in \protect\hyperlink{TIVEWASRAASI}{Chapter 12.1} both
-variables are likely to be relevant but whether they are exogenous is a
-different question.
+for cigarettes discussed in Chapter \ref{TGIVRM} is not meaningful and
+we need to rethink the design of the study. As discussed in Chapter
+\ref{TIVEWASRAASI}, both variables are likely to be relevant but whether
+they are exogenous is a different question.
 
 In the book it is advocated that cigarette-specific taxes could be
 endogenous because there might be state specific historical factors like
@@ -17878,12 +17902,11 @@ the case.
 However, since the role of the influence of the tobacco and cigarette
 industry is a factor that can be assumed to differ across states but not
 over time we may exploit the panel structure of \texttt{CigarettesSW}
-instead: as shown in \protect\hyperlink{PDWTTP}{Chapter 10.2},
-regression using data on \emph{changes} between two time periods
-eliminates such state specific and time invariant effects. Following the
-book we consider changes in variables between 1985 and 1995, that is we
-are interested in estimating the \emph{long-run elasticity} of the
-demand for cigarettes.
+instead: as shown in Chapter \ref{PDWTTP}, regression using data on
+\emph{changes} between two time periods eliminates such state specific
+and time invariant effects. Following the book we consider changes in
+variables between 1985 and 1995, that is we are interested in estimating
+the \emph{long-run elasticity} of the demand for cigarettes.
 
 The model to be estimated by TSLS using the general sales tax and the
 cigarette-specific sales tax as instruments hence is
@@ -18234,7 +18257,7 @@ considerably.
 \section{Where Do Valid Instruments Come
 From?}\label{where-do-valid-instruments-come-from}
 
-Chapter 12.5 of the books presents a comprehensive discussion of
+Chapter 12.5 of the book presents a comprehensive discussion of
 approaches to find valid instruments in practice by the example of three
 research questions:
 
@@ -18275,8 +18298,7 @@ elasticity deemed the most trustworthy is \(-0.94\). This estimate
 suggests that there is a remarkable negative long-run effect on
 cigarette consumption of increasing the average price per pack.
 
-\chapter{Experiments and
-Quasi-Experiments}\label{experiments-and-quasi-experiments}
+\chapter{Experiments and Quasi-Experiments}\label{eaqe}
 
 This chapter discusses statistical tools that are commonly applied in
 program evaluation, which is a field of study where researchers are
@@ -18295,10 +18317,10 @@ differs between two classes where one of which has a student-teacher
 ratio which is considered regular and the other one has fewer students,
 using a randomized controlled experiment. The data produced by such an
 experiment would be different from e.g.~the observed cross-section data
-on the students' performance used throughout Chapters 4 to 8 where class
-sizes are not randomly assigned to students but instead are the results
-of an economic decision where educational objectives and budgetary
-aspects were balanced.
+on the students' performance used throughout Chapters \ref{lrwor} to
+\ref{nrf} where class sizes are not randomly assigned to students but
+instead are the results of an economic decision where educational
+objectives and budgetary aspects were balanced.
 
 For economists, randomized controlled experiments are often difficult or
 even infeasable to implement. For example, due to ethic, moral and legal
@@ -18316,9 +18338,9 @@ appear random produce what is called a \emph{quasi-experiment} or
 estimation of causal effects that are of interest for economist using
 tools which are very similar to those valid for ideal randomized
 controlled experiments. These tools draw heavily on the theory of
-multiple regression and also on IV regression (see Chapter 12). We will
-review the core aspects of these methods and demonstrate how to apply
-them in R using the STAR data set.\footnote{See the
+multiple regression and also on IV regression (see Chapter \ref{ivr}).
+We will review the core aspects of these methods and demonstrate how to
+apply them in R using the STAR data set.\footnote{See the
   \href{https://dataverse.harvard.edu/dataset.xhtml?persistentId=hdl:1902.1/10766}{description}
   of the data set.}
 
@@ -18350,7 +18372,7 @@ Experiments}\label{potential-outcomes-causal-effects-and-idealized-experiments}
 
 In the following we will briefly recap the idea of the average causal
 effect and how it can be estimated using the \emph{differences
-estimator}. We advise you to read through Chapter 13.1 of the book for a
+estimator}. We advise you to work through Chapter 13.1 of the book for a
 better understanding.
 
 \subsubsection*{Potential Outcomes and the average causal
@@ -19179,7 +19201,7 @@ nonrandom assignment.\footnote{See Chapter 13.3 of the book for a
 To answer the question whether the estimated effects presented in Table
 13.2 are large or small in a practical sense, we translate the predicted
 changes in test scores to units of standard deviation in order to allow
-for a comparison (see Section 9.4 for a similar argument).
+for a comparison (see Section \ref{etsacs} for a similar argument).
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -19250,8 +19272,8 @@ LaTeX table.
 \end{Shaded}
 
 \% Table created by stargazer v.5.2 by Marek Hlavac, Harvard University.
-E-mail: hlavac at fas.harvard.edu \% Date and time: Fr, Jun 22, 2018 -
-17:09:08
+E-mail: hlavac at fas.harvard.edu \% Date and time: Do, Jul 05, 2018 -
+13:54:40
 
 \begin{table}[!htbp] \centering 
   \caption{Estimated Class Size Effects 
@@ -19284,15 +19306,15 @@ the effect of being in a small class is roughly the same for all grades.
 The remainder of Chapter 13.3 in the book discusses to what extent these
 experimental estimates are comparable with observational estimates
 obtained using data on school districts in California and Massachusetts
-in Chapter 9. It turns out that the estimates are indeed very similar.
-Please refer to the aforementioned section in the book a more lengthy
-discussion.
+in Chapter \ref{asbomr}. It turns out that the estimates are indeed very
+similar. Please refer to the aforementioned section in the book for a
+more lengthy discussion.
 
 \section{Quasi Experiments}\label{quasi-experiments}
 
 In quasi-experiments, ``as if'' randomness is exploited to use methods
-similar to those that have been discussed in the previous Chapter. There
-are two types of quasi-experiments:\footnote{See chapter 13.4 of the
+similar to those that have been discussed in the previous chapter. There
+are two types of quasi-experiments:\footnote{See Chapter 13.4 of the
   book for some example studies that are based on quasi-experiments.}
 
 \begin{enumerate}
@@ -19416,7 +19438,7 @@ We now use \texttt{R} to reproduce Figure 13.1 of the book.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-379-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-384-1} \end{center}
 
 The DID estimator \eqref{eq:DID} can also be written in regression
 notation: \(\widehat{\beta}_1^{\text{DID}}\) is the OLS estimator of
@@ -19516,7 +19538,7 @@ used in plots.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-381-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-386-1} \end{center}
 
 Notice that both observations from control and treatment group have a
 higher sample mean after the treatment but that the increase is stronger
@@ -19573,8 +19595,8 @@ binary indicator for the after-treatment period and the
 \(Period_i \times D_i\) is the interaction of both.
 
 As for \eqref{eq:did}, estimation of \eqref{eq:DIDint} using \texttt{R} is
-straightforward. See Chapter 8 for a discussion of interaction terms in
-regression models.
+straightforward. See Chapter \ref{nrf} for a discussion of interaction
+terms in regression models.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -19667,7 +19689,7 @@ book.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-386-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-391-1} \end{center}
 
 The argument \texttt{nbins} sets the number of bins the running variable
 is divided in for aggregation. The dots represent bin averages of the
@@ -19727,7 +19749,7 @@ estimated model object.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-388-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-393-1} \end{center}
 
 Note that, as above, the dots represent averages of binned observations.
 
@@ -19815,7 +19837,7 @@ treatment.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-390-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-395-1} \end{center}
 
 Obviously, receipt of treatment is no longer a deterministic function of
 the running variable \(W\). Some observations with \(W\geq0\) \emph{did
@@ -19873,7 +19895,7 @@ binned data and the estimated regression function.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-392-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-397-1} \end{center}
 
 What if we would use a SRDD instead, thereby ignoring the fact that
 treatment is not perfectly determined by the cutoff in \(W\)? We may get
@@ -19935,36 +19957,37 @@ using \texttt{R}. This study uses a randomized controlled experiment to
 assess whether smaller classes improve students' performance on
 standardized tests. We have stressed that, being related to a randomized
 controlled experiment, the data produced by this study are fundamentally
-different to those used in the cross-section studies Chapters 4 to 8 and
-therefore we have motivated usage of a \emph{differences estimator}.
+different to those used in the cross-section studies Chapters
+\ref{lrwor} to \ref{nrf} and therefore we have motivated usage of a
+\emph{differences estimator}.
 
-Chapter 13.4 demonstrated how estimates of treatment effects can be
-obtained when the design of the study is a quasi-experiment that allows
-for \emph{differences-in-differences} or \emph{regression discontinuity
-design} estimators. In particular, we have introduced core functions of
-the package \texttt{rddtools} that are convenient for estimation as well
-as graphical analysis of the research design before and after estimating
-a discontinuity design.
+Chapter \ref{attdfc} demonstrated how estimates of treatment effects can
+be obtained when the design of the study is a quasi-experiment that
+allows for \emph{differences-in-differences} or \emph{regression
+discontinuity design} estimators. In particular, we have introduced core
+functions of the package \texttt{rddtools} that are convenient for
+estimation as well as graphical analysis of the research design before
+and after estimating a regression discontinuity design.
 
 \chapter{Introduction to Time Series Regression and
-Forecasting}\label{introduction-to-time-series-regression-and-forecasting}
+Forecasting}\label{ittsraf}
 
-Time series data is data that is collected for a single entitity over
+Time series data is data that is collected for a single entity over
 time. This is fundamentally different from cross-section data which is
 data on multiple entities at the same point in time. Time series data
 allows estimation of the effect on \(Y\) of a change in \(X\) \emph{over
 time}. This is what econometricians call a \emph{dynamic causal effect}.
-Let us go back to the application to cigarette consumption of Chapter 12
-where we were interested in estimating the effect on cigarette demand of
-a price increase caused by a raise of the general sales tax. One might
-use time series data to assess the causal effect of a tax increase on
-smoking both initially and in subsequent periods.
+Let us go back to the application to cigarette consumption of Chapter
+\ref{ivr} where we were interested in estimating the effect on cigarette
+demand of a price increase caused by a raise of the general sales tax.
+One might use time series data to assess the causal effect of a tax
+increase on smoking both initially and in subsequent periods.
 
 Another application of time series data is forecasting. For example,
-weather services use time series models to predict tomorrow's average
-temperatur using todays average termperature and average termperatures
-of the past. To motivate an economic example, central banks are
-interested in forecasting next month's unemployment rates.
+weather services use time series data to predict tomorrow's average
+temperature by inter alia using today's average temperature and average
+temperatures of the past. To motivate an economic example, central banks
+are interested in forecasting next month's unemployment rates.
 
 The remainder of the book deals with the econometric techniques for the
 analysis of time series data and application of the latter to problems
@@ -20009,7 +20032,7 @@ Forecasting}\label{using-regression-models-for-forecasting}
 What is the difference between estimating models for assessment of
 causal effects and forecasting? Consider again the simple example of
 estimating the casual effect of the student-teacher ratio on test scores
-introduced in Chapter 4.
+introduced in Chapter \ref{lrwor}.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -20033,12 +20056,12 @@ introduced in Chapter 4.
 ##      698.93        -2.28
 \end{verbatim}
 
-As has been stressed in Chapter 6, the estimate of the coefficient on
-the student-teacher ratio does not have causal interpretation due to
-omitted variable bias. However, in terms deciding which school to send
-her child to, it might nevertheless be appealig for a parent to use
-\texttt{mod} for forecasting test scores in schooling districts where no
-public data about on scores are available.
+As has been stressed in Chapter \ref{rmwmr}, the estimate of the
+coefficient on the student-teacher ratio does not have causal
+interpretation due to omitted variable bias. However, in terms deciding
+which school to send her child to, it might nevertheless be appealing
+for a parent to use \texttt{mod} for forecasting test scores in
+schooling districts where no public data about on scores are available.
 
 As an example, assume that the average class in a district has \(25\)
 students. There is no such thing as a perfect forecast but the following
@@ -20059,8 +20082,7 @@ In a time series context, the parent could use data on present and past
 years test scores to forecast next years test scores --- a typical
 application for an autoregressive model.
 
-\section{Time Series Data and Serial
-Correlation}\label{time-series-data-and-serial-correlation}
+\section{Time Series Data and Serial Correlation}\label{tsdasc}
 
 GDP measures the productivity of an economy. It is commonly defined as
 the value of goods and services produced over a given time period. The
@@ -20105,11 +20127,11 @@ When dealing with time series data in R it is preferable to work with
 time-series objects that keep track of the frequency of the data and are
 extensible. In what follows we will use objects of the class xts, see
 \texttt{?xts}. Since the data in \texttt{USMacroSWQ} are in quarterly
-frequence we convert the first column to \texttt{yearqtr} format before
+frequency we convert the first column to \texttt{yearqtr} format before
 generating the xts object \texttt{GDP}.
 
 The function \texttt{Delt()} from the package \texttt{quantmod} computes
-growth rates. We anualize the quarterly changes to obtain anual growth
+growth rates. We annualize the quarterly changes to obtain annual growth
 rates as \[Rate_{annual} = (1+Rate_{quarterly})^4-1.\]
 
 \begin{Shaded}
@@ -20137,7 +20159,7 @@ The following code chunks reproduce Figure 14.1 of the book.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-401-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-406-1} \end{center}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -20152,7 +20174,7 @@ The following code chunks reproduce Figure 14.1 of the book.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-402-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-407-1} \end{center}
 
 \subsection*{Notation, Lags, Differences, Logarithms and Growth
 Rates}\label{notation-lags-differences-logarithms-and-growth-rates}
@@ -20209,11 +20231,11 @@ properties that are common to many economic time series:
 Furthermore, it is common to report rates of growth in macroeconomic
 series which is why \(\log\)-differences are often used.
 
-Table 14.1 of the book presents the quaterly U.S. GDP time series, its
-logarithm, the anualized growth rate and the first lag of the anualized
-growth rate series for the period 2012:Q1 - 2013:Q1. The following
-simple function can be used to compute these quantities for a quaterly
-time series \texttt{series}.
+Table 14.1 of the book presents the quarterly U.S. GDP time series, its
+logarithm, the annualized growth rate and the first lag of the
+annualized growth rate series for the period 2012:Q1 - 2013:Q1. The
+following simple function can be used to compute these quantities for a
+quarterly time series \texttt{series}.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -20321,9 +20343,9 @@ Series}
 
 Figure 14.2 of the book presents four plots. The U.S. unemployment rate,
 the U.S. Dollar / British Pound exchange rate, The logarithm of the
-Janapese industrial production index as well as daily changes in the
+Japanese industrial production index as well as daily changes in the
 Whilshire 5000 stock price index, a financial time series. The next code
-chunk reproduces the plots of the three macroenomic series and adds
+chunk reproduces the plots of the three macroeconomic series and adds
 percentage changes in the daily values of the New York Stock Exchange
 Composite index as a fourth one (the data set \texttt{NYSESW} comes with
 the \texttt{AER} package).
@@ -20384,12 +20406,12 @@ the \texttt{AER} package).
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-407-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-412-1} \end{center}
 
 Note that the series show quite different characteristics. The
 unemployment rate increases during recessions and declines in times of
-economic recoveries and growth. The Dollar/Pund exchange rates shows a
-deterministic patern until the end of the Bretton Woods system. Japans
+economic recoveries and growth. The Dollar/Pound exchange rates shows a
+deterministic pattern until the end of the Bretton Woods system. Japans
 industrial production exhibits an upward trend and decreasing growth.
 Daily changes in the New York Stock Exchange composite index seem to be
 random around the zero line. The sample autocorrelations confirm this
@@ -20422,7 +20444,7 @@ Further evidence can be found by looking at the plot generated by
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-409-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-414-1} \end{center}
 
 The blue dashed lines represent an approximate \(95\%\) confidence
 interval if there was no serial correlation. If a sample autocorrelation
@@ -20438,8 +20460,8 @@ series.
 
 \section{Autoregressions}\label{autoregressions}
 
-Growth forecasts are important for many economic entitites. For example,
-the production setor relies on forecasts of GDP growth published by the
+Growth forecasts are important for many economic entities. For example,
+the production sector relies on forecasts of GDP growth published by the
 central bank when deciding on future budgets and production plans.
 Autoregressive models are heavily used in economic forecasting. An
 autoregressive model relates a time series variable to its past values.
@@ -20456,7 +20478,7 @@ It is intuitive that the immediate past of a time series should have
 power to predict its near future. The simplest autoregressive model uses
 only the most recent outcome of the time series observed to predict
 future values. Such a model is called a first-order autoregressive model
-which is often abbriviated AR(1), where the 1 indicates that the order
+which is often abbreviated AR(1), where the 1 indicates that the order
 of autoregression is one.
 
 \begin{align*}
@@ -20577,7 +20599,7 @@ Suppose a random variable \(Y_t\) follows an AR(1) model with an
 intercept and that you have an OLS estimate of the model on the basis of
 observations for \(T\) periods. Then you may use the AR(1) model to
 obtain \(Y_{T+1\vert T}\), a forecast for \(Y_{T+1}\) using data up to
-perdiod \(T\) where
+period \(T\) where
 
 \begin{align*}
   \widehat{Y}_{T+1\vert T} = \widehat{\beta}_0 + \widehat{\beta}_1 Y_T.
@@ -20795,10 +20817,9 @@ This leads to a forecast error of roughly \(-1\%\).
 ## 2013 Q1 -1.025358
 \end{verbatim}
 
-\section{Can You Beat the Market? (Part
-I)}\label{can-you-beat-the-market-part-i}
+\section{Can You Beat the Market? (Part I)}\label{cybtmpi}
 
-The thoery of efficient capital markets states that stock prices embody
+The theory of efficient capital markets states that stock prices embody
 all currently available information. If this hypothesis holds, it should
 not be possible to estimate a useful model for forecasting future stock
 returns using publicly available information on past returns (this is
@@ -20937,8 +20958,7 @@ be rejected. Notice also that \(\overline{R^2}\) is almost zero in all
 models and even negative for the AR(\(4\)) model. This suggests that
 none of the models are useful for forecasting stock returns.
 
-\section{Additional Predictors and The ADL
-Model}\label{additional-predictors-and-the-adl-model}
+\section{Additional Predictors and The ADL Model}\label{apatadlm}
 
 Instead of only using the dependent variable's lags as predictors, an
 autoregressive distributed lag (ADL) model also uses lags of other
@@ -20967,11 +20987,11 @@ Spread}\label{forecasting-gdp-growth-using-the-term-spread}
 \addcontentsline{toc}{subsubsection}{Forecasting GDP Growth Using the
 Term Spread}
 
-Interests on long-term and short term treasury bonds are closly linked
+Interests on long-term and short term treasury bonds are closely linked
 to the macroeconomic development. While interest rates on both types of
 bonds have the same long-run tendencies, they behave quite differently
 in the short run. The difference in interest rates of two bonds with
-distinct matuarity is called the \emph{term spread}.
+distinct maturity is called the \emph{term spread}.
 
 The following code chunks reproduce Figure 14.3 of the book which
 displays interest rates of 10-year U.S. Treasury bonds and 3-months U.S.
@@ -21010,7 +21030,7 @@ Treasury bills from 1960 to 2012.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-427-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-432-1} \end{center}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -21025,7 +21045,7 @@ Treasury bills from 1960 to 2012.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-427-2} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-432-2} \end{center}
 
 Notice that before recessions, the gap between interests on long-term
 bonds and short term bills narrows and consequently the term spread
@@ -21182,7 +21202,7 @@ the \(10\%\) level.
 \end{verbatim}
 
 The ADL(\(2\),\(2\)) forecast of GDP growth in 2013:Q1 is \(2.27\%\)
-which imples a forecast error of \(1.14\%\).
+which implies a forecast error of \(1.14\%\).
 
 Do the ADL models \eqref{eq:gdpgradl21} and \eqref{eq:gdpgradl22} improve
 upon the simple AR(\(2\)) model \eqref{eq:GDPGRAR2} in terms of
@@ -21258,7 +21278,7 @@ level of \(5\%\).
 \subsubsection*{Stationarity}\label{stationarity}
 \addcontentsline{toc}{subsubsection}{Stationarity}
 
-In general, forecasts an be improved by using mutliple predictors ---
+In general, forecasts an be improved by using multiple predictors ---
 just as in cross-sectional regression. For time series regressions to
 yield reliable models, the assumption of \emph{stationarity} must be
 fulfilled. Key Concept 14.5 explains what stationarity is.
@@ -21353,8 +21373,9 @@ For estimation we make the following assumptions:
 
 Since many economic time series appear to be nonstationary, assumption
 two of Key Concept 14.6 is a crucial one in applied macroeconomics and
-finance which is why statistical test for stationarity / nonstationarity
-have been developed. Chapters 14.6 and 14.7 are devoted to this topic.
+finance which is why statistical test for stationarity or
+nonstationarity have been developed. Chapters \ref{llsuic} and \ref{nit}
+are devoted to this topic.
 
 \subsubsection*{Statistical inference and the Granger causality
 test}\label{statistical-inference-and-the-granger-causality-test}
@@ -21363,8 +21384,8 @@ Granger causality test}
 
 If a \(X\) is a useful predictor for \(Y\), in a regression of \(Y_t\)
 on lags of its own and lags of \(X_t\), not all of the coefficients on
-the lags on \(X_t\) are zero. This concept is called ``Granger
-causality'' and is an interesting hypothesis to test. Key Concept 14.7
+the lags on \(X_t\) are zero. This concept is called \emph{Granger
+causality} and is an interesting hypothesis to test. Key Concept 14.7
 summarizes the idea.
 
 Key Concept 14.7
@@ -21389,7 +21410,7 @@ Intervals}\label{forecast-uncertainty-and-forecast-intervals}
 Intervals}
 
 In general, it is a good practice to report a measure of the uncertainty
-inherent to the estimation. Uncertainty is particulary of interest when
+inherent to the estimation. Uncertainty is particularly of interest when
 forecasting a time series. For example, consider a simple ADL\((1,1)\)
 model
 
@@ -21433,7 +21454,7 @@ heteroskedastic or if we are interested in computing a forecast interval
 for \(T+s, s>1\).
 
 In some applications it is useful to report multiple forecast intervals
-for each step in range of subsequents periods, see the Box \emph{The
+for each step in range of subsequent periods, see the Box \emph{The
 River of Blood} on p.~592 of the book. Such forecast ranges can be
 visualized in a so-called fan chart. We will not replicate the fan chart
 presented in Figure 14.2 of book because the underlying model is by far
@@ -21470,7 +21491,7 @@ computed for each point forecast of the series.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-434-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-439-1} \end{center}
 
 The dashed red line shows point forecasts of the series for the next 25
 periods based on an \(ADL(1,1)\) model and the shaded areas represent
@@ -21479,8 +21500,7 @@ the prediction interval. The darkest of the blue bands displays the
 \(5\%\) forecast intervals and the color fades towards grey as the level
 of the intervals increases.
 
-\section{Lag Length Selection Using Information
-Criteria}\label{lag-length-selection-using-information-criteria}
+\section{Lag Length Selection Using Information Criteria}\label{llsuic}
 
 The selection of lag lengths in AR and ADL models can be partially
 governed by economic theory. However, there are statistical methods that
@@ -21490,12 +21510,12 @@ estimates and thus imply an increase in the forecast error while
 omitting lags that should be included in the model may result in an
 estimation bias.
 
-The order of an AR model can be determined using two approaches
+The order of an AR model can be determined using two approaches:
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
 \item
-  ** The \(F\)-test approach**:
+  ** The \(F\)-test approach**
 
   Estimate an AR(\(p\)) model and test the significance of the largest
   lag(s). If the test rejects, drop the respective lag(s) from the
@@ -21503,7 +21523,7 @@ The order of an AR model can be determined using two approaches
   order is too large: in a significance test we always face the risk of
   rejecting a true null hypothesis!
 \item
-  \textbf{Relying on an information criterion}:
+  \textbf{Relying on an information criterion}
 
   To circumvent the issue of producing too large models, one may choose
   the lag order that minimizes one of the following two information
@@ -21533,7 +21553,7 @@ The order of an AR model can be determined using two approaches
   an alternative when the \(BIC\) yields a model with too few lags.
 \end{enumerate}
 
-The function\texttt{dynlm()} does not compute informatoin criteria by
+The function\texttt{dynlm()} does not compute information criteria by
 default. We will therefore write a short function that reports the
 \(BIC\) (along with the chosen lag order \(p\) and \(R^2\)) for objects
 of class \texttt{dynlm}.
@@ -21634,7 +21654,7 @@ coefficients, including the intercept, we have
 \end{align*}
 
 Notice that choosing the optimal model according to the \(BIC\) can be
-computationally demaning because there may be many different
+computationally demanding because there may be many different
 combinations of lag lengths when there are multiple predictors.
 
 To motivate an example, we estimate ADL(\(p\),\(q\)) models of GDP
@@ -21675,7 +21695,7 @@ choose \(p_{max} = 12\).
 Notice that from the definition of \texttt{BIC()}, for ADL models with
 \(p=q\) it follows that p reports the number of estimated coefficients
 \emph{excluding} the intercept. Thus the lag order is obtained by
-deviding p by 2.
+dividing p by 2.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -21689,10 +21709,10 @@ deviding p by 2.
 ## 4.0000 2.3408 0.1855
 \end{verbatim}
 
-The \(BIC\) is in favour of the ADL(\(2\),\(2\)) model
+The \(BIC\) is in favor of the ADL(\(2\),\(2\)) model
 \eqref{eq:gdpgradl22} we have estimated before.
 
-\section{Nonstationarity I: Trends}\label{nonstationarity-i-trends}
+\section{Nonstationarity I: Trends}\label{nit}
 
 If a series is nonstationary, conventional hypothesis tests, confidence
 intervals and forecasts can be strongly misleading. The assumption of
@@ -21714,8 +21734,8 @@ long-term movement. One distinguishes between \emph{deterministic} and
   time.
 \end{itemize}
 
-A careful look at the figures we have produced in Chapter 14.2 reveals
-that many economic time series show a trending behaviour that is
+A careful look at the figures we have produced in Chapter \ref{tsdasc}
+reveals that many economic time series show a trending behavior that is
 probably best modeled by stochastic trends. This is why the book focuses
 on the treatment of stochastic trends.
 
@@ -21738,11 +21758,11 @@ where the \(u_t\) are i.i.d. errors with
   =& \, Y_{t-1}
 \end{align*}
 
-so the best forecast for \(Y_t\), todays value of \(Y\), is \(Y_{t-1}\),
-the observation made yesterday so the difference between \(Y_t\) and
-\(Y_{t-1}\) is unpredictable. One can shows that the path followed by
-\(Y_t\) consists of random steps \(u_t\), hence it is called a random
-walk.
+so the best forecast for \(Y_t\), today's value of \(Y\), is
+\(Y_{t-1}\), the observation made yesterday so the difference between
+\(Y_t\) and \(Y_{t-1}\) is unpredictable. One can shows that the path
+followed by \(Y_t\) consists of random steps \(u_t\), hence it is called
+a random walk.
 
 Assume that \(Y_0\), the starting value of the random walk is \(0\).
 Another way to write out \eqref{eq:randomwalk} is
@@ -21777,7 +21797,7 @@ is stationary. If at least one root equals \(1\), the AR(\(p\)) is said
 to have a \emph{unit root} and thus has a stochastic trend.
 
 It is straightforward to simulate random walks in R using
-\texttt{arima.sim()}. The function \texttt{matplot()} is covenient for
+\texttt{arima.sim()}. The function \texttt{matplot()} is convenient for
 simple plots of the columns of a matrix.
 
 \begin{Shaded}
@@ -21803,7 +21823,7 @@ simple plots of the columns of a matrix.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-440-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-445-1} \end{center}
 
 Adding a constant to \eqref{eq:randomwalk} yields
 
@@ -21839,7 +21859,7 @@ downward trend if \(\beta_0\) is negative.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-441-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-446-1} \end{center}
 
 \textless{}7div\textgreater{}
 
@@ -21850,7 +21870,7 @@ Trends}
 
 OLS estimation of the coefficients on regressors that have a stochastic
 trend is problematic because the distribution of the estimator and its
-\(t\)-statistic is nonnormal, even asymptotically. This has various
+\(t\)-statistic is non-normal, even asymptotically. This has various
 consequences:
 
 \begin{itemize}
@@ -21864,7 +21884,7 @@ consequences:
   This estimation bias causes forecasts of \(Y_t\) to perform worse than
   a pure random walk model.
 \item
-  Nonnormally distributed \(t\)-statistics:
+  Non-normally distributed \(t\)-statistics:
 
   The nonnormal distribution of the estimated coefficient of a
   stochastic regressor translates to a nonnormal distribution of its
@@ -21902,7 +21922,7 @@ of each other.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-442-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-447-1} \end{center}
 
 Imagine we did not have this information and instead conject that the
 green series is useful for predicting the red series and thus end up
@@ -21935,7 +21955,7 @@ zero.
 
 As an empirical example, consider the U.S. unemployment rate and the
 Japanese industrial production. Both series show an upward trending
-behaviour from the mid-1960s through the early 1980s.
+behavior from the mid-1960s through the early 1980s.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -21956,7 +21976,7 @@ behaviour from the mid-1960s through the early 1980s.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-444-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-449-1} \end{center}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -22013,8 +22033,8 @@ we obtain
   \widehat{U.S. UR}_t = \underset{(5.41)}{41.78} + \underset{(1.17)}{-7.78} \log(JapaneseIP)_t \label{eq:urjpip2}
 \end{align}
 
-which is suprisingly quite different from \eqref{eq:urjpip1} which
-indicates a moderate postive relationship, in contrast to the large
+which is surprisingly quite different from \eqref{eq:urjpip1} which
+indicates a moderate positive relationship, in contrast to the large
 negative coefficient in \eqref{eq:urjpip2}. This phenomenon can be
 attributed to stochastic trends in the series: since there is no
 economic reasoning that relates both trends, both regressions are
@@ -22025,7 +22045,7 @@ Root}\label{testing-for-a-unit-ar-root}
 \addcontentsline{toc}{subsubsection}{Testing for a Unit AR Root}
 
 A formal test for a stochastic trend has been proposed by Dickey and
-Fuller (1979) and is therefore termend the \emph{Dickey-Fuller test}. As
+Fuller (1979) and is therefore termed the \emph{Dickey-Fuller test}. As
 discussed above, a time series that follows an AR(\(1\)) model with
 \(\beta_1 = 1\) has a stochastic trend. Thus, the testing problem is
 
@@ -22035,7 +22055,7 @@ discussed above, a time series that follows an AR(\(1\)) model with
 
 The null hypothesis is that the AR(\(1\)) has a unit root and the
 alternative hypothesis is that it is stationary. One often rewrites the
-AR(\(1\)) by substracting \(Y_{t-1}\) on both sides:
+AR(\(1\)) by subtracting \(Y_{t-1}\) on both sides:
 
 \begin{align*}
   Y_t = \beta_0 + \beta_1 Y_{t-1} + u_t \ \ \Leftrightarrow \ \ \Delta Y_t = \beta_0 + \delta_1 Y_{t-1} + u_i
@@ -22087,7 +22107,7 @@ is no lags of \(\Delta Y_t\) are used as regressors) corresponds to a
 simple AR(\(1\)).
 
 Under the null hypothesis, the \(t\)-statistic corresponding to
-\(H_0: \delta = 0\) does not have a normal distribution. The cricital
+\(H_0: \delta = 0\) does not have a normal distribution. The critical
 values can only be obtained from simulation and differ for regressions
 \eqref{eq:ADFreg1} and \eqref{eq:ADFreg2} since the distribution of the ADF
 test statistic is sensitive to the deterministic components included in
@@ -22103,7 +22123,7 @@ regressions \eqref{eq:ADFreg1} and \eqref{eq:ADFreg2} can only be determined
 using simulation. The idea of the simulation study is to simulate a
 large number of ADF test test statistics and use them to estimate
 quantiles of their \emph{asymptotic} distribution. This section shows
-how this is feasible whithin R.
+how this is feasible within R.
 
 First, consider an AR(\(1\)) model with drift. The procedure is as
 follows:
@@ -22282,11 +22302,11 @@ densities.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-449-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-454-1} \end{center}
 
 The deviations from the standard normal distribution are significant:
 both Dickey-Fuller distributions are skewed to the left and have a
-havier left tail than the standard normal distribution.
+heavier left tail than the standard normal distribution.
 
 \subsubsection*{Does U.S. GDP Have a Unit
 Root?}\label{does-u.s.-gdp-have-a-unit-root}
@@ -22335,18 +22355,18 @@ The estimation yields
 so the ADF test statistic is \(t=-0.033/0.014 = - 2.35\). The
 corresponding \(5\%\) critical value from table \ref{tab:DFcrits} is
 \(-3.41\) so we cannot reject the null hypothesis that \(\log(GDP)\) has
-a stochastic trend in favour of the alternative that it is stationary
+a stochastic trend in favor of the alternative that it is stationary
 around a deterministic linear time trend.
 
-\section{Nonstationarity II: Breaks}\label{nonstationarity-ii-breaks}
+\section{Nonstationarity II: Breaks}\label{niib}
 
 When there are discrete (at a distinct date) or gradual (over time)
-changes in the population regression ceofficients, the series is
+changes in the population regression coefficients, the series is
 nonstationary. These changes are called \emph{breaks}. There is a
 variety of reasons why breaks can occur in macroeconomic time series but
 most often them are related to changes in economic policy or major
-changes in the structure of the economy. See Chapter 14.7 for a
-discussion of examples.
+changes in the structure of the economy. See Chapter 14.7 of the book
+for a discussion of examples.
 
 If breaks are not accounted for in the regression model, OLS estimates
 will reflect the average relationship. Since these estimates might be
@@ -22402,11 +22422,11 @@ The most important properties are:
   \(\widehat{\tau}/T\) is a consistent estimator of the true break date.
 \item
   The large-sample distribution of \(QLR\) depends on \(q\), the number
-  of restrictions beeing tested and both ratios of end points to the
+  of restrictions being tested and both ratios of end points to the
   sample size, \(\tau_0/T, \tau_1/T\).
 \item
   Similar to the ADF test, the large-sample distribution of \(QLR\) is
-  nonstandard. Cricital values are presented in Table 14.5 of the book.
+  nonstandard. Critical values are presented in Table 14.5 of the book.
 \end{itemize}
 
 \subsubsection*{Has the Predictive Power of the term spread been
@@ -22538,7 +22558,7 @@ then generate a simple plot with some annotations.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-454-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-459-1} \end{center}
 
 \subsubsection*{Pseudo Out-of-Sample
 Forecasting}\label{pseudo-out-of-sample-forecasting}
@@ -22559,8 +22579,8 @@ Pseudo Out-of-Sample Forecasting
 \def\labelenumi{\arabic{enumi}.}
 \item
   Divide the sample data into \(s=T-P\) and \(P\) subsequent
-  overservations. The \(P\) observations are used as
-  pseudo-out-of-sample observations.
+  observations. The \(P\) observations are used as pseudo-out-of-sample
+  observations.
 \item
   Estimate the model using the first \(s\) observations.
 \item
@@ -22569,8 +22589,7 @@ Pseudo Out-of-Sample Forecasting
   Compute the pseudo-forecast-error
   \(\overset{\sim}{u}_{s+1} = Y_{s+1} - \overset{\sim}{Y}_{s+1\vert s}\).
 \item
-  Repeat stepts 2 trough 4 for all reamaining pseudo-out-of-sample
-  dates.
+  Repeat steps 2 trough 4 for all remaining pseudo-out-of-sample dates.
 \end{enumerate}
 
 \subsubsection*{Did the Predictive Power of the Term Spread Change
@@ -22587,7 +22606,7 @@ function are stable after the potential break in 1980:Q4, these models
 should have good predictive power. We check this by computing
 pseudo-out-of-sample forecasts for the period 2003:Q1 - 2012:Q4, a range
 covering 40 periods, where the forecast for 2003:Q1 is done using data
-from 1981:Q1 - 2002:Q4, the forecast for 2003:Q2 is based on data frome
+from 1981:Q1 - 2002:Q4, the forecast for 2003:Q2 is based on data from
 1981:Q1 - 2003:Q1 and so on.
 
 Similarly as for the \(QLR\)-test we use a \texttt{for()} loop for
@@ -22666,7 +22685,7 @@ series.
 \KeywordTok{legend}\NormalTok{(}\StringTok{"bottomleft"}\NormalTok{, }
        \DataTypeTok{lty =} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{1}\NormalTok{),}
        \DataTypeTok{lwd =} \KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{10}\NormalTok{),}
-       \DataTypeTok{col =} \KeywordTok{c}\NormalTok{(}\StringTok{"steelblue"}\NormalTok{,}\StringTok{"black"}\NormalTok{,}\KeywordTok{alpha}\NormalTok{(}\StringTok{"blue"}\NormalTok{, }\DataTypeTok{alpha =} \FloatTok{0.3}\NormalTok{)), }
+       \DataTypeTok{col =} \KeywordTok{c}\NormalTok{(}\StringTok{"steelblue"}\NormalTok{, }\StringTok{"black"}\NormalTok{, }\KeywordTok{alpha}\NormalTok{(}\StringTok{"blue"}\NormalTok{, }\DataTypeTok{alpha =} \FloatTok{0.3}\NormalTok{)), }
        \DataTypeTok{legend =} \KeywordTok{c}\NormalTok{(}\StringTok{"Actual GDP growth rate"}\NormalTok{,}
          \StringTok{"Forecasted GDP growth rate"}\NormalTok{,}
          \StringTok{"Pseudo forecast Error"}\NormalTok{)}
@@ -22674,7 +22693,7 @@ series.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-457-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-462-1} \end{center}
 
 Apparently, the pseudo forecasts track the actual GDP growth rate quite
 well, except for the kink in 2009 which can be attributed to the recent
@@ -22736,27 +22755,27 @@ hypothesis is easily tested using the function \texttt{t.test()}.
 \end{verbatim}
 
 The hypothesis cannot be rejected at the \(10\%\) significance level.
-Alltogther the analysis suggests that the ADL(\(2\),\(2\)) model
+Altogether the analysis suggests that the ADL(\(2\),\(2\)) model
 coefficients have been stable since the presumed break in the early
 1980s.
 
 \section{Can You Beat the Market? Part
 II}\label{can-you-beat-the-market-part-ii}
 
-The dividend yield (the ratio of current dividens to the stock price)
+The dividend yield (the ratio of current dividends to the stock price)
 can be considered as an indicator of future dividends: if a stock has a
 high current dividend yield, it can be considered undervalued and it can
 be presumed that the price of the stock goes up in the future, meaning
 that future excess returns go up.
 
-This presumption can be examined using ADL models of exess returns,
+This presumption can be examined using ADL models of excess returns,
 where lags of the logarithm of the stock's dividend yield serve as
 additional regressors.
 
-Unfortunatly, a graphical inspection of the time series of the logarithm
-of the dividend yield casts doubt on the assumption that the series is
-stationary which, as has been discussed in Chapter 14.7, is necessary to
-obtain meaningful results in a regression analysis.
+Unfortunately, a graphical inspection of the time series of the
+logarithm of the dividend yield casts doubt on the assumption that the
+series is stationary which, as has been discussed in Chapter \ref{nit},
+is necessary to obtain meaningful results in a regression analysis.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -22769,7 +22788,7 @@ obtain meaningful results in a regression analysis.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-461-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-466-1} \end{center}
 
 The Dickey-Fuller test statistic for an autoregressive unit root in an
 AR(\(1\)) model with drift provides further evidence that the series
@@ -22800,7 +22819,7 @@ However, it is possible to examine whether the dividend yield has
 predictive power for excess returns by using its differences in an
 ADL(\(1\),\(1\)) and an ADL(\(2\),\(2\)) model (remember that
 differencing a series with a unit root yields a stationary series)
-although these model specifications do not correspond to the ecnonomic
+although these model specifications do not correspond to the economic
 reasoning mentioned above. Thus we also estimate a ADL(\(1\),\(1\))
 regression using the level of the logarithm of the dividend yield.
 
@@ -22892,9 +22911,9 @@ predictive power for excess returns at any common level of significance
 models).
 
 Things are different for model (3). The coefficient on the level of the
-logarithm of the devidend yield is different from zero at the \(5\%\)
+logarithm of the dividend yield is different from zero at the \(5\%\)
 level and the \(F\)-test does not reject at this level either. But we
-should be suspicious: the high degree of persistence in the devidend
+should be suspicious: the high degree of persistence in the dividend
 yield series probably renders this inference useless because \(t\)- and
 \(F\)-statistics may follow distributions that deviate considerably from
 their theoretical large-sample distributions such that the usual
@@ -22904,7 +22923,7 @@ If model (3) would be of any use for predicting excess returns,
 pseudo-out-of-sample forecasts based on (3) should outperform forecasts
 of an intercept-only model in terms of the sample RMSFE. We can perform
 this type of comparison using R code in the fashion of the applications
-of Chapter 14.8.
+of Chapter \ref{niib}.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -22996,11 +23015,11 @@ predictive power for unobserved future outcomes of a series, to check
 model stability and to compare different models.
 
 Furthermore, some more technical aspects like the concept of
-stationarity were adressed. This included applications to testing for an
-autoregressive unit root with the Dickey-Fuller test and the detection
-of a break in the population regression function using the \(QLR\)
-statistic. For both methods, the distribution of the relevant test
-statistic is nonnormal, even in large samples. Concerning the
+stationarity were addressed. This included applications to testing for
+an autoregressive unit root with the Dickey-Fuller test and the
+detection of a break in the population regression function using the
+\(QLR\) statistic. For both methods, the distribution of the relevant
+test statistic is non-normal, even in large samples. Concerning the
 Dickey-Fuller test we have used R's random number generation facilities
 to produce evidence for this by means of a Monte-Carlo simulation and
 motivated usage of the quantiles tabulated in the book.
@@ -23013,11 +23032,10 @@ have been reproduced using R.
 In all applications presented in this chapter, the focus was layed on
 forecasting future outcomes rather than estimation of causal
 relationships between time series variables. However, the framework of
-methods needed for the latter is very similar. Chapter 15 is devoted to
-estimation of so called \emph{dynamic causal effects}.
+methods needed for the latter is very similar. Chapter \ref{eodce} is
+devoted to estimation of so called \emph{dynamic causal effects}.
 
-\chapter{Estimation of Dynamic Causal
-Effects}\label{estimation-of-dynamic-causal-effects}
+\chapter{Estimation of Dynamic Causal Effects}\label{eodce}
 
 In economic research it sometimes is of interest to know how large the
 effect on \(Y\) now and in the future of a change in \(X\) is. This is
@@ -23105,7 +23123,7 @@ in Orlando, the center of Florida's orange-growing region.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-472-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-477-1} \end{center}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -23120,7 +23138,7 @@ in Orlando, the center of Florida's orange-growing region.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-472-2} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-477-2} \end{center}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -23135,7 +23153,7 @@ in Orlando, the center of Florida's orange-growing region.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-472-3} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-477-3} \end{center}
 
 It is conspicuous that periods with a high amount of freezing degree
 days are followed by large month-to-month price changes. These
@@ -23166,8 +23184,8 @@ we use \(T=611\) observations (January 1950 to December 2000).
 
 Notice that the standard errors are computed using a HAC estimator of
 the model variance-covariance matrix, a matter that will not be further
-commented at this point, see Chapter 14.5 for a discussion of this
-estimator.
+commented at this point, see Chapter \ref{apatadlm} for a discussion of
+this estimator.
 
 \begin{align*}
   \widehat{\%ChgOJC_t} = -\underset{(0.19)}{0.42} + \underset{(0.13)}{0.47} FDD_t
@@ -23229,11 +23247,11 @@ the current month' freezing degree days.
 
 This section of the book describes the general idea of a dynamic causal
 effect and how the concept of a randomized controlled experiment, which
-(as has been discussed in Chapter 13) constitutes an ideal study design
-can be translated to time series applications using several examples.
-For brevity we will not go into the details but note once again that the
-distributed lag model mentioned above can often be used to estimate a
-dynamic causal relationship.
+(as has been discussed in Chapter \ref{eaqe}) constitutes an ideal study
+design and can be translated to time series applications, using several
+examples. For brevity we will not go into the details but note once
+again that the distributed lag model mentioned above can often be used
+to estimate a dynamic causal relationship.
 
 In general, for empirical attempts to measure a dynamic causal effect,
 the assumptions of stationarity (see Key Concept 14.5) and exogeneity
@@ -23711,7 +23729,7 @@ exhibit autocorrelation by using the function \texttt{acf()}.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-482-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-487-1} \end{center}
 
 The plot indicates that the residuals are autocorrelated. In particular,
 the pattern observed reveals that the residuals follow an autoregressive
@@ -23757,7 +23775,7 @@ autocorrelation function of the residual series.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-484-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-489-1} \end{center}
 
 Note that the estimated coefficients reported by
 \texttt{adl21\_dynamic\$coefficients} are \emph{not} the dynamic
@@ -24332,7 +24350,7 @@ the estimated cumulative dynamic multipliers for the comparison.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-499-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-504-1} \end{center}
 
 Clearly, the cumulative dynamic multipliers have changed considerably
 over time. Notice that the effect of a freeze was stronger and more
@@ -24435,8 +24453,7 @@ exogeneity of the regressors is plausible.
   15.7 of the book for further examples.
 \end{itemize}
 
-\chapter{Additional Topics in Time Series
-Regression}\label{additional-topics-in-time-series-regression}
+\chapter{Additional Topics in Time Series Regression}\label{atitsr}
 
 This chapter discusses the following advanced topics in time series
 regression and demonstrates how core techniques can be applied using R:
@@ -24459,13 +24476,14 @@ regression and demonstrates how core techniques can be applied using R:
   interest rates. We demonstrate how to estimate a vector error
   correction model.
 \item
-  Autoregressive conditional heteroskedasticity (ARCH) modls. We show
-  how a simple generalied ARCH (GARCH) model can be used for quantifying
-  the risk associated with investing in the stock market in terms of
-  estimation and forecasting of the volatility of asset returns.
+  Autoregressive conditional heteroskedasticity (ARCH) models. We show
+  how a simple generalized ARCH (GARCH) model can be used for
+  quantifying the risk associated with investing in the stock market in
+  terms of estimation and forecasting of the volatility of asset
+  returns.
 \end{itemize}
 
-If you are intersted in reproducing the code examples on your own,
+If you are interested in reproducing the code examples on your own,
 install the R packages listed below and make sure that the subsequent
 code chunk executes without any errors.
 
@@ -24486,14 +24504,14 @@ code chunk executes without any errors.
 A Vector autoregressive (VAR) model is useful when one is interested in
 predicting multiple time series variables using a single model. At its
 core, the VAR model is an extension of the univariate autoregressive
-model we have dealt with in Chapters 14 and 15. Key Concept 16.1
-summarizes the essentails of VAR.
+model we have dealt with in Chapters \ref{ittsraf} and \ref{eodce}. Key
+Concept 16.1 summarizes the essentials of VAR.
 
 Key Concept 16.1
 
 Vector Autoregressions
 
-The vector auoregression (VAR) model extends the idea of univariate
+The vector autoregression (VAR) model extends the idea of univariate
 autoregression to \(k\) time series regressions, where the lagged values
 of \emph{all} \(k\) series appear as regressors. Put differently, in a
 VAR model we regress a \emph{vector} of time series variables on lagged
@@ -24518,7 +24536,7 @@ diagnostic testing and prediction using this type of models.
 When the assumptions referred to in Key Concept 16.1 hold, the OLS
 estimators of the VAR coefficients are consistent and jointly normal in
 large samples so that the usual inferential methods such as confidence
-intervals und \(t\)-statistics can be used.
+intervals and \(t\)-statistics can be used.
 
 Notice that, due to the structure of VARs, we may jointly test
 restrictions across multiple equations. For instance, it may be of
@@ -24546,9 +24564,9 @@ the determinant.
 As for univariate distributed lag models, one should think carefully
 which variables to include in a VAR because adding unrelated variables
 reduces the forecast accuracy by increasing the estimation error. This
-is particulary important because the number of parameters to be
+is particularly important because the number of parameters to be
 estimated grows proportionally to the number of variables modeled by the
-VAR. In the application below we shall see that economic thoery and
+VAR. In the application below we shall see that economic theory and
 empirical evidence are helpful for this decision.
 
 \paragraph{A VAR Model of the Growth Rate of GDP and the Term
@@ -24558,7 +24576,7 @@ and the Term Spread}
 
 In the following we show how to estimate a VAR model of the GDP growth
 rate, \(GDPGR\), and the term spread, \(TSpread\). As a consequence to
-the discussion on nonstationarity of GDP growth in Chapter 14.7
+the discussion on nonstationarity of GDP growth in Chapter \ref{nit}
 (remember the possible break in the early 1980s detected by the \(QLR\)
 test statistic), we use data from 1981:Q1 to 2012:Q4. The two model
 equations are
@@ -24573,9 +24591,9 @@ website to Stock and Watson (2014) and can be downloaded
 \href{http://wps.aw.com/aw_stock_ie_3/178/45691/11696965.cw/index.html}{here}.
 It contains data on quarterly data on US real (i.e.~inflation adjusted)
 GDP from years 1947 to 2004. We begin by importing the data set and do
-some formatting (we already worked with this data set in Chapter 14 so
-you may skip these steps if you have already loaded the data in your
-working environment).
+some formatting (we already worked with this data set in Chapter
+\ref{ittsraf} so you may skip these steps if you have already loaded the
+data in your working environment).
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -24748,7 +24766,7 @@ straightforward to obtain model statistics for the individual equations.
 ## [1] 0.8254311
 \end{verbatim}
 
-We may use the individual model objects to conduct granger causality
+We may use the individual model objects to conduct Granger causality
 tests.
 
 \begin{Shaded}
@@ -24825,12 +24843,12 @@ as an observation when predicting the level of a series for period
 \(T+2\). This can be generalized to a \(h\)-period-ahead forecast where
 all intervening periods between \(T\) and \(T+h\) must be forecasted as
 they are used as observations in the process (see Chapter 16.2 of the
-book for a more detailed argument on this concept). Iterated Multiperiod
+book for a more detailed argument on this concept). Iterated multiperiod
 forecasts are summarized in Key Concept 16.2.
 
 Key Concept 16.2
 
-Interated Multiperiod Forecasts
+Iterated Multiperiod Forecasts
 
 The steps for an \textbf{interated multiperiod AR forecast} are:
 
@@ -24851,7 +24869,7 @@ An \textbf{interated multiperiod VAR forecast} is done as follows:
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
 \item
-  Estimate the VAR(\(p\)) model unsing OLS per equation and compute the
+  Estimate the VAR(\(p\)) model using OLS per equation and compute the
   one-period-ahead forecast for \emph{all} variables in the VAR.
 \item
   Use the one-period-ahead forecasts to obtain the two-period-ahead
@@ -24909,7 +24927,7 @@ the model object \texttt{VAR\_est}.
 \end{verbatim}
 
 From this we can tell that the two-quarter-ahead forecast of GDP growth
-in 2013:Q2 using data through 2012:Q4 is \(1.69\). For the same peiod,
+in 2013:Q2 using data through 2012:Q4 is \(1.69\). For the same period,
 the iterated VAR forecast for the term spread is \(1.88\).
 
 Notice that the matrices returned by \texttt{predict(VAR\_est)} also
@@ -24926,7 +24944,7 @@ calling \texttt{plot()} on the output of \texttt{predict(VAR\_est)}.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-511-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-516-1} \end{center}
 
 \paragraph{Direct Multiperiod
 Forecasts}\label{direct-multiperiod-forecasts}
@@ -24939,7 +24957,7 @@ direct multiperiod forecasting is summarized in Key Concept 16.3.
 
 Key Concept 16.3
 
-Direct Multipreiod Forecasts
+Direct Multiperiod Forecasts
 
 A \textbf{direct multiperiod forecast} that forecasts \(h\) periods into
 the future using a model of \(Y_t\) and an additional predictor \(X_t\)
@@ -25005,11 +25023,11 @@ one-period-ahead model is correctly specified. If this is not the case,
 for example because one equation in a VAR is believed to be
 misspecified, it can be beneficial to use direct forecasts since the
 iterated method will then be biased and thus have a higher \(MSFE\) than
-the direct method. See Chapter 16.2 for a more detailed discussion on
-advantages and disadvantages of both methods.
+the direct method. See Chapter \ref{ooiatdfglsurt} for a more detailed
+discussion on advantages and disadvantages of both methods.
 
 \section{Orders of Integration and the DF-GLS Unit Root
-Test}\label{orders-of-integration-and-the-df-gls-unit-root-test}
+Test}\label{ooiatdfglsurt}
 
 Some economic time series have smoother trends than variables that can
 be described by random walk models. A way to model these time series is
@@ -25063,7 +25081,7 @@ personal consumption expenditures price index as an example.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-513-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-518-1} \end{center}
 
 We see that the logarithm of the price level has a smoothly varying
 trend. This is typical for an \(I(2)\) series. If the price level is
@@ -25072,9 +25090,9 @@ indeed \(I(2)\), the first differences of this series should be
 obtain growth rates by taking first differences, so the differenced
 price level series is the series of quarterly inflation rates. This is
 quickly done in R using the function Delt() from the package quantmod.
-As explained in Chapter 14.2, multiplying the quarterly inflation rates
-by \(400\) yields the quarterly rate of inflation, measuared in
-percentage points at an annual rate.
+As explained in Chapter \ref{tsdasc}, multiplying the quarterly
+inflation rates by \(400\) yields the quarterly rate of inflation,
+measured in percentage points at an annual rate.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -25087,7 +25105,7 @@ percentage points at an annual rate.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-514-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-519-1} \end{center}
 
 We find that the rate of inflation behaves much more erratic than the
 smooth graph of the logarithm of the PCE price index.
@@ -25188,8 +25206,8 @@ urca.
 As an example, reconsider the the relation between short- and long-term
 interest rates by the example of U.S. 3-month treasury bills, U.S.
 10-years treasury bonds and the spread in their interest rates which
-have been introduced in Chapter 14.4. The next code chunk shows how to
-reproduce Figure 16.2 of the book.
+have been introduced in Chapter \ref{cybtmpi}. The next code chunk shows
+how to reproduce Figure 16.2 of the book.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -25198,7 +25216,7 @@ reproduce Figure 16.2 of the book.
 \CommentTok{# plot both interest series}
 \KeywordTok{plot}\NormalTok{(}\KeywordTok{merge}\NormalTok{(}\KeywordTok{as.zoo}\NormalTok{(TB3MS), }\KeywordTok{as.zoo}\NormalTok{(TB10YS)), }
      \DataTypeTok{plot.type =} \StringTok{"single"}\NormalTok{, }
-     \DataTypeTok{lty =} \KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{,}\DecValTok{1}\NormalTok{),}
+     \DataTypeTok{lty =} \KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DecValTok{1}\NormalTok{),}
      \DataTypeTok{lwd =} \DecValTok{2}\NormalTok{,}
      \DataTypeTok{xlab =} \StringTok{"Date"}\NormalTok{,}
      \DataTypeTok{ylab =} \StringTok{"Percent per annum"}\NormalTok{,}
@@ -25235,12 +25253,12 @@ reproduce Figure 16.2 of the book.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-516-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-521-1} \end{center}
 
 The plot suggests that long-term and short-term interest rates are
 cointegrated: notice that both interest series seem to have the same
-long-run behaviour. They share a common stochastic trend. The term
-spread which is obtained by taking the difference between long-term and
+long-run behavior. They share a common stochastic trend. The term spread
+which is obtained by taking the difference between long-term and
 short-term interest rates seems to be stationary. In fact, the
 expectations theory of the term structure suggests the cointegrating
 coefficient \(\theta\) to be 1. This is consistent with the visual
@@ -25631,17 +25649,17 @@ treasury bill rate in the current period.
 \section{Volatility Clustering and Autoregressive Conditional
 Heteroskedasticity}\label{volatility-clustering-and-autoregressive-conditional-heteroskedasticity}
 
-Financial time series often exhibit a behaviour that is known as
+Financial time series often exhibit a behavior that is known as
 \emph{volatility clustering}: the volatility changes over time and its
 degree shows a tendency to persist i.e.~there are periods of low
 volatility and periods where volatility is high. Econometricians call
 this \emph{conditional heteroskedasticity}. Conditional
-heteroskedasticity is an intersting property because it can be exploited
-for forecasting the variance of future periods. A good forecast of a
-series' variance allows to quantify uncertainty (for example by
-computing accrurate forecast confidence intervals) which is especially
-important when it is hard to come up with a good prediction of future
-realisations (see Chapter 14.4).
+heteroskedasticity is an interesting property because it can be
+exploited for forecasting the variance of future periods. A good
+forecast of a series' variance allows to quantify uncertainty (for
+example by computing accurate forecast confidence intervals) which is
+especially important when it is hard to come up with a good prediction
+of future realizations (see Chapter \ref{cybtmpi}).
 
 As an example, we consider daily changes in the Whilshire 5000 stock
 index. The data is available for download at the
@@ -25692,7 +25710,7 @@ how to reproduce Figure 16.3 of the book.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-523-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-528-1} \end{center}
 
 The level of the series of daily percentage changes in the Wilshire
 index seems to randomly fluctuate near zero, meaning there is little
@@ -25748,7 +25766,7 @@ Maximum likelihood estimates of ARCH and GARCH models are efficient and
 have normal distributions in large samples, such that the usual methods
 for conducting inference about the unknown parameters can be applied.
 The R package fGARCh is a collection of functions for analyzing and
-modelling the heteroskedastic behaviour in time series models. In the
+modelling the heteroskedastic behavior in time series models. In the
 following application we reproduce the results presented in Chapter 16.5
 of the book by means of the function garchFit(). This function is
 somewhat more sophisticated. It allows for different specifications of
@@ -25770,7 +25788,7 @@ where \(R_t\) is the percentage change in period \(t\). \(\beta_1\),
 \(u_t\) and \(\nu_t\) are error terms with conditional mean zero. We do
 not include any lagged predictors in the equation of \(R_t\) because the
 daily changes in the Wilshire 5000 index reflect daily stock returns
-wich are essentially unpredictable. Note that \(u_t\) is assumed to be
+which are essentially unpredictable. Note that \(u_t\) is assumed to be
 normally distributed and the variance \(\sigma^2_t\) depends on \(t\) as
 it follows the GARCH(\(1\),\(1\)) recursion \eqref{eq:w5000g11}.
 
@@ -25838,7 +25856,7 @@ mean. The following code chunk reproduces Figure 16.4 of the book.
 \end{Highlighting}
 \end{Shaded}
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-525-1} \end{center}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-530-1} \end{center}
 
 We see that the bands of estimated conditional standard deviation
 describe the observed heteroskedasticity in the series of daily changes
@@ -25860,10 +25878,10 @@ volatility of the most recent regression residuals.
   methods for unit root and cointegration analysis like the DF-GLS and
   the EG-ADF tests. In an application we have found evidence that
   3-months and 10-year interest rates have a common stochastic trend
-  (that is they are cointegrated) and thus can be modelled using a
-  vector error correction model.
+  (that is they are cointegrated) and thus can be modeled using a vector
+  error correction model.
 \item
-  Furthermore, we have introduced the concept of volatility clusering
+  Furthermore, we have introduced the concept of volatility clustering
   and demonstrated how the function garchFit() from the package fGarch
   can be employed to estimate a GARCH(\(1\),\(1\)) model of the
   conditional heteroskedasticity inherent to returns of the Wilshire

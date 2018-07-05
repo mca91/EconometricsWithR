@@ -1,28 +1,33 @@
-# Hypothesis Tests and Confidence Intervals in the Simple Linear Regression Model
+# Hypothesis Tests and Confidence Intervals in the Simple Linear Regression Model {#htaciitslrm}
 
 In this chapter, we continue our treatment of the simple linear regression model. The following subsections discuss how we may use our knowledge about the sampling distribution of the OLS estimator in order to make statements regarding its uncertainty.
 
 These subsections cover the following topics:
 
-- Testing Hypotheses regarding regression coefficients
+- Testing Hypotheses regarding regression coefficients.
 
-- Confidence intervals for regression coefficients
+- Confidence intervals for regression coefficients.
 
-- Regression when $X$ is a dummy variable
+- Regression when $X$ is a dummy variable.
 
-- Heteroskedasticity and Homoskedasticity
+- Heteroskedasticity and Homoskedasticity.
 
-The packages `r ttcode('AER')` and `r ttcode('scales')` are required for reproduction of the code chunks presented throughout this chapter.
+The packages `r ttcode('AER')` and `r ttcode('scales')` are required for reproduction of the code chunks presented throughout this chapter. The package `r ttcode('scales')` provides additional generic plot scaling methods. Make sure both packages are installed before you procedd. The savest way to do so is by checking whether the following code chunk executes without any errors.
+
+```{r, warning=FALSE, message=FALSE, eval=FALSE}
+library(AER)
+library(scales)
+```
 
 ## Testing Two-Sided Hypotheses Concerning the Slope Coefficient
 
-Using the fact that $\hat{\beta}_1$ is approximately normally distributed in large samples (see [Key Concept 4.4](#tsdotoe)), testing hypotheses about the true value $\beta_1$ can be done with the same approach as discussed in chapter 3.2.
+Using the fact that $\hat{\beta}_1$ is approximately normally distributed in large samples (see [Key Concept 4.4](#tsdotoe)), testing hypotheses about the true value $\beta_1$ can be done with the same approach as discussed in Chapter \@ref(potsm).
 
 <div class = "keyconcept"> 
 <h3 class = "right"> Key Concept 5.1 </h3>
 <h3 class = "left"> General Form of the $t$-Statistic </h3>
 
-Remember from chapter 3 that a general $t$-statistic has the form
+Remember from Chapter \@ref(arosur) that a general $t$-statistic has the form
 
 \[
   t = \frac{\text{estimated value} - \text{hypothesized value}}{\text{standard error of the estimator}}.
@@ -59,7 +64,7 @@ Recall the definition of the $p$-value:
 
 </div>
 
-Consider again the OLS regression stored in `r ttcode('linear_model')` from Chapter 4 that gave us the regression line
+Consider again the OLS regression stored in `r ttcode('linear_model')` from Chapter \@ref(lrwor) that gave us the regression line
 
 \[ \widehat{TestScore} \ = \underset{(9.47)}{698.9} - \underset{(0.49)}{2.28} \times STR \ , \ R^2=0.051 \ , \ SER=18.6. \]
 
@@ -181,7 +186,7 @@ The $p$-Value is the area under the curve to left of $-4.75$ plus the area under
 
 ## Confidence Intervals for Regression Coefficients
 
-As we already know, estimates of the regression coefficients $\beta_0$ and $\beta_1$ are afflicted with sampling uncertainty, see [Chapter 4](#lrwor). Therefore, we will *never* estimate the exact true value of these parameters from sample data in an empirical application. However, we may construct confidence intervals for the intercept and the slope parameter.
+As we already know, estimates of the regression coefficients $\beta_0$ and $\beta_1$ are afflicted with sampling uncertainty, see Chapter \@ref(lrwor). Therefore, we will *never* estimate the exact true value of these parameters from sample data in an empirical application. However, we may construct confidence intervals for the intercept and the slope parameter.
 
 A $95\%$ confidence interval for $\beta_i$ has two equivalent definitions:
 
@@ -236,7 +241,7 @@ $$ \hat\mu = \overline{Y} = \frac{1}{n} \sum_{i=1}^n Y_i $$
 
 $$ SE(\hat\mu) = \frac{\sigma_{\epsilon}}{\sqrt{n}} = \frac{5}{\sqrt{100}} $$
 
-(see [Chapter 3.3](#SVSSDASE)) A large sample $95\%$ confidence interval for $\mu$ is then given by
+(see Chapter [2](#SVSSDASE)) A large sample $95\%$ confidence interval for $\mu$ is then given by
 
 \begin{equation} 
 KI^{\mu}_{0.95} = \left[\hat\mu - 1.96 \times \frac{5}{\sqrt{100}} \ , \ \hat\mu + 1.96 \times \frac{5}{\sqrt{100}}  \right]. (\#eq:KI)
@@ -322,7 +327,7 @@ for(j in 1:100) {
 
 We find that for the first $100$ samples, the true null hypothesis is rejected in four cases so these intervals do not cover $\mu=5$. We have indicated the intervals which lead to a rejection of the true null hypothesis by red color.
 
-Let us now turn back to the example of test scores and class sizes. The regression model from Chapter 4 is stored in `r ttcode('linear_model')`. An easy way to get $95\%$ confidence intervals for $\beta_0$ and $\beta_1$, the coefficients on `r ttcode('(intercept)')` and `r ttcode('STR')`, is to use the function `r ttcode('confint()')`. We only have to provide a fitted model object as an to this function. The confidence level is set to $95\%$ by default but can be modified by setting the argument `r ttcode('level')`, see `r ttcode('?confint')`. 
+Let us now turn back to the example of test scores and class sizes. The regression model from Chapter \@ref(lrwor) is stored in `r ttcode('linear_model')`. An easy way to get $95\%$ confidence intervals for $\beta_0$ and $\beta_1$, the coefficients on `r ttcode('(intercept)')` and `r ttcode('STR')`, is to use the function `r ttcode('confint()')`. We only have to provide a fitted model object as an to this function. The confidence level is set to $95\%$ by default but can be modified by setting the argument `r ttcode('level')`, see `r ttcode('?confint')`. 
 
 ```{r}
 confint(linear_model)
@@ -334,7 +339,7 @@ Let us check if the calculation is done as we expect it to be. For $\beta_1$, th
 
 so this actually leads to the same interval. Obviously, this interval *does not* contain the value zero which, as we have already seen in the previous section, leads to the rejection of the null hypothesis $\beta_{1,0} = 0$.
 
-## Regression when X is a Binary Variable
+## Regression when X is a Binary Variable {#rwxiabv}
 
 Instead of using a continuous regressor $X$, we might be interested in running the regression 
 
@@ -593,16 +598,13 @@ Consistent estimation of $\sigma_{\hat{\beta}_1}$ under heteroskedasticity is gr
 
 \[ SE(\hat{\beta}_1) = \sqrt{ \frac{ \frac{1}{n-2} \sum_{i=1}^n (X_i - \overline{X})^2 \hat{u}_i^2 }{ \left[ \frac{1}{n} \sum_{i=1}^n (X_i - \overline{X})^2  \right]^2} } \tag{5.6} \]
 
-Standard error estimates computed this way are also referred to as [Eicker-Huber-White standard errors](https://en.wikipedia.org/wiki/Heteroscedasticity-consistent_standard_errors). 
-It can be quite cumbersome to do this calculation by hand. Luckily, there are `r ttcode('R')` function for that purpose. A convenient one, named `r ttcode('vcovHC()')` is part of the package ')`sandwich')`.^[The package `r ttcode('sandwich')` is a dependency of the package `r ttcode('AER')` meaning that it is attached automatically if you load `r ttcode('AER')`] This function can compute a variety of standard error estimators. The one brought forward in (<a href="#mjx-eqn-5.6">5.6</a>) is computed when the argument `r ttcode('type')` is set to `r ttcode('"HC0"')`.
+Standard error estimates computed this way are also referred to as [Eicker-Huber-White standard errors](https://en.wikipedia.org/wiki/Heteroscedasticity-consistent_standard_errors), the most frequently cited paper on this is @white1980.  
+It can be quite cumbersome to do this calculation by hand. Luckily, there are `r ttcode('R')` function for that purpose. A convenient one, named `r ttcode('vcovHC()')` is part of the package `r ttcode("sandwich")`.^[The package `r ttcode('sandwich')` is a dependency of the package `r ttcode('AER')` meaning that it is attached automatically if you load `r ttcode('AER')`] This function can compute a variety of standard error estimators. The one brought forward in (<a href="#mjx-eqn-5.6">5.6</a>) is computed when the argument `r ttcode('type')` is set to `r ttcode('"HC0"')`.
 
 Let us now compute robust standard error estimates for the coefficients in `r ttcode('linear_model')`.
 
 ```{r}
-# load the sandwich package
-library(sandwich)
-
-# compute robust standard error estimates
+# compute heteroskedasticity-robust standard errors
 vcov <- vcovHC(linear_model, type = "HC0")
 vcov
 ```
@@ -634,7 +636,7 @@ robust_se <- sqrt(diag(vcov))
 robust_se
 ```
 
-Now assume we want to generate a coefficient summary as provided by `r  ttcode('summary()')` but with *robust* standard error estimates for the coefficient estimators, robust $t$-statistics and corresponding $p$-values for the regression model ')`linear_model')`. This can be done using `r  ttcode('coeftest()')` from the package `r  ttcode('lmtest')`, see `r  ttcode('?coeftest')`. Further we specify in the argument `r  ttcode('vcov.')` that `vcov`, the Eicker-Huber-White estimate of the variance matrix we have computed before should be used.
+Now assume we want to generate a coefficient summary as provided by `r  ttcode('summary()')` but with *robust* standard error estimates for the coefficient estimators, robust $t$-statistics and corresponding $p$-values for the regression model `r ttcode("linear_model")`. This can be done using `r  ttcode('coeftest()')` from the package `r  ttcode('lmtest')`, see `r  ttcode('?coeftest')`. Further we specify in the argument `r  ttcode('vcov.')` that `r ttcode("vcov")`, the Eicker-Huber-White estimate of the variance matrix we have computed before should be used.
 
 ```{r}
 # We invoke the function `coeftest()` on our model
@@ -832,9 +834,9 @@ Hence, our simulation results confirm what is stated by the Gauss-Markov Theorem
 
 ## Using the t-Statistic in Regression When the Sample Size Is Small
 
-The three OLS assumptions discussed in [Chapter 4](#lrwor) (see Key Concept 4.3) are the foundation for the results on the large sample distribution of the OLS estimators in the simple regression model. What can be said about the distribution of the estimators and their $t$-statistics when the sample size is small and the population distribution of the data is unknown? Provided that the three least squares assumptions hold and the errors are normally distributed and homoskedastic (we refer to these conditions as the homoskedastic normal regression assumptions), we have normally distributed estimators and $t$-distributed test statistics in small samples. 
+The three OLS assumptions discussed in Chapter \@ref(lrwor) (see Key Concept 4.3) are the foundation for the results on the large sample distribution of the OLS estimators in the simple regression model. What can be said about the distribution of the estimators and their $t$-statistics when the sample size is small and the population distribution of the data is unknown? Provided that the three least squares assumptions hold and the errors are normally distributed and homoskedastic (we refer to these conditions as the homoskedastic normal regression assumptions), we have normally distributed estimators and $t$-distributed test statistics in small samples. 
 
-Recall the [definition](#thetdist) on a $t$-distributed variable
+Recall the [definition](#thetdist) of a $t$-distributed variable
 
 $$ \frac{Z}{\sqrt{W/m}} \sim t_m$$ 
 
@@ -1178,7 +1180,7 @@ if (my_output=="html") {
 
 #### 6. Regression on a Dummy I {-}
 
-Chapter 5.3 discusses regression when $X$ is a dummy variables where we have used a <tt>for()</tt> loop to generate a binary variable indicating whether a schooling district in the <tt>CASchools</tt> data set has a student-teacher ratio below $20$. Though it is instructive to use a loop for this, there are ways to achieve the same with less code.
+Chapter \\@ref(rwxiabv) discusses regression when $X$ is a dummy variables where we have used a <tt>for()</tt> loop to generate a binary variable indicating whether a schooling district in the <tt>CASchools</tt> data set has a student-teacher ratio below $20$. Though it is instructive to use a loop for this, there are ways to achieve the same with less code.
 
 A <tt>data.frame</tt> <tt>DF</tt> with $100$ observations of a variable <tt>X</tt> is available in your working environment.
 
@@ -1417,7 +1419,7 @@ The model object <tt>dummy_mod</tt> is available in your working environment.
 
 **Instructions:**
 
-+ Test the hypothesis that the coefficient on $female_i$ is zero. This would imply that there is no gender wage gap. Use the heteroskedasticity-robust estimator proposed by White (1980).
++ Test the hypothesis that the coefficient on $female_i$ is zero. This would imply that there is no gender wage gap. Use the heteroskedasticity-robust estimator proposed by @white1980.
 
 **Hint:**
 

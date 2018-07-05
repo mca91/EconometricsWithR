@@ -1,4 +1,4 @@
-# Introduction to Time Series Regression and Forecasting
+# Introduction to Time Series Regression and Forecasting {#ittsraf}
 
 ```{r, warnings = FALSE, message=FALSE, echo=FALSE}
 library(dynlm)
@@ -10,9 +10,9 @@ library(readxl)
 ```{r, child="_setup.Rmd"}
 ```
 
-Time series data is data that is collected for a single entitity over time. This is fundamentally different from cross-section data which is data on multiple entities at the same point in time. Time series data allows estimation of the effect on $Y$ of a change in $X$ *over time*. This is what econometricians call a *dynamic causal effect*. Let us go back to the application to cigarette consumption of Chapter 12 where we were interested in estimating the effect on cigarette demand of a price increase caused by a raise of the general sales tax. One might use time series data to assess the causal effect of a tax increase on smoking both initially and in subsequent periods.
+Time series data is data that is collected for a single entity over time. This is fundamentally different from cross-section data which is data on multiple entities at the same point in time. Time series data allows estimation of the effect on $Y$ of a change in $X$ *over time*. This is what econometricians call a *dynamic causal effect*. Let us go back to the application to cigarette consumption of Chapter \@ref(ivr) where we were interested in estimating the effect on cigarette demand of a price increase caused by a raise of the general sales tax. One might use time series data to assess the causal effect of a tax increase on smoking both initially and in subsequent periods.
 
-Another application of time series data is forecasting. For example, weather services use time series models to predict tomorrow's average temperatur using todays average termperature and average termperatures of the past. To motivate an economic example, central banks are interested in forecasting next month's unemployment rates.
+Another application of time series data is forecasting. For example, weather services use time series data to predict tomorrow's average temperature by inter alia using today's average temperature and average temperatures of the past. To motivate an economic example, central banks are interested in forecasting next month's unemployment rates.
 
 The remainder of the book deals with the econometric techniques for the analysis of time series data and application of the latter to problems of forecasting and estimation of dynamic causal effects. This section covers the basic concepts presented in Chapter 14 of the book, explains how to visualize time series data and demonstrates how to estimate simple autoregressive models, where the regressors are past values of the dependent variable or other variables. In this context we will also discuss the concept of stationarity, an important property which has far-reaching consequences since it determines whether the past of a series has any power in explaining the series' future. 
 
@@ -30,7 +30,7 @@ The following packages and their dependencies are needed for reproduction of the
 
 ## Using Regression Models for Forecasting
 
-What is the difference between estimating models for assessment of causal effects and forecasting? Consider again the simple example of estimating the casual effect of the student-teacher ratio on test scores introduced in Chapter 4.
+What is the difference between estimating models for assessment of causal effects and forecasting? Consider again the simple example of estimating the casual effect of the student-teacher ratio on test scores introduced in Chapter \@ref(lrwor).
 
 ```{r, warning = FALSE, message=FALSE}
 library(AER)
@@ -42,7 +42,7 @@ mod <- lm(score ~ STR, data = CASchools)
 mod
 ```
 
-As has been stressed in Chapter 6, the estimate of the coefficient on the student-teacher ratio does not have causal interpretation due to omitted variable bias. However, in terms deciding which school to send her child to, it might nevertheless be appealig for a parent to use `mod` for forecasting test scores in schooling districts where no public data about on scores are available.
+As has been stressed in Chapter \@ref(rmwmr), the estimate of the coefficient on the student-teacher ratio does not have causal interpretation due to omitted variable bias. However, in terms deciding which school to send her child to, it might nevertheless be appealing for a parent to use `mod` for forecasting test scores in schooling districts where no public data about on scores are available.
 
 As an example, assume that the average class in a district has $25$ students. There is no such thing as a perfect forecast but the following one-liner might be helpful for the parent to decide.
 
@@ -52,7 +52,7 @@ predict(mod, newdata = data.frame("STR" = 25))
 
 In a time series context, the parent could use data on present and past years test scores to forecast next years test scores --- a typical application for an autoregressive model.
 
-## Time Series Data and Serial Correlation
+## Time Series Data and Serial Correlation {#tsdasc}
 
 GDP measures the productivity of an economy. It is commonly defined as the value of goods and services produced over a given time period. The data set <tt>us_macro_quarterly.xlsx</tt> is provided by the authors and can be downloaded [here](http://wps.aw.com/aw_stock_ie_3/178/45691/11696965.cw/index.html). It provides quarterly data on U.S. real (i.e. inflation adjusted) GDP from years 1947 to 2004.
 
@@ -80,9 +80,9 @@ colnames(USMacroSWQ) <- c("Date", "GDPC96", "JAPAN_IP", "PCECTPI",
                           "GS10", "GS1", "TB3MS", "UNRATE", "EXUSUK", "CPIAUCSL")
 ```
 
-When dealing with time series data in <tt>R</tt> it is preferable to work with time-series objects that keep track of the frequency of the data and are extensible. In what follows we will use objects of the class <tt>xts</tt>, see `?xts`. Since the data in `USMacroSWQ` are in quarterly frequence we convert the first column to `yearqtr` format before generating the <tt>xts</tt> object `GDP`.
+When dealing with time series data in <tt>R</tt> it is preferable to work with time-series objects that keep track of the frequency of the data and are extensible. In what follows we will use objects of the class <tt>xts</tt>, see `?xts`. Since the data in `USMacroSWQ` are in quarterly frequency we convert the first column to `yearqtr` format before generating the <tt>xts</tt> object `GDP`.
 
-The function `Delt()` from the package `quantmod` computes growth rates. We anualize the quarterly changes to obtain anual growth rates as $$Rate_{annual} = (1+Rate_{quarterly})^4-1.$$
+The function `Delt()` from the package `quantmod` computes growth rates. We annualize the quarterly changes to obtain annual growth rates as $$Rate_{annual} = (1+Rate_{quarterly})^4-1.$$
 
 ```{r}
 # GDP series as xts object
@@ -146,7 +146,7 @@ The definitions made in Key Concept 14.1 are useful because of two properties th
 
 Furthermore, it is common to report rates of growth in macroeconomic series which is why $\log$-differences are often used. 
 
-Table 14.1 of the book presents the quaterly U.S. GDP time series, its logarithm, the anualized growth rate and the first lag of the anualized growth rate series for the period 2012:Q1 - 2013:Q1. The following simple function can be used to compute these quantities for a quaterly time series `series`.
+Table 14.1 of the book presents the quarterly U.S. GDP time series, its logarithm, the annualized growth rate and the first lag of the annualized growth rate series for the period 2012:Q1 - 2013:Q1. The following simple function can be used to compute these quantities for a quarterly time series `series`.
 
 ```{r}
 # compute logarithms, annual growth rates and 1st lag of growth rates
@@ -207,7 +207,7 @@ This is evidence that there is mild positive autocorrelation in the growth of GD
 
 #### Other Examples of Economic Time Series {-}
 
-Figure 14.2 of the book presents four plots. The U.S. unemployment rate, the U.S. Dollar / British Pound exchange rate, The logarithm of the Janapese industrial production index as well as daily changes in the Whilshire 5000 stock price index, a financial time series. The next code chunk reproduces the plots of the three macroenomic series and adds percentage changes in the daily values of the New York Stock Exchange Composite index as a fourth one (the data set `NYSESW` comes with the `AER` package).
+Figure 14.2 of the book presents four plots. The U.S. unemployment rate, the U.S. Dollar / British Pound exchange rate, The logarithm of the Japanese industrial production index as well as daily changes in the Whilshire 5000 stock price index, a financial time series. The next code chunk reproduces the plots of the three macroeconomic series and adds percentage changes in the daily values of the New York Stock Exchange Composite index as a fourth one (the data set `NYSESW` comes with the `AER` package).
 
 ```{r}
 # define series as xts objects
@@ -263,7 +263,7 @@ plot(as.zoo(NYSESW),
 ```
 </div>
 
-Note that the series show quite different characteristics. The unemployment rate increases during recessions and declines in times of economic recoveries and growth. The Dollar/Pund exchange rates shows a deterministic patern until the end of the Bretton Woods system. Japans industrial production exhibits an upward trend and decreasing growth. Daily changes in the New York Stock Exchange composite index seem to be random around the zero line. The sample autocorrelations confirm this conjecture.
+Note that the series show quite different characteristics. The unemployment rate increases during recessions and declines in times of economic recoveries and growth. The Dollar/Pound exchange rates shows a deterministic pattern until the end of the Bretton Woods system. Japans industrial production exhibits an upward trend and decreasing growth. Daily changes in the New York Stock Exchange composite index seem to be random around the zero line. The sample autocorrelations confirm this conjecture.
 ```{r}
 # compute sample autocorrelation for the NYSESW series
 acf(na.omit(NYSESW), plot = F, lag.max = 10)
@@ -281,11 +281,11 @@ Furthermore, note that NYSWSW series shows a pattern which econometricians call 
 
 ## Autoregressions
 
-Growth forecasts are important for many economic entitites. For example, the production setor relies on forecasts of GDP growth published by the central bank when deciding on future budgets and production plans. Autoregressive models are heavily used in economic forecasting. An autoregressive model relates a time series variable to its past values. This chapter discusses the basic ideas of autoregressions models, shows how they are estimated and discusses an application to forecasting of GDP growth using <tt>R</tt>.
+Growth forecasts are important for many economic entities. For example, the production sector relies on forecasts of GDP growth published by the central bank when deciding on future budgets and production plans. Autoregressive models are heavily used in economic forecasting. An autoregressive model relates a time series variable to its past values. This chapter discusses the basic ideas of autoregressions models, shows how they are estimated and discusses an application to forecasting of GDP growth using <tt>R</tt>.
 
 #### The First-Order Autoregressive Model {-}
 
-It is intuitive that the immediate past of a time series should have power to predict its near future. The simplest autoregressive model uses only the most recent outcome of the time series observed to predict future values. Such a model is called a first-order autoregressive model which is often abbriviated AR(1), where the 1 indicates that the order of autoregression is one. 
+It is intuitive that the immediate past of a time series should have power to predict its near future. The simplest autoregressive model uses only the most recent outcome of the time series observed to predict future values. Such a model is called a first-order autoregressive model which is often abbreviated AR(1), where the 1 indicates that the order of autoregression is one. 
 \begin{align*}
   Y_t = \beta_0 + \beta_1 Y_{t-1} + u_t
 \end{align*}
@@ -338,7 +338,7 @@ Notice that we omit the first observation for $GDPGR_{1962 \ Q1}$ from the vecto
 
 #### Forecasts and Forecast Errors {-}
 
-Suppose a random variable $Y_t$ follows an AR(1) model with an intercept and that you have an OLS estimate of the model on the basis of observations for $T$ periods. Then you may use the AR(1) model to obtain $Y_{T+1\vert T}$, a forecast for $Y_{T+1}$ using data up to perdiod $T$ where
+Suppose a random variable $Y_t$ follows an AR(1) model with an intercept and that you have an OLS estimate of the model on the basis of observations for $T$ periods. Then you may use the AR(1) model to obtain $Y_{T+1\vert T}$, a forecast for $Y_{T+1}$ using data up to period $T$ where
 \begin{align*}
   \widehat{Y}_{T+1\vert T} = \widehat{\beta}_0 + \widehat{\beta}_1 Y_T.
 \end{align*}
@@ -445,9 +445,9 @@ This leads to a forecast error of roughly $-1\%$.
 GDPGrowth["2013"][1] - Forecast
 ```
 
-## Can You Beat the Market? (Part I)
+## Can You Beat the Market? (Part I) {#cybtmpi}
 
-The thoery of efficient capital markets states that stock prices embody all currently available information. If this hypothesis holds, it should not be possible to estimate a useful model for forecasting future stock returns using publicly available information on past returns (this is also referred to as the weak-form efficiency hypothesis): if it was possible to forecast the market, traders would be able to make arbitrage, e.g. by relying on an AR($2$) model, they would use information that is not already priced-in which would be not consistent with the theory.
+The theory of efficient capital markets states that stock prices embody all currently available information. If this hypothesis holds, it should not be possible to estimate a useful model for forecasting future stock returns using publicly available information on past returns (this is also referred to as the weak-form efficiency hypothesis): if it was possible to forecast the market, traders would be able to make arbitrage, e.g. by relying on an AR($2$) model, they would use information that is not already priced-in which would be not consistent with the theory.
 
 This idea is presented in the Box *Can You Beat the Market? (Part I)* on p. 582 of the book. This section reproduces the estimation results.
 
@@ -557,7 +557,7 @@ stargazer(SR_AR1, SR_AR2, SR_AR4,
 
 The results presented above are consistent with the hypothesis of efficient financial markets: there are no statistically significant coefficients in any of estimated models and the the hypotheses that the respective set of lags has no power in explaining today's returns cannot be rejected. Notice also that $\overline{R^2}$ is almost zero in all models and even negative for the AR($4$) model. This suggests that none of the models are useful for forecasting stock returns.
 
-## Additional Predictors and The ADL Model
+## Additional Predictors and The ADL Model {#apatadlm}
 
 Instead of only using the dependent variable's lags as predictors, an autoregressive distributed lag (ADL) model also uses lags of other variables for forecasting. The general ADL model is summarized in Key Concept 14.4
 
@@ -575,8 +575,8 @@ is an *autoregressive distributed lag model* with $p$ lags of $Y_t$ and $q$ lags
 
 #### Forecasting GDP Growth Using the Term Spread {-}
 
-Interests on long-term and short term treasury bonds are closly linked to the macroeconomic development. While interest rates on both types of bonds have the same long-run tendencies, they behave quite differently in the short run.
-The difference in interest rates of two bonds with distinct matuarity is called the *term spread*. 
+Interests on long-term and short term treasury bonds are closely linked to the macroeconomic development. While interest rates on both types of bonds have the same long-run tendencies, they behave quite differently in the short run.
+The difference in interest rates of two bonds with distinct maturity is called the *term spread*. 
 
 The following code chunks reproduce Figure 14.3 of the book which displays interest rates of 10-year U.S. Treasury bonds and 3-months U.S. Treasury bills from 1960 to 2012.
 
@@ -696,7 +696,7 @@ ADL22_forecast
 window(GDPGrowth_ts, c(2013, 1), c(2013, 1)) - ADL22_forecast
 ```
 
-The ADL($2$,$2$) forecast of GDP growth in 2013:Q1 is $2.27\%$ which imples a forecast error of $1.14\%$.
+The ADL($2$,$2$) forecast of GDP growth in 2013:Q1 is $2.27\%$ which implies a forecast error of $1.14\%$.
 
 Do the ADL models \@ref(eq:gdpgradl21) and \@ref(eq:gdpgradl22) improve upon the simple AR($2$) model \@ref(eq:GDPGRAR2) in terms of forecasting GPD growth in 2013:Q1? The answer is yes: while $SER$ and $\overline{R}^2$ improve only slightly, an $F$-test on the term spread coefficients in \@ref(eq:gdpgradl22) provides evidence that the model does better in explaining GPD growth than the AR($2$) model as the hypothesis that both coefficients are zero cannot be rejected at the level of $5\%$.
 
@@ -724,7 +724,7 @@ linearHypothesis(GDPGR_ADL22,
 
 #### Stationarity {-}
 
-In general, forecasts an be improved by using mutliple predictors --- just as in cross-sectional regression. For time series regressions to yield reliable models, the assumption of *stationarity* must be fulfilled. Key Concept 14.5 explains what stationarity is. 
+In general, forecasts an be improved by using multiple predictors --- just as in cross-sectional regression. For time series regressions to yield reliable models, the assumption of *stationarity* must be fulfilled. Key Concept 14.5 explains what stationarity is. 
 
 <div class = "keyconcept"> 
 <h3 class = "right"> Key Concept 14.5 </h3>
@@ -773,17 +773,17 @@ For estimation we make the following assumptions:
 
 </div>
 
-Since many economic time series appear to be nonstationary, assumption two of Key Concept 14.6 is a crucial one in applied macroeconomics and finance which is why statistical test for stationarity / nonstationarity have been developed. Chapters 14.6 and 14.7 are devoted to this topic. 
+Since many economic time series appear to be nonstationary, assumption two of Key Concept 14.6 is a crucial one in applied macroeconomics and finance which is why statistical test for stationarity or nonstationarity have been developed. Chapters \@ref(llsuic) and \@ref(nit) are devoted to this topic. 
 
 #### Statistical inference and the Granger causality test {-}
 
-If a $X$ is a useful predictor for $Y$, in a regression of $Y_t$ on lags of its own and lags of $X_t$, not all of the coefficients on the lags on $X_t$ are zero. This concept is called "Granger causality" and is an interesting hypothesis to test. Key Concept 14.7 summarizes the idea.
+If a $X$ is a useful predictor for $Y$, in a regression of $Y_t$ on lags of its own and lags of $X_t$, not all of the coefficients on the lags on $X_t$ are zero. This concept is called *Granger causality* and is an interesting hypothesis to test. Key Concept 14.7 summarizes the idea.
 
 <div class = "keyconcept"> 
 <h3 class = "right"> Key Concept 14.7 </h3>
 <h3 class = "left"> Granger Causality Tests </h3>
 
-The Granger causality test (Granger, 1969) is an $F$-test of the null hypothesis that *all* lags of a variable $X$ included in a time series regression model do not have predictive power for $Y_t$. The Granger causality test does not test whether $X$ actually *causes* $Y$ but whether the included lags are informative in terms of predicting $Y$.
+The Granger causality test [@granger1969] is an $F$-test of the null hypothesis that *all* lags of a variable $X$ included in a time series regression model do not have predictive power for $Y_t$. The Granger causality test does not test whether $X$ actually *causes* $Y$ but whether the included lags are informative in terms of predicting $Y$.
 
 </div>
 
@@ -791,7 +791,7 @@ Notice that we have already performed a Granger causality test on the coefficien
 
 ### Forecast Uncertainty and Forecast Intervals {-}
 
-In general, it is a good practice to report a measure of the uncertainty inherent to the estimation. Uncertainty is particulary of interest when forecasting a time series. For example, consider a simple ADL$(1,1)$ model
+In general, it is a good practice to report a measure of the uncertainty inherent to the estimation. Uncertainty is particularly of interest when forecasting a time series. For example, consider a simple ADL$(1,1)$ model
 \begin{align*}
   Y_t = \beta_0 + \beta_1 Y_{t-1} + \delta_1 X_{t-1} + u_t
 \end{align*}
@@ -812,7 +812,7 @@ A $95\%$ forecast interval is an interval that covers the true value of $Y_{T+1}
 \end{align*}
 Of course the computation gets more complicated when the error term is heteroskedastic or if we are interested in computing a forecast interval for $T+s, s>1$. 
 
-In some applications it is useful to report multiple forecast intervals for each step in range of subsequents periods, see the Box *The River of Blood* on p. 592 of the book. Such forecast ranges can be visualized in a so-called fan chart. We will not replicate the fan chart presented in Figure 14.2 of book because the underlying model is by far more complex than the simple AR and ADL models treated here. Instead, in the example below we use simulated time series data and estimate an ADL($1$,$1$) model which is then used for forecasting the subsequent 25 future outcomes of the series. We choose `level = seq(5,99,10)` in the call of `forecast()` such that forecast intervals with levels $5\%, 15\%, \dots, 95\%$ are computed for each point forecast of the series. 
+In some applications it is useful to report multiple forecast intervals for each step in range of subsequent periods, see the Box *The River of Blood* on p. 592 of the book. Such forecast ranges can be visualized in a so-called fan chart. We will not replicate the fan chart presented in Figure 14.2 of book because the underlying model is by far more complex than the simple AR and ADL models treated here. Instead, in the example below we use simulated time series data and estimate an ADL($1$,$1$) model which is then used for forecasting the subsequent 25 future outcomes of the series. We choose `level = seq(5,99,10)` in the call of `forecast()` such that forecast intervals with levels $5\%, 15\%, \dots, 95\%$ are computed for each point forecast of the series. 
 
 <div class="unfolded">
 ```{r, fig.align='center'}
@@ -841,17 +841,17 @@ plot(fc,
 
 The dashed red line shows point forecasts of the series for the next 25 periods based on an $ADL(1,1)$ model and the shaded areas represent the prediction intervals. The degree of shading indicates the level of the prediction interval. The darkest of the blue bands displays the $5\%$ forecast intervals and the color fades towards grey as the level of the intervals increases.
 
-## Lag Length Selection Using Information Criteria 
+## Lag Length Selection Using Information Criteria {#llsuic}
 
 The selection of lag lengths in AR and ADL models can be partially governed by economic theory. However, there are statistical methods that are helpful to determine how many lags should be included as regressors. In general, to many lags inflate the standard errors of coefficient estimates and thus imply an increase in the forecast error while omitting lags that should be included in the model may result in an estimation bias.
 
-The order of an AR model can be determined using two approaches
+The order of an AR model can be determined using two approaches:
 
-1. ** The $F$-test approach**: 
+1. ** The $F$-test approach**
 
     Estimate an AR($p$) model and test the significance of the largest lag(s). If the test rejects, drop the respective lag(s) from the model. This approach has the tendency to produce models where the order is too large: in a significance test we always face the risk of rejecting a true null hypothesis!
 
-2. **Relying on an information criterion**: 
+2. **Relying on an information criterion**
 
     To circumvent the issue of producing too large models, one may choose the lag order that minimizes one of the following two information criteria:
     
@@ -865,7 +865,7 @@ The order of an AR model can be determined using two approaches
 
     Both criteria are estimators of the optimal lag length $p$. The lag order $\widehat{p}$ that minimizes the respective criterion is called the *BIC estimate* or the *AIC estimate* of the optimal model order. The basic idea of both criteria is that the $SSR$ decreases as additional lags are added to the model such that the first addend decreases wheras the second addend increases as the lag order grows. One can show that the the $BIC$ is a consistent estimator of the true lag order while the AIC is not which is due to the differing factors in the second addend. Nevertheless, both estimators are used in practice where the $AIC$ is sometimes used as an alternative when the $BIC$ yields a model with too few lags.
 
-The function`dynlm()` does not compute informatoin criteria by default. We will therefore write a short function that reports the $BIC$ (along with the chosen lag order $p$ and $R^2$) for objects of class `dynlm`.
+The function`dynlm()` does not compute information criteria by default. We will therefore write a short function that reports the $BIC$ (along with the chosen lag order $p$ and $R^2$) for objects of class `dynlm`.
 
 ```{r}
 # compute BIC for AR model objects of class `dynlm` 
@@ -922,7 +922,7 @@ The $BIC$ may also be used to select lag lengths in time series regression model
 \begin{align*}
     BIC(K) = \log\left(\frac{SSR(K)}{T}\right) + K \frac{\log(T)}{T}.
 \end{align*}
-Notice that choosing the optimal model according to the $BIC$ can be computationally demaning because there may be many different combinations of lag lengths when there are multiple predictors. 
+Notice that choosing the optimal model according to the $BIC$ can be computationally demanding because there may be many different combinations of lag lengths when there are multiple predictors. 
 
 To motivate an example, we estimate ADL($p$,$q$) models of GDP growth where, as above, the additional variable is the term spread between short-term and long-term bonds. We impose the restriction that $p=q_1=\dots=q_k$ so that only $p_{max}$ models ($p=1,\dots,p_{max}$) need to be estimated. In the example below we choose $p_{max} = 12$. 
 
@@ -941,16 +941,16 @@ BICs <- sapply(order,
 BICs
 ```
 
-Notice that from the definition of `BIC()`, for ADL models with $p=q$ it follows that <tt>p</tt> reports the number of estimated coefficients *excluding* the intercept. Thus the lag order is obtained by deviding <tt>p</tt> by 2.
+Notice that from the definition of `BIC()`, for ADL models with $p=q$ it follows that <tt>p</tt> reports the number of estimated coefficients *excluding* the intercept. Thus the lag order is obtained by dividing <tt>p</tt> by 2.
 
 ```{r}
 # select the ADL model with the smallest BIC
 BICs[, which.min(BICs[2, ])]
 ```
 
-The $BIC$ is in favour of the ADL($2$,$2$) model \@ref(eq:gdpgradl22) we have estimated before.
+The $BIC$ is in favor of the ADL($2$,$2$) model \@ref(eq:gdpgradl22) we have estimated before.
 
-## Nonstationarity I: Trends
+## Nonstationarity I: Trends {#nit}
 
 If a series is nonstationary, conventional hypothesis tests, confidence intervals and forecasts can be strongly misleading. The assumption of stationarity is violated if a series exhibits trends or breaks and the resulting complications in an econometric analysis depend on the specific type of the nonstationarity. This section focuses on time series that exhibit trends.
 
@@ -960,7 +960,7 @@ A series is said to exhibit a trend if it fluctuates around a persistent long-te
 
 + A trend is said to be *stochastic* if it is a random function of time.
 
-A careful look at the figures we have produced in Chapter 14.2 reveals that many economic time series show a trending behaviour that is probably best modeled by stochastic trends. This is why the book focuses on the treatment of stochastic trends.
+A careful look at the figures we have produced in Chapter \@ref(tsdasc) reveals that many economic time series show a trending behavior that is probably best modeled by stochastic trends. This is why the book focuses on the treatment of stochastic trends.
 
 #### The Random Walk Model of a Trend {-}
 
@@ -973,7 +973,7 @@ where the $u_t$ are i.i.d. errors with $E(u_t\vert Y_{t-1}, Y_{t-2}, \dots) = 0$
   E(Y_t\vert Y_{t-1}, Y_{t-2}\dots) =& \, E(Y_{t-1}\vert Y_{t-1}, Y_{t-2}\dots) + E(u_t\vert Y_{t-1}, Y_{t-2}\dots) \\
   =& \, Y_{t-1}
 \end{align*}
-so the best forecast for $Y_t$, todays value of $Y$, is $Y_{t-1}$, the observation made yesterday so the difference between $Y_t$ and $Y_{t-1}$ is unpredictable. One can shows that the path followed by $Y_t$ consists of random steps $u_t$, hence it is called a random walk.
+so the best forecast for $Y_t$, today's value of $Y$, is $Y_{t-1}$, the observation made yesterday so the difference between $Y_t$ and $Y_{t-1}$ is unpredictable. One can shows that the path followed by $Y_t$ consists of random steps $u_t$, hence it is called a random walk.
 
 Assume that $Y_0$, the starting value of the random walk is $0$. Another way to write out \@ref(eq:randomwalk) is
 \begin{align*}
@@ -993,7 +993,7 @@ Thus the variance of a random walk depends on $t$ which violates the assumption 
 Obviously, \@ref(eq:randomwalk) is a special case of an AR($1$) model where $\beta_1 = 1$. One can show that a time series that follows an AR($1$) model is stationary if $\lvert\beta_1\rvert < 1$. In a general AR($p$) model, stationarity is linked to the roots of the polynomial $$1-\beta_1 z - \beta_2 z^2 - \beta_3 z^3 - \dots - \beta_p z^p.$$ If all roots are greater than $1$ in absolute value, the AR($p$) series is stationary. If at least one root equals $1$, the AR($p$) is said to have a *unit root* and thus has a stochastic trend.
 
 It is straightforward to simulate random walks in <tt>R</tt> using `arima.sim()`. 
-The function `matplot()` is covenient for simple plots of the columns of a matrix.
+The function `matplot()` is convenient for simple plots of the columns of a matrix.
 
 <div class="unfolded">
 ```{r, fig.align='center'}
@@ -1023,16 +1023,16 @@ Adding a constant to \@ref(eq:randomwalk) yields
 \begin{align}
   Y_t = \beta_0 + Y_{t-1} + u_t (\#eq:randomwalkdrift),
 \end{align}
-a *random walk model with a drift* which allows to model the tendency of a series to move in one direction or the other. If $\beta_0$ is positive, the series drifts upwards and it follows a downward trend if $\beta_0$ is negative.
+a *random walk model with a drift* which allows to model the tendency of a series to move upwards or downwards. If $\beta_0$ is positive, the series drifts upwards and it follows a downward trend if $\beta_0$ is negative.
 
 <div class="unfolded">
 ```{r, fig.align='center'}
-# simulate and plot random walks with drift starting at 0 
+# simulate and plot random walks with drift
 set.seed(1)
 
 RWsd <- ts(
   replicate(n = 4, 
-            arima.sim(model = list(order = c(0, 1, 0)), n = 100)
+            arima.sim(model = list(order = c(0, 1, 0)), n = 100, mean = 0.15)
             )
   )
 
@@ -1046,17 +1046,17 @@ matplot(RWsd,
         ylab = "Value"
         )
 ```
-<7div>
+</div>
 
 #### Problems Caused by Stochastic Trends {-}
 
-OLS estimation of the coefficients on regressors that have a stochastic trend is problematic because the distribution of the estimator and its $t$-statistic is nonnormal, even asymptotically. This has various consequences:
+OLS estimation of the coefficients on regressors that have a stochastic trend is problematic because the distribution of the estimator and its $t$-statistic is non-normal, even asymptotically. This has various consequences:
 
 + Downward bias of autoregressive coefficients:
   
     If $Y_t$ is a random walk, the coefficient $\beta_1$ can be consistently estimated by OLS but the estimator is biased toward zero. This bias is roughly $E(\widehat{\beta}_1) = 1 - 5.3/T$ which is substantial for sample sizes typically encountered in macroeconomics. This estimation bias causes forecasts of $Y_t$ to perform worse than a pure random walk model.
   
-+ Nonnormally distributed $t$-statistics:
++ Non-normally distributed $t$-statistics:
 
     The nonnormal distribution of the estimated coefficient of a stochastic regressor translates to a nonnormal distribution of its $t$-statistic so that normal critical values are invalid and therefore usual confidence intervals and hypothesis tests are invalid, too, and the true distribution of the $t$-statistic cannot be readily determined. 
     
@@ -1095,7 +1095,7 @@ summary(
 
 The result is obviously spurious: the coefficient on $Green_{t-1}$ is estimated to be about $1$ and the $p$-value of $1.14 \cdot 10^{-10}$ of the corresponding $t$-test indicates that the coefficient is highly significant while its true value is in fact zero.
 
-As an empirical example, consider the U.S. unemployment rate and the Japanese industrial production. Both series show an upward trending behaviour from the mid-1960s through the early 1980s.
+As an empirical example, consider the U.S. unemployment rate and the Japanese industrial production. Both series show an upward trending behavior from the mid-1960s through the early 1980s.
 
 <div class="unfolded">
 ```{r}
@@ -1109,7 +1109,7 @@ plot(merge(as.zoo(USUnemp), as.zoo(JPIndProd)),
      main = "Spurious Regression: Macroeconomic Time series"
 )
 legend("topleft", 
-       legend = c("USUnemp","JPIndProd"),
+       legend = c("USUnemp", "JPIndProd"),
        col = c("darkred", "steelblue"),
        lwd = c(2, 2)
        )
@@ -1136,17 +1136,17 @@ coeftest(SR_Unemp2, vcov = sandwich)
 
 When estimating the same model, this time with data from 1986 to 2012, we obtain 
 \begin{align}
-  \widehat{U.S. UR}_t = \underset{(5.41)}{41.78} + \underset{(1.17)}{-7.78} \log(JapaneseIP)_t (\#eq:urjpip2)
+  \widehat{U.S. UR}_t = \underset{(5.41)}{41.78} + -\underset{(1.17)}{7.78} \log(JapaneseIP)_t (\#eq:urjpip2)
 \end{align}
-which is suprisingly quite different from \@ref(eq:urjpip1) which indicates a moderate postive relationship, in contrast to the large negative coefficient in \@ref(eq:urjpip2). This phenomenon can be attributed to stochastic trends in the series: since there is no economic reasoning that relates both trends, both regressions are spurious.
+which is surprisingly quite different from \@ref(eq:urjpip1) which indicates a moderate positive relationship, in contrast to the large negative coefficient in \@ref(eq:urjpip2). This phenomenon can be attributed to stochastic trends in the series: since there is no economic reasoning that relates both trends, both regressions are spurious.
 
 #### Testing for a Unit AR Root {-}
 
-A formal test for a stochastic trend has been proposed by Dickey and Fuller (1979) and is therefore termend the *Dickey-Fuller test*. As discussed above, a time series that follows an AR($1$) model with $\beta_1 = 1$ has a stochastic trend. Thus, the testing problem is
+A formal test for a stochastic trend has been proposed by @dickey1979 which thus is termed the *Dickey-Fuller test*. As discussed above, a time series that follows an AR($1$) model with $\beta_1 = 1$ has a stochastic trend. Thus, the testing problem is
 \begin{align*}
   H_0: \beta_1 = 1 \ \ \ \text{vs.} \ \ \ H_1: \beta_1 < 1.
 \end{align*}
-The null hypothesis is that the AR($1$) has a unit root and the alternative hypothesis is that it is stationary. One often rewrites the AR($1$) by substracting $Y_{t-1}$ on both sides:
+The null hypothesis is that the AR($1$) has a unit root and the alternative hypothesis is that it is stationary. One often rewrites the AR($1$) by subtracting $Y_{t-1}$ on both sides:
 \begin{align*}
   Y_t = \beta_0 + \beta_1 Y_{t-1} + u_t \ \ \Leftrightarrow \ \ \Delta Y_t = \beta_0 + \delta_1 Y_{t-1} + u_i
 \end{align*}
@@ -1177,12 +1177,12 @@ where again $H_0: \delta = 0$ is tested against $H_1: \delta < 0$.
 
 The optimal lag length $p$ can be estimated using information criteria. Notice that in the regression \@ref(eq:ADFreg1), $p=0$ (that is no lags of $\Delta Y_t$ are used as regressors) corresponds to a simple AR($1$).
 
-Under the null hypothesis, the $t$-statistic corresponding to $H_0: \delta = 0$ does not have a normal distribution. The cricital values can only be obtained from simulation and differ for regressions \@ref(eq:ADFreg1) and \@ref(eq:ADFreg2) since the distribution of the ADF test statistic is sensitive to the deterministic components included in the regression.
+Under the null hypothesis, the $t$-statistic corresponding to $H_0: \delta = 0$ does not have a normal distribution. The critical values can only be obtained from simulation and differ for regressions \@ref(eq:ADFreg1) and \@ref(eq:ADFreg2) since the distribution of the ADF test statistic is sensitive to the deterministic components included in the regression.
 </div>
 
 #### Critical Values for the ADF Statistic {-}
 
-Key Concept 14.8 states that the critical values for the ADF test in the regressions \@ref(eq:ADFreg1) and \@ref(eq:ADFreg2) can only be determined using simulation. The idea of the simulation study is to simulate a large number of ADF test test statistics and use them to estimate quantiles of their *asymptotic* distribution. This section shows how this is feasible whithin <tt>R</tt>.
+Key Concept 14.8 states that the critical values for the ADF test in the regressions \@ref(eq:ADFreg1) and \@ref(eq:ADFreg2) can only be determined using simulation. The idea of the simulation study is to simulate a large number of ADF test test statistics and use them to estimate quantiles of their *asymptotic* distribution. This section shows how this is feasible within <tt>R</tt>.
 
 First, consider an AR($1$) model with drift. The procedure is as follows:
 
@@ -1211,7 +1211,7 @@ and estimate
 
 Loosely speaking, the precision of the estimated quantiles depends on two factors: $n$, the length of the underlying series and $N$, the number of test statistics used. Since we are interested in estimating quantiles of the *asymptotic* distribution (the Dickey-Fuller distribution) of the ADF test statistic so both using many observations and large number of simulated test statistics will increase the precision of the estimated quantiles. We choose $n=N=1000$ as the computational burden grows quickly with $n$ and $N$.
 
-```{r, cache=TRUE}
+```{r}
 # repititions
 N <- 1000
 
@@ -1224,7 +1224,7 @@ trend <- 1:n
 
 # simulate N random walks with drift 
 RWD <- ts(replicate(n = N, 
-            drift + arima.sim(model = list(order = c(0, 1, 0)),
+            (n-1)*drift + arima.sim(model = list(order = c(0, 1, 0)),
                               n = n - 1)
             )
           )
@@ -1304,7 +1304,7 @@ legend("topleft",
 ```
 </div>
 
-The deviations from the standard normal distribution are significant: both Dickey-Fuller distributions are skewed to the left and have a havier left tail than the standard normal distribution.
+The deviations from the standard normal distribution are significant: both Dickey-Fuller distributions are skewed to the left and have a heavier left tail than the standard normal distribution.
 
 #### Does U.S. GDP Have a Unit Root? {-}
 
@@ -1328,11 +1328,11 @@ The estimation yields
   \Delta\log(GDP_t) =& \, \underset{(0.118)}{0.28} + \underset{(0.0001)}{0.0002} t + -\underset{(0.014)}{0.033} \log(GDP_{t-1}) \\
   & \, + \underset{(0.113)}{0.083} \Delta \log(GDP_{t-1}) + \underset{(0.071)}{0.188} \Delta \log(GDP_{t-2}) + u_t,
 \end{align*}
-so the ADF test statistic is $t=-0.033/0.014 = - 2.35$. The corresponding $5\%$ critical value from table \@ref(tab:DFcrits) is $-3.41$ so we cannot reject the null hypothesis that $\log(GDP)$ has a stochastic trend in favour of the alternative that it is stationary around a deterministic linear time trend.
+so the ADF test statistic is $t=-0.033/0.014 = - 2.35$. The corresponding $5\%$ critical value from table \@ref(tab:DFcrits) is $-3.41$ so we cannot reject the null hypothesis that $\log(GDP)$ has a stochastic trend in favor of the alternative that it is stationary around a deterministic linear time trend.
 
-## Nonstationarity II: Breaks
+## Nonstationarity II: Breaks {#niib}
 
-When there are discrete (at a distinct date) or gradual (over time) changes in the population regression ceofficients, the series is nonstationary. These changes are called *breaks*. There is a variety of reasons why breaks can occur in macroeconomic time series but most often them are related to changes in economic policy or major changes in the structure of the economy. See Chapter 14.7 for a discussion of examples.
+When there are discrete (at a distinct date) or gradual (over time) changes in the population regression coefficients, the series is nonstationary. These changes are called *breaks*. There is a variety of reasons why breaks can occur in macroeconomic time series but most often them are related to changes in economic policy or major changes in the structure of the economy. See Chapter 14.7 of the book for a discussion of examples.
 
 If breaks are not accounted for in the regression model, OLS estimates will reflect the average relationship. Since these estimates might be strongly misleading and result in poor forecast quality, we are interested in testing for breaks. One distinguishes between testing for a break when the date is known and testing for a break with an unknown break date.
 
@@ -1340,9 +1340,9 @@ Let $\tau$ denote a known break date and let $D_t(\tau)$ be a binary variable in
 \begin{align*}
   Y_t =& \beta_0 + \beta_1 Y_{t-1} + \delta_1 X_{t-1} + \gamma_0 D_t(\tau) + \left[ D_t(\tau) Y_{t-1}\right] \\ &+ \, \gamma_2\left[ D_t(\tau) X_{t-1} \right] + u_t,
 \end{align*}
-where we allow for discrete changes in $\beta_0$, $\beta_1$ and $\beta_2$ at the break date $\tau$. The null hypothesis of no break, $$H_0: \gamma_0=\gamma_1=\gamma_2=0,$$ can be tested against the alternative that at least one of the $\gamma$'s is not zero using an $F$-Test. This idea is called a Chow test after Gregory Chow (1960).
+where we allow for discrete changes in $\beta_0$, $\beta_1$ and $\beta_2$ at the break date $\tau$. The null hypothesis of no break, $$H_0: \gamma_0=\gamma_1=\gamma_2=0,$$ can be tested against the alternative that at least one of the $\gamma$'s is not zero using an $F$-Test. This idea is called a Chow test after Gregory @chow1960.
 
-When the break date is unknown the *Quandt likelihood ratio* (QLR) *test* (Quandt, 1960) may be used. It is a modified version of the Chow test which uses the largest of all $F$-statistics obtained when applying the Chow test for all possible break dates in a predetermined range $\left[\tau_0,\tau_1\right]$. The QLR test is summarized in Key Concept 14.9.
+When the break date is unknown the *Quandt likelihood ratio* (QLR) *test* [@quandt1960] may be used. It is a modified version of the Chow test which uses the largest of all $F$-statistics obtained when applying the Chow test for all possible break dates in a predetermined range $\left[\tau_0,\tau_1\right]$. The QLR test is summarized in Key Concept 14.9.
 
 <div class = "keyconcept"> 
 <h3 class = "right"> Key Concept 14.9 </h3>
@@ -1363,9 +1363,9 @@ The most important properties are:
 
 + When there is a single discrete break in the population regression function, the $QLR$ test statistic is $F(\widehat{\tau})$ and $\widehat{\tau}/T$ is a consistent estimator of the true break date.
 
-+ The large-sample distribution of $QLR$ depends on $q$, the number of restrictions beeing tested and both ratios of end points to the sample size, $\tau_0/T, \tau_1/T$. 
++ The large-sample distribution of $QLR$ depends on $q$, the number of restrictions being tested and both ratios of end points to the sample size, $\tau_0/T, \tau_1/T$. 
 
-+ Similar to the ADF test, the large-sample distribution of $QLR$ is nonstandard. Cricital values are presented in Table 14.5 of the book.
++ Similar to the ADF test, the large-sample distribution of $QLR$ is nonstandard. Critical values are presented in Table 14.5 of the book.
 
 </div>
 
@@ -1467,7 +1467,7 @@ Pseudo out-of-sample forecasts are used to simulate the out-of-sample performanc
 <h3 class = "right"> Key Concept 14.10 </h3>
 <h3 class = "left"> Pseudo Out-of-Sample Forecasting </h3>
 
-1. Divide the sample data into $s=T-P$ and $P$ subsequent overservations. The $P$ observations are used as pseudo-out-of-sample observations.
+1. Divide the sample data into $s=T-P$ and $P$ subsequent observations. The $P$ observations are used as pseudo-out-of-sample observations.
 
 2. Estimate the model using the first $s$ observations. 
 
@@ -1475,13 +1475,13 @@ Pseudo out-of-sample forecasts are used to simulate the out-of-sample performanc
 
 4. Compute the pseudo-forecast-error $\overset{\sim}{u}_{s+1} = Y_{s+1} - \overset{\sim}{Y}_{s+1\vert s}$.
 
-5. Repeat stepts 2 trough 4 for all reamaining pseudo-out-of-sample dates.
+5. Repeat steps 2 trough 4 for all remaining pseudo-out-of-sample dates.
 
 </div>
 
 #### Did the Predictive Power of the Term Spread Change During the 2000s? {-}
 
-The insight gained in the previous section gives reason to presume that the pseudo-out-of-sample performance of ADL($2$,$2$) models estimated using data after the break in the early 1980s should not deteriorate: provided that the coefficients of the population regression function are stable after the potential break in 1980:Q4, these models should have good predictive power. We check this by computing pseudo-out-of-sample forecasts for the period 2003:Q1 - 2012:Q4, a range covering 40 periods, where the forecast for 2003:Q1 is done using data from 1981:Q1 - 2002:Q4, the forecast for 2003:Q2 is based on data frome 1981:Q1 - 2003:Q1 and so on.
+The insight gained in the previous section gives reason to presume that the pseudo-out-of-sample performance of ADL($2$,$2$) models estimated using data after the break in the early 1980s should not deteriorate: provided that the coefficients of the population regression function are stable after the potential break in 1980:Q4, these models should have good predictive power. We check this by computing pseudo-out-of-sample forecasts for the period 2003:Q1 - 2012:Q4, a range covering 40 periods, where the forecast for 2003:Q1 is done using data from 1981:Q1 - 2002:Q4, the forecast for 2003:Q2 is based on data from 1981:Q1 - 2003:Q1 and so on.
 
 Similarly as for the $QLR$-test we use a `for()` loop for estimation of all 40 models and gather their $SER$s and the obtained forecasts in a vector which is then used to compute pseudo-out-of-sample forecast errors.
 
@@ -1550,7 +1550,7 @@ polygon(c(time(PSOSSFc), rev(time(PSOSSFc))),
 legend("bottomleft", 
        lty = c(1, 2, 1),
        lwd = c(2, 2, 10),
-       col = c("steelblue","black",alpha("blue", alpha = 0.3)), 
+       col = c("steelblue", "black", alpha("blue", alpha = 0.3)), 
        legend = c("Actual GDP growth rate",
          "Forecasted GDP growth rate",
          "Pseudo forecast Error")
@@ -1581,15 +1581,15 @@ An interesting hypothesis is whether the mean forecast error is zero, that is th
 t.test(POOSFCE)
 ```
 
-The hypothesis cannot be rejected at the $10\%$ significance level. Alltogther the analysis suggests that the ADL($2$,$2$) model coefficients have been stable since the presumed break in the early 1980s.
+The hypothesis cannot be rejected at the $10\%$ significance level. Altogether the analysis suggests that the ADL($2$,$2$) model coefficients have been stable since the presumed break in the early 1980s.
 
 ## Can You Beat the Market? Part II
 
-The dividend yield (the ratio of current dividens to the stock price) can be considered as an indicator of future dividends: if a stock has a high current dividend yield, it can be considered undervalued and it can be presumed that the price of the stock goes up in the future, meaning that future excess returns go up.
+The dividend yield (the ratio of current dividends to the stock price) can be considered as an indicator of future dividends: if a stock has a high current dividend yield, it can be considered undervalued and it can be presumed that the price of the stock goes up in the future, meaning that future excess returns go up.
 
-This presumption can be examined using ADL models of exess returns, where lags of the logarithm of the stock's dividend yield serve as additional regressors. 
+This presumption can be examined using ADL models of excess returns, where lags of the logarithm of the stock's dividend yield serve as additional regressors. 
 
-Unfortunatly, a graphical inspection of the time series of the logarithm of the dividend yield casts doubt on the assumption that the series is stationary which, as has been discussed in Chapter 14.7, is necessary to obtain meaningful results in a regression analysis.
+Unfortunately, a graphical inspection of the time series of the logarithm of the dividend yield casts doubt on the assumption that the series is stationary which, as has been discussed in Chapter \@ref(nit), is necessary to obtain meaningful results in a regression analysis.
 
 <div class="unfolded">
 ```{r, fig.align='center'}
@@ -1615,7 +1615,7 @@ summary(LDivYield)$coef
 
 Since the $t$-value for the coefficient on the lagged logarithm of the dividend yield is $-1.27$, the hypothesis that the true coefficient is zero cannot be rejected, even at the $10\%$ significance level. 
 
-However, it is possible to examine whether the dividend yield has predictive power for excess returns by using its differences in an ADL($1$,$1$) and an ADL($2$,$2$) model (remember that differencing a series with a unit root yields a stationary series) although these model specifications do not correspond to the ecnonomic reasoning mentioned above. Thus we also estimate a ADL($1$,$1$) regression using the level of the logarithm of the dividend yield.
+However, it is possible to examine whether the dividend yield has predictive power for excess returns by using its differences in an ADL($1$,$1$) and an ADL($2$,$2$) model (remember that differencing a series with a unit root yields a stationary series) although these model specifications do not correspond to the economic reasoning mentioned above. Thus we also estimate a ADL($1$,$1$) regression using the level of the logarithm of the dividend yield.
 
 Altogether we estimate three different model specifications:
 
@@ -1694,9 +1694,9 @@ stargazer(CRSP_ADL_1, CRSP_ADL_2, CRSP_ADL_3,
 
 Notice that for models (1) and (2) none of the individual $t$-statistics suggest that the coefficients are different from zero. Also we cannot reject the hypothesis that none of the lags have predictive power for excess returns at any common level of significance (an $F$-test that the lags have predictive power rejects for both models). 
 
-Things are different for model (3). The coefficient on the level of the logarithm of the devidend yield is different from zero at the $5\%$ level and the $F$-test does not reject at this level either. But we should be suspicious: the high degree of persistence in the devidend yield series probably renders this inference useless because $t$- and $F$-statistics may follow distributions that deviate considerably from their theoretical large-sample distributions such that the usual critical values cannot be applied.
+Things are different for model (3). The coefficient on the level of the logarithm of the dividend yield is different from zero at the $5\%$ level and the $F$-test does not reject at this level either. But we should be suspicious: the high degree of persistence in the dividend yield series probably renders this inference useless because $t$- and $F$-statistics may follow distributions that deviate considerably from their theoretical large-sample distributions such that the usual critical values cannot be applied.
 
-If model (3) would be of any use for predicting excess returns, pseudo-out-of-sample forecasts based on (3) should outperform forecasts of an intercept-only model in terms of the sample RMSFE. We can perform this type of comparison using <tt>R</tt> code in the fashion of the applications of Chapter 14.8.
+If model (3) would be of any use for predicting excess returns, pseudo-out-of-sample forecasts based on (3) should outperform forecasts of an intercept-only model in terms of the sample RMSFE. We can perform this type of comparison using <tt>R</tt> code in the fashion of the applications of Chapter \@ref(niib).
 
 ```{r, cache=T}
 # end of sample dates
@@ -1757,11 +1757,11 @@ We have introduced AR and ADL models and applied them in the context of forecast
 
 We have also seen how to write simple <tt>R</tt> code for performing and evaluating forecasts and demonstrated some more sophisticated approaches to conduct pseudo-out-of-sample forecasts for assessment of a model's predictive power for unobserved future outcomes of a series, to check model stability and to compare different models.
 
-Furthermore, some more technical aspects like the concept of stationarity were adressed. This included applications to testing for an autoregressive unit root with the Dickey-Fuller test and the detection of a break in the population regression function using the $QLR$ statistic. For both methods, the distribution of the relevant test statistic is nonnormal, even in large samples. Concerning the Dickey-Fuller test we have used <tt>R</tt>'s random number generation facilities to produce evidence for this by means of a Monte-Carlo simulation and motivated usage of the quantiles tabulated in the book.
+Furthermore, some more technical aspects like the concept of stationarity were addressed. This included applications to testing for an autoregressive unit root with the Dickey-Fuller test and the detection of a break in the population regression function using the $QLR$ statistic. For both methods, the distribution of the relevant test statistic is non-normal, even in large samples. Concerning the Dickey-Fuller test we have used <tt>R</tt>'s random number generation facilities to produce evidence for this by means of a Monte-Carlo simulation and motivated usage of the quantiles tabulated in the book.
 
 Also, empirical studies regarding the validity of the weak and the strong form efficiency hypothesis which are presented in the applications *Can You Beat the Market? Part I & II* in the book have been reproduced using <tt>R</tt>.
 
-In all applications presented in this chapter, the focus was layed on forecasting future outcomes rather than estimation of causal relationships between time series variables. However, the framework of methods needed for the latter is very similar. Chapter 15 is devoted to estimation of so called *dynamic causal effects*.
+In all applications presented in this chapter, the focus was layed on forecasting future outcomes rather than estimation of causal relationships between time series variables. However, the framework of methods needed for the latter is very similar. Chapter \@ref(eodce) is devoted to estimation of so called *dynamic causal effects*.
 
 
 

@@ -1,15 +1,15 @@
-# Experiments and Quasi-Experiments
+# Experiments and Quasi-Experiments {#eaqe}
 
 ```{r, child="_setup.Rmd"}
 ```
 
 This chapter discusses statistical tools that are commonly applied in program evaluation, which is a field of study where researchers are interested in measuring the causal effects of programs, policies or other interventions. An optimal research design for this purpose is what statisticians call an ideal randomized controlled experiment. The basic idea is to randomly assign subjects in two different groups, one that receives the treatment (the treatment group) and one that does not (the control group) and to compare outcomes for both groups in order to get an estimate of the average treatment effect. 
 
-Note that *experimental* data is fundamentally different from *observational* data. For example, one might be interested in measuring how much the performance of students in a standardized test differs between two classes where one of which has a student-teacher ratio which is considered regular and the other one has fewer students, using a randomized controlled experiment. The data produced by such an experiment would be different from e.g. the observed cross-section data on the students' performance used throughout Chapters 4 to 8 where class sizes are not randomly assigned to students but instead are the results of an economic decision where educational objectives and budgetary aspects were balanced.
+Note that *experimental* data is fundamentally different from *observational* data. For example, one might be interested in measuring how much the performance of students in a standardized test differs between two classes where one of which has a student-teacher ratio which is considered regular and the other one has fewer students, using a randomized controlled experiment. The data produced by such an experiment would be different from e.g. the observed cross-section data on the students' performance used throughout Chapters \@ref(lrwor) to \@ref(nrf) where class sizes are not randomly assigned to students but instead are the results of an economic decision where educational objectives and budgetary aspects were balanced.
 
 For economists, randomized controlled experiments are often difficult or even infeasable to implement. For example, due to ethic, moral and legal reasons it is practically impossible for a business owner to estimate the causal effect on the productivity of workers of setting them under psychological stress using an experiment where workers are randomly assigned either to the treatment group that is pressed under time or to the control group where work is under regular conditions, at best without knowledge of being in an experiment.^[See the box *The Hawthorne Effect* on p. 528 of the book.]
 
-However sometimes it is the case that external circumstances which appear random produce what is called a *quasi-experiment* or *natural experiment*. This "as if" randomness allows for estimation of causal effects that are of interest for economist using tools which are very similar to those valid for ideal randomized controlled experiments. These tools draw heavily on the theory of multiple regression and also on IV regression (see Chapter 12). We will review the core aspects of these methods and demonstrate how to apply them in R using the STAR data set.^[See the [description](https://dataverse.harvard.edu/dataset.xhtml?persistentId=hdl:1902.1/10766) of the data set.]
+However sometimes it is the case that external circumstances which appear random produce what is called a *quasi-experiment* or *natural experiment*. This "as if" randomness allows for estimation of causal effects that are of interest for economist using tools which are very similar to those valid for ideal randomized controlled experiments. These tools draw heavily on the theory of multiple regression and also on IV regression (see Chapter \@ref(ivr)). We will review the core aspects of these methods and demonstrate how to apply them in R using the STAR data set.^[See the [description](https://dataverse.harvard.edu/dataset.xhtml?persistentId=hdl:1902.1/10766) of the data set.]
 
 The following packages and their dependencies are needed for reproduction of the code chunks presented throughout this chapter:
 
@@ -24,7 +24,7 @@ The following packages and their dependencies are needed for reproduction of the
 
 ## Potential Outcomes, Causal Effects and Idealized Experiments
 
-In the following we will briefly recap the idea of the average causal effect and how it can be estimated using the *differences estimator*. We advise you to read through Chapter 13.1 of the book for a better understanding.
+In the following we will briefly recap the idea of the average causal effect and how it can be estimated using the *differences estimator*. We advise you to work through Chapter 13.1 of the book for a better understanding.
 
 #### Potential Outcomes and the average causal Effect {-}
 
@@ -396,7 +396,7 @@ While the results in column (1) of table Table 13.3 are just a repetition of the
 
 Because teachers where randomly assigned to classes, inclusion of school fixed effect allows us to estimate the causal effect of a teacher's experience on test scores of students in kindergarten. For regression (3) we find that the average effect of 10 years experience on test scores is predicted to be $10*0.74=7.4$ points. It is important to be aware of the fact that the other estimates on student characteristics used in regression (4) *do not* have causal interpretation due to nonrandom assignment.^[See Chapter 13.3 of the book for a detailed discussion.]
 
-To answer the question whether the estimated effects presented in Table 13.2 are large or small in a practical sense, we translate the predicted changes in test scores to units of standard deviation in order to allow for a comparison (see Section 9.4 for a similar argument).
+To answer the question whether the estimated effects presented in Table 13.2 are large or small in a practical sense, we translate the predicted changes in test scores to units of standard deviation in order to allow for a comparison (see Section \@ref(etsacs) for a similar argument).
 
 ```{r}
 # compute sample standard deviations of test scores
@@ -481,11 +481,11 @@ stargazer(df,
 
 On the one hand, we find that the estimated effect of a small classes is largest for grade 1. As pointed out in the book, this is probably because students in the control group for grade 1 did poorly on the test for some unknown reason or simply due to random variation. On the other hand, the difference between the estimated effect of being in a small class and being in a regular classes with an aide is roughly 0.2 standard deviations for all grades. This leads to the conclusion that the effect of being in a regular sized class with an aide is zero and the effect of being in a small class is roughly the same for all grades.
 
-The remainder of Chapter 13.3 in the book discusses to what extent these experimental estimates are comparable with observational estimates obtained using data on school districts in California and Massachusetts in Chapter 9. It turns out that the estimates are indeed very similar. Please refer to the aforementioned section in the book a more lengthy discussion.
+The remainder of Chapter 13.3 in the book discusses to what extent these experimental estimates are comparable with observational estimates obtained using data on school districts in California and Massachusetts in Chapter \@ref(asbomr). It turns out that the estimates are indeed very similar. Please refer to the aforementioned section in the book for a more lengthy discussion.
 
 ## Quasi Experiments
 
-In quasi-experiments, "as if" randomness is exploited to use methods similar to those that have been discussed in the previous Chapter. There are two types of quasi-experiments:^[See chapter 13.4 of the book for some example studies that are based on quasi-experiments.]
+In quasi-experiments, "as if" randomness is exploited to use methods similar to those that have been discussed in the previous chapter. There are two types of quasi-experiments:^[See Chapter 13.4 of the book for some example studies that are based on quasi-experiments.]
 
 1. Random variations in individual circumstances allow to view the treatment "as if" it was randomly determined.
 
@@ -499,9 +499,9 @@ We will briefly review these techniques and, since the book does not provide any
 
 ### The Differences-in-Differences Estimator {-} 
 
-In quasi-experiments it is often the case that the source of "as if" randomness in treatment assignment cannot entirely prevent systematic differences between control and treatment group. This problem was encountered by Card and Krüger (1994) who used geography as the "as if" random treatment assignment to study the effect on employment of workers in the fast-food restaurants caused by an increase in the state minimum wage in New Jersey in the year of 1992. Their idea was to use the fact that the increase in minimum wage applied to employees in New Jersey (treatment group) but not to those living in the neighboring Pennsylvania (control group). 
+In quasi-experiments it is often the case that the source of "as if" randomness in treatment assignment cannot entirely prevent systematic differences between control and treatment group. This problem was encountered by @card1994 who use geography as the "as if" random treatment assignment to study the effect on employment of workers in the fast-food restaurants caused by an increase in the state minimum wage in New Jersey in the year of 1992. Their idea was to use the fact that the increase in minimum wage applied to employees in New Jersey (treatment group) but not to those living in the neighboring Pennsylvania (control group). 
 
-It is quite conceivable that such a wage hike is not correlated with other determinants of employment. However, there still might be some state-specific differences and thus differences between control and treatment group. This would render the *differences estimator* biased and inconsistent. Card and Krüger (1994) solved this by using a DID estimator: they collected data in February 1992 (before the treatment) and November 1992 (after the treatment) for the same restaurants and estimated the effect of the wage hike by analyzing differences in the differences in employment for New Jersey and Pennsylvania before and after the increase.^[See also the box *What is the Effect on Employment of the Minimum Wage?* in Chapter 13.4 of the book.] The DID estimator is
+It is quite conceivable that such a wage hike is not correlated with other determinants of employment. However, there still might be some state-specific differences and thus differences between control and treatment group. This would render the *differences estimator* biased and inconsistent. @card1994 solved this by using a DID estimator: they collected data in February 1992 (before the treatment) and November 1992 (after the treatment) for the same restaurants and estimated the effect of the wage hike by analyzing differences in the differences in employment for New Jersey and Pennsylvania before and after the increase.^[See also the box *What is the Effect on Employment of the Minimum Wage?* in Chapter 13.4 of the book.] The DID estimator is
 
 \begin{align}
   \widehat{\beta}_1^{\text{diffs-in-diffs}} =& \, (\overline{Y}^{\text{treatment,after}} - \overline{Y}^{\text{treatment,before}}) - (\overline{Y}^{\text{control,after}} - \overline{Y}^{\text{control,before}}) \\
@@ -661,7 +661,7 @@ We find that the estimates coincide. Furthermore, one can show that the DID esti
 \end{align}
 where $D_i$ is the binary treatment indicator, $Period_i$ is a binary indicator for the after-treatment period and the $Period_i \times D_i$ is the interaction of both.
 
-As for \@ref(eq:did), estimation of \@ref(eq:DIDint) using `r ttcode("R")` is straightforward. See Chapter 8 for a discussion of interaction terms in regression models.
+As for \@ref(eq:did), estimation of \@ref(eq:DIDint) using `r ttcode("R")` is straightforward. See Chapter \@ref(nrf) for a discussion of interaction terms in regression models.
 
 ```{r}
 # prepare Data for DID regression using interaction term 
@@ -851,11 +851,6 @@ Hereinafter the book continues with a discussion of potential problems with quas
 
 In this chapter we have introduced the concept of causal effect in randomized controlled experiments and quasi-experiments where variations in circumstances or accidents of nature are treated as sources of "as if" random assignment to treatment. We have also discussed methods that allow for unbiased and consistent estimation of these effects in both settings. This included the *differences estimator*, the *differences-in-differences estimator* as well as *sharp* and *fuzzy regression discontinuity design* estimators. It was shown how to apply these estimation techniques in `r ttcode("R")`.
 
-In an empirical application we have shown how to replicate the results of the analysis of the STAR data presented in Chapter 13.3 of the book using `r ttcode("R")`. This study uses a randomized controlled experiment to assess whether smaller classes improve students' performance on standardized tests. We have stressed that, being related to a randomized controlled experiment, the data produced by this study are fundamentally different to those used in the cross-section studies Chapters 4 to 8 and therefore we have motivated usage of a *differences estimator*.
+In an empirical application we have shown how to replicate the results of the analysis of the STAR data presented in Chapter 13.3 of the book using `r ttcode("R")`. This study uses a randomized controlled experiment to assess whether smaller classes improve students' performance on standardized tests. We have stressed that, being related to a randomized controlled experiment, the data produced by this study are fundamentally different to those used in the cross-section studies Chapters \@ref(lrwor) to \@ref(nrf) and therefore we have motivated usage of a *differences estimator*.
 
-Chapter 13.4 demonstrated how estimates of treatment effects can be obtained when the design of the study is a quasi-experiment that allows for *differences-in-differences* or *regression discontinuity design* estimators. In particular, we have introduced core functions of the package `r ttcode("rddtools")` that are convenient for estimation as well as graphical analysis of the research design before and after estimating a discontinuity design. 
-
-
-
-
-
+Chapter \@ref(attdfc) demonstrated how estimates of treatment effects can be obtained when the design of the study is a quasi-experiment that allows for *differences-in-differences* or *regression discontinuity design* estimators. In particular, we have introduced core functions of the package `r ttcode("rddtools")` that are convenient for estimation as well as graphical analysis of the research design before and after estimating a regression discontinuity design. 

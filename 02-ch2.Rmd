@@ -1,11 +1,11 @@
-# Probability Theory
+# Probability Theory {#pt}
 
 This chapter reviews some basic concepts of probability theory and demonstrates how they can be
 applied in `r ttcode("R")`.
 
-Most of the statistical functionalities in `r ttcode("R")`'s standard version are collected in the `r ttcode("stats")` package. It provides simple functions which compute descriptive measures and facilitate calculus involving a variety of probability distributions. However, it also holds more sophisticated routines that e.g. enable the user to estimate a large number of models based on the same data or help to conduct extensive simulation studies. `r ttcode("stats")` is part of the base distribution of `r ttcode("R")`, meaning that it is installed by default so there is no need to run `install.packages("stats")` or `library("stats")`. Simply execute `library(help = "stats")` in the console to view the documentation and a complete list of all functions gathered in `r ttcode("stats")`.
+Most of the statistical functionalities in `r ttcode("R")`'s standard version are collected in the `r ttcode("stats")` package. It provides simple functions which compute descriptive measures and facilitate calculus involving a variety of probability distributions. However, it also holds more sophisticated routines that e.g. enable the user to estimate a large number of models based on the same data or help to conduct extensive simulation studies. `r ttcode("stats")` is part of the base distribution of `r ttcode("R")`, meaning that it is installed by default so there is no need to run `install.packages("stats")` or `library("stats")`. Simply execute `library(help = "stats")` in the console to view the documentation and a complete list of all functions gathered in `r ttcode("stats")`. For most packages a documentation that can be viewed within *RStudio* is available. Documentations can be invoked using the `r ttcode("?")` operator, e.g. upon execution of `?stats` the documentation of the `r ttcode("stats")` package is shown in the help tab of the bottom-right pane
 
-In what follows, we lay our focus on (some of) the probability distributions that are handled by `r ttcode("R")` and show how to use the relevant functions to solve simple problems. Thereby we will repeat some core concepts of probability theory. Among other things, you will learn how to draw random numbers, how to compute densities, probabilities, quantiles and alike. As we shall see, it is very convenient to rely on these routines, especially when writing your own functions.
+In what follows, we lay our focus on (some of) the probability distributions that are handled by `r ttcode("R")` and show how to use the relevant functions to solve simple problems. Thereby we will repeat some core concepts of probability theory. Among other things, you will learn how to draw random numbers, how to compute densities, probabilities, quantiles and alike. As we shall see, it is very convenient to rely on these routines, especially when writing custom functions.
 
 ## Random Variables and Probability Distributions
 
@@ -30,8 +30,7 @@ Here, the sample space is $\{1,2,3,4,5,6\}$ and we can think of many different
 events, e.g. 'the observed outcome lies between $2$ and $5$'.
 
 A basic function to draw random samples from a specified set of elements is the
-the function `sample()`, see `?sample`. We can use it to simulate the random
-outcome of a die roll. Let's role the die!
+the function `r ttcode("sample()")`, see `?sample`. We can use it to simulate the random outcome of a die roll. Let's role the die!
 
 
 ```{r, echo = T, eval = T, message = F, warning = F} 
@@ -42,32 +41,31 @@ The probability distribution of a discrete random variable is the list of all
 possible values of the variable and their probabilities which sum to $1$. The
 cumulative probability distribution function states the probability that the random variable is less than or equal to a particular value.
 
-For the die roll, this is straightforward to set up
+For the die roll, this is straightforward to summarize in a table:
 
 | Outcome                             |  1  |  2  |  3  |  4  |  5  |  6  | 
 |-------------------------------------|-----|-----|-----|-----|-----|-----|
 |Probability distribution             | 1/6 | 1/6 | 1/6 | 1/6 | 1/6 | 1/6 |
 |Cumulative probability distribution  | 1/6 | 2/6 | 3/6 | 4/6 | 5/6 |  1  |
 
-
 We can easily plot both functions using R. Since the probability equals $1/6$
-for each outcome, we set up the vector `probability` by using the `rep()` function
-which replicates a given value a specified number of times.
+for each outcome, we set up the vector `r ttcode("probability")` by using the function `r ttcode("rep()")` which replicates a given value a specified number of times.
 
 <div class="unfolded"> 
 ```{r, echo = T, eval = T, message = F, warning = F, fig.align='center'} 
 # generate the vector of probabilities 
-probability <- rep(1/6,6) 
+probability <- rep(1/6, 6) 
 
 # plot the probabilites 
-plot(probability, xlab = "outcomes", 
+plot(probability, 
+     xlab = "outcomes", 
      main = "Probability Distribution"
      ) 
 ``` 
 </div>
 
 For the cumulative probability distribution we need the cumulative
-probabilities i.e. we need the cumulative sums of the vector `probability`. These sums can be computed using `r ttcode("cumsum()")`.
+probabilities i.e. we need the cumulative sums of the vector `r ttcode("probability")`. These sums can be computed using `r ttcode("cumsum()")`.
 
 <div class="unfolded"> 
 ```{r, echo = T, eval = T, message = F, warning = F, fig.align='center'} 
@@ -89,9 +87,8 @@ only. We might as well simulate coin tossing with outcomes $H$ (heads) and $T$
 (tails).
 
 ```{r, echo = T, eval = T, message = F, warning = F} 
-sample(c("H","T"),1) 
+sample(c("H", "T"), 1) 
 ```
-
 
 The result of a single coin toss is a *Bernoulli* distributed random variable i.e. a variable with two possible distinct outcomes.
 
@@ -262,17 +259,27 @@ We find the sample mean to be fairly close to the expected value. This result wi
 
 Other frequently encountered measures are the variance and the standard deviation. Both are measures of the *dispersion* of a random variable.
 
-<div class = "keyconcept"> 
+```{r, eval = my_output == "html", results='asis', echo=FALSE}
+cat('<div class = "keyconcept"> 
 <h3 class = "right"> Key Concept 2.2 </h3> 
 <h3 class= "left"> Variance and Standard Deviation </h3> 
 
 <p> 
-The Variance of the discrete *random variable* $Y$, denoted $\sigma^2_Y$, is
-$$ \sigma^2_Y = \text{Var}(Y) = E\left[(Y-\mu_y)^2\right] = \sum_{i=1}^k (y_i - \mu_y)^2 p_i $$
-The standard deviation of $Y$ is $\sigma_Y$, the square root of the variance. The units of the standard deviation are the same as the units of $Y$.
+The Variance of the discrete random variable $Y$, denoted $\\sigma^2_Y$, is
+$$ \\sigma^2_Y = \\text{Var}(Y) = E\\left[(Y-\\mu_y)^2\\right] = \\sum_{i=1}^k (y_i - \\mu_y)^2 p_i $$
+The standard deviation of $Y$ is $\\sigma_Y$, the square root of the variance. The units of the standard deviation are the same as the units of $Y$.
 </p> 
-</div>
+</div>')
+```
 
+```{r, eval = my_output == "latex", results='asis', echo=FALSE}
+cat('\\begin{keyconcepts}[Variance and Standard Deviation]{2.2}
+The Variance of the discrete *random variable* $Y$, denoted $\\sigma^2_Y$, is
+$$ \\sigma^2_Y = \\text{Var}(Y) = E\\left[(Y-\\mu_y)^2\\right] = \\sum_{i=1}^k (y_i - \\mu_y)^2 p_i $$
+The standard deviation of $Y$ is $\\sigma_Y$, the square root of the variance. The units of the standard deviation are the same as the units of $Y$.
+\\end{keyconcepts}')
+```
+  
 The variance as defined in Key Concept 2.2 *is not* implemented as a function in R. Instead we have the function `r ttcode("var()")` which computes the *sample variance* 
 
 $$ s^2_Y = \frac{1}{n-1} \sum_{i=1}^n (y_i - \overline{y})^2. $$
@@ -578,7 +585,7 @@ Equation \@ref(eq:bivnorm) contains the bivariate normal PDF. Admittedly, it is 
 
 $$ g_{X,Y}(x,y) = f_X(x) f_Y(y) = \frac{1}{2\pi} \cdot \exp \left\{ -\frac{1}{2} \left[x^2 + y^2 \right]  \right\}, \tag{2.2}  $$ 
 
-the PDF of the bivariate standard normal distribution. The next plot provides an interactive three dimensional plot of (<a href="#mjx-eqn-2.2">2.2</a>). By moving the cursor over the plot you can see that the density is rotationally invariant. 
+the PDF of the bivariate standard normal distribution. The next plot provides an interactive three-dimensional plot of (<a href="#mjx-eqn-2.2">2.2</a>). By moving the cursor over the plot you can see that the density is rotationally invariant. 
 
 ```{r, echo=F}
 library("knitr")
