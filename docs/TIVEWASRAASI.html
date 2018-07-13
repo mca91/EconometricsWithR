@@ -25,7 +25,7 @@
 <meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber and Martin Schmelzer">
 
 
-<meta name="date" content="2018-07-05">
+<meta name="date" content="2018-07-13">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -388,13 +388,13 @@ The instrument <span class="math inline">\(Z\)</span> <em>must not be</em> corre
 \widehat{\beta}_1^{TSLS} = \frac{s_{ZY}}{s_{ZX}} = \frac{\frac{1}{n-1}\sum_{i=1}^n(Y_i - \overline{Y})(Z_i - \overline{Z})}{\frac{1}{n-1}\sum_{i=1}^n(X_i - \overline{X})(Z_i - \overline{Z})}, \tag{12.2}
 \end{align}\]</span>
 <p>which is nothing but the ratio of the sample covariance between <span class="math inline">\(Z\)</span> and <span class="math inline">\(Y\)</span> to the sample covariance between <span class="math inline">\(Z\)</span> and <span class="math inline">\(X\)</span>.</p>
-<p>As shown in Appendix 12.3 of the book, <a href="TIVEWASRAASI.html#eq:simpletsls">(12.2)</a> is a consistent estimator for <span class="math inline">\(\beta_1\)</span> in <a href="TIVEWASRAASI.html#eq:srm12">(12.1)</a> under the assumption that <span class="math inline">\(Z\)</span> is a valid instrument. Furthermore, as for every other OLS estimator that we have considered so far, the CLT implies that <span class="math inline">\(\widehat{\beta}_1^{TSLS}\)</span> can be approximated by a normal distribution if the sample size is large. This allows us to use <span class="math inline">\(t\)</span>-statistics and confidence intervals which are also computed by  functions relevant to us. A more detailed argument on the large-sample distribution of the TSLS estimator is sketched in Appendix 12.3 of the book.</p>
+<p>As shown in Appendix 12.3 of the book, <a href="TIVEWASRAASI.html#eq:simpletsls">(12.2)</a> is a consistent estimator for <span class="math inline">\(\beta_1\)</span> in <a href="TIVEWASRAASI.html#eq:srm12">(12.1)</a> under the assumption that <span class="math inline">\(Z\)</span> is a valid instrument. Just as for every other OLS estimator we have considered so far, the CLT implies that the distribution of <span class="math inline">\(\widehat{\beta}_1^{TSLS}\)</span> can be approximated by a normal distribution if the sample size is large. This allows us to use <span class="math inline">\(t\)</span>-statistics and confidence intervals which are also computed by the  functions relevant to us. A more detailed argument on the large-sample distribution of the TSLS estimator is sketched in Appendix 12.3 of the book.</p>
 </div>
 <div id="application-to-the-demand-for-cigarettes" class="section level4 unnumbered">
 <h4>Application to the Demand For Cigarettes</h4>
 <p>The relation between the demand for and the price of commodities is a simple yet widespread problem in many branches of economics. The field of health economics is inter alia concerned with the study of how health-affecting behavior of individuals is influenced by the health-care system and regulation policy. The probably most prominent example in public policy debates is smoking as it is related to numerous illnesses and negative externalities.</p>
 <p>It is plausible that cigarette consumption can be reduced by taxing cigarettes more heavily. The question is <em>how much</em> taxes must be increased to reach a noticeable reduction in cigarette consumption. Economists use elasticities to answer this kind of question. Since the price elasticity for the demand of cigarettes is unknown, it must be estimated. As discussed in the box <em>Who Invented Instrumental Variables Regression</em> presented in Chapter 12.1 of the book, an OLS regression of log quantity on log price cannot be used to estimate the effect of interest since there is simultaneous causality between demand and supply. Instead, IV regression can be used.</p>
-<p>We use the data set <tt>CigarettesSW</tt> which comes with the package <tt>AER</tt>. It is a panel data set that contains observations on cigarette consumption and several economic indicators for all 48 continental US States from 1985 to 1995. Following the book we consider data for the cross section of states in 1995 only.</p>
+<p>We use the data set <tt>CigarettesSW</tt> which comes with the package <tt>AER</tt>. It is a panel data set that contains observations on cigarette consumption and several economic indicators for all 48 continental federal states of the U.S. from 1985 to 1995. Following the book we consider data for the cross section of states in 1995 only.</p>
 <p>We start by loading the package, attaching the data set and getting an overview.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># load the data set and get an overview</span>
 <span class="kw">library</span>(AER)
@@ -461,7 +461,7 @@ cig_s1 &lt;-<span class="st"> </span><span class="kw">lm</span>(<span class="kw"
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># inspect the R^2 of the first stage regression</span>
 <span class="kw">summary</span>(cig_s1)<span class="op">$</span>r.squared</code></pre></div>
 <pre><code>## [1] 0.4709961</code></pre>
-<p>We continue by saving <span class="math inline">\(\widehat{\log(P_i^{cigarettes})}\)</span>, the fitted values predicted by the first stage regression <tt>cig_s1</tt>,to the variable <tt>lcigp_pred</tt>.</p>
+<p>We continue by saving <span class="math inline">\(\widehat{\log(P_i^{cigarettes})}\)</span>, the fitted values obtained by the first stage regression <tt>cig_s1</tt>, to the variable <tt>lcigp_pred</tt>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># save the predicted values</span>
 lcigp_pred &lt;-<span class="st"> </span>cig_s1<span class="op">$</span>fitted.values</code></pre></div>
 <p>Next, we run the second stage regression which gives us the TSLS estimates we seek.</p>
@@ -476,12 +476,12 @@ cig_s2 &lt;-<span class="st"> </span><span class="kw">lm</span>(<span class="kw"
 ## lcigp_pred  -1.08359    0.35563 -3.0469  0.003822 ** 
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
-<p>Thus estimating the model equation <a href="TIVEWASRAASI.html#eq:cigstsls">(12.3)</a> using TSLS yields</p>
+<p>Thus estimating the model <a href="TIVEWASRAASI.html#eq:cigstsls">(12.3)</a> using TSLS yields</p>
 <span class="math display" id="eq:ecigstsls">\[\begin{align}
   \widehat{\log(Q_i^{cigarettes})} = \underset{(1.70)}{9.72} + \underset{(0.36)}{1.08} \log(P_i^{cigarettes}), \tag{12.4}
 \end{align}\]</span>
 <p>where we write <span class="math inline">\(\log(P_i^{cigarettes})\)</span> instead of <span class="math inline">\(\widehat{\log(P_i^{cigarettes})}\)</span> for convenience.</p>
-<p>The function <tt>ivreg()</tt> from the package <tt>AER</tt> carries out TSLS automatically. It is used similarly as <tt>lm()</tt>. Instruments can be added to the usual specification of the regression formula using a vertical bar (<span class="math inline">\(|\)</span>) separating the model equation from the instruments. Thus, for the regression and hand the correct formula is <tt>log(packs) ~ log(rprice) | salestax</tt>.</p>
+<p>The function <tt>ivreg()</tt> from the package <tt>AER</tt> carries out TSLS procedure automatically. It is used similarly as <tt>lm()</tt>. Instruments can be added to the usual specification of the regression formula using a vertical bar separating the model equation from the instruments. Thus, for the regression at hand the correct formula is <tt>log(packs) ~ log(rprice) | salestax</tt>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># perform TSLS using `ivreg()`</span>
 cig_ivreg &lt;-<span class="st"> </span><span class="kw">ivreg</span>(<span class="kw">log</span>(packs) <span class="op">~</span><span class="st"> </span><span class="kw">log</span>(rprice) <span class="op">|</span><span class="st"> </span>salestax, <span class="dt">data =</span> c1995)
 
@@ -495,10 +495,10 @@ cig_ivreg &lt;-<span class="st"> </span><span class="kw">ivreg</span>(<span clas
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <p>We find that the coefficient estimates coincide for both approaches.</p>
-<p><strong>Two notes on the calculation of TSLS standard errors</strong></p>
+<p><strong>Two Notes on the Computation of TSLS Standard Errors</strong></p>
 <ol style="list-style-type: decimal">
-<li><p>We have demonstrated that running the individual regressions for each stage of TSLS using <tt>lm()</tt> leads to the same coefficient estimates as when using <tt>ivreg()</tt>. However, the standard errors reported for the second-stage regression, e.g. by <tt>coeftest()</tt> or <tt>summary()</tt>, are <em>invalid</em>: both functions <em>do not</em> adjust for using predictions from the first-stage regression as regressors in the second-stage regression! Fortunately, <tt>ivreg()</tt> performs the necessary adjustment automatically. This is another advantage over manual step-by-step estimation which we have done for demonstrating the mechanics behind the procedure.</p></li>
-<li><p>Just as in multiple regression, it is important to compute heteroskedasticity-robust standard errors as we have done above using <tt>vcovHC()</tt>.</p></li>
+<li><p>We have demonstrated that running the individual regressions for each stage of TSLS using <tt>lm()</tt> leads to the same coefficient estimates as when using <tt>ivreg()</tt>. However, the standard errors reported for the second-stage regression, e.g. by <tt>coeftest()</tt> or <tt>summary()</tt>, are <em>invalid</em>: both functions <em>do not</em> adjust for using predictions from the first-stage regression as regressors in the second-stage regression! Fortunately, <tt>ivreg()</tt> performs the necessary adjustment automatically. This is another advantage over manual step-by-step estimation which we have done above for demonstrating the mechanics of the procedure.</p></li>
+<li><p>Just like in multiple regression it is important to compute heteroskedasticity-robust standard errors as we have done above using <tt>vcovHC()</tt>.</p></li>
 </ol>
 <p>The TSLS estimate for <span class="math inline">\(\beta_1\)</span> in <a href="TIVEWASRAASI.html#eq:ecigstsls">(12.4)</a> suggests that an increase in cigarette prices by one percent reduces cigarette consumption by roughly <span class="math inline">\(1.08\)</span> percentage points which is fairly elastic. However, we should keep in mind that this estimate might not be trustworthy although we used IV estimation: there still might be a bias due to omitted variables. Thus a multiple IV regression approach is needed.</p>
 </div>

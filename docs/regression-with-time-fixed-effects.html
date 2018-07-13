@@ -25,7 +25,7 @@
 <meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber and Martin Schmelzer">
 
 
-<meta name="date" content="2018-07-05">
+<meta name="date" content="2018-07-13">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -365,9 +365,9 @@ This book is in <b>Open Review</b>. We want your feedback to make the book bette
 <div id="regression-with-time-fixed-effects" class="section level2">
 <h2><span class="header-section-number">10.4</span> Regression with Time Fixed Effects</h2>
 <p>Controlling for variables that are constant across entities but vary over time can be done by including time fixed effects. If there are <em>only</em> time fixed effects, the fixed effects regression model becomes <span class="math display">\[Y_{it} = \beta_0 + \beta_1 X_{it} + \delta_2 B2_t + \cdots + \delta_T BT_t + u_{it},\]</span> where only <span class="math inline">\(T-1\)</span> dummies are included (<span class="math inline">\(B1\)</span> is omitted) since the model includes an intercept. This model eliminates omitted variables bias caused by excluding unobserved variables that evolve over time but are constant across entities only.</p>
-<p>In some applications it is meaningful to include entity and time fixed effects. The <strong>entity and time fixed effects</strong> regression model is <span class="math display">\[Y_{it} = \beta_0 + \beta_1 X_{it} + \gamma_2 D2_i + \cdots + \gamma_n DT_i + \delta_2 B2_t + \cdots + \delta_T BT_t + u_{it} .\]</span> The combined model allows to eliminate bias from unobservables that change over time but are constant over entities and it controls for factors that differ across entities but are constant over time. Such models can be estimated using the OLS algorithm that is implemented in <tt>R</tt>.</p>
-<p>The following code chunk shows how to estimate the combined entity and time fixed effects model of the relation between fatalities and beer tax, <span class="math display">\[FatalityRate_{it} = \beta_1 BeerTax_{it} + StateEffects + TimeFixedEffects + u_{it}\]</span> using both, <code>lm()</code> and <code>plm()</code>. It is straightforward to estimate this regression with <code>lm()</code> since it is just an extension of <a href="fixed-effects-regression.html#eq:fatsemod">(10.6)</a> so we only have to adjust the <code>formula</code> argument by adding the additional regressor <code>year</code> for time fixed effects. In our call of <code>plm()</code> we set another argument <code>effect = &quot;twoways&quot;</code> for inclusion of entity <em>and</em> time dummies.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Estimate combined time and entity fixed effects regression model</span>
+<p>In some applications it is meaningful to include entity and time fixed effects. The <em>entity and time fixed effects</em> regression model is <span class="math display">\[Y_{it} = \beta_0 + \beta_1 X_{it} + \gamma_2 D2_i + \cdots + \gamma_n DT_i + \delta_2 B2_t + \cdots + \delta_T BT_t + u_{it} .\]</span> The combined model allows to eliminate bias from unobservables that change over time but are constant over entities and it controls for factors that differ across entities but are constant over time. Such models can be estimated using the OLS algorithm that is implemented in <tt>R</tt>.</p>
+<p>The following code chunk shows how to estimate the combined entity and time fixed effects model of the relation between fatalities and beer tax, <span class="math display">\[FatalityRate_{it} = \beta_1 BeerTax_{it} + StateEffects + TimeFixedEffects + u_{it}\]</span> using both, <tt>lm()</tt> and <tt>plm()</tt>. It is straightforward to estimate this regression with <tt>lm()</tt> since it is just an extension of <a href="fixed-effects-regression.html#eq:fatsemod">(10.6)</a> so we only have to adjust the <tt>formula</tt> argument by adding the additional regressor <tt>year</tt> for time fixed effects. In our call of <tt>plm()</tt> we set another argument <tt>effect = “twoways”</tt> for inclusion of entity <em>and</em> time dummies.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Estimate a combined time and entity fixed effects regression model</span>
 
 <span class="co"># via lm()</span>
 fatal_tefe_lm_mod &lt;-<span class="st"> </span><span class="kw">lm</span>(fatal_rate <span class="op">~</span><span class="st"> </span>beertax <span class="op">+</span><span class="st"> </span>state <span class="op">+</span><span class="st"> </span>year <span class="op">-</span><span class="st"> </span><span class="dv">1</span>, <span class="dt">data =</span> Fatalities)
@@ -408,10 +408,10 @@ fatal_tefe_mod &lt;-<span class="st"> </span><span class="kw">plm</span>(fatal_r
 ## beertax -0.63998    0.35015 -1.8277  0.06865 .
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
-<p>Notice that since we exclude the intercept, <code>lm()</code> does estimate coefficients for <span class="math inline">\((n-1) + (T-1) = 47 + 6 = 53\)</span> binary variables! Again, <code>plm()</code> does only report the estimated coefficient on <span class="math inline">\(BeerTax\)</span>.</p>
+<p>Notice that since we exclude the intercept, <tt>lm()</tt> does estimate coefficients for <span class="math inline">\((n-1) + (T-1) = 47 + 6 = 53\)</span> binary variables! Again, <tt>plm()</tt> does only report the estimated coefficient on <span class="math inline">\(BeerTax\)</span>.</p>
 The estimated regression function is
 <span class="math display" id="eq:cbnfemod">\[\begin{align}
-\widehat{FatalityRate} =  \underset{(0.35)}{-0.64} \times BeerTax + StateEffects + TimeFixedEffects. \tag{10.8}
+\widehat{FatalityRate} =  -\underset{(0.35)}{0.64} \times BeerTax + StateEffects + TimeFixedEffects. \tag{10.8}
 \end{align}\]</span>
 <p>The value of <span class="math inline">\(-0.66\)</span>, the result is close to the estimated coefficient for the regression model including only entity fixed effects. Unsurprisingly, the coefficient is less precisely estimated as before but significantly different from zero at the level of <span class="math inline">\(10\%\)</span>.</p>
 <p>In view of <a href="fixed-effects-regression.html#eq:efemod">(10.7)</a> and <a href="regression-with-time-fixed-effects.html#eq:cbnfemod">(10.8)</a> we conclude that the estimated relationship between traffic fatalities and the real beer tax is not affected by omitted variable bias due to factors that are constant over time.</p>

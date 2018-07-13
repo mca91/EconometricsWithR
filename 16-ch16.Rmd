@@ -3,15 +3,15 @@
 ```{r, child="_setup.Rmd"}
 ```
 
-This chapter discusses the following advanced topics in time series regression and demonstrates how core techniques can be applied using <tt>R</tt>:
+This chapter discusses the following advanced topics in time series regression and demonstrates how core techniques can be applied using `r ttcode("R")`:
 
 + *Vector autoregressions* (VARs). We focus on using VARs for forecasting. Another branch of the literature is concerned with so-called *Structural VARs* which are, however, beyond the scope of this chapter.
 + Multiperiod forecasts. This includes a discussion of iterated and direct (multivariate) forecasts.
 + The DF-GLS test, a more powerful method to test for a unit root than the ADF test.
 + Cointegration analysis with an application to short- and long-term interest rates. We demonstrate how to estimate a vector error correction model.
-+ Autoregressive conditional heteroskedasticity (ARCH) models. We show how a simple generalized ARCH (GARCH) model can be used for quantifying the risk associated with investing in the stock market in terms of estimation and forecasting of the volatility of asset returns.
++ Autoregressive conditional heteroskedasticity (ARCH) models. We show how a simple generalized ARCH (GARCH) model can be helpful in quantifying the risk associated with investing in the stock market in terms of estimation and forecasting of the volatility of asset returns.
 
-If you are interested in reproducing the code examples on your own, install the <tt>R</tt> packages listed below and make sure that the subsequent code chunk executes without any errors. 
+If you are interested in reproducing the code examples on your own, install the `r ttcode("R")` packages listed below and make sure that the subsequent code chunk executes without any errors. 
 
 ```{r, warning=FALSE, message=FALSE}
 library(AER)
@@ -41,14 +41,14 @@ The vector autoregression (VAR) model extends the idea of univariate autoregress
 
 The $\alpha$s and $\beta$s can be estimated using OLS on each equation. The assumptions for VARs are the time series assumptions presented in Key Concept 14.6 applied to each of the equations.
 
-It is straightforward to estimate VAR models in <tt>R</tt>. A feasible approach is to simply use <tt>lm()</tt> for estimation of the individual equations. Furthermore, the <tt>R</tt> package <tt>vars</tt> provides standard tools for estimation, diagnostic testing and prediction using this type of models.  
+It is straightforward to estimate VAR models in `r ttcode("R")`. A feasible approach is to simply use `r ttcode("lm()")` for estimation of the individual equations. Furthermore, the `r ttcode("R")` package `r ttcode("vars")` provides standard tools for estimation, diagnostic testing and prediction using this type of models.  
 
 </p>
 </div>
 
 When the assumptions referred to in Key Concept 16.1 hold, the OLS estimators of the VAR coefficients are consistent and jointly normal in large samples so that the usual inferential methods such as confidence intervals and $t$-statistics can be used.
 
-Notice that, due to the structure of VARs, we may jointly test restrictions across multiple equations. For instance, it may be of interest to test whether the coefficients on all regressors of the lag $p$ are zero. This corresponds to testing the null hypothesis that the lag order $p-1$ is correct. Large sample joint normality of the coefficient estimates is a convenient thing because this implies that we may simply use an $F$-test for this testing problem. The explicit formula for such a test statistic is rather complicated but fortunately such computations are easily done using the <tt>R</tt> functions we will work with for the course of this chapter. Another way for determining optimal lag lengths are information criteria like the $BIC$ which we have introduced for univariate time series regressions. Just as in the case of a single equation, for a multiple equation model we choose the specification which has the smallest $BIC(p)$ where 
+Notice that, due to the structure of VARs, we may jointly test restrictions across multiple equations. For instance, it may be of interest to test whether the coefficients on all regressors of the lag $p$ are zero. This corresponds to testing the null hypothesis that the lag order $p-1$ is correct. Large sample joint normality of the coefficient estimates is a convenient thing because this implies that we may simply use an $F$-test for this testing problem. The explicit formula for such a test statistic is rather complicated but fortunately such computations are easily done using the `r ttcode("R")` functions we will work with for the course of this chapter. Another way for determining optimal lag lengths are information criteria like the $BIC$ which we have introduced for univariate time series regressions. Just as in the case of a single equation, for a multiple equation model we choose the specification which has the smallest $BIC(p)$ where 
 \begin{align*}
   BIC(p) =& \, \log\left[\text{det}(\widehat{\Sigma}_u)\right] + k(kp+1), \frac{\log(T)}{T}.
 \end{align*}
@@ -65,7 +65,7 @@ In the following we show how to estimate a VAR model of the GDP growth rate, $GD
  TSpread_t =& \, \beta_{20} + \beta_{21} GDPGR_{t-1} + \beta_{22} GDPGR_{t-2} + \gamma_{21} TSpread_{t-1} + \gamma_{22} TSpread_{t-2} + u_{2t}
 \end{align*}
 
-The data set <tt>us_macro_quarterly.xlsx</tt> is provided at the companion website to Stock and Watson (2014) and can be downloaded [here](http://wps.aw.com/aw_stock_ie_3/178/45691/11696965.cw/index.html). It contains data on  quarterly data on US real (i.e. inflation adjusted) GDP from years 1947 to 2004. We begin by importing the data set and do some formatting (we already worked with this data set in Chapter \@ref(ittsraf) so you may skip these steps if you have already loaded the data in your working environment).
+The data set `r ttcode("us_macro_quarterly.xlsx")` is provided at the companion website to Stock and Watson (2014) and can be downloaded [here](http://wps.aw.com/aw_stock_ie_3/178/45691/11696965.cw/index.html). It contains data on  quarterly data on US real (i.e. inflation adjusted) GDP from years 1947 to 2004. We begin by importing the data set and do some formatting (we already worked with this data set in Chapter \@ref(ittsraf) so you may skip these steps if you have already loaded the data in your working environment).
 
 ```{r, eval=FALSE}
 # load US macroeconomic data
@@ -181,7 +181,7 @@ We end up with the following results:
  TSpread_t =& \, \underset{(0.13)}{0.46} + \underset{(0.03)}{0.01} GDPGR_{t-1} -\underset{(0.03)}{0.06} GDPGR_{t-2} + \underset{(0.09)}{1.06} TSpread_{t-1} -\underset{(0.08)}{0.22} TSpread_{t-2} 
 \end{align*}
 
-The function <tt>VAR()</tt> can be used to obtain the same coefficient estimates as presented above since it applies OLS per equation, too.
+The function `r ttcode("VAR()")` can be used to obtain the same coefficient estimates as presented above since it applies OLS per equation, too.
 
 ```{r}
 # set up data for estimation using `VAR()`
@@ -192,7 +192,7 @@ VAR_est <- VAR(y = VAR_data, p = 2)
 VAR_est
 ```
 
-Notice that <tt>VAR()</tt> returns a list of `lm` objects which can be passed to the usual function, for example <tt>summary()</tt> and so it is straightforward to obtain model statistics for the individual equations.
+Notice that `r ttcode("VAR()")` returns a list of `lm` objects which can be passed to the usual function, for example `r ttcode("summary()")` and so it is straightforward to obtain model statistics for the individual equations.
 
 ```{r}
 # obtain the adj. R^2 from the output of 'VAR()'
@@ -249,7 +249,7 @@ An **interated multiperiod VAR forecast** is done as follows:
 
 </div>
 
-Since in a VAR the variables are modeled using lags of the respective other variables, we need to compute forecasts for *all* variables. It can be cumbersome to do so when the VAR is large but fortunately there are <tt>R</tt> functions that facilitate this. For example, the function <tt>predict()</tt> can be used to obtain iterated multivariate forecasts for VAR models estimated by the function <tt>VAR()</tt>. 
+Since in a VAR the variables are modeled using lags of the respective other variables, we need to compute forecasts for *all* variables. It can be cumbersome to do so when the VAR is large but fortunately there are `r ttcode("R")` functions that facilitate this. For example, the function `r ttcode("predict()")` can be used to obtain iterated multivariate forecasts for VAR models estimated by the function `r ttcode("VAR()")`. 
 
 The following code chunk shows how to compute iterated forecasts for GDP growth and the term spread  up to period 2015:Q1, that is $h=10$, using the model object `VAR_est`.
 
@@ -336,7 +336,7 @@ Some economic time series have smoother trends than variables that can be descri
 
 + When $Y_t$ is stationary, we say it is integrated of order $0$ so $Y_t$ is $I(0)$.
 
-It is fairly easy to obtain differences of time series in <tt>R</tt>. For example, the function <tt>diff()</tt> returns suitably lagged and iterated differences of numeric vectors, matrices and time series objects of the class <tt>ts</tt>.
+It is fairly easy to obtain differences of time series in `r ttcode("R")`. For example, the function `r ttcode("diff()")` returns suitably lagged and iterated differences of numeric vectors, matrices and time series objects of the class `r ttcode("ts")`.
 
 </p>
 </div>
@@ -355,7 +355,7 @@ plot(log(PCECTPI),
      lwd = 2)
 ```
 
-We see that the logarithm of the price level has a smoothly varying trend. This is typical for an $I(2)$ series. If the price level is indeed $I(2)$, the first differences of this series should be $I(1)$. Since we are considering the logarithm of the price level, we obtain growth rates by taking first differences, so the differenced price level series is the series of quarterly inflation rates. This is quickly done in <tt>R</tt> using the function <tt>Delt()</tt> from the package <tt>quantmod</tt>. As explained in Chapter \@ref(tsdasc), multiplying the quarterly inflation rates by $400$ yields the quarterly rate of inflation, measured in percentage points at an annual rate.
+We see that the logarithm of the price level has a smoothly varying trend. This is typical for an $I(2)$ series. If the price level is indeed $I(2)$, the first differences of this series should be $I(1)$. Since we are considering the logarithm of the price level, we obtain growth rates by taking first differences, so the differenced price level series is the series of quarterly inflation rates. This is quickly done in `r ttcode("R")` using the function `r ttcode("Delt()")` from the package `r ttcode("quantmod")`. As explained in Chapter \@ref(tsdasc), multiplying the quarterly inflation rates by $400$ yields the quarterly rate of inflation, measured in percentage points at an annual rate.
 
 ```{r, fig.align='center'}
 # plot United States PCE price inflation
@@ -374,7 +374,7 @@ The DF-GLS test for a unit root has been developed by @elliott1996 and has highe
 
 The idea of the DF-GLS test is to test for an autoregressive unit root in the detrended series, whereby GLS estimates of the deterministic components are used to obtain the detrended version of the original series. See Chapter 16.3 of the book for a more detailed explanation of the approach.
 
-A function that performs the DF-GLS test is implemented in the package <tt>urca</tt> (this package is a dependency of the package <tt>vars</tt> so it should be already loaded if <tt>vars</tt> is attached). The function that computes the test statistic is <tt>ur.ers</tt>.
+A function that performs the DF-GLS test is implemented in the package `r ttcode("urca")` (this package is a dependency of the package `r ttcode("vars")` so it should be already loaded if `r ttcode("vars")` is attached). The function that computes the test statistic is `r ttcode("ur.ers")`.
 
 ```{r}
 # DF-GLS test for unit root in GDP
@@ -395,7 +395,7 @@ Inspecting the summary of the test we find that the test statistic is about -1.2
 <p>
 When $X_t$ and $Y_t$ are $I(1)$ and if there is a $\theta$ such that $Y_t - \theta X_t$ is $I(0)$, we say that $X_t$ and $Y_t$ are cointegrated. Put differently, cointegration of $X_t$ and $Y_t$ means that $X_t$ and $Y_t$ have the same or a common stochastic trend and this trend can be eliminated by taking a specific difference of the series such that the resulting series is stationary.
 
-<tt>R</tt> functions for cointegration analysis are implemented in the package <tt>urca</tt>. 
+`r ttcode("R")` functions for cointegration analysis are implemented in the package `r ttcode("urca")`. 
 
 </p>
 </div>
@@ -462,7 +462,7 @@ Following Key Concept 16.5, it seems natural to construct a test for cointegrati
 
 As has been mentioned above, the theory of the term structure suggests that long-term and short-term interest rates are cointegrated with a cointegration coefficient of $\theta = 1$. In the previous section we have seen that there is visual evidence for this conjecture since the spread of 10-year and 3-month interest rates looks stationary.
 
-We continue by using formal tests (the ADF and the DF-GLS test) to see whether the individual interest rate series are integrated and if their difference is stationary (for now, we assume that $\theta = 1$ is known). Both is conveniently done by using the functions <tt>ur.df()</tt> for computation of the ADF test and <tt>ur.ers</tt> for conducting the DF-GLS test. Following the book we use data from 1962:Q1 to 2012:Q4 and employ models that include a drift term. We set the maximum lag order to $5$ and use the $AIC$ for selection of the optimal lag length. Remember that the Dickey-Fuller critical values from table \@ref(tab:DFcrits) are appropriate for both the ADF and the DF-GLS test.
+We continue by using formal tests (the ADF and the DF-GLS test) to see whether the individual interest rate series are integrated and if their difference is stationary (for now, we assume that $\theta = 1$ is known). Both is conveniently done by using the functions `r ttcode("ur.df()")` for computation of the ADF test and `r ttcode("ur.ers")` for conducting the DF-GLS test. Following the book we use data from 1962:Q1 to 2012:Q4 and employ models that include a drift term. We set the maximum lag order to $5$ and use the $AIC$ for selection of the optimal lag length. Remember that the Dickey-Fuller critical values from table \@ref(tab:DFcrits) are appropriate for both the ADF and the DF-GLS test.
 
 ```{r}
 # test for nonstationarity of 3-month treasury bills using ADF test
@@ -488,7 +488,7 @@ ur.ers(window(TB10YS, c(1962, 1), c(2012, 4)),
        lag.max = 6)
 ```
 
-The corresponding $10\%$ critical value for both tests is $-2.57$ so we cannot reject the null hypotheses of nonstationary for either series, even at the $10\%$ level of significance.^[Note: <tt>ur.df()</tt> reports two test statistics when there is a drift in the ADF regression. The first of which (the one we are interested in here) is the $t$-statistic for the test that the coefficient on the first lag of the series is 0. The second one is the $t$-statistic for the hypothesis test that the drift term equals $0$.] We conclude that it is plausible to model both interest rate series as $I(1)$.
+The corresponding $10\%$ critical value for both tests is $-2.57$ so we cannot reject the null hypotheses of nonstationary for either series, even at the $10\%$ level of significance.^[Note: `r ttcode("ur.df()")` reports two test statistics when there is a drift in the ADF regression. The first of which (the one we are interested in here) is the $t$-statistic for the test that the coefficient on the first lag of the series is 0. The second one is the $t$-statistic for the hypothesis test that the drift term equals $0$.] We conclude that it is plausible to model both interest rate series as $I(1)$.
 
 Next, we apply the ADF and the DF-GLS test to test for nonstationarity of the term spread series, which means we test for non-cointegration of long- and short-term interest rates with cointegration coefficient $\theta = 1$.
 
@@ -576,7 +576,7 @@ Thus the two estimated equations of the VECM are
  \widehat{\Delta TB10YS}_t =& \, \underset{(0.06)}{0.12} -\underset{(0.07)}{0.00} \Delta TB3MS_{t-1} -\underset{(0.04)}{0.07} \Delta TB3MS_{t-2} \\ &+ \underset{(0.10)}{0.23} \Delta TB10YS_{t-1} -\underset{(0.07)}{0.07} \Delta TB10YS_{t-2} -\underset{(0.03)}{0.09} ECT_{t-1}.
 \end{align*}
 
-The output produced by <tt>coeftest()</tt> shows that there is little evidence that lagged values of the differenced interest series are useful for prediction. This finding is more pronounced for the equation of the differenced series of the 3-month treasury bill rate, where the error correction term (the lagged term spread) is not significantly different from zero at any common level of significance. However, for the model equation of the differenced 10-years treasury bonds rate we find that the error correction term is statistically significant at the $1\%$ level with an estimate of $-0.09$. This can be interpreted as follows: although both interest rates are nonstationary, their conintegrating relationship allows to predict the *change* in the 10-years treasury bonds rate using the VECM. In particular, the negative estimate of the coefficient on the error correction term indicates that there will be a negative change in the next period's 10-years treasury bonds rate when the 10-years treasury bonds rate is higher than the 3-month treasury bill rate in the current period.
+The output produced by `r ttcode("coeftest()")` shows that there is little evidence that lagged values of the differenced interest series are useful for prediction. This finding is more pronounced for the equation of the differenced series of the 3-month treasury bill rate, where the error correction term (the lagged term spread) is not significantly different from zero at any common level of significance. However, for the model equation of the differenced 10-years treasury bonds rate we find that the error correction term is statistically significant at the $1\%$ level with an estimate of $-0.09$. This can be interpreted as follows: although both interest rates are nonstationary, their conintegrating relationship allows to predict the *change* in the 10-years treasury bonds rate using the VECM. In particular, the negative estimate of the coefficient on the error correction term indicates that there will be a negative change in the next period's 10-years treasury bonds rate when the 10-years treasury bonds rate is higher than the 3-month treasury bill rate in the current period.
 
 ## Volatility Clustering and Autoregressive Conditional Heteroskedasticity
 
@@ -638,7 +638,7 @@ The GARCH model is an ADL($p$,$q$) model and thus can provide more parsimonious 
 
 ### Application to Stock Price Volatility {-}
 
-Maximum likelihood estimates of ARCH and GARCH models are efficient and have normal distributions in large samples, such that the usual methods for conducting inference about the unknown parameters can be applied. The <tt>R</tt> package <tt>fGARCh</tt> is a collection of functions for analyzing and modelling the heteroskedastic behavior in time series models. In the following application we reproduce the results presented in Chapter 16.5 of the book by means of the function <tt>garchFit()</tt>. This function is somewhat more sophisticated. It allows for different specifications of the optimization procedure, different error distributions and much more (use `?GarchFit` for a detailed description of the arguments). In particular, the reported standard errors reported by <tt>garchFit()</tt> are robust.
+Maximum likelihood estimates of ARCH and GARCH models are efficient and have normal distributions in large samples, such that the usual methods for conducting inference about the unknown parameters can be applied. The `r ttcode("R")` package `r ttcode("fGARCh")` is a collection of functions for analyzing and modelling the heteroskedastic behavior in time series models. In the following application we reproduce the results presented in Chapter 16.5 of the book by means of the function `r ttcode("garchFit()")`. This function is somewhat more sophisticated. It allows for different specifications of the optimization procedure, different error distributions and much more (use `?GarchFit` for a detailed description of the arguments). In particular, the reported standard errors reported by `r ttcode("garchFit()")` are robust.
 
 The GARCH($1$,$1$) model of daily changes in the Wilshire 5000 index we estimate is given by
 \begin{align}
@@ -647,7 +647,7 @@ The GARCH($1$,$1$) model of daily changes in the Wilshire 5000 index we estimate
 \end{align}
 where $R_t$ is the percentage change in period $t$. $\beta_1$, $\alpha_0$, $\alpha_1$ and $\phi_1$ are unknown coefficients and $u_t$ and $\nu_t$ are error terms with conditional mean zero. We do not include any lagged predictors in the equation of $R_t$ because the daily changes in the Wilshire 5000 index reflect daily stock returns which are essentially unpredictable. Note that $u_t$ is assumed to be normally distributed and the variance $\sigma^2_t$ depends on $t$ as it follows the GARCH($1$,$1$) recursion \@ref(eq:w5000g11).
 
-It is straightforward to estimate this model using <tt>garchFit()</tt>.
+It is straightforward to estimate this model using `r ttcode("garchFit()")`.
 
 ```{r}
 # estimate GARCH(1,1) model of daily percentage changes
@@ -661,7 +661,7 @@ We obtain
 \end{align}
 so the coefficients on $u_{t-1}^2$ and $\sigma^2_{t-1}$ are statistically significant at any common level of significance. One can show that the persistence of movements in $\sigma^2_t$ is determined by the sum of both coefficients which is $0.99$ here. This indicates that movements in the conditional variance are highly persistent, implying long-lasting periods of high volatility which is consistent with the visual evidence for volatility clustering presented above.  
 
-The estimated conditional variance $\widehat{\sigma}^2_t$ can be computed by plugging the residuals from \@ref(eq:w5000g11est1) into equation \@ref(eq:w5000g11est2). This is performed automatically by <tt>garchFit()</tt>, so to obtain a vector of the estimated conditional standard deviations all we have to do is to read out the values from `GARCH_Wilshire` by appending `@sigma.t`.  
+The estimated conditional variance $\widehat{\sigma}^2_t$ can be computed by plugging the residuals from \@ref(eq:w5000g11est1) into equation \@ref(eq:w5000g11est2). This is performed automatically by `r ttcode("garchFit()")`, so to obtain a vector of the estimated conditional standard deviations all we have to do is to read out the values from `GARCH_Wilshire` by appending `@sigma.t`.  
 
 Using the vector containing the $\widehat{\sigma}_t$ we plot bands of $\pm$ one conditional standard deviation along with deviations of the series of daily percentage changes in the Wilshire 5000 index from its mean. The following code chunk reproduces Figure 16.4 of the book.
 
@@ -695,10 +695,10 @@ We see that the bands of estimated conditional standard deviation describe the o
 
 ## Summary 
 
-+ We have discussed how vector autoregressions are conveniently estimated and used for forecasting in <tt>R</tt> by means of functions from the <tt>VARS</tt> package. 
++ We have discussed how vector autoregressions are conveniently estimated and used for forecasting in `r ttcode("R")` by means of functions from the `r ttcode("vars")` package. 
 
-+ The package <tt>urca</tt> which is a dependency of <tt>VARS</tt> supplies advanced methods for unit root and cointegration analysis like the DF-GLS and the EG-ADF tests. In an application we have found evidence that 3-months and 10-year interest rates have a common stochastic trend (that is they are cointegrated) and thus can be modeled using a vector error correction model. 
++ The package `r ttcode("urca")` which is a dependency of `r ttcode("vars")` supplies advanced methods for unit root and cointegration analysis like the DF-GLS and the EG-ADF tests. In an application we have found evidence that 3-months and 10-year interest rates have a common stochastic trend (that is they are cointegrated) and thus can be modeled using a vector error correction model. 
 
-+ Furthermore, we have introduced the concept of volatility clustering and demonstrated how the function <tt>garchFit()</tt> from the package <tt>fGarch</tt> can be employed to estimate a GARCH($1$,$1$) model of the conditional heteroskedasticity inherent to returns of the Wilshire 5000 stock index.
++ Furthermore, we have introduced the concept of volatility clustering and demonstrated how the function `r ttcode("garchFit()")` from the package `r ttcode("fGarch")` can be employed to estimate a GARCH($1$,$1$) model of the conditional heteroskedasticity inherent to returns of the Wilshire 5000 stock index.
 
 

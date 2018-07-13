@@ -25,7 +25,7 @@
 <meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber and Martin Schmelzer">
 
 
-<meta name="date" content="2018-07-05">
+<meta name="date" content="2018-07-13">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -374,17 +374,16 @@ Notation for Panel Data
 <p>In contrast to cross-section data where we have observations on <span class="math inline">\(n\)</span> subjects (entities), panel data has observations on <span class="math inline">\(n\)</span> entities at <span class="math inline">\(T\geq2\)</span> time periods. This is denoted</p>
 <p><span class="math display">\[(X_{it},Y_{it}), \ i=1,\dots,n \ \ \ \text{and} \ \ \ t=1,\dots,T \]</span> where the index <span class="math inline">\(i\)</span> refers to the entity being observed while <span class="math inline">\(t\)</span> refers to the time period.</p>
 </div>
-<p>Sometimes panel data is also called longitudinal data as it adds a temporal dimension to cross-sectional data. Let us have a glimpse at the data set <code>Fatalities</code> by checking its structure and listing of the first few observations.</p>
-<div class="unfolded">
+<p>Sometimes panel data is also called longitudinal data as it adds a temporal dimension to cross-sectional data. Let us have a glimpse at the data set <tt>Fatalities</tt> by checking its structure and listing the first few observations.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># load package and data</span>
 <span class="kw">library</span>(AER)
-<span class="kw">data</span>(Fatalities)
-
-<span class="co"># obtain dimension and inspect structure</span>
+<span class="kw">data</span>(Fatalities)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># obtain dimension and inspect structure</span>
 <span class="kw">is.data.frame</span>(Fatalities)</code></pre></div>
 <pre><code>## [1] TRUE</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">dim</span>(Fatalities)</code></pre></div>
 <pre><code>## [1] 336  34</code></pre>
+<div class="unfolded">
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">str</span>(Fatalities)</code></pre></div>
 <pre><code>## &#39;data.frame&#39;:    336 obs. of  34 variables:
 ##  $ state       : Factor w/ 48 levels &quot;al&quot;,&quot;az&quot;,&quot;ar&quot;,..: 1 1 1 1 1 1 1 2 2 2 ...
@@ -421,6 +420,8 @@ Notation for Panel Data
 ##  $ unempus     : num  9.7 9.6 7.5 7.2 7 ...
 ##  $ emppopus    : num  57.8 57.9 59.5 60.1 60.7 ...
 ##  $ gsp         : num  -0.0221 0.0466 0.0628 0.0275 0.0321 ...</code></pre>
+</div>
+<div class="unfolded">
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># list first few observations</span>
 <span class="kw">head</span>(Fatalities)</code></pre></div>
 <pre><code>##   state year spirits unemp   income   emppop  beertax baptist  mormon
@@ -458,6 +459,7 @@ Notation for Panel Data
 ## 4  0.02748997
 ## 5  0.03214295
 ## 6  0.04897637</code></pre>
+</div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># summarize variables &#39;state&#39; and &#39;year&#39;</span>
 <span class="kw">summary</span>(Fatalities[, <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">2</span>)])</code></pre></div>
 <pre><code>##      state       year   
@@ -468,20 +470,17 @@ Notation for Panel Data
 ##  co     :  7   1986:48  
 ##  ct     :  7   1987:48  
 ##  (Other):294   1988:48</code></pre>
-</div>
-<p>We find that the data set consists of 336 observations on 34 variables. Notice that the variable <code>state</code> is a factor variable with 48 levels (one for each of the 48 contiguous US states). The variable <code>year</code> is also a factor variable that has 7 levels identifying the time period when the observation was made which gives us <span class="math inline">\(7\times48 = 336\)</span> observations in total. Since all variables are observed for all entities and over all time periods we say the the panel is <strong>balanced</strong>. If there were missing data for at least one entities in at least one time period we would call the panel <strong>unbalanced</strong>.</p>
+<p>We find that the data set consists of 336 observations on 34 variables. Notice that the variable <tt>state</tt> is a factor variable with 48 levels (one for each of the 48 contiguous federal states of the U.S.). The variable <tt>year</tt>is also a factor variable that has 7 levels identifying the time period when the observation was made which gives us <span class="math inline">\(7\times48 = 336\)</span> observations in total. Since all variables are observed for all entities and over all time periods we say the the panel is <em>balanced</em>. If there were missing data for at least one entities in at least one time period we would call the panel <em>unbalanced</em>.</p>
 <div id="example-traffic-deaths-and-alcohol-taxes" class="section level4 unnumbered">
 <h4>Example: Traffic Deaths and Alcohol Taxes</h4>
 <p>Coming to the question of how the alcohol taxes and traffic fatalities are related, we start by reproducing Figure 10.1 of the book. For this we estimate simple regressions using data for years 1982 and 1988 that model the relationship between beer tax (adjusted for 1988 dollars) and the traffic fatality rate. Beforehand we define the latter as the number of fatalities per 10000 inhabitants and choose subsets of the observations made for years 1982 and 1988. Afterwards, we plot both subsets and add the corresponding estimated regression functions.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># define fatality rate</span>
 Fatalities<span class="op">$</span>fatal_rate &lt;-<span class="st"> </span>Fatalities<span class="op">$</span>fatal <span class="op">/</span><span class="st"> </span>Fatalities<span class="op">$</span>pop <span class="op">*</span><span class="st"> </span><span class="dv">10000</span>
 
-<span class="co"># subset data</span>
+<span class="co"># subset the data</span>
 Fatalities1982 &lt;-<span class="st"> </span><span class="kw">subset</span>(Fatalities, year <span class="op">==</span><span class="st"> &quot;1982&quot;</span>)
 Fatalities1988 &lt;-<span class="st"> </span><span class="kw">subset</span>(Fatalities, year <span class="op">==</span><span class="st"> &quot;1988&quot;</span>)</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># estimate simple regression models using 1982 and 1988 data</span>
-<span class="kw">library</span>(lmtest)
-<span class="kw">library</span>(sandwich)
 
 fatal1982_mod &lt;-<span class="st"> </span><span class="kw">lm</span>(fatal_rate <span class="op">~</span><span class="st"> </span>beertax, <span class="dt">data =</span> Fatalities1982)
 fatal1988_mod &lt;-<span class="st"> </span><span class="kw">lm</span>(fatal_rate <span class="op">~</span><span class="st"> </span>beertax, <span class="dt">data =</span> Fatalities1988)
@@ -504,7 +503,7 @@ fatal1988_mod &lt;-<span class="st"> </span><span class="kw">lm</span>(fatal_rat
 ## beertax      0.43875    0.12786  3.4314  0.001279 ** 
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
-<p>The estimated regression functions are:</p>
+The estimated regression functions are:
 <span class="math display">\[\begin{align*}
   \widehat{FatalityRate} =&amp; \, \underset{(0.15)}{2.01} + \underset{(0.13)}{0.15} \times BeerTax \quad (1982 \text{ data}), \\
   \widehat{FatalityRate} =&amp; \, \underset{(0.11)}{1.86} + \underset{(0.13)}{0.44} \times BeerTax \quad (1988 \text{ data})
@@ -521,7 +520,7 @@ fatal1988_mod &lt;-<span class="st"> </span><span class="kw">lm</span>(fatal_rat
      <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>)
 
 <span class="kw">abline</span>(fatal1982_mod, <span class="dt">lwd =</span> <span class="fl">1.5</span>)</code></pre></div>
-<p><img src="URFITE_files/figure-html/unnamed-chunk-293-1.png" width="672" /></p>
+<p><img src="URFITE_files/figure-html/unnamed-chunk-302-1.png" width="672" /></p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># plot observations of interest and add estimated regression line for 1988 data</span>
 <span class="kw">plot</span>(<span class="dt">x =</span> Fatalities1988<span class="op">$</span>beertax, 
      <span class="dt">y =</span> Fatalities1988<span class="op">$</span>fatal_rate, 
@@ -533,7 +532,7 @@ fatal1988_mod &lt;-<span class="st"> </span><span class="kw">lm</span>(fatal_rat
      <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>)
 
 <span class="kw">abline</span>(fatal1988_mod, <span class="dt">lwd =</span> <span class="fl">1.5</span>)</code></pre></div>
-<p><img src="URFITE_files/figure-html/unnamed-chunk-293-2.png" width="672" /></p>
+<p><img src="URFITE_files/figure-html/unnamed-chunk-302-2.png" width="672" /></p>
 </div>
 <p>In both plots, each point represents observations of beer tax and fatality rate for a given state in the respective year. The regression results indicate a positive relationship between the beer tax and the fatality rate for both years, whereby the estimated coefficient on beer tax for the 1988 data is almost three times as large as for the 1988 data set. This is contrary to our expectations: alcohol taxes are supposed to <em>lower</em> the rate of traffic fatalities. As known from Chapter <a href="rmwmr.html#rmwmr">6</a>, this is possibly due to omitted variable bias, since both models do not include any covariates, e.g. economic conditions. This could be corrected for using a multiple regression approach. However, both models cannot account for omitted <em>unobservable</em> factors that differ from state to state but can be assumed to be constant over the observation span, e.g. the populations attitude towards drunk driving. As shown in the next section, panel data allow us to hold such factors constant.</p>
 </div>

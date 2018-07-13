@@ -28,6 +28,18 @@ The following packages and their dependencies are needed for reproduction of the
 + `r ttcode("scales")` 
 + `r ttcode("quantmod")`
 
+Please verify that the following code chunk runs on your machine without any errors.
+
+```{r, warning=FALSE, message=FALSE, eval=FALSE}
+library(AER)
+library(dynlm)
+library(forecast)
+library(readxl)
+library(stargazer)
+library(scales)
+library(quantmod)
+```
+
 ## Using Regression Models for Forecasting
 
 What is the difference between estimating models for assessment of causal effects and forecasting? Consider again the simple example of estimating the casual effect of the student-teacher ratio on test scores introduced in Chapter \@ref(lrwor).
@@ -42,7 +54,7 @@ mod <- lm(score ~ STR, data = CASchools)
 mod
 ```
 
-As has been stressed in Chapter \@ref(rmwmr), the estimate of the coefficient on the student-teacher ratio does not have causal interpretation due to omitted variable bias. However, in terms deciding which school to send her child to, it might nevertheless be appealing for a parent to use `mod` for forecasting test scores in schooling districts where no public data about on scores are available.
+As has been stressed in Chapter \@ref(rmwmr), the estimate of the coefficient on the student-teacher ratio does not have causal interpretation due to omitted variable bias. However, in terms deciding which school to send her child to, it might nevertheless be appealing for a parent to use `r ttcode("mod")` for forecasting test scores in schooling districts where no public data about on scores are available.
 
 As an example, assume that the average class in a district has $25$ students. There is no such thing as a perfect forecast but the following one-liner might be helpful for the parent to decide.
 
@@ -56,7 +68,7 @@ In a time series context, the parent could use data on present and past years te
 
 GDP measures the productivity of an economy. It is commonly defined as the value of goods and services produced over a given time period. The data set <tt>us_macro_quarterly.xlsx</tt> is provided by the authors and can be downloaded [here](http://wps.aw.com/aw_stock_ie_3/178/45691/11696965.cw/index.html). It provides quarterly data on U.S. real (i.e. inflation adjusted) GDP from years 1947 to 2004.
 
-As before, a good point to start with in pre-estimation is plotting the data. The package `quantmod` provides some very convenient functions for plotting and computing with time series data. We also load the package `readxl` to read the data into <tt>R</tt>.
+As before, a good point to start with in pre-estimation is plotting the data. The package `r ttcode("quantmod")` provides some very convenient functions for plotting and computing with time series data. We also load the package `r ttcode("readxl")` to read the data into `r ttcode("R")`.
 
 ```{r, warning=FALSE, message=FALSE}
 # attach the package `quantmod`
@@ -314,11 +326,11 @@ We can check that the computations done by `ar.ols()` are the same as done by `l
 # length of data set
 N <-length(GDPGRSub)
 
-GDPGR_leads <- as.numeric(GDPGRSub[-1])
+GDPGR_level <- as.numeric(GDPGRSub[-1])
 GDPGR_lags <- as.numeric(GDPGRSub[-N])
 
 # estimate the model
-armod <- lm(GDPGR_leads ~ GDPGR_lags)
+armod <- lm(GDPGR_level ~ GDPGR_lags)
 armod
 ```
 
@@ -371,7 +383,7 @@ The function `forecast()` from the <tt>forecast</tt> package has some useful fea
 library(forecast)
 
 # assign GDP growth rate in 2012:Q4
-new <- data.frame("GDPGR_lags" = GDPGR_leads[N-1])
+new <- data.frame("GDPGR_lags" = GDPGR_level[N-1])
 
 # forecast GDP growth rate in 2013:Q1
 forecast(armod, newdata = new)
@@ -412,7 +424,7 @@ Following the book, we estimate an AR($2$) model of the GDP growth series from 1
 
 ```{r}
 # estimate the AR(2) model
-GDPGR_AR2 <- dynlm(ts(GDPGR_leads) ~ L(ts(GDPGR_leads)) + L(ts(GDPGR_leads), 2))
+GDPGR_AR2 <- dynlm(ts(GDPGR_level) ~ L(ts(GDPGR_level)) + L(ts(GDPGR_level), 2))
 
 coeftest(GDPGR_AR2, vcov. = sandwich)
 ```
@@ -435,7 +447,7 @@ We may use the AR($2$) model to obtain a forecast for GDP growth in 2013:Q1 in t
 
 ```{r}
 # AR(2) forecast of GDP growth in 2013:Q1 
-"Forecast" <- c("2013:Q1" = coef(GDPGR_AR2) %*% c(1, GDPGR_leads[N-1], GDPGR_leads[N-2]))
+"Forecast" <- c("2013:Q1" = coef(GDPGR_AR2) %*% c(1, GDPGR_level[N-1], GDPGR_level[N-2]))
 ```
 
 This leads to a forecast error of roughly $-1\%$.
@@ -893,7 +905,7 @@ Table 14.3 of the book presents a breakdown of how the $BIC$ is computed for AR(
 ```{r}
 # apply the BIC() to an intercept only model of GDP growth
 BIC(
-  dynlm(ts(GDPGR_leads) ~ 1)
+  dynlm(ts(GDPGR_level) ~ 1)
 )
 
 # loop BIC over models of different orders
@@ -902,7 +914,7 @@ order <- 1:6
 BICs <- sapply(order, 
        function(x) 
         "AR" = BIC(
-          dynlm(ts(GDPGR_leads) ~ L(ts(GDPGR_leads), 1:x))
+          dynlm(ts(GDPGR_level) ~ L(ts(GDPGR_level), 1:x))
           )
        )
 

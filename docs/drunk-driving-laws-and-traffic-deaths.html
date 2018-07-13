@@ -25,7 +25,7 @@
 <meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber and Martin Schmelzer">
 
 
-<meta name="date" content="2018-07-05">
+<meta name="date" content="2018-07-13">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -364,7 +364,7 @@ This book is in <b>Open Review</b>. We want your feedback to make the book bette
 </div>
 <div id="drunk-driving-laws-and-traffic-deaths" class="section level2">
 <h2><span class="header-section-number">10.6</span> Drunk Driving Laws and Traffic Deaths</h2>
-<p>There are two major sources of omitted variable bias that are not accounted for by all of the models of the relation between traffic fatalities and beer taxes that we have considered so far: economic conditions and driving laws. Fortunately, <code>Fatalities</code> has recordings on state specific legal drinking age (<code>drinkage</code>), punishment (<code>jail</code>, <code>service</code>) and various economic indicators like unemployment rate (<code>unemp</code>) and per capita income (<code>income</code>). We may use this data to extend the preceding analysis.</p>
+<p>There are two major sources of omitted variable bias that are not accounted for by all of the models of the relation between traffic fatalities and beer taxes that we have considered so far: economic conditions and driving laws. Fortunately, <tt>Fatalities</tt> has recordings on state specific legal drinking age (<tt>drinkage</tt>), punishment (<tt>jail</tt>, <tt>service</tt>) and various economic indicators like unemployment rate (<tt>unemp</tt>) and per capita income (<tt>income</tt>). We may use this data to extend the preceding analysis.</p>
 <p>At first, we define the variables according to the regression results presented in Table 10.1 of the book.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Discretize the minimum legal drinking age</span>
 Fatalities<span class="op">$</span>drinkagec &lt;-<span class="st"> </span><span class="kw">cut</span>(Fatalities<span class="op">$</span>drinkage,
@@ -384,7 +384,7 @@ Fatalities<span class="op">$</span>punish &lt;-<span class="st"> </span><span cl
 
 <span class="co"># Observations on all variables for 1982 and 1988 only</span>
 Fatalities_1982_<span class="dv">1988</span> &lt;-<span class="st"> </span>Fatalities[<span class="kw">with</span>(Fatalities, year <span class="op">==</span><span class="st"> </span><span class="dv">1982</span> <span class="op">|</span><span class="st"> </span>year <span class="op">==</span><span class="st"> </span><span class="dv">1988</span>), ]</code></pre></div>
-<p>Next, we estimate all seven models using <code>plm()</code>.</p>
+<p>Next, we estimate all seven models using <tt>plm()</tt>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fatalities_mod1 &lt;-<span class="st"> </span><span class="kw">lm</span>(fatal_rate <span class="op">~</span><span class="st"> </span>beertax, <span class="dt">data =</span> Fatalities)
 
 fatalities_mod2 &lt;-<span class="st"> </span><span class="kw">plm</span>(fatal_rate <span class="op">~</span><span class="st"> </span>beertax <span class="op">+</span><span class="st"> </span>state, <span class="dt">data =</span> Fatalities)
@@ -422,7 +422,7 @@ fatalities_mod7 &lt;-<span class="st"> </span><span class="kw">plm</span>(fatal_
                        <span class="dt">model =</span> <span class="st">&quot;within&quot;</span>,
                        <span class="dt">effect =</span> <span class="st">&quot;twoways&quot;</span>,
                        <span class="dt">data =</span> Fatalities_1982_<span class="dv">1988</span>)</code></pre></div>
-<p>Yet again we may use <code>stargazer()</code> to generate a comprehensive tabular presentation of the results.</p>
+<p>Yet again we may use <tt>stargazer()</tt> to generate a comprehensive tabular presentation of the results.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(stargazer)
 
 rob_se &lt;-<span class="st"> </span><span class="kw">list</span>(
@@ -494,12 +494,12 @@ rob_se &lt;-<span class="st"> </span><span class="kw">list</span>(
 <p>While columns (2) and (3) recap the results <a href="fixed-effects-regression.html#eq:efemod">(10.7)</a> and <a href="regression-with-time-fixed-effects.html#eq:cbnfemod">(10.8)</a>, column (1) presents an estimate of the coefficient of interest in the naive OLS regression of the fatality rate on beer tax without any fixed effects. We obtain a <em>positive</em> estimate for the coefficient on beer tax that is likely to be upward biased. Notice that the model fit is rather bad, too (<span class="math inline">\(\overline{R^2} = 0.091\)</span>). The sign of the estimate changes as we extend the model by both entity and time fixed effects in models (2) and (3). Furthermore <span class="math inline">\(\overline{R^2}\)</span> increases substantially as fixed effects are included in the model equation. Nonetheless, as discussed before, the magnitudes of both estimates are by far too large.</p>
 <p>Thus, model specifications (4) to (7) include covariates that shall capture the effect of overall state economic conditions as well as the legal framework. These covariates are as follows:</p>
 <ul>
-<li><code>unemp</code>: a numeric variable stating the state specific unemployment rate.</li>
-<li><code>log(income)</code>: the logarithm of real per capita income (in prices of 1988).</li>
-<li><code>miles</code>: average miles per driver.</li>
-<li><code>drinkage</code>: state specify minimum legal drinking age.</li>
-<li><code>drinkagc</code>: a discretized version of <code>drinkage</code> that classifies states into four categories of minimal drinking age; <span class="math inline">\(18\)</span>, <span class="math inline">\(19\)</span>, <span class="math inline">\(20\)</span>, <span class="math inline">\(21\)</span> and older. <tt>R</tt> denotes this as <code>[18,19)</code>, <code>[19,20)</code>, <code>[20,21)</code> and <code>[21,22]</code>. These categories are included as dummy regressors whereby <code>[21,22]</code> is chosen to be the reference category.</li>
-<li><code>punish</code>: a dummy variable with levels <code>yes</code> and <code>no</code> that measures if drunk driving is severely punished by mandatory jail time or mandatory community service (first conviction).</li>
+<li><tt>unemp</tt>: a numeric variable stating the state specific unemployment rate.</li>
+<li><tt>log(income)</tt>: the logarithm of real per capita income (in prices of 1988).</li>
+<li><tt>miles</tt>: average miles per driver.</li>
+<li><tt>drinkage</tt>: state specify minimum legal drinking age.</li>
+<li><tt>drinkagc</tt>: a discretized version of <tt>drinkage</tt> that classifies states into four categories of minimal drinking age; <span class="math inline">\(18\)</span>, <span class="math inline">\(19\)</span>, <span class="math inline">\(20\)</span>, <span class="math inline">\(21\)</span> and older. <tt>R</tt> denotes this as <tt>[18,19)</tt>, <tt>[19,20)</tt>, <tt>[20,21)</tt> and <tt>[21,22]</tt>. These categories are included as dummy regressors whereby <tt>[21,22]</tt> is chosen to be the reference category.</li>
+<li><tt>punish</tt>: a dummy variable with levels <tt>yes</tt> and <tt>no</tt> that measures if drunk driving is severely punished by mandatory jail time or mandatory community service (first conviction).</li>
 </ul>
 <p>Considering (4) as the base specification, we observe four interesting results:</p>
 <ol style="list-style-type: decimal">
@@ -558,7 +558,7 @@ rob_se &lt;-<span class="st"> </span><span class="kw">list</span>(
 <p>Estimation outcomes for specification (7) reveals that reducing the amount of available information inflates standard errors but does not lead to drastic changes in coefficient estimates.</p>
 <div id="summary-2" class="section level4 unnumbered">
 <h4>Summary</h4>
-<p>We have not found evidence that menacing severe punishments and increasing the minimum drinking ages are appropriate measures for reducing traffic fatalities due to drunk driving. Nonetheless we concluded that there is some effect of alcohol taxes on traffic fatalities which, however, is estimated imprecisely and cannot be interpreted as the causal effect of interest as there seems to be omitted variable bias. This bias persists even though we used a panel approach that controls for entity specific and time invariant unobservables. A possible source for this bias are omitted variables that change across entities <em>and</em> over time.</p>
+<p>We have not found evidence that menacing severe punishments and increasing the minimum drinking age are appropriate measures for reducing traffic fatalities due to drunk driving. Nonetheless we concluded that there is some effect of alcohol taxes on traffic fatalities which, however, is estimated imprecisely and cannot be interpreted as the causal effect of interest as there seems to be omitted variable bias. This bias persists even though we used a panel approach that controls for entity specific and time invariant unobservables. A possible source for this bias are omitted variables that change across entities <em>and</em> over time.</p>
 <p>A powerful method that can be used if common panel regression approaches fail is instrumental variables regression. We will return to this concept in Chapter <a href="ivr.html#ivr">12</a>.</p>
 
 </div>

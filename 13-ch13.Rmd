@@ -22,6 +22,19 @@ The following packages and their dependencies are needed for reproduction of the
 + `r ttcode("stargazer")`
 + `r ttcode("tidyr")`
 
+Make sure the following code chunk runs without any errors.
+
+```{r, warning=FALSE, message=FALSE, eval=FALSE}
+library(AER)
+library(dplyr)
+library(MASS)
+library(mvtnorm)
+library(rddtools)
+library(scales)
+library(stargazer)
+library(tidyr)
+```
+
 ## Potential Outcomes, Causal Effects and Idealized Experiments
 
 In the following we will briefly recap the idea of the average causal effect and how it can be estimated using the *differences estimator*. We advise you to work through Chapter 13.1 of the book for a better understanding.
@@ -47,19 +60,19 @@ The OLS estimator in the regression model
 \begin{align}
   Y_i = \beta_0 + \beta_1 X_i + \beta_2 W_{1i} + \dots + \beta_{1+r} W_{ri} + u_i \ \ , \ \ i=1,\dots,n (\#eq:diffestwar)
 \end{align}
-with additional regressors $W_1,\dots,W_r$ is called the *differences estimator with additional regressors*. It is assumed that conditional mean independence holds, i.e. $$E(u_i\vert X_i , W_i) = E(u_i\vert W_i) = 0.$$ The *differences estimator with additional regressors* is more efficient than the *differences estimator* if the additional regressors explain some of the variation in $Y_i$.
+with additional regressors $W_1,\dots,W_r$ is called the *differences estimator with additional regressors*. It is assumed that conditional mean independence holds, i.e. $$E(u_i\vert X_i , W_i) = E(u_i\vert W_i) = 0.$$ The *differences estimator with additional regressors* is more efficient than the *differences estimator* if the additional regressors explain some of the variation in the $Y_i$.
 
 ## Threats to Validity of Experiments
 
-The concepts of internal and external validity discussed in Key Concept 9.1 are also applicable for studies based on experimental and quasi-experimental data. Chapter 13.2 of the book provides a sound explanation of the particular threats to internal and external validity of experiments including examples. We limit ourselves to a short repetition of the threats listed. Consult the book for a more detailed explanation.
+The concepts of internal and external validity discussed in Key Concept 9.1 are also applicable for studies based on experimental and quasi-experimental data. Chapter 13.2 of the book provides a sound explanation of the particular threats to internal and external validity of experiments including examples. We limit ourselves to a short repetition of the threats listed there. Consult the book for a more detailed explanation.
 
 #### Threats to Internal Validity {-}
 
-1. **Failure to randomize**
+1. **Failure to Randomize**
 
     If the subjects are not randomly assigned to the treatment group, then the outcomes will be contaminated with the effect of the subjects' individual characteristics or preferences and it is not possible to obtain an unbiased estimate of the treatment effect. One can test for nonrandom assignment using a significance test ($F$-Test) on the coefficients in the regression model $$X_i = \beta_0 + \beta_1 W_{1i} + \dots +\beta_2 W_{ri} + u_i \ \ , \ \ i=1,\dots,n.$$
     
-2. **Failure to follow the treatment protocol**
+2. **Failure to Follow the Treatment Protocol**
 
     If subjects do not follow the treatment protocol, i.e. some subjects in the treatment group manage to avoid receiving the treatment and/or some subjects in the control group manage to receive the treatment (*partial compliance*), there is correlation between $X_i$ und $u_i$ such that the OLS estimator of the average treatment effect will be biased. If there are data on *both* treatment actually recieved ($X_i$) and initial random assignment ($Z_i$), IV regression of the models \@ref(eq:diffest) and \@ref(eq:diffestwar) is a remedy.
 
@@ -67,26 +80,26 @@ The concepts of internal and external validity discussed in Key Concept 9.1 are 
 
     Attrition results in a nonrandomly selected sample. If subjects systematically drop out of the study after beeing assigned to the control or the treatment group ( systematic means that the reason of the drop out is related to the treatment) there will be correlation between $X_i$ and $u_i$ and hence bias in the OLS estimator of the treatment effect.
 
-4. **Experimental effects**
+4. **Experimental Effects**
   
     If human subjects in treatment group and/or control group know that they are in an experiment, they might adapt their behaviour in a way that prevents unbiased estimation of the treatment effect.
 
-5. **Small sample sizes**
+5. **Small Sample Sizes**
 
     As we know from the theory of linear regression, small sample sizes lead to imprecise estimation of the coefficients in regression models and thus imply imprecise estimation of the causal effect. Furthermore, confidence intervals and hypothesis test may produce wrong inference when the sample size is small.
 
 #### Threats to External Validity {-}
 
 
-1. **Nonrepresentative sample**
+1. **Nonrepresentative Sample**
 
     If the population studied and the population of interest are not sufficiently similar, there is no justification in generalizing the results.
 
-2. **Nonrepresentative program or policy**
+2. **Nonrepresentative Program or Policy**
 
     If the program or policy for the population studied differs considerably from the program (to be) applied to population(s) of interest, the results cannot be generalized. For example, a small-scale programm with low funding might have different effects than a widely available scaled-up programm that is actually implemented. There are other factors like duration and the extend of monitoring that should be considered here. 
     
-3. **General equilibrium effects**
+3. **General Equilibrium Effects**
 
     If market and/or environmental conditions cannot be kept constant when an internally valid program is implemented broadly, the external validity may be doubted.
 
@@ -96,7 +109,7 @@ The concepts of internal and external validity discussed in Key Concept 9.1 are 
 
 The Project *Sudent-Teacher Achievement Ratio* (STAR) was a large randomized controlled experiment with the aim of asserting whether a class size reduction is effective in improving education. It has been conducted in 80 Tennessee elementary schools over a period of four years during the 1980s by the state Department of Education.
 
-In the first year, about 6400 students were randomly assigned into one of three interventions: small class (13 to 17 students per teacher), regular class (22 to 25 students per teacher), and regular-with-aide class (22 to 25 students with a full-time teacher's aide). Classroom teachers were also randomly assigned to the classes they would teach. The interventions were initiated as the students entered school in kindergarten and continued through third grade. Control and treatment groups across grades are summarized in Table \@ref(#tab:starstructure).
+In the first year, about 6400 students were randomly assigned into one of three interventions: small class (13 to 17 students per teacher), regular class (22 to 25 students per teacher), and regular-with-aide class (22 to 25 students with a full-time teacher's aide). Classroom teachers were also randomly assigned to the classes they would teach. The interventions were initiated as the students entered school in kindergarten and continued through third grade. Control and treatment groups across grades are summarized in Table \@ref(tab:starstructure).
 
 |                 | K                    | 1                    | 2                    | 3                    |
 |-----------------|----------------------|----------------------|----------------------|----------------------|
@@ -261,7 +274,9 @@ in four different population regression specifications:
   Y_i =& \beta_0 + \beta_1 SmallClass_i + \beta_2 RegAide_i + u_i, (\#eq:augstarpopreg1) \\
   Y_i =& \beta_0 + \beta_1 SmallClass_i + \beta_2 RegAide_i + \beta_3 experience_i + u_i, (\#eq:augstarpopreg2) \\
   Y_i =& \beta_0 + \beta_1 SmallClass_i + \beta_2 RegAide_i + \beta_3 experience_i + \text{school indicators} + u_i (\#eq:augstarpopreg3) \\
-  Y_i =& \beta_0 + \beta_1 SmallClass_i + \beta_2 RegAide_i + u_i + \beta_3 experience_i + \beta_4 boy + \beta_5 lunch (\#eq:augstarpopreg4) \\ +& \beta_6 black + \beta_7 race + \text{schoolid} + u_i \notag
+  \begin{split}
+  Y_i =& \beta_0 + \beta_1 SmallClass_i + \beta_2 RegAide_i + u_i + \beta_3 experience_i + \beta_4 boy + \beta_5 lunch  \\ +& \beta_6 black + \beta_7 race + \text{schoolid} + u_i 
+  \end{split} (\#eq:augstarpopreg4)
 \end{align}
 
 Beforehand to estimation, we perform some subsetting and some data wrangling. We do this using functions from the packages `r ttcode("dplyr")` and `r ttcode("tidyr")` which are both part of `r ttcode("tidyverse")`, a collection of `r ttcode("R")` packages designed for data science and handling big data sets.^[See the [official site](https://www.tidyverse.org/) for more on `r ttcode("tidyverse")` packages.] The functions `r ttcode("%>%")`, `r ttcode("transmute()")` and `r ttcode("mutate()")` are sufficient for us here: 

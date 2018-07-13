@@ -25,7 +25,7 @@
 <meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber and Martin Schmelzer">
 
 
-<meta name="date" content="2018-07-05">
+<meta name="date" content="2018-07-13">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -415,7 +415,7 @@ denyprobit &lt;-<span class="st"> </span><span class="kw">glm</span>(deny <span 
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <p>The estimated model equation is</p>
 <span class="math display" id="eq:denyprobit">\[\begin{align}
-  \widehat{P(deny\vert P/I \ ratio}) = \Phi(\underset{(0.19)}{-2.19} + \underset{(0.54)}{2.97} P/I \ ratio). \tag{11.4}
+  \widehat{P(deny\vert P/I \ ratio}) = \Phi(-\underset{(0.19)}{2.19} + \underset{(0.54)}{2.97} P/I \ ratio). \tag{11.4}
 \end{align}\]</span>
 <p>Just as in the linear probability model we find that the relation between the probability of denial and the payments-to-income ratio is positive and that the corresponding coefficient is highly significant.</p>
 <p>The following code chunk reproduces Figure 11.2 of the book.</p>
@@ -442,9 +442,9 @@ x &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="dv">0</
 y &lt;-<span class="st"> </span><span class="kw">predict</span>(denyprobit, <span class="kw">list</span>(<span class="dt">pirat =</span> x), <span class="dt">type =</span> <span class="st">&quot;response&quot;</span>)
 
 <span class="kw">lines</span>(x, y, <span class="dt">lwd =</span> <span class="fl">1.5</span>, <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>)</code></pre></div>
-<p><img src="URFITE_files/figure-html/unnamed-chunk-318-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="URFITE_files/figure-html/unnamed-chunk-328-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
-<p>Notice that the estimated regression function has a stretched “S”-shape which is typical for the CDF of a of continuous random variable with symmetric PDF like that of a normally distributed random variable. The function is clearly nonlinear and flattens out for large and small values of <span class="math inline">\(P/I \ ratio\)</span>. More importantly, the functional form ensures that predicted conditional probabilities of a denial lie between <span class="math inline">\(0\)</span> and <span class="math inline">\(1\)</span>.</p>
+<p>Notice that the estimated regression function has a stretched “S”-shape which is typical for the CDF of a of continuous random variable with symmetric PDF like that of a normally distributed random variable. The function is clearly nonlinear and flattens out for large and small values of <span class="math inline">\(P/I \ ratio\)</span>. More importantly, the functional form ensures that the predicted conditional probabilities of a denial lie between <span class="math inline">\(0\)</span> and <span class="math inline">\(1\)</span>.</p>
 <p>We may use <tt>predict()</tt> to compute the predicted change in the denial probability when <span class="math inline">\(P/I \ ratio\)</span> is increased from <span class="math inline">\(0.3\)</span> to <span class="math inline">\(0.4\)</span>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 1. compute predictions for P/I ratio = 0.3, 0.4</span>
 predictions &lt;-<span class="st"> </span><span class="kw">predict</span>(denyprobit, 
@@ -501,7 +501,7 @@ Key Concept 11.3
 <h3 class="left">
 Logit Regression
 </h3>
-<p>The Logit regression population function is</p>
+<p>The population Logit regression function is</p>
 <span class="math display">\[\begin{align*}
   P(Y=1\vert X_1, X_2, \dots, X_k) =&amp; \, F(\beta_0 + \beta_1 X_1 + \beta_2 X_2 + \dots + \beta_k X_k) \\
   =&amp; \, \frac{1}{1+e^{-(\beta_0 + \beta_1 X_1 + \beta_2 X_2 + \dots + \beta_k X_k)}}.
@@ -556,11 +556,12 @@ y_logit &lt;-<span class="st"> </span><span class="kw">predict</span>(denylogit,
        <span class="dt">legend =</span> <span class="kw">c</span>(<span class="st">&quot;Probit&quot;</span>, <span class="st">&quot;Logit&quot;</span>),
        <span class="dt">col =</span> <span class="kw">c</span>(<span class="st">&quot;steelblue&quot;</span>, <span class="st">&quot;black&quot;</span>), 
        <span class="dt">lty =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</code></pre></div>
-<p><img src="URFITE_files/figure-html/unnamed-chunk-323-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="URFITE_files/figure-html/unnamed-chunk-333-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <p>Notice that both models produce very similar estimates of the probability that a mortgage application will be denied depending on the applicants payment-to-income ratio.</p>
-<p>Following the book we expand the simple Logit model of mortgage denial with the additional regressor <span class="math inline">\(black\)</span> and estimate the model.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">denylogit2 &lt;-<span class="st"> </span><span class="kw">glm</span>(deny <span class="op">~</span><span class="st"> </span>pirat <span class="op">+</span><span class="st"> </span>black, 
+<p>Following the book we expand the simple Logit model of mortgage denial with the additional regressor <span class="math inline">\(black\)</span>.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># estimate Logit regression with multiple regressors</span>
+denylogit2 &lt;-<span class="st"> </span><span class="kw">glm</span>(deny <span class="op">~</span><span class="st"> </span>pirat <span class="op">+</span><span class="st"> </span>black, 
                 <span class="dt">family =</span> <span class="kw">binomial</span>(<span class="dt">link =</span> <span class="st">&quot;logit&quot;</span>), 
                 <span class="dt">data =</span> HMDA)
 
@@ -576,7 +577,7 @@ y_logit &lt;-<span class="st"> </span><span class="kw">predict</span>(denylogit,
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <p>We obtain</p>
 <span class="math display" id="eq:denylogit2">\[\begin{align}
-  \widehat{P(deny=1 \vert P/I ratio, black)} = F(\underset{(0.35)}{-4.13} + \underset{(0.96)}{5.37} P/I \ ratio + \underset{(0.15)}{1.27} black). \tag{11.6}
+  \widehat{P(deny=1 \vert P/I ratio, black)} = F(-\underset{(0.35)}{4.13} + \underset{(0.96)}{5.37} P/I \ ratio + \underset{(0.15)}{1.27} black). \tag{11.6}
 \end{align}\]</span>
 <p>As for the Probit model <a href="probit-and-logit-regression.html#eq:denyprobit2">(11.5)</a> all model coefficients are highly significant and we obtain positive estimates for the coefficients on <span class="math inline">\(P/I \ ratio\)</span> and <span class="math inline">\(black\)</span>. For comparison purposes we compute the predicted probability of denial for two hypothetical applicants that differ in race and have a <span class="math inline">\(P/I \ ratio\)</span> of <span class="math inline">\(0.3\)</span>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 1. compute predictions for P/I ratio = 0.3</span>
@@ -586,14 +587,17 @@ predictions &lt;-<span class="st"> </span><span class="kw">predict</span>(denylo
                        <span class="dt">type =</span> <span class="st">&quot;response&quot;</span>
                       )
 
-<span class="co"># 2. Compute difference in probabilities</span>
+predictions</code></pre></div>
+<pre><code>##          1          2 
+## 0.07485143 0.22414592</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 2. Compute difference in probabilities</span>
 <span class="kw">diff</span>(predictions)</code></pre></div>
 <pre><code>##         2 
 ## 0.1492945</code></pre>
 <p>We find that the white applicant faces a denial probability of only <span class="math inline">\(7.5\%\)</span>, while the African American is rejected with a probability of <span class="math inline">\(22.4\%\)</span> with makes a difference of <span class="math inline">\(14.9\%\)</span>.</p>
 <div id="comparison-of-the-models" class="section level4 unnumbered">
 <h4>Comparison of the Models</h4>
-<p>The Probit model and the Logit model deliver only approximations to the unknown population regression function <span class="math inline">\(E(Y\vert X)\)</span>. It is not unambiguous to decide which model one should use in practice. The linear probability model has the clear drawback of not being able to capture the nonlinear nature of the population regression function and it predicts probabilities to lie outside the interval <span class="math inline">\([0,1]\)</span> for extreme regressor values. Probit and Logit models are hard to interpret but can capture nonlinearities. Both models produce predictions of probabilities that lie inside the interval <span class="math inline">\([0,1]\)</span>. Predictions of Probit and Logit models are often close to each other. The book suggests to use the method that is easiest to use in the statistical software of choice. As we have seen, it is equally easy to estimate Probit and Logit model using <tt>R</tt>. We can therefore give no general guide which method to use.</p>
+<p>The Probit model and the Logit model deliver only approximations to the unknown population regression function <span class="math inline">\(E(Y\vert X)\)</span>. It is not unambiguous to decide which model one should use in practice. The linear probability model has the clear drawback of not being able to capture the nonlinear nature of the population regression function and it predicts probabilities to lie outside the interval <span class="math inline">\([0,1]\)</span> for extreme regressor values. Probit and Logit models are harder to interpret but can capture the nonlinearities better than the linear approach: both models produce predictions of probabilities that lie inside the interval <span class="math inline">\([0,1]\)</span>. Predictions of Probit and Logit models are often close to each other. The book suggests to use the method that is easiest to use in the statistical software of choice. As we have seen, it is equally easy to estimate Probit and Logit model using <tt>R</tt>. We can therefore give no general recommendation which method to use.</p>
 </div>
 </div>
 </div>

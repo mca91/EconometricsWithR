@@ -9,6 +9,13 @@ The same issue arises if there is simultaneous causality. When causality runs fr
 
 A general technique for obtaining a consistent estimate of the coefficient of interest is instrumental variables (IV) regression. In this chapter we focus on a powerful IV regression tool called *two-stage least squares* (TSLS). The first sections briefly recap the general mechanics and assumptions of IV regression and show how to perform TSLS estimation using \texttt{R}. Next, IV regression is used for estimating the elasticity of the demand for cigarettes --- a classical example where multiple regression fails to do the job because of simultaneous causality. 
 
+Just like for the previous chapter, the packages `r ttcode("AER")` and `r ttcode("stargazer")` are required for reproducing the code presented in this chapter. Check whether the code chunk below executes without any error messages.
+
+```{r, warning=FALSE, message=FALSE, eval=FALSE}
+library(AER)
+library(stargazer)
+```
+
 ## The IV Estimator with a Single Regressor and a Single Instrument {#TIVEWASRAASI}
 
 Consider the simple regression model 
@@ -45,7 +52,7 @@ For the case of a single instrument one can show that the TSLS estimator of $\be
 
 which is nothing but the ratio of the sample covariance between $Z$ and $Y$ to the sample covariance between $Z$ and $X$.
 
-As shown in Appendix 12.3 of the book, \@ref(eq:simpletsls) is a consistent estimator for $\beta_1$ in \@ref(eq:srm12) under the assumption that $Z$ is a valid instrument. Furthermore, as for every other OLS estimator that we have considered so far, the CLT implies that $\widehat{\beta}_1^{TSLS}$ can be approximated by a normal distribution if the sample size is large. This allows us to use $t$-statistics and confidence intervals which are also computed by \texttt{R} functions relevant to us. A more detailed argument on the large-sample distribution of the TSLS estimator is sketched in Appendix 12.3 of the book.
+As shown in Appendix 12.3 of the book, \@ref(eq:simpletsls) is a consistent estimator for $\beta_1$ in \@ref(eq:srm12) under the assumption that $Z$ is a valid instrument. Just as for every other OLS estimator we have considered so far, the CLT implies that the distribution of $\widehat{\beta}_1^{TSLS}$ can be approximated by a normal distribution if the sample size is large. This allows us to use $t$-statistics and confidence intervals which are also computed by the \texttt{R} functions relevant to us. A more detailed argument on the large-sample distribution of the TSLS estimator is sketched in Appendix 12.3 of the book.
 
 #### Application to the Demand For Cigarettes {-}
 
@@ -53,7 +60,7 @@ The relation between the demand for and the price of commodities is a simple yet
 
 It is plausible that cigarette consumption can be reduced by taxing cigarettes more heavily. The question is *how much* taxes must be increased to reach a noticeable reduction in cigarette consumption. Economists use elasticities to answer this kind of question. Since the price elasticity for the demand of cigarettes is unknown, it must be estimated. As discussed in the box *Who Invented Instrumental Variables Regression* presented in Chapter 12.1 of the book, an OLS regression of log quantity on log price cannot be used to estimate the effect of interest since there is simultaneous causality between demand and supply. Instead, IV regression can be used.
 
-We use the data set `r ttcode("CigarettesSW")` which comes with the package `r ttcode("AER")`. It is a panel data set that contains observations on cigarette consumption and several economic indicators for all 48 continental US States from 1985 to 1995. Following the book we consider data for the cross section of states in 1995 only.
+We use the data set `r ttcode("CigarettesSW")` which comes with the package `r ttcode("AER")`. It is a panel data set that contains observations on cigarette consumption and several economic indicators for all 48 continental federal states of the U.S. from 1985 to 1995. Following the book we consider data for the cross section of states in 1995 only.
 
 We start by loading the package, attaching the data set and getting an overview.
 
@@ -110,7 +117,7 @@ For the first stage regression we obtain $$\widehat{\log(P_i^{cigarettes})} = \u
 summary(cig_s1)$r.squared
 ```
 
-We continue by saving $\widehat{\log(P_i^{cigarettes})}$, the fitted values predicted by the first stage regression `r ttcode("cig_s1")`,to the variable `r ttcode("lcigp_pred")`.
+We continue by saving $\widehat{\log(P_i^{cigarettes})}$, the fitted values obtained by the first stage regression `r ttcode("cig_s1")`, to the variable `r ttcode("lcigp_pred")`.
 
 ```{r}
 # save the predicted values
@@ -125,7 +132,7 @@ cig_s2 <- lm(log(c1995$packs) ~ lcigp_pred)
 coeftest(cig_s2, vcov = vcovHC(cig_s2))
 ```
 
-Thus estimating the model equation \@ref(eq:cigstsls) using TSLS yields 
+Thus estimating the model \@ref(eq:cigstsls) using TSLS yields 
 
 \begin{align}
   \widehat{\log(Q_i^{cigarettes})} = \underset{(1.70)}{9.72} + \underset{(0.36)}{1.08} \log(P_i^{cigarettes}), (\#eq:ecigstsls)
@@ -133,7 +140,7 @@ Thus estimating the model equation \@ref(eq:cigstsls) using TSLS yields
 
 where we write $\log(P_i^{cigarettes})$ instead of $\widehat{\log(P_i^{cigarettes})}$ for convenience.
 
-The function `r ttcode("ivreg()")` from the package `r ttcode("AER")` carries out TSLS automatically. It is used similarly as `r ttcode("lm()")`. Instruments can be added to the usual specification of the regression formula using a vertical bar ($|$) separating the model equation from the instruments. Thus, for the regression and hand the correct formula is `r ttcode("log(packs) ~ log(rprice) | salestax")`.
+The function `r ttcode("ivreg()")` from the package `r ttcode("AER")` carries out TSLS procedure automatically. It is used similarly as `r ttcode("lm()")`. Instruments can be added to the usual specification of the regression formula using a vertical bar separating the model equation from the instruments. Thus, for the regression at hand the correct formula is `r ttcode("log(packs) ~ log(rprice) | salestax")`.
 
 ```{r}
 # perform TSLS using `ivreg()`
@@ -144,11 +151,11 @@ coeftest(cig_ivreg, vcov = vcovHC(cig_ivreg, type = "HC1"))
 
 We find that the coefficient estimates coincide for both approaches.
 
-**Two notes on the calculation of TSLS standard errors**
+**Two Notes on the Computation of TSLS Standard Errors**
 
-1. We have demonstrated that running the individual regressions for each stage of TSLS using `r ttcode("lm()")` leads to the same coefficient estimates as when using `r ttcode("ivreg()")`. However, the standard errors reported for the second-stage regression, e.g. by `r ttcode("coeftest()")` or `r ttcode("summary()")`, are *invalid*: both functions *do not* adjust for using predictions from the first-stage regression as regressors in the second-stage regression! Fortunately, `r ttcode("ivreg()")` performs the necessary adjustment automatically. This is another advantage over manual step-by-step estimation which we have done for demonstrating the mechanics behind the procedure.
+1. We have demonstrated that running the individual regressions for each stage of TSLS using `r ttcode("lm()")` leads to the same coefficient estimates as when using `r ttcode("ivreg()")`. However, the standard errors reported for the second-stage regression, e.g. by `r ttcode("coeftest()")` or `r ttcode("summary()")`, are *invalid*: both functions *do not* adjust for using predictions from the first-stage regression as regressors in the second-stage regression! Fortunately, `r ttcode("ivreg()")` performs the necessary adjustment automatically. This is another advantage over manual step-by-step estimation which we have done above for demonstrating the mechanics of the procedure.
   
-2. Just as in multiple regression, it is important to compute heteroskedasticity-robust standard errors as we have done above using `r ttcode("vcovHC()")`.
+2. Just like in multiple regression it is important to compute heteroskedasticity-robust standard errors as we have done above using `r ttcode("vcovHC()")`.
 
 The TSLS estimate for $\beta_1$ in \@ref(eq:ecigstsls) suggests that an increase in cigarette prices by one percent reduces cigarette consumption by roughly $1.08$ percentage points which is fairly elastic. However, we should keep in mind that this estimate might not be trustworthy although we used IV estimation: there still might be a bias due to omitted variables. Thus a multiple IV regression approach is needed.
 
@@ -201,7 +208,7 @@ Similarly to the simple IV regression model, the general IV model \@ref(eq:givmo
 2. **Second-stage regression**: regress the dependent variable on the predicted values of all endogenous regressors, all exogenous variables and an intercept using OLS. This delivers $\widehat{\beta}_{0}^{TSLS},\dots,\widehat{\beta}_{k+r}^{TSLS}$ which are called the TSLS estimates of the model coefficients.
 </div>
 
-In the general IV regression model the instrument relevance and exogeneity assumptions are the same as in the simple regression model with a single endogenous regressor and only one instrument. See Key Concept 12.3 for a recap using the terminology of general IV regression.
+In the general IV regression model the instrument relevance and instrument exogeneity assumptions are the same as in the simple regression model with a single endogenous regressor and only one instrument. See Key Concept 12.3 for a recap using the terminology of general IV regression.
 
 <div class = "keyconcept"> 
 <h3 class = "right"> Key Concept 12.3 </h3>
@@ -211,13 +218,13 @@ For $Z_{1i},\dots,Z_{mi}$ to be a set of valid instruments, the following two co
 
 1. **Instrument Relevance**: if there are $k$ endogenous variables, $r$ exogenous variables and $m\geq k$ instruments $Z$ and the $\widehat{X}_{1i}^*,\dots,\widehat{X}_{ki}^*$ are the predicted values from the $k$ population first stage regressions, it must hold that $$(\widehat{X}_{1i}^*,\dots,\widehat{X}_{ki}^*, W_{1i}, \dots, W_{ri},1)$$ are not perfectly multicollinear. $1$ denotes the constant regressor which equals $1$ for all observations.
 
-    *Note*: If there is only one endogenous regressor $X_i$, there must be at least one non-zero coefficient on the $Z$'s and the $W$'s in the population regression for this condition to be valid: If all of these coefficients are zero, all the $\widehat{X}^*_i$ are just the mean of $X$ such that there is perfect multicollinearity.
+    *Note*: If there is only one endogenous regressor $X_i$, there must be at least one non-zero coefficient on the $Z$'s and the $W$'s in the population regression for this condition to be valid: if all of the coefficients are zero, all the $\widehat{X}^*_i$ are just the mean of $X$ such that there is perfect multicollinearity.
 
 2. **Instrument Exogeneity**:
 
-All $m$ instruments must be uncorrelated with the error term,
+    All $m$ instruments must be uncorrelated with the error term,
 
-$$\rho_{Z_{1i},u_i} = 0,\dots,\rho_{Z_{mi},u_i} = 0.$$
+    $$\rho_{Z_{1i},u_i} = 0,\dots,\rho_{Z_{mi},u_i} = 0.$$
 
 </div>
 
@@ -345,7 +352,7 @@ and test the joint hypothesis $$H_0: \delta_1 = 0, \dots, \delta_{m} = 0$$ which
 
 </div>
 
-It is important to note that the $J$-statistic discussed in Key Concept 12.5 is only $\chi^2_{m-k}$ distributed when the error term $e_i$ in the regression \@ref(eq:jstatreg) is homoskedastic.  Discussion of the heteroskedasticity-robust $J$-statistic is beyond the scope of this chapter. The reader is referred to Section 18.7 of the book for a theoretical argument. 
+It is important to note that the $J$-statistic discussed in Key Concept 12.5 is only $\chi^2_{m-k}$ distributed when the error term $e_i$ in the regression \@ref(eq:jstatreg) is homoskedastic. A discussion of the heteroskedasticity-robust $J$-statistic is beyond the scope of this chapter. We refer to Section 18.7 of the book for a theoretical argument. 
 
 As for the procedure shown in Key Concept 12.5, further interest lies in applying the $J$-test using the function `r ttcode("linearHypothesis()")` in `r ttcode("R")`, which will be shown in context of estimation of the demand elasticity for cigarettes discussed in the next chapter. 
 
@@ -360,7 +367,8 @@ However, since the role of the influence of the tobacco and cigarette industry i
 The model to be estimated by TSLS using the general sales tax and the cigarette-specific sales tax as instruments hence is
 
 \begin{align}
-  \log(Q_{i,1995}^{cigarettes}) - \log(Q_{i,1995}^{cigarettes}) =& \, \beta_0 + \beta_1 \left[\log(P_{i,1995}^{cigarettes}) - \log(P_{i,1985}^{cigarettes}) \right] \\ & \, + \beta_2 \left[\log(income_{i,1995}) - \log(income_{i,1985})\right] + u_i (\#eq:diffivreg).
+\begin{split}
+  \log(Q_{i,1995}^{cigarettes}) - \log(Q_{i,1995}^{cigarettes}) =& \, \beta_0 + \beta_1 \left[\log(P_{i,1995}^{cigarettes}) - \log(P_{i,1985}^{cigarettes}) \right] \\ +& \beta_2 \left[\log(income_{i,1995}) - \log(income_{i,1985})\right] + u_i. \end{split}(\#eq:diffivreg)
 \end{align}
 
 Prior to the estimation using `r ttcode("ivreg()")` we define differences from 1985 to 1995 for the dependent variable, the regressors and both instruments. 
@@ -382,7 +390,7 @@ salestaxdiff <- (c1995$taxs - c1995$tax)/c1995$cpi - (c1985$taxs - c1985$tax)/c1
 cigtaxdiff <- c1995$tax/c1995$cpi - c1985$tax/c1985$cpi
 ```
 
-We perform three estimations of \@ref(eq:diffivreg) using `r ttcode("ivreg()")`:
+We now perform three different IV estimations of \@ref(eq:diffivreg) using `r ttcode("ivreg()")`:
 
 1. TSLS using only the difference in the sales taxes between 1985 and 1995 as the instrument.
 
@@ -445,7 +453,7 @@ stargazer(cig_ivreg_diff1, cig_ivreg_diff2,cig_ivreg_diff3,
 
 <!--/html_preserve-->
 
-```{r, message=F, warning=F, results='asis', echo=F, eval=my_output == "latex"}
+```{r, message=F, warning=F, results='asis', eval=my_output == "latex"}
 library(stargazer)
 
 stargazer(cig_ivreg_diff1, cig_ivreg_diff2,cig_ivreg_diff3,
@@ -471,21 +479,21 @@ mod_relevance3 <- lm(pricediff ~ incomediff + salestaxdiff + cigtaxdiff)
 ```
 
 ```{r}
-# check instrument relevance for model 1
+# check instrument relevance for model (1)
 linearHypothesis(mod_relevance1, 
                  "salestaxdiff = 0", 
                  vcov = vcovHC(mod_relevance1, type = "HC1"))
 ```
 
 ```{r}
-# check instrument relevance for model 2
+# check instrument relevance for model (2)
 linearHypothesis(mod_relevance2, 
                  "cigtaxdiff = 0", 
                  vcov = vcovHC(mod_relevance2, type = "HC1"))
 ```
 
 ```{r}
-# check instrument relevance for model 3
+# check instrument relevance for model (3)
 linearHypothesis(mod_relevance3, 
                  c("salestaxdiff = 0", "cigtaxdiff = 0"), 
                  vcov = vcovHC(mod_relevance3, type = "HC1"))
@@ -513,11 +521,11 @@ pchisq(cig_OR_test[2,5], df = 1, lower.tail = FALSE)
 
 Since this value is smaller than $0.05$ we reject the hypothesis that both instruments are exogenous at the level of $5\%$. This means one of the following: 
 
-1. The sales tax is an invalid instrument.
-2. The cigarettes-specific sales tax is an invalid instrument.
+1. The sales tax is an invalid instrument for the per-pack price. 
+2. The cigarettes-specific sales tax is an invalid instrument for the per-pack price.
 3. Both instruments are invalid.
 
-In the book it is argued that the assumption of instrument exogeneity is more likely to hold for the general sales tax (see Chapter 12.4 of the book) such that the IV estimate of the long-run elasticity of demand for cigarettes we consider the most trustworthy is $-0.94$, the estimate obtained using TSLS with only the general sales tax as an instrument. 
+In the book it is argued that the assumption of instrument exogeneity is more likely to hold for the general sales tax (see Chapter 12.4 of the book) such that the IV estimate of the long-run elasticity of demand for cigarettes we consider the most trustworthy is $-0.94$, the estimate obtained using TSLS with the general sales tax as the only instrument. 
 
 The interpretation of this estimate is that over a 10-year period, an increase in the average price per package by one percent is expected to decrease consumption by about $0.94$ percentage points. This suggests that, in the long run, price increases can reduce cigarette consumption considerably.
 
