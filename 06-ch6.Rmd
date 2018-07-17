@@ -15,8 +15,9 @@ library(MASS)
 
 The previous analysis of the relationship between test score and class size discussed in Chapters \@ref(lrwor) and \@ref(htaciitslrm) has a major flaw: we ignored other determinants of the dependent variable (test score) that correlate with the regressor (class size). Remember that influences on the dependent variable which are not captured by the model are collected in the error term which we assume to be uncorrelated with the regressor. However, this assumption is violated if we exclude determinants of the dependent variable which vary with the regressor. This might induce an estimation bias, i.e. the mean of the OLS estimator's sampling distribution is no longer equal to the true mean. In our example we therefore estimate the effect on test scores of a unit change in the student-teacher ratio wrongly, on average. This issue is called *omitted variable bias* and is summarized by Key Concept 6.1.
 
+```{r, eval = my_output == "html", results='asis', echo=FALSE}
+cat('
 <div class="keyconcept">
-
 <h3 class = "right"> Key Concept 6.1 </h3>          
 <h3 class = "left"> Omitted Variable Bias in Regression with a Single Regressor </h3>
 
@@ -25,17 +26,40 @@ Omitted variable bias is the bias in the OLS estimator that arises when the regr
 1. $X$ is correlated with the omitted variable. 
 2. The omitted variable is a determinant of the dependent variable $Y$.
 
-Together, 1. and 2. result in a violation of the first OLS assumption $E(u_i\vert X_i) = 0$. Formally, the resulting bias can be expressed as
+Together, 1. and 2. result in a violation of the first OLS assumption $E(u_i\\vert X_i) = 0$. Formally, the resulting bias can be expressed as
 
-$$ \hat\beta_1 \xrightarrow[]{p} \beta_1 + \rho_{Xu} \frac{\sigma_u}{\sigma_X}. \tag{6.1} $$
+$$ \\hat\\beta_1 \\xrightarrow[]{p} \\beta_1 + \\rho_{Xu} \\frac{\\sigma_u}{\\sigma_X}. \\tag{6.1} $$
 See Appendix 6.1 of the book for a detailed derivation. <br>
-(<a href="#mjx-eqn-6.1">6.1</a>) states that OVB is a problem that cannot be alleviated by increasing the number of observations used to estimate $\beta_1$ since then $\hat\beta_1$ is inconsistent: OVB prevents the estimator from converging in probability to the true parameter value. Strength and direction of the bias are determined by $\rho_{Xu}$, the correlation between the error term and the regressor.
+(<a href="#mjx-eqn-6.1">6.1</a>) states that OVB is a problem that cannot be alleviated by increasing the number of observations used to estimate $\\beta_1$ since then $\\hat\\beta_1$ is inconsistent: OVB prevents the estimator from converging in probability to the true parameter value. Strength and direction of the bias are determined by $\\rho_{Xu}$, the correlation between the error term and the regressor.
 
 </div>
+')
+```
+
+```{r, eval = my_output == "latex", results='asis', echo=FALSE}
+cat('\\begin{keyconcepts}[Omitted Variable Bias in Regression with a Single Regressor]{6.1}
+Omitted variable bias is the bias in the OLS estimator that arises when the regressor, $X$, is \\textit{correlated} with an omitted variable. For omitted variable bias to occur, two conditions must be fulfilled:\\newline
+
+\\begin{enumerate}
+\\item $X$ is correlated with the omitted variable. 
+\\item The omitted variable is a determinant of the dependent variable $Y$.
+\\end{enumerate}\\vspace{0.5cm}
+
+Together, 1. and 2. result in a violation of the first OLS assumption $E(u_i\\vert X_i) = 0$. Formally, the resulting bias can be expressed as
+
+\\begin{align}
+\\hat\\beta_1 \\xrightarrow[]{p} \\beta_1 + \\rho_{Xu} \\frac{\\sigma_u}{\\sigma_X}.
+\\end{align}
+
+See Appendix 6.1 of the book for a detailed derivation.\\newline
+(6.1) states that OVB is a problem that cannot be alleviated by increasing the number of observations used to estimate $\\beta_1$ since then $\\hat\\beta_1$ is inconsistent: OVB prevents the estimator from converging in probability to the true parameter value. Strength and direction of the bias are determined by $\\rho_{Xu}$, the correlation between the error term and the regressor.
+\\end{keyconcepts}
+')
+```
 
 In the example of test score and class size, it is easy to come up with variables that may cause such a bias, if omitted from the model. As mentioned in the book, a highly relevant variable could be the percentage of English learners in the school district: it is plausible that the ability to speak, read and write English is an important factor for successful learning. Therefore, students that are still learning English are likely to perform worse in the tests than native speakers. Also, it is conceivable that the share of English learning students is bigger in school districts where class sizes are relatively large: think of poor urban districts were a lot of immigrants live. <br>
 
-Let us think about a possible bias induced by omitting the share of English learning students ($PctEL$) in view of (<a href="#mjx-eqn-6.1">6.1</a>). When the estimated regression model does not include $PctEL$ as a regressor although the true data generating process (DGP) is 
+Let us think about a possible bias induced by omitting the share of English learning students ($PctEL$) in view of (6.1). When the estimated regression model does not include $PctEL$ as a regressor although the true data generating process (DGP) is 
 
 $$ TestScore = \beta_0 + \beta_1 \times STR + \beta_2 \times PctEL \tag{6.2}$$ 
 
@@ -95,23 +119,37 @@ As in the simple regression model, this relation does not hold exactly since the
 
 $$ Y_i = \beta_0 + \beta_1 X_{1i} + \beta_2 X_{2i} + \beta_3 X_{3i} + \dots + \beta_k X_{ki} + u_i \ \ , \ \ i=1,\dots,n. \tag{6.4} $$ 
 
+```{r, eval = my_output == "html", results='asis', echo=FALSE}
+cat('
 <div class="keyconcept">
-
 <h3 class = "right"> Key Concept 6.2 </h3>          
 <h3 class = "left"> The Multiple Regression Model </h3>
 
 The multiple regression model is
 
-$$ Y_i = \beta_0 + \beta_1 X_{1i} + \beta_2 X_{2i} + \beta_3 X_{3i} + \dots + \beta_k X_{ki} + u_i \ \ , \ \ i=1,\dots,n.  $$ 
+$$ Y_i = \\beta_0 + \\beta_1 X_{1i} + \\beta_2 X_{2i} + \\beta_3 X_{3i} + \\dots + \\beta_k X_{ki} + u_i \\ \\ , \\ \\ i=1,\\dots,n.  $$ 
 
 The designations are similar to those in the simple regression model:
 
-- $Y_i$ is the $i^{th}$ observation in the dependent variable. Observations on the $k$ regressors are denoted by $X_{1i},X_{2i},\dots,X_{ki}$ and $u_i$ is the error term.
+- $Y_i$ is the $i^{th}$ observation in the dependent variable. Observations on the $k$ regressors are denoted by $X_{1i},X_{2i},\\dots,X_{ki}$ and $u_i$ is the error term.
 - The average relationship between $Y$ and the regressors is given by the population regression line
-$$ E(Y_i\vert X_{1i}=x_1, X_{2i}=x_2,  X_{3i}=x_3,\dots, X_{ki}=x_k) = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_3 + \dots + \beta_k x_k. $$
-- $\beta_0$ is the intercept; it is the expected value of $Y$ when all $X$s equal $0$. $\beta_j \ , \ j=1,\dots,k$ are the coefficients on $X_j \ , \ j=1,\dots,k$. $\beta_1$ measures the expected change in $Y_i$ that results from a one unit change in $X_{1i}$ while holding all other regressors constant. 
-
+$$ E(Y_i\\vert X_{1i}=x_1, X_{2i}=x_2,  X_{3i}=x_3,\\dots, X_{ki}=x_k) = \\beta_0 + \\beta_1 x_1 + \\beta_2 x_2 + \\beta_3 x_3 + \\dots + \\beta_k x_k. $$
+- $\\beta_0$ is the intercept; it is the expected value of $Y$ when all $X$s equal $0$. $\\beta_j \\ , \\ j=1,\\dots,k$ are the coefficients on $X_j \\ , \\ j=1,\\dots,k$. $\\beta_1$ measures the expected change in $Y_i$ that results from a one unit change in $X_{1i}$ while holding all other regressors constant. 
 </div>
+')
+```
+
+```{r, eval = my_output == "latex", results='asis', echo=FALSE}
+cat('\\begin{keyconcepts}[The Multiple Regression Model]{6.2}
+\\begin{itemize}
+\\item $Y_i$ is the $i^{th}$ observation in the dependent variable. Observations on the $k$ regressors are denoted by $X_{1i},X_{2i},\\dots,X_{ki}$ and $u_i$ is the error term.
+\\item The average relationship between $Y$ and the regressors is given by the population regression line
+$$ E(Y_i\\vert X_{1i}=x_1, X_{2i}=x_2,  X_{3i}=x_3,\\dots, X_{ki}=x_k) = \\beta_0 + \\beta_1 x_1 + \\beta_2 x_2 + \\beta_3 x_3 + \\dots + \\beta_k x_k. $$
+\\item $\\beta_0$ is the intercept; it is the expected value of $Y$ when all $X$s equal $0$. $\\beta_j \\ , \\ j=1,\\dots,k$ are the coefficients on $X_j \\ , \\ j=1,\\dots,k$. $\\beta_1$ measures the expected change in $Y_i$ that results from a one unit change in $X_{1i}$ while holding all other regressors constant. 
+\\end{itemize}
+\\end{keyconcepts}
+')
+```
 
 Key Concept 6.2 summarizes the core concepts of the multiple regression model.
 
@@ -277,24 +315,46 @@ As already mentioned, $R^2$ and $\overline{R^2}$ may be used to quantify how goo
 
 In the multiple regression model we extend the three least squares assumptions imposed for the simple regression model (see Chapter \@ref(lrwor)) and add a fourth assumption. These assumptions are presented in Key Concept 6.4. While we will not go into the details of assumptions 1, 2 and 3 since their ideas have been discussed before and are easily generalized to the case of multiple regressors, we will focus on the fourth assumption. This forth assumption forbids the occurrence of perfect correlation between the regressors. 
 
+```{r, eval = my_output == "html", results='asis', echo=FALSE}
+cat('
 <div class="keyconcept">
-
 <h3 class = "right"> Key Concept 6.4 </h3>          
 <h3 class = "left"> The Least Squares Assumptions in the Multiple Regression Model </h3>
 
 The multiple regression model is given by
 
-$$ Y_i = \beta_0 + \beta_1 X_{1i} + \beta_1 X_{2i} + \dots + \beta_k X_{ki} + u_i \ , \ i=1,\dots,n. $$
+$$ Y_i = \\beta_0 + \\beta_1 X_{1i} + \\beta_1 X_{2i} + \\dots + \\beta_k X_{ki} + u_i \\ , \\ i=1,\\dots,n. $$
 
 The OLS assumptions in the multiple regression model are an extension of the ones made for the simple regression model:
 
-1. Regressors $(X_{1i}, X_{2i}, \dots, X_{ki}, Y_i) \ , \ i=1,\dots,n$ are drawn such that the i.i.d. assumption holds. 
+1. Regressors $(X_{1i}, X_{2i}, \\dots, X_{ki}, Y_i) \\ , \\ i=1,\\dots,n$ are drawn such that the i.i.d. assumption holds. 
 2. $u_i$ is an error term with conditional mean zero given the regressors, i.e.
-$$ E(u_i\vert X_{1i}, X_{2i}, \dots, X_{ki}) = 0. $$
-3. Large outliers are unlikely, formally $X_{1i},\dots,X_{ki}$ and $Y_i$ have finite fourth moments.
+$$ E(u_i\\vert X_{1i}, X_{2i}, \\dots, X_{ki}) = 0. $$
+3. Large outliers are unlikely, formally $X_{1i},\\dots,X_{ki}$ and $Y_i$ have finite fourth moments.
 4. No perfect multicollinearity.
 
 </div>
+')
+```
+
+```{r, eval = my_output == "latex", results='asis', echo=FALSE}
+cat('\\begin{keyconcepts}[The Least Squares Assumptions in the Multiple Regression Model]{6.4}
+The multiple regression model is given by
+
+$$ Y_i = \\beta_0 + \\beta_1 X_{1i} + \\beta_1 X_{2i} + \\dots + \\beta_k X_{ki} + u_i \\ , \\ i=1,\\dots,n. $$
+
+The OLS assumptions in the multiple regression model are an extension of the ones made for the simple regression model:\\newline
+
+\\begin{enumerate}
+\\item Regressors $(X_{1i}, X_{2i}, \\dots, X_{ki}, Y_i) \\ , \\ i=1,\\dots,n$ are drawn such that the i.i.d. assumption holds. 
+\\item $u_i$ is an error term with conditional mean zero given the regressors, i.e.
+$$ E(u_i\\vert X_{1i}, X_{2i}, \\dots, X_{ki}) = 0. $$
+\\item Large outliers are unlikely, formally $X_{1i},\\dots,X_{ki}$ and $Y_i$ have finite fourth moments.
+\\item No perfect multicollinearity.
+\\end{enumerate}
+\\end{keyconcepts}
+')
+```
 
 ### Multicollinearity {-}
 
@@ -526,14 +586,26 @@ Since we call <tt>var()</tt> on matrices rather than vectors, the outcomes are e
 
 As in simple linear regression, different samples will produce different values of the OLS estimators in the multiple regression model. Here again this variation leads to uncertainty of those estimators and we seek to describe it using their sampling distribution(s). In short, if the assumption made in Key Concept 6.4 hold, the large sample distribution of $\hat\beta_0,\hat\beta_1,\dots,\hat\beta_k$ is multivariate normal and the individual estimators themselves are also normally distributed. Key Concept 6.5 summarizes the corresponding statements made in Chapter 6.6 of the book. A more technical derivation of these results can be found in Chapter 18 of the book. 
 
+```{r, eval = my_output == "html", results='asis', echo=FALSE}
+cat('
 <div class="keyconcept">
-
 <h3 class = "right"> Key Concept 6.5 </h3>          
-<h3 class = "left"> Large-sample distribution of $\hat\beta_0,\hat\beta_1,\dots,\hat\beta_k$ </h3>
+<h3 class = "left"> Large-sample distribution of $\\hat\\beta_0,\\hat\\beta_1,\\dots,\\hat\\beta_k$ </h3>
 
-If the least squares assumptions in the multiple regression model (see Key Concept 6.4) hold, then in large samples, the OLS estimators $\hat\beta_0,\hat\beta_1,\dots,\hat\beta_k$ are jointly normally distributed. We also say that their joint distribution is *multivariate* normal. Further, each $\hat\beta_j$ is distributed as $N(\beta_j,\sigma_{\beta_j}^2)$.
+If the least squares assumptions in the multiple regression model (see Key Concept 6.4) hold, then in large samples, the OLS estimators $\\hat\\beta_0,\\hat\\beta_1,\\dots,\\hat\\beta_k$ are jointly normally distributed. We also say that their joint distribution is *multivariate* normal. Further, each $\\hat\\beta_j$ is distributed as $N(\\beta_j,\\sigma_{\\beta_j}^2)$.
 
 </div>
+')
+```
+
+```{r, eval = my_output == "latex", results='asis', echo=FALSE}
+cat('\\begin{keyconcepts}[Large-sample distribution of $\\hat\\beta_0,\\hat\\beta_1,\\dots,\\hat\\beta_k$]{6.5}
+
+If the least squares assumptions in the multiple regression model (see Key Concept 6.4) hold, then in large samples, the OLS estimators $\\hat\\beta_0,\\hat\\beta_1,\\dots,\\hat\\beta_k$ are jointly normally distributed. We also say that their joint distribution is \\textit{multivariate} normal. Further, each $\\hat\\beta_j$ is distributed as $N(\\beta_j,\\sigma_{\\beta_j}^2)$.
+
+\\end{keyconcepts}
+')
+```
 
 Essentially, Key Concept 6.5 states that, if the sample size is large, we can approximate the individual sampling distributions of the coefficient estimators by specific normal distributions and their joint sampling distribution by a multivariate normal distribution.
 
