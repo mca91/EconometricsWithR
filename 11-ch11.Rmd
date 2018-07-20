@@ -18,12 +18,12 @@ Of course, we will also see how to estimate abovementioned models using `r ttcod
 
 The following packages and their dependencies are needed for reproduction of the code chunks presented throughout this chapter on your computer:
 
-+ `r ttcode("AER")`
-+ `r ttcode("stargazer")`
++ `r ttcode("AER")` [@R-AER]
++ `r ttcode("stargazer")` [@R-stargazer]
 
 Check whether the following code chunk runs without any errors.
 
-```{r, warning=FALSE, message=FALSE, eval=FALSE}
+```{r, warning=FALSE, message=FALSE}
 library(AER)
 library(stargazer)
 ```
@@ -105,7 +105,7 @@ denymod1 <- lm(deny ~ pirat, data = HMDA)
 denymod1
 ```
 
-We plot the data and the regression line to reproduce Figure 11.1 of the book next.
+Next, we plot the data and the regression line to reproduce Figure 11.1 of the book.
 
 ```{r}
 # plot data
@@ -644,8 +644,6 @@ probit_HMDA_4 <- glm(deny ~ black * (pirat + hirat) + lvrat + chist + mhist + ph
 Just as in previous chapters, we use the package `r ttcode("sandwich")` for computation of heteroskedasticity-robust standard errors of the coefficient estimators in all models and store these in an object of the type `r ttcode("list")` which is then used as the argument `r ttcode("se")` in `r ttcode("stargazer()")`.
 
 ```{r, eval=FALSE}
-library(stargazer)
-
 rob_se <- list(
   sqrt(diag(vcovHC(lpm_HMDA, type = "HC1"))),
   sqrt(diag(vcovHC(logit_HMDA, type = "HC1"))),
@@ -667,7 +665,7 @@ stargazer(lpm_HMDA, logit_HMDA, probit_HMDA_1, probit_HMDA_2, probit_HMDA_3, pro
 
 <!--html_preserve-->
 
-```{r, message=F, warning=F, results='asis', echo=F, eval=my_output == "html"}
+```{r hmdad, message=F, warning=F, results='asis', echo=F, eval=my_output == "html"}
 library(stargazer)
 
 rob_se <- list(
@@ -680,7 +678,6 @@ rob_se <- list(
 )
 
 stargazer(lpm_HMDA, logit_HMDA, probit_HMDA_1, probit_HMDA_2, probit_HMDA_3, probit_HMDA_4, 
-          title = "HMDA Data: LPM, Probit and Logit Models",
           digits = 3,
           type = "html", 
           se = rob_se,
@@ -688,6 +685,8 @@ stargazer(lpm_HMDA, logit_HMDA, probit_HMDA_1, probit_HMDA_2, probit_HMDA_3, pro
           model.numbers = FALSE,
           column.labels = c("(1)", "(2)", "(3)", "(4)", "(5)", "(6)")
           )
+
+stargazer_html_title("HMDA Data: LPM, Probit and Logit Models", "hmdad")
 ```
 
 <!--/html_preserve-->
@@ -705,7 +704,7 @@ rob_se <- list(
 )
 
 stargazer(lpm_HMDA, logit_HMDA, probit_HMDA_1, probit_HMDA_2, probit_HMDA_3, probit_HMDA_4, 
-          title = "(\\#tab:hmdad) HMDA Data: LPM, Probit and Logit Models",
+          title = "\\label{tab:hmdad} HMDA Data: LPM, Probit and Logit Models",
           digits = 3,
           type = "latex",
           float.env = "sidewaystable",

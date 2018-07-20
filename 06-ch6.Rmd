@@ -2,9 +2,9 @@
 
 In what follows we introduce linear regression models that use more than just one explanatory variable and discuss important key concepts in multiple regression. As we broaden our scope beyond the relationship of only two variables (the dependent and a single regressor) some potential issues arise such as *multicollinearity* and *omitted variable bias* (OVB). In particular, this chapter deals with omitted variables and their hazard to causal interpretation of OLS-estimated coefficients. 
 
-Naturally, we will introduce estimation of multiple regression models using <tt>R</tt>. We will also advocate thoughtful usage of multiple regression models by doing simulation studies that demonstrate the consequences of using highly correlated regressors or a misspecified model. 
+Naturally, we will introduce estimation of multiple regression models using `r ttcode("R")`. We will also advocate thoughtful usage of multiple regression models by doing simulation studies that demonstrate the consequences of using highly correlated regressors or a misspecified model. 
 
-The packages <tt>AER</tt> and <tt>MASS</tt> are needed for reproducing the code presented in this chapter. Make sure that the following code chunk executes without any errors.
+The packages `r ttcode("AER")` [@R-AER] and `r ttcode("MASS")` [@R-MASS] are needed for reproducing the code presented in this chapter. Make sure that the following code chunk executes without any errors.
 
 ```{r, warning=FALSE, message=FALSE, eval=FALSE}
 library(AER)
@@ -13,7 +13,7 @@ library(MASS)
 
 ## Omitted Variable Bias
 
-The previous analysis of the relationship between test score and class size discussed in Chapters \@ref(lrwor) and \@ref(htaciitslrm) has a major flaw: we ignored other determinants of the dependent variable (test score) that correlate with the regressor (class size). Remember that influences on the dependent variable which are not captured by the model are collected in the error term which we assume to be uncorrelated with the regressor. However, this assumption is violated if we exclude determinants of the dependent variable which vary with the regressor. This might induce an estimation bias, i.e. the mean of the OLS estimator's sampling distribution is no longer equal to the true mean. In our example we therefore estimate the effect on test scores of a unit change in the student-teacher ratio wrongly, on average. This issue is called *omitted variable bias* and is summarized by Key Concept 6.1.
+The previous analysis of the relationship between test score and class size discussed in Chapters \@ref(lrwor) and \@ref(htaciitslrm) has a major flaw: we ignored other determinants of the dependent variable (test score) that correlate with the regressor (class size). Remember that influences on the dependent variable which are not captured by the model are collected in the error term which we assume to be uncorrelated with the regressor. However, this assumption is violated if we exclude determinants of the dependent variable which vary with the regressor. This might induce an estimation bias, i.e. the mean of the OLS estimator's sampling distribution is no longer equal to the true mean. In our example we therefore estimate the effect on test scores of a unit change in the student-teacher ratio wrongly, on average. This issue is called *omitted variable bias* (OVB) and is summarized by Key Concept 6.1.
 
 ```{r, eval = my_output == "html", results='asis', echo=FALSE}
 cat('
@@ -67,7 +67,7 @@ where $STR$ and $PctEL$ are correlated, we have
 
 $$\rho_{STR,PctEL}\neq0.$$
 
-Let us investigate this using <tt>R</tt>. After defining our variables we may compute the correlation between $STR$ and $PctEL$ as well as the correlation between $STR$ and $TestScore$.
+Let us investigate this using `r ttcode("R")`. After defining our variables we may compute the correlation between $STR$ and $PctEL$ as well as the correlation between $STR$ and $TestScore$.
 
 ```{r, message=F, warnings=F}
 # load the AER package
@@ -87,12 +87,12 @@ cor(CASchools$STR, CASchools$english)
 
 The fact that $\widehat{\rho}_{STR, Testscore} = -0.2264$ is cause for concern that omitting $PctEL$ leads to a negatively biased estimate $\hat\beta_1$ since this indicates that $\rho_{Xu} < 0$ and we have $\sigma_X>0$, $\sigma_u>0$ by definition. As a consequence we expect $\hat\beta_1$,  the coefficient on $STR$, to be too large in absolute value. Put differently, the OLS estimate of $\hat\beta_1$ suggests that small classes improve test scores but the effect of small classes is overestimated as it captures the effect of having fewer English learners, too. 
 
-What happens to the magnitude of $\hat\beta_1$ if we add the variable $PctEL$ to the regression, that is if we estimate the model 
+What happens to the magnitude of $\hat\beta_1$ if we add the variable $PctEL$ to the regression, that is, if we estimate the model 
 $$ TestScore = \beta_0 + \beta_1 \times STR + \beta_2 \times PctEL + u $$
 
 instead? And what do we expect about the sign of $\hat\beta_2$, the estimated coefficient on $PctEL$? Following the reasoning above we should still end up with a negative but larger coefficient estimate $\hat\beta_1$ than before and a negative estimate $\hat\beta_2$. 
 
-Let us estimate both regression models and compare. Performing a multiple regression in <tt>R</tt> is straightforward. One can simply add additional variables to the right hand side of the `formula` argument of the function <tt>lm()</tt> by using their names and the <tt>+</tt> operator. Notice that <tt>english</tt> is the name of the column in the data set <tt>CASchools</tt> which contains observations on the share of English learning students.
+Let us estimate both regression models and compare. Performing a multiple regression in `r ttcode("R")` is straightforward. One can simply add additional variables to the right hand side of the `formula` argument of the function `r ttcode("lm()")` by using their names and the `r ttcode("+")` operator. Notice that `r ttcode("english")` is the name of the column in the data set `r ttcode("CASchools")` which contains observations on the share of English learning students.
 
 ```{r}
 # estimate both regression models
@@ -109,7 +109,7 @@ The following section discusses some theory on multiple regression models.
 
 ## The Multiple Regression Model
 
-In the multiple regression model we extend the basic concept of the simple regression model discussed in Chapters \@ref(lrwor) and \@ref(htaciitslrm). A multiple regression model enables us to estimate the effect on $Y_i$ of changing a regressor $X_{1i}$ if the remaining regressors $X_{2i},X_{3i}\dots,X_{ki}$ *do not vary*. In fact we already have performed estimation of the multiple regression model (<a href="#mjx-eqn-6.2">6.2</a>) using <tt>R</tt> in the previous section. Recall that the interpretation of the coefficient on student-teacher ratio is the effect on test scores of a one unit change student-teacher ratio if the percentage of English learners is kept constant.
+In the multiple regression model we extend the basic concept of the simple regression model discussed in Chapters \@ref(lrwor) and \@ref(htaciitslrm). A multiple regression model enables us to estimate the effect on $Y_i$ of changing a regressor $X_{1i}$ if the remaining regressors $X_{2i},X_{3i}\dots,X_{ki}$ *do not vary*. In fact we already have performed estimation of the multiple regression model (<a href="#mjx-eqn-6.2">6.2</a>) using `r ttcode("R")` in the previous section. Recall that the interpretation of the coefficient on student-teacher ratio is the effect on test scores of a one unit change student-teacher ratio if the percentage of English learners is kept constant.
 
 Just like in the simple regression model, we assume the true relationship between $Y$ and $X_{1i},X_{2i}\dots\dots,X_{ki}$ to be linear. On average, this relation is given by the population regression function
 
@@ -153,7 +153,7 @@ $$ E(Y_i\\vert X_{1i}=x_1, X_{2i}=x_2,  X_{3i}=x_3,\\dots, X_{ki}=x_k) = \\beta_
 
 Key Concept 6.2 summarizes the core concepts of the multiple regression model.
 
-How can we estimate the coefficients of the multiple regression model (<a href="#mjx-eqn-6.4">6.4</a>)? We will not go to much into detail on this issue as our focus lies on usage of <tt>R</tt> instead of the technical details. However, it should be pointed out that, similarly to the simple regression model, the coefficients of the multiple regression model can be estimated using OLS. As in the simple model, we seek to minimize the sum of squared prediction mistakes by choosing estimates $b_0,b_1,\dots,b_k$ for the coefficients $\beta_0,\beta_1,\dots,\beta_k$ such that 
+How can we estimate the coefficients of the multiple regression model (<a href="#mjx-eqn-6.4">6.4</a>)? We will not go to much into detail on this issue as our focus lies on usage of `r ttcode("R")` instead of the technical details. However, it should be pointed out that, similarly to the simple regression model, the coefficients of the multiple regression model can be estimated using OLS. As in the simple model, we seek to minimize the sum of squared prediction mistakes by choosing estimates $b_0,b_1,\dots,b_k$ for the coefficients $\beta_0,\beta_1,\dots,\beta_k$ such that 
 
 $$\sum_{i=1}^n (Y_i - b_0 - b_1 X_{1i} - b_2 X_{2i} - \dots -  b_k X_{ki})^2 \tag{6.5}$$
 
@@ -164,7 +164,7 @@ The difference between $Y_i$ and its predicted value $\hat{Y}_i$ is called the O
 
 For further information regarding the theory behind multiple regression, see Chapter 18.1 of the book which inter alia presents a derivation of the OLS estimator in the multiple regression model using matrix notation.
 
-Now let us jump back to the example of test scores and class sizes. The estimated model object is `mult.mod`. As for simple regression models we can use <tt>summary()</tt> to obtain information on estimated coefficients and model statistics.
+Now let us jump back to the example of test scores and class sizes. The estimated model object is `mult.mod`. As for simple regression models we can use `r ttcode("summary()")` to obtain information on estimated coefficients and model statistics.
 
 ```{r}
 summary(mult.mod)$coef
@@ -172,7 +172,7 @@ summary(mult.mod)$coef
 
 So the estimated multiple regression model is
 
-$$ \widehat{TestScore} = \underset{(7.41)}{686.03} - \underset{(0.38)}{1.10} \times STR - \underset{(0.04)}{0.65} \times PctEL \tag{6.6}.  $$
+$$ \widehat{TestScore} = 686.03 - 1.10 \times STR - 0.65 \times PctEL \tag{6.6}.  $$
 
 Unlike in the simple regression model where the data can be represented by points in the two-dimensional Cartesian coordinate system, we are now dealing with three dimensions. Hence observations can be represented by points in the three-dimensional real space. Therefore (<a href="#mjx-eqn-6.6">6.6</a>) is now longer a regression line but a *regression plane*. This idea extends to higher dimensions when we further expand the number of regressors $k$. We then say that the regression model can be represented a hyperplane in the $k+1$ dimensional space. It is already hard to imagine such a space if $k=3$ and we best stick with the general idea that, in the multiple regression model, the dependent variable is explained by a *linear combination of the regressors*. However, in the present case we are able to visualize the situation. The following figure is an interactive 3D visualization of the data and the estimated regression plane (<a href="#mjx-eqn-6.6">6.6</a>).
 
@@ -235,11 +235,13 @@ p <- plot_ly(x=~x1.seq,
   )
 
 p <- p %>% config(showLink = F, displayModeBar = F);p
-} else {
-  cat("This content is availale in the HTML version only.")
 }
 ```
 </center>
+
+```{r, echo=FALSE, eval=my_output=="latex", results='asis'}
+cat('\\begin{center}\\textit{This interactive part of URFITE is only available in the HTML version.}\\end{center}')
+```
 
 We observe that the estimated regression plane fits the data reasonably well --- at least with regard to the shape and spatial position of the point cloud. The color of the markers is an indicator for the absolute deviation from the predicted regression plane. Observations that are colored more reddish lie close to the regression plane while the color shifts to blue with growing distance. An anomaly that can be seen from the plot is that there might be heteroskedasticity: we see that the dispersion of regression errors made, i.e. the distance of observations to the regression plane shows a tendency to decrease as the share of English learning students increases.   
 
@@ -256,11 +258,11 @@ $$ s_{\hat u}^2 = \frac{1}{n-k-1} \, SSR $$
 
 with $k$ denoting the number of regressors *excluding* the intercept.
 
-While <tt>summary()</tt> computes the $R^2$ just as in the case of a single regressor, it is no reliable measure for multiple regression models. This is due to $R^2$ becoming larger every time an additional regressor is added to the model since adding a regressor decreases the $SSR$ --- at least unless the respective estimated coefficient is exactly zero what practically never happens to be the case (see Chapter 6.4 of the book for a detailed argument). The adjusted $R^2$ takes this into consideration by "punishing" the addition of regressors using a correction factor. So the adjusted $R^2$, or simply $\overline{R^2}$, is a modified version of $R^2$. It is defined as
+While `r ttcode("summary()")` computes the $R^2$ just as in the case of a single regressor, it is no reliable measure for multiple regression models. This is due to $R^2$ becoming larger every time an additional regressor is added to the model since adding a regressor decreases the $SSR$ --- at least unless the respective estimated coefficient is exactly zero what practically never happens to be the case (see Chapter 6.4 of the book for a detailed argument). The adjusted $R^2$ takes this into consideration by "punishing" the addition of regressors using a correction factor. So the adjusted $R^2$, or simply $\overline{R^2}$, is a modified version of $R^2$. It is defined as
 
 $$ \overline{R^2} = 1-\frac{n-1}{n-k-1} \, \frac{SSR}{TSS}. $$
 
-As you may have already suspected, <tt>summary()</tt> adjusts the formula for $SER$ and it computes $\overline{R^2}$ and of course $R^2$ by default, thereby leaving the decision which measure to rely on to the user. 
+As you may have already suspected, `r ttcode("summary()")` adjusts the formula for $SER$ and it computes $\overline{R^2}$ and of course $R^2$ by default, thereby leaving the decision which measure to rely on to the user. 
 
 You can find both measures at the bottom of the output produced by calling `summary(mult.mod)`. 
 
@@ -293,7 +295,7 @@ c("SER" = SER, "R2" = Rsq, "Adj.R2" = adj_Rsq)
 ```
 </div>
 
-We find that the results do match. Now, what can be said about the fit of our multiple regression model for test scores with the percentage of English learners as an additional regressor? Does it improve on the simple model including only an intercept and a measure of the class size? The answer is yes: this is easily seen by comparing these measures of fit with those obtained for the simple regression model <tt>mod</tt>.
+We find that the results do match. Now, what can be said about the fit of our multiple regression model for test scores with the percentage of English learners as an additional regressor? Does it improve on the simple model including only an intercept and a measure of the class size? The answer is yes: this is easily seen by comparing these measures of fit with those obtained for the simple regression model `r ttcode("mod")`.
 
 ```{r}
 # SER
@@ -358,15 +360,15 @@ $$ E(u_i\\vert X_{1i}, X_{2i}, \\dots, X_{ki}) = 0. $$
 
 ### Multicollinearity {-}
 
-If two or more regressors in a multiple regression model are *strongly* correlated we say that there is *multicollinearity*. If the correlation between two or more regressors is perfect , that is they one regressor can be written as a linear combination of the other(s), we refer to the situation as *perfect multicollinearity*. While strong multicollinearity in general is unpleasant as it causes the variance of the OLS estimator to be large (we will discuss is in more detail later), the presence of perfect multicollinearity makes it impossible to solve for the OLS estimator, that is, the model cannot be estimated in the first place.  
+If two or more regressors in a multiple regression model are *strongly* correlated we say that there is *multicollinearity*. If the correlation between two or more regressors is perfect, that is, one regressor can be written as a linear combination of the other(s), we refer to the situation as *perfect multicollinearity*. While strong multicollinearity in general is unpleasant as it causes the variance of the OLS estimator to be large (we will discuss is in more detail later), the presence of perfect multicollinearity makes it impossible to solve for the OLS estimator, i.e. the model cannot be estimated in the first place.  
 
-The next section presents some examples of perfect multicollinearity and demonstrates how R, specifically the function <tt>lm()</tt> deals with them.
+The next section presents some examples of perfect multicollinearity and demonstrates how R, specifically the function `r ttcode("lm()")` deals with them.
 
 #### Examples of Perfect Multicollinearity {-}
 
-How does <tt>R</tt> react if we want it to estimate a model with perfectly correlated regressors?
+How does `r ttcode("R")` react if we want it to estimate a model with perfectly correlated regressors?
 
-If we use the <tt>lm</tt> function to estimate a model with a set of regressors that suffer from perfect multicollinearity, the system will produce a warning in the first line of the coefficient section of the output (<tt>1 not defined because of singularities</tt>) and ignore the regressor(s) which is (are) assumed to be a linear combination of the other(s). Consider the following example where we add another variable <tt>FracEL</tt>, the fraction of English learners to <tt>CASchools</tt> where observations are scaled values of the observations for <tt>english</tt> and use it as a regressor together with <tt>STR</tt> and <tt>english</tt> in a multiple regression model. In this example <tt>english</tt> and <tt>FracEL</tt> are perfectly collinear. The <tt>R</tt> code is as follows.
+If we use the `r ttcode("lm")` function to estimate a model with a set of regressors that suffer from perfect multicollinearity, the system will produce a warning in the first line of the coefficient section of the output (`r ttcode("1 not defined because of singularities")`) and ignore the regressor(s) which is (are) assumed to be a linear combination of the other(s). Consider the following example where we add another variable `r ttcode("FracEL")`, the fraction of English learners to `r ttcode("CASchools")` where observations are scaled values of the observations for `r ttcode("english")` and use it as a regressor together with `r ttcode("STR")` and `r ttcode("english")` in a multiple regression model. In this example `r ttcode("english")` and `r ttcode("FracEL")` are perfectly collinear. The `r ttcode("R")` code is as follows.
 
 ```{r}
 # define the fraction of English learners        
@@ -379,7 +381,7 @@ mult.mod <- lm(score ~ STR + english + FracEL, data = CASchools)
 summary(mult.mod)                                                 
 ```
 
-Notice that the row <tt>FracEL</tt> in the coefficients section of the output consists of <tt>NA</tt> entries since <tt>FracEL</tt> was excluded from the model.
+Notice that the row `r ttcode("FracEL")` in the coefficients section of the output consists of `r ttcode("NA")` entries since `r ttcode("FracEL")` was excluded from the model.
 
 If we were to compute OLS by hand, we would run into the problem as well but no one would be helping us out! The computation simply fails. Why is this the case? Take the following example:
 
@@ -395,7 +397,7 @@ Let us consider two further examples where our selection of regressors induces p
 
 $$ NS = \begin{cases} 0, \ \ \ \text{if STR < 12} \\ 1 \ \ \ \text{otherwise.} \end{cases} $$
 
-We add the corresponding column to <tt>CASchools</tt> and estimate a multiple regression model with covariates <tt>computer</tt> and <tt>english</tt>.
+We add the corresponding column to `r ttcode("CASchools")` and estimate a multiple regression model with covariates `r ttcode("computer")` and `r ttcode("english")`.
 
 ```{r}
 # if STR smaller 12, NS = 0, else NS = 1
@@ -408,13 +410,13 @@ mult.mod <- lm(score ~ computer + english + NS, data = CASchools)
 summary(mult.mod)                                                  
 ```
 
-Again, the output of <tt>summary(mult.mod)</tt> tells us that inclusion of `NS` in the regression would render the estimation infeasible. What happened here? This is an example where we made a logical mistake when defining the regressor <tt>NS</tt>: if we had taken a closer look at <tt>NS</tt>, the redefined measure for class size, we would have noticed that there is not a single school with $STR<12$ hence $NS$ equals one for all observations. We can check this by printing the contents of `CASchools$NS` to the console or by using the function <tt>table()</tt>, see `?table`.
+Again, the output of `r ttcode("summary(mult.mod)")` tells us that inclusion of `NS` in the regression would render the estimation infeasible. What happened here? This is an example where we made a logical mistake when defining the regressor `r ttcode("NS")`: if we had taken a closer look at `r ttcode("NS")`, the redefined measure for class size, we would have noticed that there is not a single school with $STR<12$ hence $NS$ equals one for all observations. We can check this by printing the contents of `CASchools$NS` to the console or by using the function `r ttcode("table()")`, see `?table`.
 
 ```{r}
 table(CASchools$NS)
 ```
 
-<tt>CASchools$NS</tt> is a vector of $420$ ones and our data set includes $420$ observations. This obviously violates assumption 4 of Key Concept 6.4: remember that observations for the intercept are always $1$ so we have
+`r ttcode("CASchools$NS")` is a vector of $420$ ones and our data set includes $420$ observations. This obviously violates assumption 4 of Key Concept 6.4: remember that observations for the intercept are always $1$ so we have
 
 \begin{align}
   intercept = \, & \lambda \cdot NS \\
@@ -422,7 +424,7 @@ table(CASchools$NS)
   \begin{pmatrix} 1 \\ \vdots \\ 1\end{pmatrix} = \, & \lambda \cdot \begin{pmatrix} 1 \\ \vdots \\ 1\end{pmatrix} \\   \Leftrightarrow \, & \lambda = 1.
 \end{align}
 
-Since both regressors can be written as a linear combination of each other, we face perfect multicollinearity and <tt>R</tt> excludes <tt>NS</tt> from the model. Thus the message to take away is: think carefully about how regressors you generated yourself could possibly interact with unrecognized features of the data set!
+Since both regressors can be written as a linear combination of each other, we face perfect multicollinearity and `r ttcode("R")` excludes `r ttcode("NS")` from the model. Thus the message to take away is: think carefully about how regressors you generated yourself could possibly interact with unrecognized features of the data set!
 
 Another example of perfect multicollinearity is known as the *dummy variable trap*. This may occur when multiple dummy variables are used as regressors. A common case for this is when the dummies are used to sort the data set into mutually exclusive categories. For example, suppose we have spatial information that indicates whether a school is located in the North, West, South or East of the U.S. which allows us to create the dummy variables
 
@@ -469,7 +471,7 @@ since then for all observations $i=1,\dots,n$ the constant term can be written a
 
 and we have perfect multicollinearity. This is what is meant by the "dummy variable trap": not paying attention and falsely including all dummies *and* a constant term in a regression model.
 
-How does <tt>lm()</tt> handle a regression like (<a href="#mjx-eqn-6.8">6.8</a>)? To answer this we first generate some artificial categorical data and append a new column named <tt>directions</tt> to <tt>CASchools</tt> and see how <tt>lm()</tt> behaves when asked to estimate the model.
+How does `r ttcode("lm()")` handle a regression like (<a href="#mjx-eqn-6.8">6.8</a>)? To answer this we first generate some artificial categorical data and append a new column named `r ttcode("directions")` to `r ttcode("CASchools")` and see how `r ttcode("lm()")` behaves when asked to estimate the model.
 
 ```{r}
 # set random seed for reproducibility
@@ -487,9 +489,9 @@ mult.mod <- lm(score ~ STR + english + direction, data = CASchools)
 summary(mult.mod)                                                 
 ```
 
-Notice that <tt>R</tt> solves the problem sketched above on its own by generating and including the dummies <tt>directionNorth</tt>, <tt>directionSouth</tt> and <tt>directionWest</tt> but omitting <tt>directionEast</tt>. Of course, the omission of every other dummy instead would achieve the same. This is done by default. Another solution would be to exclude the constant and to include all dummies instead.
+Notice that `r ttcode("R")` solves the problem sketched above on its own by generating and including the dummies `r ttcode("directionNorth")`, `r ttcode("directionSouth")` and `r ttcode("directionWest")` but omitting `r ttcode("directionEast")`. Of course, the omission of every other dummy instead would achieve the same. This is done by default. Another solution would be to exclude the constant and to include all dummies instead.
 
-Does this mean that the information on schools located in the East is lost? Fortunately, this is not the case: exclusion of <tt>directEast</tt> just alters the interpretation of coefficient estimates on the remaining dummies from absolute to relative. For example, the coefficient estimate on <tt>directionNorth</tt> states that, on average, test scores in the North are about $1.61$ points higher than in the East. 
+Does this mean that the information on schools located in the East is lost? Fortunately, this is not the case: exclusion of `r ttcode("directEast")` just alters the interpretation of coefficient estimates on the remaining dummies from absolute to relative. For example, the coefficient estimate on `r ttcode("directionNorth")` states that, on average, test scores in the North are about $1.61$ points higher than in the East. 
 
 A last example considers the case where a perfect linear relationship arises from redundant regressors. Suppose we have a regressor $PctES$, the percentage of English speakers in the school where
 
@@ -497,7 +499,7 @@ $$ PctES = 100 -  PctEL$$
 
 and both $PctES$ and $PctEL$ are both included in a regression model. One regressor is redundant since the other one conveys the same information. Since this obviously is a case where the regressors can be written as linear combination, we end up with perfect multicollinearity, again. 
 
-Let us do this in <tt>R</tt>.
+Let us do this in `r ttcode("R")`.
 
 ```{r}
 # Percentage of english speakers 
@@ -510,7 +512,7 @@ mult.mod <- lm(score ~ STR + english + PctES, data = CASchools)
 summary(mult.mod)                                                 
 ```
 
-Once more, <tt>lm()</tt> refuses to estimate the full model using OLS and excludes <tt>PctES</tt>.
+Once more, `r ttcode("lm()")` refuses to estimate the full model using OLS and excludes `r ttcode("PctES")`.
 
 See Chapter 18.1 of the book for an explanation of perfect multicollinearity and its consequences to the OLS estimator in general multiple regression models using matrix notation.
 
@@ -580,7 +582,7 @@ var(coefs1)
 var(coefs2)
 ```
 
-Since we call <tt>var()</tt> on matrices rather than vectors, the outcomes are estimates of variance-covariance matrices. We are interested in the variances which are the diagonal elements. We see that due to the high collinearity, the variances of $\hat\beta_1$ and $\hat\beta_2$ have more than tripled: in Econometrics lingo we say that it has become more difficult to estimate the true coefficients precisely. 
+Since we call `r ttcode("var()")` on matrices rather than vectors, the outcomes are estimates of variance-covariance matrices. We are interested in the variances which are the diagonal elements. We see that due to the high collinearity, the variances of $\hat\beta_1$ and $\hat\beta_2$ have more than tripled: in Econometrics lingo we say that it has become more difficult to estimate the true coefficients precisely. 
 
 ## The Distribution of the OLS Estimators in Multiple Regression
 
@@ -609,9 +611,9 @@ If the least squares assumptions in the multiple regression model (see Key Conce
 
 Essentially, Key Concept 6.5 states that, if the sample size is large, we can approximate the individual sampling distributions of the coefficient estimators by specific normal distributions and their joint sampling distribution by a multivariate normal distribution.
 
-How can we use <tt>R</tt> to get an idea of what the joint PDF of the coefficient estimators in multiple regression model looks like? When estimating some model on arbitrary data once, we would end up with a set of point estimates that do not reveal much information on the joint density of the estimators. However, with a large number of estimations using repeatedly randomly sampled data from the same population we could generate a large set of point estimates that allows us to plot an *estimate* of the joint density function.
+How can we use `r ttcode("R")` to get an idea of what the joint PDF of the coefficient estimators in multiple regression model looks like? When estimating some model on arbitrary data once, we would end up with a set of point estimates that do not reveal much information on the joint density of the estimators. However, with a large number of estimations using repeatedly randomly sampled data from the same population we could generate a large set of point estimates that allows us to plot an *estimate* of the joint density function.
 
-The approach we will use to do this in <tt>R</tt> is a follows:
+The approach we will use to do this in `r ttcode("R")` is a follows:
 
 - Generate $10000$ random samples of size $50$ using the DGP
 
@@ -632,7 +634,7 @@ is an error term.
 $$ Y_i = \beta_0 + \beta_1 X_{1i} + \beta_2 X_{2i} + u_i $$
 and save the coefficient estimates $\hat\beta_1$ and $\hat\beta_2$.
 
-- We compute a density estimate of the joint distribution of $\hat\beta_1$ and $\hat\beta_2$ in the model above using the function `kde2d` from the package `MASS`, see `?MASS`. This estimate is then plotted using the function `persp`.
+- We compute a density estimate of the joint distribution of $\hat\beta_1$ and $\hat\beta_2$ in the model above using the function `r ttcode("kde2d()")` from the package `r ttcode("MASS")`, see `?MASS`. This estimate is then plotted using the function `r ttcode("persp()")`.
 
 ```{r, echo=T, message=F, warning=F, fig.align='center'}
 # load packages
@@ -660,7 +662,12 @@ for (i in 1:10000) {
 kde <- kde2d(coefs[, 1], coefs[, 2])
 
 # plot density estimate
-persp(kde,  theta = 310, phi = 30, xlab = "beta_1", ylab = "beta_2", zlab = "Est. Density")
+persp(kde, 
+      theta = 310, 
+      phi = 30, 
+      xlab = "beta_1", 
+      ylab = "beta_2", 
+      zlab = "Est. Density")
 ```
 
 From the plot above we can see that the density estimate has some similarity to a bivariate normal distribution (see Chapter \@ref(pt)) though it is not very pretty and probably a little rough. Furthermore, there is a correlation between the estimates such that $\rho\neq0$ in (<a href="#mjx-eqn-2.1">2.1</a>). Also, the distribution's shape deviates from the symmetric bell shape of the bivariate standard normal distribution and has an elliptical surface area instead.
@@ -670,7 +677,7 @@ From the plot above we can see that the density estimate has some similarity to 
 cor(coefs[, 1], coefs[, 2])
 ```
 
-Where does this correlation come from? Notice that, due to the way we generated the data, there is correlation between the regressors $X_1$ and $X_2$. Correlation between the regressors in a multiple regression model always translates to correlation between the estimators (see Appendix 6.2 of the book). In our case, the positive correlation between $X_1$ and $X_2$ translates to negative correlation between $\hat\beta_1$ and $\hat\beta_2$. To get a better idea of the distribution you can vary the point of view in the subsequent smooth interactive 3D plot of the same density estimate used for plotting with <tt>persp()</tt>. Here you can see that the shape of the distribution is somewhat stretched due to $\hat\rho=-0.20$ and it is also apparent that both estimators are unbiased since their joint density seems to be centered close to the true parameter vector $(\beta_1,\beta_2) = (2.5,3)$. 
+Where does this correlation come from? Notice that, due to the way we generated the data, there is correlation between the regressors $X_1$ and $X_2$. Correlation between the regressors in a multiple regression model always translates to correlation between the estimators (see Appendix 6.2 of the book). In our case, the positive correlation between $X_1$ and $X_2$ translates to negative correlation between $\hat\beta_1$ and $\hat\beta_2$. To get a better idea of the distribution you can vary the point of view in the subsequent smooth interactive 3D plot of the same density estimate used for plotting with `r ttcode("persp()")`. Here you can see that the shape of the distribution is somewhat stretched due to $\hat\rho=-0.20$ and it is also apparent that both estimators are unbiased since their joint density seems to be centered close to the true parameter vector $(\beta_1,\beta_2) = (2.5,3)$. 
 
 <center>
 ```{r, echo=F, message=F, warning=F}
@@ -691,16 +698,19 @@ p %>% layout(scene = list(zaxis = list(title = "Est. Density"
                           )
              ) %>% 
   config(showLink = F, displayModeBar = F)
-} else {
-  cat("This content is available in the HTML version only.")
 }
 ```
 </center>
 
+```{r, echo=FALSE, eval=my_output=="latex", results='asis'}
+cat('\\begin{center}\\textit{This interactive part of URFITE is only available in the HTML version.}\\end{center}')
+```
+
 ## Exercises
 
-
-
+```{r, echo=FALSE, results='asis'}
+if (my_output=="html") {
+  cat('
 For the course of this section, you will work with <tt>Boston</tt>, the Boston Housing data set which contains 506 observations on housing values in suburbs of Boston. The data set comes with the package <tt>MASS</tt> which is already installed for the interactive <tt>R</tt> exercises below. 
 
 <div  class = "DCexercise">
@@ -759,15 +769,15 @@ test_function("data")
 test_or({
   test_function("coeftest", args=c("x","vcov."))
 },{
-  f <- ex() %>% override_solution("coeftest(bh_mod, vcov. = vcovHC)") %>% check_function('coeftest')
+  f <- ex() %>% override_solution("coeftest(bh_mod, vcov. = vcovHC)") %>% check_function("coeftest")
   f %>% check_arg("x") %>% check_equal()
   f %>% check_arg("vcov.") %>% check_equal()
 },{
-  f <- ex() %>% override_solution("coeftest(bh_mod, vcov. = vcovHC(bh_mod, type = 'HC0'))") %>% check_function('coeftest')
+  f <- ex() %>% override_solution("coeftest(bh_mod, vcov. = vcovHC(bh_mod, type = "HC0"))") %>% check_function("coeftest")
   f %>% check_arg("x") %>% check_equal()
   f %>% check_arg("vcov.") %>% check_equal()
 },{
-  f <- ex() %>% override_solution("coeftest(bh_mod, vcov. = vcovHC(bh_mod, type = 'HC1'))") %>% check_function('coeftest')
+  f <- ex() %>% override_solution("coeftest(bh_mod, vcov. = vcovHC(bh_mod, type = "HC1"))") %>% check_function("coeftest")
   f %>% check_arg("x") %>% check_equal()
   f %>% check_arg("vcov.") %>% check_equal()
 })
@@ -775,11 +785,11 @@ test_or({
 test_or({
   test_object("bh_mod")
 },{
-  f <- ex() %>% override_solution('lm(Boston$medv ~ Boston$lstat)') %>% check_function('lm')
-  f %>% check_arg('formula') %>% check_equal()
+  f <- ex() %>% override_solution("lm(Boston$medv ~ Boston$lstat)") %>% check_function("lm")
+  f %>% check_arg("formula") %>% check_equal()
 },{
-  f <- ex() %>% override_solution('attach(Boston);lm(medv ~ lstat)') %>% check_function('lm')
-  f %>% check_arg('formula') %>% check_equal()
+  f <- ex() %>% override_solution("attach(Boston);lm(medv ~ lstat)") %>% check_function("lm")
+  f %>% check_arg("formula") %>% check_equal()
 })
 
 success_msg("Correct. Notice both model coefficients are highly significant.")
@@ -790,26 +800,30 @@ success_msg("Correct. Notice both model coefficients are highly significant.")
 
 <!--/html_preserve-->
 
-</div>
+</div>') } else {
+  cat('\\begin{center}\\textit{This interactive part of URFITE is only available in the HTML version.}\\end{center}')
+}
+```
 
-
+```{r, echo=FALSE, results='asis', eval=my_output == "html"}
+cat('
 <div  class = "DCexercise">
 
 #### 2. A Multiple Regression Model of Housing Prices I {-}
 
 Now, let us expand the idea from the previous exercise by adding additional regressors to the model and estimate it again.
 
-As has been discussed in Chapter \@ref(mofimr), adding regressors to the model improves the fit, that is the $SER$ decreases and the $R^2$ increases.  
+As has been discussed in Chapter \\@ref(mofimr), adding regressors to the model improves the fit so the $SER$ decreases and the $R^2$ increases.  
 
 The packages <tt>AER</tt> and <tt>MASS</tt> have been loaded. The model object <tt>bh_mod</tt> is available in the environment.
 
 **Instructions**
 
-+ Regress the median housing value in a district, <tt>medv</tt>, on the average age of the buildings, <tt>age</tt>, the per-capita crime rate, <tt>crim</tt>, the percentage of individuals with low socioeconomic status, <tt>lstat</tt>, and a constant. Put differently, estimate the model $$medv_i = \beta_0 + \beta_1 lstat_i + \beta_2 age_i + \beta_3 crim_i + u_i.$$
++ Regress the median housing value in a district, <tt>medv</tt>, on the average age of the buildings, <tt>age</tt>, the per-capita crime rate, <tt>crim</tt>, the percentage of individuals with low socioeconomic status, <tt>lstat</tt>, and a constant. Put differently, estimate the model $$medv_i = \\beta_0 + \\beta_1 lstat_i + \\beta_2 age_i + \\beta_3 crim_i + u_i.$$
 
 + Print a coefficient summary to the console that reports robust standard errors for the augmented model.
 
-+ The simple regression model's $R^2$ is stored in <tt>R2_res</tt>. Save the multiple regression model's $R^2$ to <tt>R2_unres</tt> and check whether the augmented model yields a higher $R^2$. Use <tt><</tt> or <tt>></tt> for the comparison.
++ The $R^2$ of the simple regression model is stored in <tt>R2_res</tt>. Save the multiple regression models $R^2$ to <tt>R2_unres</tt> and check whether the augmented model yields a higher $R^2$. Use <tt><</tt> or <tt>></tt> for the comparison.
 
 <!--html_preserve-->
 
@@ -849,37 +863,37 @@ R2_unres < R2_res
 <code data-type="sct">
 
 test_or({
-  ex() %>% check_function('lm') %>% check_result()
+  ex() %>% check_function("lm") %>% check_result()
 },{
-  ex() %>% override_solution('lm(Boston$medv ~ Boston$lstat + Boston$crim + Boston$age)') %>% check_function('lm') %>% check_result()
+  ex() %>% override_solution("lm(Boston$medv ~ Boston$lstat + Boston$crim + Boston$age)") %>% check_function("lm") %>% check_result()
 },{
-  ex() %>% override_solution('lm(medv ~ lstat + crim + age)') %>% check_function('lm') %>% check_result()
+  ex() %>% override_solution("lm(medv ~ lstat + crim + age)") %>% check_function("lm") %>% check_result()
 })
 
 
 test_or({
     test_function("coeftest")
 },{
-    f <- ex() %>% override_solution('coeftest(lm(Boston$medv ~ Boston$lstat + Boston$crim + Boston$age), vcov. = vcovHC)') %>% check_function('coeftest') 
-    f %>% check_arg('x') %>% check_equal()
+    f <- ex() %>% override_solution("coeftest(lm(Boston$medv ~ Boston$lstat + Boston$crim + Boston$age), vcov. = vcovHC)") %>% check_function("coeftest") 
+    f %>% check_arg("x") %>% check_equal()
 },{   
-    f <- ex() %>% override_solution('coeftest(lm(medv ~ lstat + crim + age), vcov. = vcovHC)') %>% check_function('coeftest') 
-    f %>% check_arg('x') %>% check_equal()
+    f <- ex() %>% override_solution("coeftest(lm(medv ~ lstat + crim + age), vcov. = vcovHC)") %>% check_function("coeftest") 
+    f %>% check_arg("x") %>% check_equal()
 })
 
-test_student_typed('vcov. = vcovHC')
+test_student_typed("vcov. = vcovHC")
 
-test_predefined_objects('R2_res')
-test_object('R2_unres')
+test_predefined_objects("R2_res")
+test_object("R2_unres")
 
 test_or({
     test_student_typed("R2_unres > R2_res")
 },{
     test_student_typed("R2_unres < R2_res")
 },{
-    test_student_typed('R2_res < R2_unres')
+    test_student_typed("R2_res < R2_unres")
 },{
-    test_student_typed('R2_res > R2_unres')
+    test_student_typed("R2_res > R2_unres")
 })
 
 success_msg("Right. Remember that R2 generally grows when a regressor is added to the model but this does not mean that the model improves upon a model with less regressors in any case.")
@@ -889,28 +903,30 @@ success_msg("Right. Remember that R2 generally grows when a regressor is added t
 
 <!--/html_preserve-->
 
-</div>
+</div>')
+```
 
-
+```{r, echo=FALSE, results='asis', eval=my_output == "html"}
+cat('
 <div  class = "DCexercise">
 
 #### 3. A Multiple Regression Model of Housing Prices II {-}
 
-Look at the regression equation below describing the previously estimated model with White standard errors in parentheses.
+Look at the regression equation below describing the previously estimated model with heteroskedasticity-robust standard errors in parentheses.
 
-$$ \widehat{medv}_i = \underset{(0.74)}{32.828} \underset{(0.08)}{-0.994} \times lstat_i \underset{(0.03)}{-0.083} \times crim_i + \underset{(0.02)}{0.038} \times age_i$$
+$$ \\widehat{medv}_i = \\underset{(0.74)}{32.828} \\underset{(0.08)}{-0.994} \\times lstat_i \\underset{(0.03)}{-0.083} \\times crim_i + \\underset{(0.02)}{0.038} \\times age_i$$
 
 This model is saved in <tt>bh_mult_mod</tt> which is available in the working environment.
 
 **Instructions**
 
-As has been stressed in Chapter \@ref(mofimr), it is not meaningful to use $R^2$ when comparing regression models with a different number of regressors. Instead, the $\overline{R}^2$ should be used. $\overline{R}^2$ adjusts for the circumstance that the $SSR$ reduces when a regressor is added to the model.
+As has been stressed in Chapter \\@ref(mofimr), it is not meaningful to use $R^2$ when comparing regression models with a different number of regressors. Instead, the $\\overline{R}^2$ should be used. $\\overline{R}^2$ adjusts for the circumstance that the $SSR$ reduces when a regressor is added to the model.
 
-+ Use the model object to compute the correction factor $CF = \frac{n-1}{n-k-1}$ where $n$ is the number of observations and $k$ is the number of regressors, excluding the intercept. Save it to <tt>CF</tt>.
++ Use the model object to compute the correction factor $CF = \\frac{n-1}{n-k-1}$ where $n$ is the number of observations and $k$ is the number of regressors, excluding the intercept. Save it to <tt>CF</tt>.
 
-+ Use <tt>summary()</tt> to obtain $R^2$ and $\overline{R}^2$ for <tt>bh_mult_mod</tt>. Is is sufficient if you print both values to the console.
++ Use <tt>summary()</tt> to obtain $R^2$ and $\\overline{R}^2$ for <tt>bh_mult_mod</tt>. Is is sufficient if you print both values to the console.
 
-+ Check that $$\overline{R}^2 = 1 - (1-R^2) \cdot CF$$. Use the <tt>==</tt> operator.
++ Check that $$\\overline{R}^2 = 1 - (1-R^2) \\cdot CF.$$ Use the <tt>==</tt> operator.
 
 <!--html_preserve-->
 
@@ -954,8 +970,8 @@ test_predefined_objects("bh_mult_mod")
 test_object("n")
 test_object("k")
 test_object("CF")
-test_output_contains('summary(bh_mult_mod)$r.squared')
-test_output_contains('summary(bh_mult_mod)$adj.r.squared')
+test_output_contains("summary(bh_mult_mod)$r.squared")
+test_output_contains("summary(bh_mult_mod)$adj.r.squared")
 ex() %>% check_operator("==") %>% check_result() %>% check_equal()
 success_msg("Well done!")
 </code>
@@ -964,8 +980,11 @@ success_msg("Well done!")
 
 <!--/html_preserve-->
 
-</div>
+</div>')
+```
 
+```{r, echo=FALSE, results='asis', eval=my_output == "html"}
+cat('
 <div  class = "DCexercise">
 
 #### 4. A Fully Fledged Model for Housing Values? {-}
@@ -979,7 +998,7 @@ Which variable would you expect to have the highest $p$-value in a multiple regr
 
 + Obtain a heteroskedasticity robust summary of the coefficients.
 
-+ The $\overline{R}^2$ for the model in exercise 3 is $0.5533$. What can you say about the $\overline{R}^2$ of the large regression model? Does this model improve on the previous one? (no code submission needed)
++ The $\\overline{R}^2$ for the model in exercise 3 is $0.5533$. What can you say about the $\\overline{R}^2$ of the large regression model? Does this model improve on the previous one? (no code submission needed)
 
 The packages <tt>AER</tt> and <tt>MASS</tt> as well as the data set <tt>Boston</tt> are loaded to the working environment.
 
@@ -987,7 +1006,7 @@ The packages <tt>AER</tt> and <tt>MASS</tt> as well as the data set <tt>Boston</
 
 + For brevity, use the regression formula <tt>medv ~.</tt> in your call of <tt>lm()</tt>. This is a shortcut that specifies a regression of <tt>medv</tt> on all the remaining variables in the data set supplied to the argument <tt>data</tt>.
 
-+ Use summary on both models for a comparison of the $\overline{R}^2$.
++ Use summary on both models for a comparison of the $\\overline{R}^2$.
 
 <!--html_preserve-->
 
@@ -999,28 +1018,28 @@ library(MASS)
 data(Boston)
 </code>
 <code data-type="sample-code">
- # Run a regression of 'medv' on all remaining variables in the 'Boston' data set
+ # Run a regression of medv on all remaining variables in the Boston data set
 
 
  # Obtain a robust summary of the coefficients
 
 
- # What is the model's adj. R^2?
+ # What is the R^2 of the model?
 </code>
 <code data-type="solution">
- # Run a regression of 'medv' on all remaining variables in the 'Boston' data set
+ # Run a regression of medv on all remaining variables in the Boston data set
 full_mod <- lm(medv ~., data = Boston)
 
  # obtain a robust summary of the coefficients
 coeftest(full_mod, vcov. = vcovHC(full_mod, type = "HC0"))
 
- # What is the model's adj. R^2?
+ # What is the R^2 of the model?
 summary(full_mod)$adj.r.squared
 </code>
 <code data-type="sct">
 test_object("full_mod")
 test_function("coeftest", args="x")
-test_student_typed('vcov. = vcovHC')
+test_student_typed("vcov. = vcovHC")
 success_msg("Right. Notice that the smallest p-value is associated with the coefficient on ptratio, the pupil-teacher ratio by town. It is conceivable that quality of the schooling district is an important location factor. According to the adj. R^2 , the full model does better than 
 the model dealt with in exercises 2 and 3 which uses a smaller subset of the variables as regressors.")
 </code>
@@ -1029,16 +1048,18 @@ the model dealt with in exercises 2 and 3 which uses a smaller subset of the var
 
 <!--/html_preserve-->
 
-</div>
+</div>')
+```
 
-
+```{r, echo=FALSE, results='asis', eval=my_output == "html"}
+cat('
 <div  class = "DCexercise">
 
 #### 5. Model Selection  {-}
 
 Maybe we can improve the model by dropping a variable?
 
-In this exercise, you have to estimate several models, each time dropping one of the explanatory variables used in the large regression model of exercise 4 and compare the models' $\overline{R}^2$
+In this exercise, you have to estimate several models, each time dropping one of the explanatory variables used in the large regression model of Exercise 4 and compare the $\\overline{R}^2$.
 
 The full regression model from the previous exercise, <tt>full_mod</tt>, is available in your environment.
 
@@ -1047,11 +1068,11 @@ The full regression model from the previous exercise, <tt>full_mod</tt>, is avai
 + You are totally free to choose a way to solve this. We recommend the following approach:
 
 1. Start by estimating a model <tt>mod_new</tt>, say, where e.g. <tt>lstat</tt> is excluded from the explanatory variables.
-Next, access this model's $\overline{R}^2$. 
+Next, access the $\\overline{R}^2$ of this model. 
 
-2. Compare the model's $\overline{R}^2$ to the $\overline{R}^2$ of the full model (this was about $0.7338$).
+2. Compare the $\\overline{R}^2$ of this model to the $\\overline{R}^2$ of the full model (this was about $0.7338$).
 
-3. Repeat Steps 1 and 2 for all explanatory variables used in the full regression model. Save the model with the highest improvement in $\overline{R}^2$ to <tt>better_mod</tt>.
+3. Repeat Steps 1 and 2 for all explanatory variables used in the full regression model. Save the model with the highest improvement in $\\overline{R}^2$ to <tt>better_mod</tt>.
 
 <!--html_preserve-->
 
@@ -1064,7 +1085,7 @@ data(Boston)
 full_mod <- lm(medv ~., data = Boston)
 </code>
 <code data-type="sample-code">
- # Find the model which fits the data better than 'full_mod'
+ # Find the model which fits the data better than full_mod
 
 
 
@@ -1093,14 +1114,14 @@ better_model <- lm(medv ~., data = Boston[,-7])
 </code>
 <code data-type="sct">
 test_object("better_model")
-success_msg("Correct. Notice that this model fits the data better than the full model and does better than all other models that include 12 of the available set of 13 regressors, in terms of adj. R^2. However, the increase in adj. R^2 is very small and the model is not 'the best' of all conceivable models.")
+success_msg("Correct. Notice that this model fits the data better than the full model and does better than all other models that include 12 of the available set of 13 regressors, in terms of adj. R^2. However, the increase in adj. R^2 is very small and the model is not "the best" of all conceivable models.")
 </code>
 
 </div>
 
 <!--/html_preserve-->
 
-</div>
-
+</div>')
+```
 
 

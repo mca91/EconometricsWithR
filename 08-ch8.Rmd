@@ -2,7 +2,7 @@
 
 Until now we assumed the regression function to be linear, i.e. we have treated the slope parameter of the regression function as a constant. This implies that the effect on $Y$ of a one unit change in $X$ does not depend on the level of $X$. If however the effect of a change in $X$ on $Y$ does depend on the value of $X$, we have to model the relationship using a nonlinear regression function.
 
-Just like for the previous chapter, the packages <tt>AER</tt> and <tt>stargazer</tt> are required for reproduction of the code presented in this chapter. Check whether the code chunk below executes without any error messages.
+Just like for the previous chapter, the packages <tt>AER</tt> [@R-AER] and <tt>stargazer</tt> [@R-stargazer] are required for reproduction of the code presented in this chapter. Check whether the code chunk below executes without any error messages.
 
 ```{r, warning=FALSE, message=FALSE, eval=FALSE}
 library(AER)
@@ -61,20 +61,20 @@ This equation is called the *quadratic regression model*. Note, that $income^2$ 
 quadratic_model <- lm(score ~ income + I(income^2), data = CASchools)
 
 # Generate model summary
-summary(quadratic_model)
+coeftest(quadratic_model, vcov. = vcovHC(quadratic_model, type = "HC1"))
 ```
 
 The output tells us that the estimated regression function is
 
-$$\widehat{TestScore}_i = \underset{(3.05)}{607.3} + \underset{(0.30)}{3.85} \times income_i - \underset{(0.01)}{0.0423} \times income_i^2.$$
+$$\widehat{TestScore}_i = \underset{(2.90)}{607.3} + \underset{(0.)}{3.85} \times income_i - \underset{(0.0048)}{0.0423} \times income_i^2.$$
 
 Notice that this estimated model equation allows us to test the hypothesis that the relationship between test scores and district income is linear against the alternative hypothesis that it is quadratic. This corresponds to testing
 
 $$H_0: \beta_2 = 0 \ \ \text{vs.} \ \  H_1: \beta_2\neq0,$$
 
-since $\beta_2=0$ corresponds to a simple linear equation and $\beta_2\neq0$ implies a quadratic relationship. We find that $t=(\hat\beta_2 - 0)/SE(\hat\beta_2) = -0.0423/0.01 = -4.23$ so the null is rejected at any common level of significance and we conclude that the relationship is nonlinear. This is consistent with the impression gained from inspection of the plotted data.
+since $\beta_2=0$ corresponds to a simple linear equation and $\beta_2\neq0$ implies a quadratic relationship. We find that $t=(\hat\beta_2 - 0)/SE(\hat\beta_2) = -0.0423/0.0048 = -8.81$ so the null is rejected at any common level of significance and we conclude that the relationship is nonlinear. This is consistent with the impression gained from inspection of the plotted data.
 
-We can now draw the same scatter plot as for the linear model and add the regression line for the quadratic model. Because <tt>abline()</tt> can only draw straight lines, it cannot be used for this task. A function which can be used to draw lines without being restricted to straight lines is <tt>lines()</tt>, see `?lines`. The most basic call of <tt>lines()</tt> is <tt>lines(x_values, y_values)</tt> where <tt>x_values</tt> and <tt>y_values</tt> are vectors of the same length that provide coordinates of the points to be *sequentially*</it>* connected by a line. This makes it necessary to sort the coordinate pairs according to the X-values. Otherwise you will not get the desired result! In this example we use the function <tt>order()</tt> to sort the fitted values of <tt>score</tt> according to the observations of <tt>income</tt>.
+We can now draw the same scatter plot as for the linear model and add the regression line for the quadratic model. Because <tt>abline()</tt> can only draw straight lines, it cannot be used for this task. A function which can be used to draw lines without being restricted to straight lines is <tt>lines()</tt>, see `?lines`. The most basic call of <tt>lines()</tt> is <tt>lines(x_values, y_values)</tt> where <tt>x_values</tt> and <tt>y_values</tt> are vectors of the same length that provide coordinates of the points to be *sequentially* connected by a line. This makes it necessary to sort the coordinate pairs according to the X-values. Otherwise you will not get the desired result! In this example we use the function <tt>order()</tt> to sort the fitted values of <tt>score</tt> according to the observations of <tt>income</tt>.
 
 <div class="unfolded">
 ```{r, fig.align="center"}
@@ -123,7 +123,8 @@ This is a joint null hypothesis with $r-1$ restrictions so it can be tested usin
 ```{r, warning=F, message=F}
 # test the hypothesis
 linearHypothesis(cubic_model, 
-                 c("I(income^2)=0", "I(income^3)=0")
+                 c("I(income^2)=0", "I(income^3)=0"),
+                 white.adj = "hc1"
 )
 ```
 
@@ -219,7 +220,11 @@ For example, we may ask the following: what is the predicted change in test scor
 
 $$\widehat{TestScore} = 607.3 + 3.85 \times income - 0.0423 \times income^2\ ?$$
 
-Because the regression function is quadratic, this effect depends on the initial district income. We therefore consider two cases: an increase in district income form $10$ to $11$ (i.e. from $\$10000$ per capita to $\$11000$) and an increase in district income from $40$ to $41$ (that is from $\$40000$ to $\$41000$). 
+Because the regression function is quadratic, this effect depends on the initial district income. We therefore consider two cases: 
+
+1. An increase in district income form $10$ to $11$ (i.e. from $\$10000$ per capita to $\$11000$)
+
+2. An increase in district income from $40$ to $41$ (that is from $\$40000$ to $\$41000$). 
 
 In order to obtain the $\Delta \widehat{Y}$ associated with a change in income form $10$ to $11$, we use the following formula: 
 
@@ -505,7 +510,22 @@ coeftest(polyLog_model,
          vcov = vcovHC(polyLog_model, type = "HC1"))
 ```
 
-Which of the models presented here is the most suitable one? Comparing by $\overline{R^2}$ we find that, leaving out the log-linear model, all models have a similar fit. In the class of polynomial models, the cubic specification has the highest $\overline{R^2}$ whereas the linear-log specification is the best of the log-models (check this!). Let us now compare both models graphically by plotting the corresponding estimated regression functions.
+Which of the models presented here is the most suitable one? Comparing by $\overline{R^2}$ we find that, leaving out the log-linear model, all models have a similar fit. In the class of polynomial models, the cubic specification has the highest $\overline{R^2}$ whereas the linear-log specification is the best of the log-models. 
+
+```{r}
+# compute the adj. R^2 for the nonlinear models
+R2 <-rbind("quadratic" = summary(quadratic_model)$adj.r.squared,
+           "cubic" = summary(cubic_model)$adj.r.squared,
+           "LinearLog" = summary(LinearLog_model)$adj.r.squared,
+           "LogLinear" = summary(LogLinear_model)$adj.r.squared,
+           "LogLog" = summary(LogLog_model)$adj.r.squared,
+           "polyLog" = summary(polyLog_model)$adj.r.squared
+)
+colnames(R2) <- "R^2"
+R2
+```
+
+Let us now compare the cubic model and the linear-log model graphically by plotting the corresponding estimated regression functions.
 
 <div class="unfolded">
 ```{r, fig.align='center'}
@@ -532,7 +552,7 @@ lines(x = CASchools$income[order_id],
 ```
 </div>
 
-We see that both regression lines are nearly identical. Here the linear-log model is preferable since it has a slightly higher $\overline{R^2}$ and is more parsimonious in terms of regressors: it does not include higher-degree polynomials.
+We see that both regression lines look nearly identical. Altogether The linear-log model is preferable since it has a slightly higher $\overline{R^2}$ and is more parsimonious in terms of regressors: it does not include higher-degree polynomials.
 
 ## Interactions Between Independent Variables
 
@@ -654,13 +674,13 @@ using <tt>lm()</tt>. There are several ways to add an interaction term to the <t
 # estimate the model with binary interaction term
 bi_model <- lm(score ~ HiSTR + HiEL + HiSTR * HiEL, data = CASchools)
 
-# print summary
-summary(bi_model)
+# print robust summary of coefficients
+coeftest(bi_model, vcov. = vcovHC(bi_model, type = "HC1"))
 ```
 
 The estimated regression model is
 
-$$ \widehat{TestScore} = 664.1 - 1.9 \times HiSTR - 18.3 \times HiEL - 3.3 \times (HiSTR \times HiEL) $$ 
+$$ \widehat{TestScore} = \underset{(1.39)}{664.1} - \underset{(1.93)}{1.9} \times HiSTR - \underset{(2.33)}{18.3} \times HiEL - \underset{(3.12)}{3.3} \times (HiSTR \times HiEL) $$ 
 
 and it predicts that the effect of moving from a school district with a low student-teacher ratio to a district with a high student-teacher ratio, depending on high or low percentage of english learners is $-1.9-3.3\times HiEL$. So for districts with a low share of english learners ($HiEL = 0$), the estimated effect is a decrease of $1.9$ points in test scores while for districts with a big fraction of english learner ($HiEL = 1$), the predicted decrease in test scores amounts to $1.9 + 3.3 = 5.2$ points, on average.
 
@@ -822,7 +842,7 @@ abline(coef = c(mod3_coef[1], mod3_coef[2] + mod3_coef[3]),
 ```
 </div>
 
-##### Application to the student-teacher ratio and the percentage of English learners {-}
+##### Application to the Student-Teacher Ratio and the Percentage of English Learners {-}
 
 Using a model specification like the second one discussed in Key Concept 8.3 (different slope, different intercept) we may answer the question whether the effect on test scores of decreasing the student-teacher ratio depends on whether there are many or few English learners. We estimate the regression model
 
@@ -832,13 +852,13 @@ $$ \widehat{TestScore_i} = \beta_0 + \beta_1 \times size_i + \beta_2 \times HiEL
 # estimate the model
 bci_model <- lm(score ~ size + HiEL + size * HiEL, data = CASchools)
 
-# print summary to console
-summary(bci_model)
+# print robust summary of coefficients to the console
+coeftest(bci_model, vcov. = vcovHC(bci_model, type = "HC1"))
 ```
 
 The estimated regression model is
 
-$$ \widehat{TestScore} = 682.2 - 0.97 \times size + 5.6 \times HiEL - 1.28 \times (size \times HiEL). $$
+$$ \widehat{TestScore} = \underset{(11.87)}{682.2} - \underset{(0.59)}{0.97} \times size + \underset{(19.51)}{5.6} \times HiEL - \underset{(0.97)}{1.28} \times (size \times HiEL). $$
 
 We find that the estimated regression line for districts with a low fraction of English learners ($HiEL_i=0$) is 
 
@@ -950,12 +970,12 @@ We will now examine the interaction between student-teacher ratio and the percen
 cci_model <- lm(score ~ size + english + english*size, data = CASchools) 
 
 # print a summary to the console
-summary(cci_model)
+coeftest(cci_model, vcov. = vcovHC(cci_model, type = "HC1"))
 ```
 
-The estimated model equation is $$ \widehat{TestScore} = 686.3 - 1.12 \times STR - 0.67 \times PctEL + 0.0012(STR\times PctEL). $$
+The estimated model equation is $$ \widehat{TestScore} = \underset{(11.76)}{686.3} - \underset{(0.59)}{1.12} \times STR - \underset{(0.37)}{0.67} \times PctEL + \underset{(0.02)}{0.0012} \times (STR\times PctEL). $$
 
-For the interpretation, let us consider quartiles of $PctEL$.
+For the interpretation, let us consider the quartiles of $PctEL$.
 
 ```{r}
 summary(CASchools$english)
@@ -1048,20 +1068,31 @@ It is of interest whether the coefficients the nonlinear transformations of $\ln
 ```{r}
 # F-Test for significance of cubic terms
 linearHypothesis(Journals_mod3, 
-                 c("I(log(PricePerCitation)^2)=0","I(log(PricePerCitation)^3)=0")
+                 c("I(log(PricePerCitation)^2)=0", "I(log(PricePerCitation)^3)=0"),
+                 vcov. = vcovHC(Journals_mod3, type = "HC1")
                  )
 ```
 
-We cannot reject the null hypothesis $H_0: \beta_3=\beta_4=0$ in model $(III)$.
+Clearly, we cannot reject the null hypothesis $H_0: \beta_3=\beta_4=0$ in model $(III)$.
 
-We now demonstrate how the function `stargazer()` can be used to generate a verbose tabular representation of all four estimated models.
+We now demonstrate how the function `r ttcode("stargazer()")` can be used to generate a verbose tabular representation of all four models.
 
 ```{r, eval=FALSE}
 # load the stargazer package
 library(stargazer)
 
+# gather robust standard errors in a list
+rob_se <- list(
+  sqrt(diag(vcovHC(Journals_mod1, type = "HC1"))),
+  sqrt(diag(vcovHC(Journals_mod2, type = "HC1"))),
+  sqrt(diag(vcovHC(Journals_mod3, type = "HC1"))),
+  sqrt(diag(vcovHC(Journals_mod4, type = "HC1")))
+)
+
 # generate a Latex table using stargazer
 stargazer(Journals_mod1, Journals_mod2, Journals_mod3, Journals_mod4,
+          se = rob_se,
+          digits = 3,
           column.labels = c("(I)", "(II)", "(III)", "(IV)")
           )
 ```
@@ -1072,29 +1103,49 @@ stargazer(Journals_mod1, Journals_mod2, Journals_mod3, Journals_mod4,
 # load the stargazer package
 library(stargazer)
 
-# generate a Latex table using stargazer
+# gather robust standard errors in a list
+rob_se <- list(
+  sqrt(diag(vcovHC(Journals_mod1, type = "HC1"))),
+  sqrt(diag(vcovHC(Journals_mod2, type = "HC1"))),
+  sqrt(diag(vcovHC(Journals_mod3, type = "HC1"))),
+  sqrt(diag(vcovHC(Journals_mod4, type = "HC1")))
+)
+
+# generate a LaTeX table using stargazer
 stargazer(Journals_mod1, Journals_mod2, Journals_mod3, Journals_mod4,
           type = "html", 
           model.numbers = FALSE,
-          header=FALSE,
-          title = "Nonlinear Regression Models of Journal Subscribtions",
+          header = FALSE,
+          dep.var.caption = "Dependent Variable: Logarithm of Subscriptions",
+          se = rob_se,
+          digits = 3,
           column.labels = c("(I)", "(II)", "(III)", "(IV)")
           )
+
+stargazer_html_title("Nonlinear Regression Models of Journal Subscribtions", "nrmojs")
 ```
 
 <!--/html_preserve-->
 
 ```{r, results='asis', echo=FALSE, message=FALSE, warning=FALSE, eval=my_output == "latex"}
-# load the stargazer package
 library(stargazer)
 
-# generate a Latex table using stargazer
+rob_se <- list(
+  sqrt(diag(vcovHC(Journals_mod1, type = "HC1"))),
+  sqrt(diag(vcovHC(Journals_mod2, type = "HC1"))),
+  sqrt(diag(vcovHC(Journals_mod3, type = "HC1"))),
+  sqrt(diag(vcovHC(Journals_mod4, type = "HC1")))
+)
+
 stargazer(Journals_mod1, Journals_mod2, Journals_mod3, Journals_mod4,
           type = "latex", 
           float.env = "sidewaystable",
-          title = "Nonlinear Regression Models of Journal Subscribtions",
+          dep.var.caption = "Dependent Variable: Logarithm of Subscriptions",
+          title = "\\label{tab:nrmojs} Nonlinear Regression Models of Journal Subscribtions",
           model.numbers = FALSE,
           header=FALSE,
+          se = rob_se,
+          digits = 3,
           column.labels = c("(I)", "(II)", "(III)", "(IV)")
           )
 ```
@@ -1192,13 +1243,13 @@ Two answer these questions we will consider a total of seven models, some of whi
 The considered model specifications are:
 
 \begin{align}
- \widehat{TestScore_i} =& \, \beta_0 + \beta_1 size_i + \beta_4 english_i + \beta_9 lunch_i + u_i \\
- \widehat{TestScore_i} =& \, \beta_0 + \beta_1 size_i + \beta_4 english_i + \beta_9 lunch_i + \beta_{10} \ln(income_i) + u_i \\
-  \widehat{TestScore_i} =& \, \beta_0 + \beta_1 size_i + \beta_5 HiEL_i + \beta_6 (HiEL_i\times size_i) + u_i \\
-  \widehat{TestScore_i} =& \, \beta_0 + \beta_1 size_i + \beta_5 HiEL_i + \beta_6 (HiEL_i\times size_i) + \beta_9 lunch_i + \beta_{10} \ln(income_i) + u_i \\
-  \widehat{TestScore_i} =& \, \beta_0 + \beta_1 size_i + \beta_2 size_i^2 + \beta_5 HiEL_i + \beta_9 lunch_i + \beta_{10} \ln(income_i) + u_i \\
-  \widehat{TestScore_i} =& \, \beta_0 + \beta_1 size_i + \beta_2 size_i^2 + \beta_3 size_i^3 + \beta_5 HiEL_i + \beta_6 (HiEL\times size) \\ + & \, \beta_7 (HiEL_i\times size_i^2) + \beta_8 (HiEL_i\times size_i^3) + \beta_9 lunch_i + \beta_{10} \ln(income_i) + u_i \\
-  \widehat{TestScore_i} =& \, \beta_0 + \beta_1 size_i + \beta_2 size_i^2 + \beta_3 size_i^3 + \beta_4 english + \beta_9 lunch_i + \beta_{10} \ln(income_i) + u_i
+ TestScore_i =& \, \beta_0 + \beta_1 size_i + \beta_4 english_i + \beta_9 lunch_i + u_i \\
+ TestScore_i =& \, \beta_0 + \beta_1 size_i + \beta_4 english_i + \beta_9 lunch_i + \beta_{10} \ln(income_i) + u_i \\
+  TestScore_i =& \, \beta_0 + \beta_1 size_i + \beta_5 HiEL_i + \beta_6 (HiEL_i\times size_i) + u_i \\
+  TestScore_i =& \, \beta_0 + \beta_1 size_i + \beta_5 HiEL_i + \beta_6 (HiEL_i\times size_i) + \beta_9 lunch_i + \beta_{10} \ln(income_i) + u_i \\
+  TestScore_i =& \, \beta_0 + \beta_1 size_i + \beta_2 size_i^2 + \beta_5 HiEL_i + \beta_9 lunch_i + \beta_{10} \ln(income_i) + u_i \\
+  TestScore_i =& \, \beta_0 + \beta_1 size_i + \beta_2 size_i^2 + \beta_3 size_i^3 + \beta_5 HiEL_i + \beta_6 (HiEL\times size) \\ + & \, \beta_7 (HiEL_i\times size_i^2) + \beta_8 (HiEL_i\times size_i^3) + \beta_9 lunch_i + \beta_{10} \ln(income_i) + u_i \\
+  TestScore_i =& \, \beta_0 + \beta_1 size_i + \beta_2 size_i^2 + \beta_3 size_i^3 + \beta_4 english + \beta_9 lunch_i + \beta_{10} \ln(income_i) + u_i
 \end{align}
 
 ```{r, tidy=TRUE}
@@ -1218,10 +1269,21 @@ TestScore_mod6 <- lm(score ~ size + I(size^2) + I(size^3) + HiEL + HiEL:size + H
 TestScore_mod7 <- lm(score ~ size + I(size^2) + I(size^3) + english + lunch + log(income), data = CASchools)
 ```
 
-Next, we may use <tt>summary()</tt> to assess the models. Using <tt>stargazer()</tt> we may also obtain a tabular representation of all regression outputs and which is more convenient for comparison of the models. 
+We may use <tt>summary()</tt> to assess the models' fit. Using <tt>stargazer()</tt> we may also obtain a tabular representation of all regression outputs and which is more convenient for comparison of the models. 
 
 ```{r, eval=FALSE, message=FALSE, warning=FALSE}
-# generate a latex table of regression outputes
+# gather robust standard errors in a list
+rob_se <- list(
+  sqrt(diag(vcovHC(TestScore_mod1, type = "HC1"))),
+  sqrt(diag(vcovHC(TestScore_mod2, type = "HC1"))),
+  sqrt(diag(vcovHC(TestScore_mod3, type = "HC1"))),
+  sqrt(diag(vcovHC(TestScore_mod4, type = "HC1"))),
+  sqrt(diag(vcovHC(TestScore_mod5, type = "HC1"))),
+  sqrt(diag(vcovHC(TestScore_mod6, type = "HC1"))),
+  sqrt(diag(vcovHC(TestScore_mod7, type = "HC1")))
+)
+
+# generate a LaTeX table of regression outputs
 stargazer(TestScore_mod1, 
           TestScore_mod2, 
           TestScore_mod3, 
@@ -1229,6 +1291,9 @@ stargazer(TestScore_mod1,
           TestScore_mod5, 
           TestScore_mod6, 
           TestScore_mod7,
+          digits = 3,
+          dep.var.caption = "Dependent Variable: Test Score",
+          se = rob_se,
           column.labels = c("(1)", "(2)", "(3)", "(4)", "(5)", "(6)", "(7)")
           )
 ```
@@ -1236,6 +1301,16 @@ stargazer(TestScore_mod1,
 <!--html_preserve-->
 
 ```{r, echo=F, results='asis', warning=FALSE, message=FALSE, eval = my_output == "html"}
+rob_se <- list(
+  sqrt(diag(vcovHC(TestScore_mod1, type = "HC1"))),
+  sqrt(diag(vcovHC(TestScore_mod2, type = "HC1"))),
+  sqrt(diag(vcovHC(TestScore_mod3, type = "HC1"))),
+  sqrt(diag(vcovHC(TestScore_mod4, type = "HC1"))),
+  sqrt(diag(vcovHC(TestScore_mod5, type = "HC1"))),
+  sqrt(diag(vcovHC(TestScore_mod6, type = "HC1"))),
+  sqrt(diag(vcovHC(TestScore_mod7, type = "HC1")))
+)
+
 stargazer(TestScore_mod1, 
           TestScore_mod2, 
           TestScore_mod3, 
@@ -1243,18 +1318,31 @@ stargazer(TestScore_mod1,
           TestScore_mod5, 
           TestScore_mod6, 
           TestScore_mod7,
-          digits = 2,
-          title = "(\\#tab:nmots) Nonlinear Models of Test Scores",
+          digits = 3,
+          dep.var.caption = "Dependent Variable: Test Score",
+          se = rob_se,
           type = "html", 
           model.numbers = FALSE,
           header=FALSE,
           column.labels = c("(1)", "(2)", "(3)", "(4)", "(5)", "(6)", "(7)")
           )
+
+stargazer_html_title("Nonlinear Models of Test Scores", "nmots")
 ```
 
 <!--/html_preserve-->
 
 ```{r, echo=F, results='asis', warning= FALSE, message=FALSE, eval = my_output == "latex"}
+rob_se <- list(
+  sqrt(diag(vcovHC(TestScore_mod1, type = "HC1"))),
+  sqrt(diag(vcovHC(TestScore_mod2, type = "HC1"))),
+  sqrt(diag(vcovHC(TestScore_mod3, type = "HC1"))),
+  sqrt(diag(vcovHC(TestScore_mod4, type = "HC1"))),
+  sqrt(diag(vcovHC(TestScore_mod5, type = "HC1"))),
+  sqrt(diag(vcovHC(TestScore_mod6, type = "HC1"))),
+  sqrt(diag(vcovHC(TestScore_mod7, type = "HC1")))
+)
+
 stargazer(TestScore_mod1, 
           TestScore_mod2, 
           TestScore_mod3, 
@@ -1262,8 +1350,10 @@ stargazer(TestScore_mod1,
           TestScore_mod5, 
           TestScore_mod6, 
           TestScore_mod7,
-          digits = 2,
-          title = "(\\#tab:nmots) Nonlinear Models of Test Scores",
+          dep.var.caption = "Dependent Variable: Test Score",
+          title = "\\label{tab:nmots} Nonlinear Models of Test Scores",
+          digits = 3,
+          se = rob_se,
           type = "latex", 
           float.env = "sidewaystable",
           model.numbers = FALSE,
@@ -1273,7 +1363,7 @@ stargazer(TestScore_mod1,
           )
 ```
 
-Let us summarize what can be concluded Table \@ref(tab:nmots).
+Let us summarize what can be concluded from the results presented in Table \@ref(tab:nmots).
 
 First of all, it is apparent that the coefficient on $size$ is statistically significant in all seven models. Adding $\ln(income)$ to model (1) we find that the corresponding coefficient is statistically significant at the level of $1\%$ while all other coefficients remain at their significance level. Furthermore, the estimate for the coefficient on $size$ is roughly $0.27$ points larger which could be a sign of attenuated omitted variable bias. We consider this a reason to include $\ln(income)$ as a regressor in other models, too.
 
@@ -1283,7 +1373,7 @@ Regression (5) includes a cubic term for the student-teacher ratio and omits the
 
 Consequently, regression (6) further explores whether the fraction of english learners is also accountable for the effect of the student-teacher ratio by using $HiEL \times size$ and the interactions $HiEL \times size^2$ and $HiEL \times size^3$. All individual $t$-tests indicate that that there are significant effects. We check this using a robust $F$-test of $H_0: \beta_6=\beta_7=\beta_8=0$. 
 ```{r}
-# check joint significance of interactions
+# check joint significance of the interaction terms
 linearHypothesis(TestScore_mod6, 
                  c("size:HiEL=0", "I(size^2):HiEL=0", "I(size^3):HiEL=0"),
                  vcov. = vcovHC(TestScore_mod6, type = "HC1")
@@ -1310,7 +1400,9 @@ plot(CASchools$size,
 
 # add a legend
 legend("top", 
-       legend = c("Linear Regression (2)","Cubic Regression (5)", "Cubic Regression (7)"),
+       legend = c("Linear Regression (2)", 
+                  "Cubic Regression (5)", 
+                  "Cubic Regression (7)"),
        cex = 0.8,
        ncol = 3,
        lty = c(1, 1, 2),

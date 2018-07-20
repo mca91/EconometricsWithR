@@ -8,9 +8,9 @@ This chapter covers the following topics:
 - Fixed effects regression using time and/or entity fixed effects
 - Computation of standard errors in fixed effects regression models
 
-Following the book, for applications we make use of the data set `r ttcode("Fatalities")` from the `r ttcode("AER")` package which is a panel data set reporting annually state level observations on U.S. traffic fatalities for the period 1982 through 1988. The applications are concerned with the question if there are effects of alcohol taxes and drunk driving laws on road fatalities and, if present, *how strong* these effects are.
+Following the book, for applications we make use of the data set `r ttcode("Fatalities")` from the `r ttcode("AER")` package [@R-AER] which is a panel data set reporting annually state level observations on U.S. traffic fatalities for the period 1982 through 1988. The applications are concerned with the question if there are effects of alcohol taxes and drunk driving laws on road fatalities and, if present, *how strong* these effects are.
 
-For this purpose we will introduce a convenient `r ttcode("R")` function that enables us to estimate linear panel regression models, the function `r ttcode("plm()")` which comes with the package `r ttcode("plm")`. Usage of `r ttcode("plm()")` is very similar as for the function `r ttcode("lm()")` which we have used throughout the previous chapters for estimation of simple and multiple regression models.
+For this purpose we will introduce a convenient `r ttcode("R")` function that enables us to estimate linear panel regression models, the function `r ttcode("plm()")` which comes with the package `r ttcode("plm")` [@R-plm]. Usage of `r ttcode("plm()")` is very similar as for the function `r ttcode("lm()")` which we have used throughout the previous chapters for estimation of simple and multiple regression models.
 
 The following packages and their dependencies are needed for reproduction of the code chunks presented throughout this chapter on your computer:
 
@@ -56,7 +56,6 @@ Sometimes panel data is also called longitudinal data as it adds a temporal dime
 library(AER)
 data(Fatalities)
 ```
-
 
 ```{r, warning=FALSE, message=FALSE}
 # obtain dimension and inspect structure
@@ -258,7 +257,7 @@ where the $D2_i,D3_i,\\dots,Dn_i$ are dummy variables.
 
 ### Estimation and Inference {-}
 
-Software packages use a so-called "entity-demeaned" OLS algorithm that is computationally more efficient than estimating regression models with $k+n$ regressors as needed for models \@ref(eq:gfemodel) and \@ref(eq:gdrmodel).
+Software packages use a so-called "entity-demeaned" OLS algorithm which is computationally more efficient than estimating regression models with $k+n$ regressors as needed for models \@ref(eq:gfemodel) and \@ref(eq:gdrmodel).
 
 Taking averages on both sides of \@ref(eq:femodel) we obtain
 \begin{align*}
@@ -297,7 +296,7 @@ fatal_fe_lm_mod <- lm(fatal_rate ~ beertax + state - 1, data = Fatalities)
 fatal_fe_lm_mod
 ```
 
-As discussed in the previous section, it is also possible to estimate $\beta_1$ by applying OLS to the demeaned data, that is to run the regression
+As discussed in the previous section, it is also possible to estimate $\beta_1$ by applying OLS to the demeaned data, that is, to run the regression
 
 $$\overset{\sim}{FatalityRate} = \beta_1 \overset{\sim}{BeerTax}_{it} + u_{it}. $$
 
@@ -387,7 +386,7 @@ cat('
 
 In the fixed effects regression model $$ Y_{it} = \\beta_1 X_{it} + \\alpha_i + u_{it} \\ \\ , \\ \\ i=1,\\dots,n, \\ t=1,\\dots,T, $$ we assume the following:
 
-1. The error term $u_{it}$ has conditional mean zero, that is $E(u_{it}|u_{i1}, u_{i2},\\dots, u_{iT})$.
+1. The error term $u_{it}$ has conditional mean zero, that is, $E(u_{it}|u_{i1}, u_{i2},\\dots, u_{iT})$.
 
 2. $(X_{i1}, X_{i2}, \\dots, X_{i3}, u_{i1}, \\dots, u_{iT})$, $i=1,\\dots,n$ are i.i.d. draws from their joint distribution.
 
@@ -406,7 +405,7 @@ cat('\\begin{keyconcepts}[The Fixed Effects Regression Assumptions]{10.3}
 In the fixed effects regression model $$ Y_{it} = \\beta_1 X_{it} + \\alpha_i + u_{it} \\ \\ , \\ \\ i=1,\\dots,n, \\ t=1,\\dots,T, $$ we assume the following:\\newline
 
 \\begin{enumerate}
-\\item The error term $u_{it}$ has conditional mean zero, that is $E(u_{it}|u_{i1}, u_{i2},\\dots, u_{iT})$.
+\\item The error term $u_{it}$ has conditional mean zero, that is, $E(u_{it}|u_{i1}, u_{i2},\\dots, u_{iT})$.
 \\item $(X_{i1}, X_{i2}, \\dots, X_{i3}, u_{i1}, \\dots, u_{iT})$, $i=1,\\dots,n$ are i.i.d. draws from their joint distribution.
 \\item Large outliers are unlikely i.e. $(X_{it}, u_{it})$ have nonzero finite fourth moments.
 \\item There is no perfect multicollinearity.
@@ -513,7 +512,7 @@ fatalities_mod7 <- plm(fatal_rate ~ beertax + state + year + drinkagec
                        data = Fatalities_1982_1988)
 ```
 
-Yet again we may use `r ttcode("stargazer()")` to generate a comprehensive tabular presentation of the results.
+Yet again we may use `r ttcode("stargazer()")` [@R-stargazer] to generate a comprehensive tabular presentation of the results.
 
 ```{r, message=F, warning=F, results='asis', eval=F}
 library(stargazer)
@@ -559,9 +558,10 @@ stargazer(fatalities_mod1, fatalities_mod2, fatalities_mod3, fatalities_mod4, fa
           type = "html", 
           se = rob_se,
           model.numbers = FALSE,
-          title = "Linear Panel Regression Models of Traffic Fatalities due to Drunk Driving",
           column.labels = c("(1)", "(2)", "(3)", "(4)", "(5)", "(6)", "(7)")
           )
+
+stargazer_html_title("Linear Panel Regression Models of Traffic Fatalities due to Drunk Driving", "lprmotfdtdd")
 ```
 
 <!--/html_preserve-->
@@ -588,8 +588,7 @@ stargazer(fatalities_mod1, fatalities_mod2, fatalities_mod3, fatalities_mod4, fa
           model.names = FALSE,
           column.labels = c('OLS','','','Linear Panel Regression'),
           omit.stat = "f",
-          title = "Linear Panel Regression Models of Traffic Fatalities due to Drunk Driving"
-          )
+          title = "\\label{tab:lprmotfdtdd} Linear Panel Regression Models of Traffic Fatalities due to Drunk Driving")
 ```
 
 While columns (2) and (3) recap the results \@ref(eq:efemod) and \@ref(eq:cbnfemod), column (1) presents an estimate of the coefficient of interest in the naive OLS regression of the fatality rate on beer tax without any fixed effects. We obtain a *positive* estimate for the coefficient on beer tax that is likely to be upward biased. Notice that the model fit is rather bad, too ($\overline{R^2} = 0.091$). The sign of the estimate changes as we extend the model by both entity and time fixed effects in models (2) and (3). Furthermore $\overline{R^2}$ increases substantially as fixed effects are included in the model equation. Nonetheless, as discussed before, the magnitudes of both estimates are by far too large. 

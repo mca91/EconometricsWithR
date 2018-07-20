@@ -12,7 +12,7 @@ These subsections cover the following topics:
 
 - Heteroskedasticity and Homoskedasticity.
 
-The packages `r ttcode('AER')` and `r ttcode('scales')` are required for reproduction of the code chunks presented throughout this chapter. The package `r ttcode('scales')` provides additional generic plot scaling methods. Make sure both packages are installed before you procedd. The savest way to do so is by checking whether the following code chunk executes without any errors.
+The packages `r ttcode('AER')` [@R-AER] and `r ttcode('scales')` [@R-scales] are required for reproduction of the code chunks presented throughout this chapter. The package `r ttcode('scales')` provides additional generic plot scaling methods. Make sure both packages are installed before you procedd. The savest way to do so is by checking whether the following code chunk executes without any errors.
 
 ```{r, warning=FALSE, message=FALSE, eval=FALSE}
 library(AER)
@@ -226,7 +226,7 @@ rug(c(-tact, tact), ticksize  = -0.0451, lwd = 2, col = "darkgreen")
 
 The $p$-Value is the area under the curve to left of $-4.75$ plus the area under the curve to the right of $4.75$. As we already know from the calculations above, this value is very small. 
 
-## Confidence Intervals for Regression Coefficients
+## Confidence Intervals for Regression Coefficients {#cifrc}
 
 As we already know, estimates of the regression coefficients $\beta_0$ and $\beta_1$ are afflicted with sampling uncertainty, see Chapter \@ref(lrwor). Therefore, we will *never* estimate the exact true value of these parameters from sample data in an empirical application. However, we may construct confidence intervals for the intercept and the slope parameter.
 
@@ -390,7 +390,7 @@ Let us now turn back to the example of test scores and class sizes. The regressi
 confint(linear_model)
 ```
 
-Let us check if the calculation is done as we expect it to be. For $\beta_1$, that is the coefficient on `r ttcode('STR')`, according to the formula presented above the interval borders are computed as
+Let us check if the calculation is done as we expect it to be. For $\beta_1$, the coefficient on `r ttcode('STR')`, according to the formula presented above the interval bounds are computed as
 
 \[  -2.279808 \pm 1.96 \times 0.4798255 \, \Rightarrow \, \text{KI}_{0.95}^{\beta_1} = \left[ -3.22, -1.34 \right]  \]
 
@@ -625,8 +625,9 @@ confint(labor_model)
 
 Since the interval is $[1.33, 1.60]$ we can reject the hypothesis that the coefficient on `r ttcode('education')` is zero at the $5\%$ level.
 
-Furthermore, the plot indicates that there is heteroskedasticity: if we assume the regression line to be a reasonably good representation of the conditional mean function $E(earnings_i\vert education_i)$, the dispersion of hourly earnings around that function clearly increases with the level of education, i.e. the variance of the distribution of earnings increases. In other words: the variance of the residuals (the errors made in explaining earnings by education) increases with education so that the regression errors are heteroskedastic.<br>
-This example makes a case that the assumption of homoskedasticity is doubtful in economic applications. 
+Furthermore, the plot indicates that there is heteroskedasticity: if we assume the regression line to be a reasonably good representation of the conditional mean function $E(earnings_i\vert education_i)$, the dispersion of hourly earnings around that function clearly increases with the level of education, i.e. the variance of the distribution of earnings increases. In other words: the variance of the residuals (the errors made in explaining earnings by education) increases with education so that the regression errors are heteroskedastic.
+
+This example makes a case that the assumption of homoskedasticity is doubtful in economic applications. Should we care about heteroskedasticity? In short, yes we shoud. As explained in the next section, heteroskedasticity can have serious negative consequences in hypothesis testing, if we ignore it. 
 
 ### Should We Care About Heteroskedasticity? {-}
 
@@ -674,13 +675,13 @@ Consistent estimation of $\sigma_{\hat{\beta}_1}$ under heteroskedasticity is gr
 \[ SE(\hat{\beta}_1) = \sqrt{ \frac{ \frac{1}{n-2} \sum_{i=1}^n (X_i - \overline{X})^2 \hat{u}_i^2 }{ \left[ \frac{1}{n} \sum_{i=1}^n (X_i - \overline{X})^2  \right]^2} } \tag{5.6} \]
 
 Standard error estimates computed this way are also referred to as [Eicker-Huber-White standard errors](https://en.wikipedia.org/wiki/Heteroscedasticity-consistent_standard_errors), the most frequently cited paper on this is @white1980.  
-It can be quite cumbersome to do this calculation by hand. Luckily, there are `r ttcode('R')` function for that purpose. A convenient one, named `r ttcode('vcovHC()')` is part of the package `r ttcode("sandwich")`.^[The package `r ttcode('sandwich')` is a dependency of the package `r ttcode('AER')` meaning that it is attached automatically if you load `r ttcode('AER')`] This function can compute a variety of standard error estimators. The one brought forward in (<a href="#mjx-eqn-5.6">5.6</a>) is computed when the argument `r ttcode('type')` is set to `r ttcode('"HC0"')`.
+It can be quite cumbersome to do this calculation by hand. Luckily, there are `r ttcode('R')` function for that purpose. A convenient one named `r ttcode('vcovHC()')` is part of the package `r ttcode("sandwich")`.^[The package `r ttcode('sandwich')` is a dependency of the package `r ttcode('AER')` meaning that it is attached automatically if you load `r ttcode('AER')`]. This function can compute a variety of standard errors. The one brought forward in (<a href="#mjx-eqn-5.6">5.6</a>) is computed when the argument `r ttcode('type')` is set to `r ttcode('"HC0"')`. Most of the examples presented in the book rely on a slightly different formula which is computed by *STATA* by default. To get `r ttcode('vcovHC()')` to use this formula, we have to set `r ttcode('type = HC1')`.
 
 Let us now compute robust standard error estimates for the coefficients in `r ttcode('linear_model')`.
 
 ```{r}
 # compute heteroskedasticity-robust standard errors
-vcov <- vcovHC(linear_model, type = "HC0")
+vcov <- vcovHC(linear_model, type = "HC1")
 vcov
 ```
 
@@ -724,13 +725,12 @@ How severe are the implications of using homoskedasticity-only standard errors i
 
 $$ Y_i = \beta_1 \cdot X_i + u_i \ \ , \ \ u_i \overset{i.i.d.}{\sim} N(0,0.36 \cdot X_i^2)  $$ 
 
-with $\beta_1=1$ as the data generating process. Clearly the assumption of homoskedasticity is violated here since the variance of the errors is a non-linear, increasing function of $X_i$ but the errors have zero mean and are i.i.d. such that the assumptions made in Key Concept 4.3 are not violated. As before, the true conditional mean function we are interested in estimating is
+with $\beta_1=1$ as the data generating process. Clearly the assumption of homoskedasticity is violated here since the variance of the errors is a nonlinear, increasing function of $X_i$ but the errors have zero mean and are i.i.d. such that the assumptions made in Key Concept 4.3 are not violated. As before, the true conditional mean function we are interested in estimating is
 
 $$ E(Y_i\vert X_i) = \beta_1 X_i. $$
 
-```{r}
-# set random seed
-set.seed(21)
+```{r, echo=-1}
+set.seed(905)
 
 # generate heteroskedastic data 
 X <- 1:500
@@ -761,7 +761,7 @@ abline(reg,
 The plot shows that the data are heteroskedastic as the variance of $Y$ grows with $X$. We continue by conducting a significance test of the (true) null hypothesis $H_0: \beta_1 = 1$ twice, once using the homoskedasticity-only standard error formula and once with the robust version (<a href="#mjx-eqn-5.6">5.6</a>). An easy way to do this in `r  ttcode('R')` is the function `r  ttcode('linearHypothesis()')` from the package `r  ttcode('car')`, see `?linearHypothesis`. It allows to test linear hypotheses about parameters in linear models in a similar way as done with a $t$-statistic and offers various robust covariance matrix estimators. We test by comparing the tests' $p$-values to the significance level of $5\%$.   
 
 ```{block2, linearhypothesis, type='rmdknit'}
-<tt>linearHypothesis()</tt> computes a test statistic that follows an $F$ distribution under the null hypothesis. We will not loose too much words on the theory behind it at this time. In general, the idea of the $F$ test is to compare the fit of different models. When testing a hypothesis about a *single* coefficient using an $F$ test, one can show that the test statistic is simply the square of the corresponding $t$-statistic:
+<tt>linearHypothesis()</tt> computes a test statistic that follows an $F$-distribution under the null hypothesis. We will not loose too much words on the theory behind it at this time. In general, the idea of the $F$-test is to compare the fit of different models. When testing a hypothesis about a *single* coefficient using an $F$-test, one can show that the test statistic is simply the square of the corresponding $t$-statistic:
 
 $$ F = t^2 = \frac{\hat\beta_i - \beta_{i,0}}{SE(\hat\beta_i)} \sim F_{1,n-k-1}  $$
 
@@ -774,7 +774,7 @@ In <tt>linearHypothesis()</tt>, the hypothesis must be provided as a *string*. T
 linearHypothesis(reg, hypothesis.matrix = "X = 1")$'Pr(>F)'[2] < 0.05
 
 # test hypothesis using robust standard error
-linearHypothesis(reg, hypothesis.matrix = "X = 1", white.adjust = "hc0")$'Pr(>F)'[2] < 0.05
+linearHypothesis(reg, hypothesis.matrix = "X = 1", white.adjust = "hc1")$'Pr(>F)'[2] < 0.05
 ```
 
 This is a good example of what can go wrong if we ignore heteroskedasticity: for the data set at hand the default method rejects the null hypothesis $\beta_1 = 1$ although it is true. When using the robust standard error formula the test does not reject the null. Of course we could argue that this is just a coincidence and both tests are equally well in maintaining the type I error rate of $5\%$. This can be further investigated by computing *Monte Carlo* estimates of the rejection frequencies of both tests on the basis of a large number of random samples. We proceed as follows:
@@ -783,8 +783,8 @@ This is a good example of what can go wrong if we ignore heteroskedasticity: for
 - Using a `r  ttcode('for()')` loop, we generate $10000$ heteroskedastic random samples of size $1000$, estimate the regression model and check whether the tests falsly reject the null at the level of $5\%$ using comparison operators. The results are stored in the respective vectors `r  ttcode('t')` and `r  ttcode('t.rob')`.
 - After the simulation, we compute the fraction of false rejections for both tests.
 
-```{r, cache=T}
-set.seed(123)
+```{r, cache=T, echo=-1}
+set.seed(905)
 
 # initialize vectors t and t.rob
 t <- c()
@@ -804,15 +804,15 @@ for (i in 1:10000) {
   t[i] <- linearHypothesis(reg, "X = 1")$'Pr(>F)'[2] < 0.05
 
   # robust significance test
-  t.rob[i] <- linearHypothesis(reg, "X = 1", white.adjust = "hc0")$'Pr(>F)'[2] < 0.05
+  t.rob[i] <- linearHypothesis(reg, "X = 1", white.adjust = "hc1")$'Pr(>F)'[2] < 0.05
 
 }
 
 # compute the fraction of false rejections
-cbind(t = sum(t), t.rob = sum(t.rob)) / 10000
+round(cbind(t = sum(t), t.rob = sum(t.rob)) / 10000, 3)
 ```
 
-The results show that we face an increased risk of falsely rejecting the null using the homoskedasticity-only standard error for the testing problem at hand: with the common standard error estimator, $7.81\%$ of all tests reject the null hypothesis falsely. In contrast, with the robust test statistic we are closer to the nominal level of $5\%$.
+These results show that we face an increased risk of falsely rejecting the null using the homoskedasticity-only standard error for the testing problem at hand: with the common standard error estimator, $`r round(sum(t)/length(t)*100,3)`\%$ of all tests reject the null hypothesis falsely. In contrast, with the robust test statistic we are closer to the nominal level of $5\%$.
  
 ## The Gauss-Markov Theorem
 
@@ -1227,9 +1227,9 @@ if (my_output=="html") {
 
 For historical reasons, some <tt>R</tt> functions that we use to obtain statistical inference on model parameters, among them <tt>confint()</tt> and <tt>summary()</tt>, rely on the $t$-distribution instead of using the large-sample normal approximation. This is why for small sample sizes (and hence small degrees of freedom), $p$-values and confidence intervals reported by these functions deviate from those computed using critical values or cumulative probabilities of the standard normal distribution.
 
-The $95\\%$ confidence interval for the mean in the previous exercise is $[`r set.seed(1); mu_hat <- mean(rnorm(100, mean = 10, sd = 10));round(c("lower"= mu_hat - 1.96, "upper" = mu_hat + 1.96),4)`]$.
+The $95\\%$ confidence interval for the mean in the previous exercise is $[9.128874, 13.048874]$.
 
-100 observations sampled from a normal distribution with $\\mu=10$ and $\\sigma^2=100$ have been assigned to the vector <tt>s</tt> and are available in your work space.
+100 observations sampled from a normal distribution with $\\mu=10$ and $\\sigma^2=100$ have been assigned to the vector <tt>s</tt> which is available in your environment.
 
 **Instructions**
 
@@ -1819,7 +1819,7 @@ if (my_output=="html") {
 
 #### 15. A Small Simulation Study III {-}
 
-The Gauss-Markov Theorem states that the OLS estimator in linear regression models is no longer the most efficient estimator (in the sense of minimum variance) among the conditionally unbiased linear estimators, that is the OLS estimator loses the BLUE property, under heteroskedasticity.
+The Gauss-Markov Theorem states that the OLS estimator in linear regression models is no longer the most efficient estimator (in the sense of minimum variance) among the conditionally unbiased linear estimators, that is, the OLS estimator loses the BLUE property, under heteroskedasticity.
 
 It turns out that OLS applied to the weighted observations $(w_i X_i, w_i Y_i)$ where $w_i=\\frac{1}{\\sigma_i}$ yields the BLUE estimator under heteroskedasticity. This estimator is called the *weighted least squares* (WLS) estimator so that its variance is smaller than the variance of the OLS estimator.
 

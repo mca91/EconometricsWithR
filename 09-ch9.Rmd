@@ -82,7 +82,7 @@ For internal validity to exist, there are two conditions:
 
 1. The estimator of the causal effect, which is measured the coefficient(s) of interest, needs to be unbiased and consistent. 
 
-2. Statistical inference is valid, that is hypothesis tests should have the desired significance level and confidence intervals should have the desired confidence level.
+2. Statistical inference is valid, that is, hypothesis tests should have the desired significance level and confidence intervals should have the desired confidence level.
 
 In multiple regression, we estimate the model coefficients using OLS. Thus for condition 1. to be fulfilled we need the OLS estimator to be unbiased and consistent. For the second condition to be valid, the standard errors must be valid such that hypothesis testing and computation of confidence intervals yield results that are trustworthy. Remember that a necessary condition for conditions 1. and 2. to be fulfilled is that the assumptions of Key Concept 6.4 hold. 
 
@@ -274,7 +274,7 @@ For example, consider two bivariate normally distributed random variables $X,Y$.
   Y_i =& \, 100 + 0.5 (X - 50) \\
       =& \, 75 + 0.5 X.
 \end{align*}
-Now suppose you gather data on $X$ and $Y$, but that you can only measure $\overset{\sim}{X_i} = X_i + w_i$ with $w_i \overset{i.i.d.}{\sim} \mathcal{N}(0,\sqrt{10})$. Since the $w_i$ are independent of the $X_i$, there is no correlation between the $X_i$ and the $w_i$ so that we have a case of the classical measurement error model. We now illustrate this example using `r ttcode("R")`.
+Now suppose you gather data on $X$ and $Y$, but that you can only measure $\overset{\sim}{X_i} = X_i + w_i$ with $w_i \overset{i.i.d.}{\sim} \mathcal{N}(0,\sqrt{10})$. Since the $w_i$ are independent of the $X_i$, there is no correlation between the $X_i$ and the $w_i$ so that we have a case of the classical measurement error model. We now illustrate this example in `r ttcode("R")` using the package `r ttcode("mvtnorm")` [@R-mvtnorm].
 
 ```{r, eval = T}
 # set random seed
@@ -376,7 +376,7 @@ There are three cases of sample selection but only one of which poses a threat t
 
 2. Data are missing based on the value of a regressor.
 
-3. Data are missing due to a selection process that is related to the dependent variable.
+3. Data are missing due to a selection process which is related to the dependent variable.
 
 Let us jump back to the example of variables $X$ and $Y$ distributed as stated in equation \@ref(eq:bvnormd) and illustrate all three cases using `r ttcode("R")`. 
 
@@ -584,18 +584,18 @@ Suppose we are interested in estimating the effect of a $20\%$ increase in cigar
 After loading the data set, we pick observations for the year 1995 and plot logarithms of average federal and local excise taxes, `r ttcode("tax")`, against pack consumption, `r ttcode("packs")`, and estimate a simple linear regression model.
 
 ```{r}
-# load data set
+# load the data set
 library(AER)
 data("CigarettesSW")
 c1995 <- subset(CigarettesSW, year == "1995")
 
-# estimate model
+# estimate the model
 cigcon_mod <- lm(log(packs) ~ log(price), data = c1995)
 cigcon_mod
 ```
 <div class="unfolded">
 ```{r}
-# plot estimated regression line and the data
+# plot the estimated regression line and the data
 plot(log(c1995$price), log(c1995$packs),
      xlab = "ln(Price)",
      ylab = "ln(Consumption)",
@@ -698,7 +698,7 @@ This section discusses internal and external validity of the results gained from
 
 #### External Validity of the Study {-}
 
-External validity of the California test score analysis means that its results can be generalized. If this is possible depends on the population and the setting. Following the book we conduct the same analysis using data for fourth graders in $220$ public school districts in Massachusetts in 1998. Like `r ttcode("CASchools")`, the data set `r ttcode("MASchools")` is part of the `r ttcode("AER")` package. Use the help function (`?MASchools`) to get info on the definitions of all the variables contained.
+External validity of the California test score analysis means that its results can be generalized. If this is possible depends on the population and the setting. Following the book we conduct the same analysis using data for fourth graders in $220$ public school districts in Massachusetts in 1998. Like `r ttcode("CASchools")`, the data set `r ttcode("MASchools")` is part of the `r ttcode("AER")` package [@R-AER]. Use the help function (`?MASchools`) to get info on the definitions of all the variables contained.
 
 We start by loading the data set and proceed by computing some summary statistics.
 
@@ -782,13 +782,13 @@ legend("topleft",
 </div>
 The plot indicates that the cubic specification fits the data best. Interestingly, this is different from the `r ttcode("CASchools")` data where the pattern of nonlinearity is better described by the linear-log specification.
 
-We continue by estimating most of the model specifications used for analysis of the `r ttcode("CASchools")` data set in Chapter \@ref(nrf) and use `r ttcode("stargazer()")` to generate a tabular representation of the regression results.
+We continue by estimating most of the model specifications used for analysis of the `r ttcode("CASchools")` data set in Chapter \@ref(nrf) and use `r ttcode("stargazer()")` [@R-stargazer] to generate a tabular representation of the regression results.
 
 ```{r, eval=FALSE}
 # Add HiEL to 'MASchools'
 MASchools$HiEL <- as.numeric(MASchools$english > median(MASchools$english))
 
-# estimate model specifications from table 9.2 of the book
+# estimate model specifications from Table 9.2 of the book
 TestScore_MA_mod1 <- lm(score ~ STR, data = MASchools)
 
 TestScore_MA_mod2 <- lm(score ~ STR + english + lunch + log(income), 
@@ -823,6 +823,7 @@ stargazer(Linear_model_MA, TestScore_MA_mod2, TestScore_MA_mod3,
           TestScore_MA_mod4, TestScore_MA_mod5, TestScore_MA_mod6,
           title = "Regressions Using Massachusetts Test Score Data",
           type = "latex",
+          digits = 3,
           se = rob_se,
           object.names = TRUE,
           model.numbers = FALSE,
@@ -863,6 +864,8 @@ stargazer(TestScore_MA_mod1, TestScore_MA_mod2, TestScore_MA_mod3, TestScore_MA_
           column.sep.width = "1pt",
           column.labels = c("(I)", "(II)", "(III)", "(IV)", "(V)", "(VI)")
           )
+
+stargazer_html_title("Regressions Using Massachusetts Test Score Data", "rumtsd")
 ```
 
 <!--/html_preserve-->
@@ -893,7 +896,7 @@ rob_se <- list(
 
 stargazer(TestScore_MA_mod1, TestScore_MA_mod2, TestScore_MA_mod3, TestScore_MA_mod4, TestScore_MA_mod5, TestScore_MA_mod6,
           digits = 3,
-          title = "Regressions Using Massachusetts Test Score Data",
+          title = "\\label{tab:rumtsd} Regressions Using Massachusetts Test Score Data",
           type = "latex",
           float.env = "sidewaystable",
           column.sep.width = "-7pt",
