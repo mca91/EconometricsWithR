@@ -13,6 +13,13 @@ The discussion covers:
 
 If you would like to reproduce code examples, install the `r ttcode("R")` packages listed below beforehand and make sure that the subsequent code chunk executes without any errors. 
 
++ `r ttcode("AER")` [@R-AER]
++ `r ttcode("dynlm")` [@R-dynlm]
++ `r ttcode("nlme")` [@R-nlme]
++ `r ttcode("orcutt")` [@R-orcutt]
++ `r ttcode("quantmod")` [@R-quantmod]
++ `r ttcode("stargazer")` [@R-stargazer]
+
 ```{r, warning=FALSE, message=FALSE}
 library(AER)
 library(quantmod)
@@ -112,21 +119,21 @@ This section of the book describes the general idea of a dynamic causal effect a
 
 In general, for empirical attempts to measure a dynamic causal effect, the assumptions of stationarity (see Key Concept 14.5) and exogeneity must hold. In time series applications up until here we have assumed that the model error term has conditional mean zero given current and past values of the regressors. For estimation of a dynamic causal effect using a distributed lag model, assuming a stronger form termed *strict exogeneity* may be useful. Strict exogeneity states that the error term has mean zero conditional on past, present *and future* values of the independent variables. 
 
-The two concepts of exogeneity and the distributive lag model are summarized in Key Concept 15.1
+The two concepts of exogeneity and the distributive lag model are summarized in Key Concept 15.1.
 
+```{r, eval = my_output == "html", results='asis', echo=FALSE}
+cat('
 <div class = "keyconcept"> 
 <h3 class = "right"> Key Concept 15.1 </h3>
 <h3 class = "left"> The Distributed Lag Model and Exogeneity </h3>
-
 <p>
-
 The general distributed lag model is
-\begin{align}
-  Y_t = \beta_0 + \beta_1 X_t + \beta_2 X_{t-1} + \beta_3 X_{t-2} + \dots + \beta_{r+1} X_{t-r} + u_t, (\#eq:dlm)
-\end{align}
+\\begin{align}
+  Y_t = \\beta_0 + \\beta_1 X_t + \\beta_2 X_{t-1} + \\beta_3 X_{t-2} + \\dots + \\beta_{r+1} X_{t-r} + u_t, (\\#eq:dlm)
+\\end{align}
 where it is assumed that
 
-1. $X$ is an exogenous variable, $$E(u_t\vert X_t, X_{t-1}, X_{t-2},\dots) = 0.$$
+1. $X$ is an exogenous variable, $$E(u_t\\vert X_t, X_{t-1}, X_{t-2},\\dots) = 0.$$
 
 2.
      (a) $X_t,Y_t$ have a stationary distribution.
@@ -140,14 +147,44 @@ where it is assumed that
 
 **On the assumption of exogeneity**
 
-+ There is another form of exogeneity termed *strict exogeneity* which assumes $$E(u_t\vert \dots X_{t+2},X_{t+1},X_t,X_{t-1},X_{t-2},\dots)=0,$$ that is the error term has mean zero conditional on past, present and future values of $X$. Strict exogeneity implies exogeneity (as defined in 1.) but not the other way around. From this point on we will therefore distinguish between exogeneity and strict exogeneity. 
++ There is another form of exogeneity termed *strict exogeneity* which assumes $$E(u_t\\vert \\dots, X_{t+2},X_{t+1},X_t,X_{t-1},X_{t-2},\\dots)=0,$$ that is the error term has mean zero conditional on past, present and future values of $X$. Strict exogeneity implies exogeneity (as defined in 1.) but not the other way around. From this point on we will therefore distinguish between exogeneity and strict exogeneity. 
 
-+ Exogeneity as in 1. suffices for the OLS estimators of the coefficient in distributed lag models to be consistent. However, if the the assumption of strict exogeneity can be made, more efficient estimators can be applied.
-
++ Exogeneity as in 1. suffices for the OLS estimators of the coefficient in distributed lag models to be consistent. However, if the the assumption of strict exogeneity is valid, more efficient estimators can be applied.
 </p>
-
 </div>
+')
+```
 
+```{r, eval = my_output == "latex", results='asis', echo=FALSE}
+cat('\\begin{keyconcepts}[The Distributed Lag Model and Exogeneity]{15.1}
+The general distributed lag model is
+\\begin{align}
+  Y_t = \\beta_0 + \\beta_1 X_t + \\beta_2 X_{t-1} + \\beta_3 X_{t-2} + \\dots + \\beta_{r+1} X_{t-r} + u_t, \\label{eq:dlm}
+\\end{align}
+where it is assumed that \\newline
+
+\\begin{enumerate}
+\\item $X$ is an exogenous variable, $$E(u_t\\vert X_t, X_{t-1}, X_{t-2},\\dots) = 0.$$
+\\item \\vspace{0.5cm}
+\\begin{itemize}
+\\item[(a)] $X_t,Y_t$ have a stationary distribution.
+\\item[(b)] $(Y_t,X_t)$ and $(Y_{t-j},X_{t-j})$ become independently distributed as $j$ gets large.
+\\end{itemize}\\vspace{0.5cm}
+\\item Large outliers are unlikely. In particular, we need that all the variables have more than eight nonzero and finite moments --- a stronger assumption than before (four finite nonzero moments) that is required for computation of the HAC covariance matrix estimator.
+\\item There is no perfect multicollinearity.
+\\end{enumerate}\\vspace{0.5cm}
+
+The distributed lag model may be extended to include contemporaneous and past values of additional regressors.\\vspace{0.5cm}
+
+\\textbf{On the assumption of exogeneity}\\vspace{0.5cm}
+
+\\begin{itemize}
+\\item There is another form of exogeneity termed \\textit{strict exogeneity} which assumes $$E(u_t\\vert \\dots, X_{t+2},X_{t+1},X_t,X_{t-1},X_{t-2},\\dots)=0,$$ that is the error term has mean zero conditional on past, present and future values of $X$. Strict exogeneity implies exogeneity (as defined in 1.) but not the other way around. From this point on we will therefore distinguish between exogeneity and strict exogeneity. 
+\\item Exogeneity as in 1. suffices for the OLS estimators of the coefficient in distributed lag models to be consistent. However, if the the assumption of strict exogeneity is valid, more efficient estimators can be applied.
+\\end{itemize}
+\\end{keyconcepts}
+')
+```
 
 ## Dynamic Multipliers and Cumulative Dynamic Multipliers
 
@@ -197,25 +234,40 @@ The error term $u_t$ in the distributed lag model \@ref(eq:dlm) may be serially 
 
 However, autocorrelated standard errors render the usual homoskedasticity-only *and* heteroskedasticity-robust standard errors invalid and may cause misleading inference. HAC errors are a remedy for this issue.
 
+```{r, eval = my_output == "html", results='asis', echo=FALSE}
+cat('
 <div class = "keyconcept"> 
 <h3 class = "right"> Key Concept 15.2 </h3>
 <h3 class = "left"> HAC Standard errors </h3>
-
 <p>
-
 **Problem**:
 
-If the error term $u_t$ in the distributed lag model \@ref(eq:dlm) is serially correlated, statistical inference that rests on usual (heteroskedasticity-robust) standard errors can be strongly misleading.
+If the error term $u_t$ in the distributed lag model \\@ref(eq:dlm) is serially correlated, statistical inference that rests on usual (heteroskedasticity-robust) standard errors can be strongly misleading.
 
 **Solution**:
 
-Heteroskedasticity- and autocorrelation-consistent (HAC) estimators of the variance-covariance matrix circumvent this issue. There are `r ttcode("R")` functions like `r ttcode("vcovHAC()")` from the package `r ttcode("sandwich")` which are convenient for computation of such estimators.
+Heteroskedasticity- and autocorrelation-consistent (HAC) estimators of the variance-covariance matrix circumvent this issue. There are <tt>R</tt> functions like <tt>vcovHAC()</tt> from the package <tt>sandwich</tt> which are convenient for computation of such estimators.
 
-The package `r ttcode("sandwich")` also contains the function `r ttcode("NeweyWest()")`, an implementation of the HAC variance-covariance estimator proposed by @newey1987.
-
+The package <tt>sandwich</tt> also contains the function <tt>NeweyWest()</tt>, an implementation of the HAC variance-covariance estimator proposed by @newey1987.
 </p>
-
 </div>
+')
+```
+
+```{r, eval = my_output == "latex", results='asis', echo=FALSE}
+cat('\\begin{keyconcepts}[HAC Standard errors]{15.2}
+\\textbf{Problem}:\\newline
+
+If the error term $u_t$ in the distributed lag model (\\ref{eq:dlm}) is serially correlated, statistical inference that rests on usual (heteroskedasticity-robust) standard errors can be strongly misleading.\\newline
+
+\\textbf{Solution}:\\newline
+
+Heteroskedasticity- and autocorrelation-consistent (HAC) estimators of the variance-covariance matrix circumvent this issue. There are \\texttt{R} functions like \\texttt{vcovHAC()} from the package \\texttt{sandwich} which are convenient for computation of such estimators.\\newline
+
+The package \\texttt{sandwich} also contains the function \\texttt{NeweyWest()}, an implementation of the HAC variance-covariance estimator proposed by \\cite{newey1987}.
+\\end{keyconcepts}
+')
+```
 
 Consider the distributed lag regression model with no lags and a single regressor $X_t$ 
 \begin{align*}
@@ -297,29 +349,53 @@ coeftest(example_mod, vcov = NW_VCOV)
 
 In general, the errors in a distributed lag model are correlated which necessitates usage of HAC standard errors for valid inference. If, however, the assumption of exogeneity (the first assumption stated in Key Concept 15.1) is replaced by strict exogeneity, that is $$E(u_t\vert \dots, X_{t+1}, X_{t}, X_{t-1}, \dots) = 0,$$ more efficient approaches than OLS estimation of the coefficients are available. For a general distributed lag model with $r$ lags and AR($p$) errors, these approaches are summarized in Key Concept 15.4.
 
+```{r, eval = my_output == "html", results='asis', echo=FALSE}
+cat('
 <div class = "keyconcept"> 
 <h3 class = "right"> Key Concept 15.4 </h3>
 <h3 class = "left"> Estimation of Dynamic Multipliers Under Strict Exogeneity </h3>
 <p>
-
 Consider the general distributed lag model with $r$ lags and assume that the errors follow an AR($p$) process,
-\begin{align}
-  Y_t =& \, \beta_0 + \beta_1 X_t + \beta_2 X_{t-1} + \dots + \beta_{r+1} X_{t-r} + u_t \\
-  u_t =& \, \phi_1 u_{t-1} + \phi u_{t-2} + \dots + \phi_p u_{t-p} + \overset{\sim}{u}_t. (\#eq:dlmarerrors)
-\end{align}
+\\begin{align}
+  Y_t =& \\, \\beta_0 + \\beta_1 X_t + \\beta_2 X_{t-1} + \\dots + \\beta_{r+1} X_{t-r} + u_t \\\\
+  u_t =& \\, \\phi_1 u_{t-1} + \\phi u_{t-2} + \\dots + \\phi_p u_{t-p} + \\overset{\\sim}{u}_t. (\\#eq:dlmarerrors)
+\\end{align}
 Assuming strict exogeneity of $X_t$, one may rewrite the above model in the ADL specification
-\begin{align*}
-  Y_t =& \, \alpha_0 + \phi_1 Y_{t-1} + \phi_2 Y_{t-2} + \dots + \phi_p Y_{t-p} \\
-      &+ \, \delta_0 X_t + \delta_1 X_{t-1} + \dots + \delta_q X_{t-q} + \overset{\sim}{u}_t
-\end{align*}
-where $q=r+p$ and compute estimates of the dynamic multipliers $\beta_1, \beta_2, \dots, \beta_{r+1}$ using OLS estimates of $\phi_1, \phi_2, \dots, \phi_p, \delta_0, \delta_1, \dots, \delta_q$. 
+\\begin{align*}
+  Y_t =& \\, \\alpha_0 + \\phi_1 Y_{t-1} + \\phi_2 Y_{t-2} + \\dots + \\phi_p Y_{t-p} \\\\
+      +& \\, \\delta_0 X_t + \\delta_1 X_{t-1} + \\dots + \\delta_q X_{t-q} + \\overset{\\sim}{u}_t
+\\end{align*}
+where $q=r+p$ and compute estimates of the dynamic multipliers $\\beta_1, \\beta_2, \\dots, \\beta_{r+1}$ using OLS estimates of $\\phi_1, \\phi_2, \\dots, \\phi_p, \\delta_0, \\delta_1, \\dots, \\delta_q$. 
 
-An alternative is to estimate the dynamic multipliers using feasible GLS, that is to apply the OLS estimator to a quasi-difference specification of \@ref(eq:dlmarerrors). Under strict exogeneity, the feasible GLS approach is the BLUE estimator for the dynamic multipliers in large samples.
+An alternative is to estimate the dynamic multipliers using feasible GLS, that is to apply the OLS estimator to a quasi-difference specification of \\@ref(eq:dlmarerrors). Under strict exogeneity, the feasible GLS approach is the BLUE estimator for the dynamic multipliers in large samples.
 
 On the one hand, as demonstrated in Chapter 15.5 of the book, the OLS estimation of the ADL representation can be beneficial for estimation of the dynamic multipliers in large distributed lag models because it allows for a more parsimonious model that may be a good approximation to a large distributed lag model. On the other hand, the GLS approach is more efficient than the ADL estimator if the sample size is large.
-
 </p>
 </div>
+')
+```
+
+```{r, eval = my_output == "latex", results='asis', echo=FALSE}
+cat('\\begin{keyconcepts}[Estimation of Dynamic Multipliers Under Strict Exogeneity]{15.4}
+Consider the general distributed lag model with $r$ lags and assume that the errors follow an AR($p$) process,
+\\begin{align}
+  Y_t =& \\, \\beta_0 + \\beta_1 X_t + \\beta_2 X_{t-1} + \\dots + \\beta_{r+1} X_{t-r} + u_t \\\\
+  u_t =& \\, \\phi_1 u_{t-1} + \\phi u_{t-2} + \\dots + \\phi_p u_{t-p} + \\overset{\\sim}{u}_t. (\\#eq:dlmarerrors)
+\\end{align}
+Assuming strict exogeneity of $X_t$, one may rewrite the above model in the ADL specification
+\\begin{align*}
+  Y_t =& \\, \\alpha_0 + \\phi_1 Y_{t-1} + \\phi_2 Y_{t-2} + \\dots + \\phi_p Y_{t-p} \\\\
+      +& \\, \\delta_0 X_t + \\delta_1 X_{t-1} + \\dots + \\delta_q X_{t-q} + \\overset{\\sim}{u}_t
+\\end{align*}
+where $q=r+p$ and compute estimates of the dynamic multipliers $\\beta_1, \\beta_2, \\dots, \\beta_{r+1}$ using OLS estimates of $\\phi_1, \\phi_2, \\dots, \\phi_p, \\delta_0, \\delta_1, \\dots, \\delta_q$.\\newline 
+
+An alternative is to estimate the dynamic multipliers using feasible GLS, that is to apply the OLS estimator to a quasi-difference specification of \\ref{eq:dlmarerrors}. Under strict exogeneity, the feasible GLS approach is the BLUE estimator for the dynamic multipliers in large samples.\\newline
+
+On the one hand, as demonstrated in Chapter 15.5 of the book, the OLS estimation of the ADL representation can be beneficial for estimation of the dynamic multipliers in large distributed lag models because it allows for a more parsimonious model that may be a good approximation to a large distributed lag model. On the other hand, the GLS approach is more efficient than the ADL estimator if the sample size is large.
+\\end{keyconcepts}
+')
+```
+
 
 In what follows we shortly review how the different representations of a distributed lag model can be obtained when the causal effect in $Y$ of a change in $X$ lasts for only two periods and show how these specification can be estimated by OLS and GLS using `r ttcode("R")`.
 
@@ -514,9 +590,9 @@ The results are then used to reproduce the outcomes presented in Table 15.1 of t
 stargazer(FOJC_mod_DM , FOJC_mod_CM1, FOJC_mod_CM1, FOJC_mod_CM2,
   title = "Dynamic Effects of a Freezing Degree Day on the Price of Orange Juice",
   header = FALSE, 
-  digits = 2, 
+  digits = 3, 
   column.labels = c("Dynamic Multipliers", rep("Dynamic Cumulative Multipliers", 3)),
-  dep.var.caption  = "Monthly Percentage Change in Orange Juice Price",
+  dep.var.caption  = "Dependent Variable: Monthly Percentage Change in Orange Juice Price",
   dep.var.labels.include = FALSE,
   covariate.labels = as.character(0:18),
   omit = "season",
@@ -534,12 +610,11 @@ stargazer(FOJC_mod_DM , FOJC_mod_CM1, FOJC_mod_CM1, FOJC_mod_CM2,
 
 ```{r, message=F, warning=F, results='asis', echo=F, eval=my_output=="html"}
 stargazer(FOJC_mod_DM , FOJC_mod_CM1, FOJC_mod_CM1, FOJC_mod_CM2,
-  title = "Dynamic Effects of a Freezing Degree Day on the Price of Orange Juice",
   header = FALSE, 
   type = "html",
-  digits = 2, 
-  column.labels = c("Dynamic Multipliers", rep("Dynamic Cumulative Multipliers",3)),
-  dep.var.caption  = "Monthly Percentage Change in Orange Juice Price",
+  digits = 3, 
+  column.labels = c("Dynamic Multipliers", rep("Dynamic Cumulative Multipliers", 3)),
+  dep.var.caption  = "Dependent Variable: Monthly Percentage Change in Orange Juice Price",
   dep.var.labels.include = FALSE,
   covariate.labels = as.character(0:18),
   omit = "season",
@@ -551,21 +626,23 @@ stargazer(FOJC_mod_DM , FOJC_mod_CM1, FOJC_mod_CM1, FOJC_mod_CM2,
                    ),
   omit.stat = c("rsq", "f","ser")
   ) 
+
+stargazer_html_title("Dynamic Effects of a Freezing Degree Day on the Price of Orange Juice", "deoafddotpooj")
 ```
 
 <!--/html_preserve-->
 
 ```{r, message=F, warning=F, results='asis', echo=F, eval=my_output=="latex"}
 stargazer(FOJC_mod_DM , FOJC_mod_CM1, FOJC_mod_CM1, FOJC_mod_CM2,
-  title = "Dynamic Effects of a Freezing Degree Day on the Price of Orange Juice",
+  title = "\\label{tab:deoafddotpooj} Dynamic Effects of a Freezing Degree Day on the Price of Orange Juice",
   header = FALSE, 
   type = "latex",
   column.sep.width = "20pt",
   float.env = "sidewaystable",
   single.row = T,
-  digits = 2, 
+  digits = 3, 
   column.labels = c("Dyn. Mult.", rep("Dyn. Cum. Mult.", 3)),
-  dep.var.caption  = "Monthly Percentage Change in Orange Juice Price",
+  dep.var.caption  = "Dependent Variable: Monthly Percentage Change in Orange Juice Price",
   dep.var.labels.include = FALSE,
   covariate.labels = paste("lag",as.character(0:18)),
   omit = "season",
@@ -579,7 +656,7 @@ stargazer(FOJC_mod_DM , FOJC_mod_CM1, FOJC_mod_CM1, FOJC_mod_CM2,
   ) 
 ```
 
-According to column (1), the contemporaneous effect of a freezing degree day is an increase of $0.5\%$ in orange juice prices. The estimated effect is only $0.17\%$ for the next month and close to zero for subsequent months. In fact, for all lags larger than 1, we cannot reject the null hypotheses that the respective coefficients are zero using individual $t$-tests. Notice also that the model `r ttcode("FOJC_mod_DM")` does only explain little of the variation in the dependent variable ($\overline{R}^2 = 0.11$). 
+According to column (1) of Table \@ref(tab:deoafddotpooj), the contemporaneous effect of a freezing degree day is an increase of $0.5\%$ in orange juice prices. The estimated effect is only $0.17\%$ for the next month and close to zero for subsequent months. In fact, for all lags larger than 1, we cannot reject the null hypotheses that the respective coefficients are zero using individual $t$-tests. Notice also that the model `r ttcode("FOJC_mod_DM")` does only explain little of the variation in the dependent variable ($\overline{R}^2 = 0.11$). 
 
 Columns (2) and (3) present estimates of the dynamic cumulative multipliers of model `r ttcode("FOJC_mod_CM1")`. Apparently, it does not matter whether we choose $m=7$ or $m=14$ when computing HAC standard errors so we stick with $m=7$ and the standard errors reported in column (2). 
 

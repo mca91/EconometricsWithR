@@ -18,36 +18,57 @@ Of course, we will also see how to estimate abovementioned models using `r ttcod
 
 The following packages and their dependencies are needed for reproduction of the code chunks presented throughout this chapter on your computer:
 
-+ `r ttcode("AER")`
-+ `r ttcode("stargazer")`
++ `r ttcode("AER")` [@R-AER]
++ `r ttcode("stargazer")` [@R-stargazer]
 
 Check whether the following code chunk runs without any errors.
 
-```{r, warning=FALSE, message=FALSE, eval=FALSE}
+```{r, warning=FALSE, message=FALSE}
 library(AER)
 library(stargazer)
 ```
 
 ## Binary Dependent Variables and the Linear Probability Model
 
+```{r, eval = my_output == "html", results='asis', echo=FALSE}
+cat('
 <div class = "keyconcept"> 
 <h3 class = "right"> Key Concept 11.1 </h3>
 <h3 class = "left"> The Linear Probability Model </h3>
 
 The linear regression model 
 
-$$Y_i = \beta_0 + \beta_1 + X_{1i} + \beta_2 X_{2i} + \dots + \beta_k X_{ki} + u_i$$
-with a binary dependent variable $Y_i$ is called the linear probability model. In the linear probability model we have $$E(Y\vert X_1,X_2,\dots,X_k) = P(Y=1\vert X_1, X_2,\dots, X_3)$$ such that $$ P(Y = 1 \vert X_1, X_2, \dots, X_k) = \beta_0 + \beta_1 + X_{1i} + \beta_2 X_{2i} + \dots + \beta_k X_{ki}.$$
+$$Y_i = \\beta_0 + \\beta_1 + X_{1i} + \\beta_2 X_{2i} + \\dots + \\beta_k X_{ki} + u_i$$
+with a binary dependent variable $Y_i$ is called the linear probability model. In the linear probability model we have $$E(Y\\vert X_1,X_2,\\dots,X_k) = P(Y=1\\vert X_1, X_2,\\dots, X_3)$$ such that $$ P(Y = 1 \\vert X_1, X_2, \\dots, X_k) = \\beta_0 + \\beta_1 + X_{1i} + \\beta_2 X_{2i} + \\dots + \\beta_k X_{ki}.$$
 
-Thus, the coefficient $\beta_j$ can be interpreted as the change in the probability that $Y_i=1$, holding constant the other $k-1$ regressors. Just as in common multiple regression, the $\beta_j$ can be estimated using OLS and the robust standard error formulas can be used for hypothesis testing and computation of confidence intervals. 
+Thus, the coefficient $\\beta_j$ can be interpreted as the change in the probability that $Y_i=1$, holding constant the other $k-1$ regressors. Just as in common multiple regression, the $\\beta_j$ can be estimated using OLS and the robust standard error formulas can be used for hypothesis testing and computation of confidence intervals. 
 
 In most linear probability models, $R^2$ has no meaningful interpretation since the regression line can never fit the data perfectly if the dependent variable is binary and the regressors are continuous. This can be seen in the application below.
 
 We emphasize that it is *essential* to use robust standard errors since the $u_i$ in a linear probability model are always heteroskedastic.
 
-Linear probability models are easily estimated in `r ttcode("R")` using the function `r ttcode("lm()")`.
+Linear probability models are easily estimated in <tt>R</tt> using the function <tt>lm()</tt>.
 
 </div>
+')
+```
+
+```{r, eval = my_output == "latex", results='asis', echo=FALSE}
+cat('\\begin{keyconcepts}[The Linear Probability Model]{11.1}
+The linear regression model 
+$$Y_i = \\beta_0 + \\beta_1 + X_{1i} + \\beta_2 X_{2i} + \\dots + \\beta_k X_{ki} + u_i$$
+with a binary dependent variable $Y_i$ is called the linear probability model. In the linear probability model we have $$E(Y\\vert X_1,X_2,\\dots,X_k) = P(Y=1\\vert X_1, X_2,\\dots, X_3)$$ such that $$ P(Y = 1 \\vert X_1, X_2, \\dots, X_k) = \\beta_0 + \\beta_1 + X_{1i} + \\beta_2 X_{2i} + \\dots + \\beta_k X_{ki}.$$\\newline
+
+Thus, the coefficient $\\beta_j$ can be interpreted as the change in the probability that $Y_i=1$, holding constant the other $k-1$ regressors. Just as in common multiple regression, the $\\beta_j$ can be estimated using OLS and the robust standard error formulas can be used for hypothesis testing and computation of confidence intervals.\\newline 
+
+In most linear probability models, $R^2$ has no meaningful interpretation since the regression line can never fit the data perfectly if the dependent variable is binary and the regressors are continuous. This can be seen in the application below.\\newline
+
+We emphasize that it is \\textit{essential} to use robust standard errors since the $u_i$ in a linear probability model are always heteroskedastic.\\newline
+
+Linear probability models are easily estimated in \\texttt{R} using the function\texttt{lm()}.
+\\end{keyconcepts}
+')
+```
 
 #### Mortgage Data {-}
 
@@ -84,7 +105,7 @@ denymod1 <- lm(deny ~ pirat, data = HMDA)
 denymod1
 ```
 
-We plot the data and the regression line to reproduce Figure 11.1 of the book next.
+Next, we plot the data and the regression line to reproduce Figure 11.1 of the book.
 
 ```{r}
 # plot data
@@ -163,30 +184,59 @@ Since in Probit models the dependent variable is a nonlinear function of the reg
 
 Of course we can generalize \@ref(eq:probitmodel) to Probit regression with multiple regressors to mitigate the risk of facing omitted variable bias. The core knowledge on Probit regression is summarized in Key Concept 11.2.
 
+```{r, eval = my_output == "html", results='asis', echo=FALSE}
+cat('
 <div class = "keyconcept"> 
 <h3 class = "right"> Key Concept 11.2 </h3>
 <h3 class = "left"> Probit Model, Predicted Probabilities and Estimated Effects</h3>
 
 Assume that $Y$ is a binary variable. The model
 
-$$ Y= \beta_0 + \beta_1 + X_1 + \beta_2 X_2 + \dots + \beta_k X_k + u $$
+$$ Y= \\beta_0 + \\beta_1 + X_1 + \\beta_2 X_2 + \\dots + \\beta_k X_k + u $$
 with
-$$P(Y = 1 \vert X_1, X_2, \dots ,X_k) = \Phi(\beta_0 + \beta_1 + X_1 + \beta_2 X_2 + \dots + \beta_k X_k)$$
-is the population Probit model with multiple regressors where $X_1, X_2, \dots, X_k$ are regressors and $\Phi$ is the cumulative standard normal distribution function.
+$$P(Y = 1 \\vert X_1, X_2, \\dots ,X_k) = \\Phi(\\beta_0 + \\beta_1 + X_1 + \\beta_2 X_2 + \\dots + \\beta_k X_k)$$
+is the population Probit model with multiple regressors where $X_1, X_2, \\dots, X_k$ are regressors and $\\Phi$ is the cumulative standard normal distribution function.
 
-The predicted probability that $Y=1$ given $X_1, X_2, \dots, X_k$ can be calculated in two steps:
+The predicted probability that $Y=1$ given $X_1, X_2, \\dots, X_k$ can be calculated in two steps:
 
-1. Compute $z = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + \dots + \beta_k X_k$
+1. Compute $z = \\beta_0 + \\beta_1 X_1 + \\beta_2 X_2 + \\dots + \\beta_k X_k$
 
-2. Look up $\Phi(z)$ using a normal distribution table or by calling `r ttcode("pnorm()")`.
+2. Look up $\\Phi(z)$ using a normal distribution table or by calling <tt>pnorm()</tt>.
 
-$\beta_j$ is the effect on $z$ of a one unit change in regressor $X_j$, holding constant all other $k-1$ regressors.
+$\\beta_j$ is the effect on $z$ of a one unit change in regressor $X_j$, holding constant all other $k-1$ regressors.
 
 The effect on the predicted probability of a change in a regressor can be computed as shown in Key Concept 8.1.
 
-In `r ttcode("R")`, Probit models can be estimated using the function `r ttcode("glm()")` from the package `r ttcode("stats")`. Using the argument `r ttcode("family")` we specify that we want to use a Probit link function.
+In <tt>R</tt>, Probit models can be estimated using the function <tt>glm()</tt> from the package <tt>stats</tt>. Using the argument <tt>family</tt> we specify that we want to use a Probit link function.
 
 </div>
+')
+```
+
+```{r, eval = my_output == "latex", results='asis', echo=FALSE}
+cat('\\begin{keyconcepts}[Probit Model, Predicted Probabilities and Estimated Effects]{11.2}
+Assume that $Y$ is a binary variable. The model
+
+$$ Y= \\beta_0 + \\beta_1 + X_1 + \\beta_2 X_2 + \\dots + \\beta_k X_k + u $$
+with
+$$P(Y = 1 \\vert X_1, X_2, \\dots ,X_k) = \\Phi(\\beta_0 + \\beta_1 + X_1 + \\beta_2 X_2 + \\dots + \\beta_k X_k)$$
+is the population Probit model with multiple regressors where $X_1, X_2, \\dots, X_k$ are regressors and $\\Phi$ is the cumulative standard normal distribution function.\\newline
+
+The predicted probability that $Y=1$ given $X_1, X_2, \\dots, X_k$ can be calculated in two steps:\\newline
+
+\\begin{enumerate}
+\\item Compute $z = \\beta_0 + \\beta_1 X_1 + \\beta_2 X_2 + \\dots + \\beta_k X_k$
+\\item Look up $\\Phi(z)$ using a normal distribution table or by calling \\texttt{pnorm()}.
+\\end{enumerate}\\vspace{0.5cm}
+
+$\\beta_j$ is the effect on $z$ of a one unit change in regressor $X_j$, holding constant all other $k-1$ regressors.\\newline
+
+The effect on the predicted probability of a change in a regressor can be computed as shown in Key Concept 8.1.\\newline
+
+In \\texttt{R}, Probit models can be estimated using the function \\texttt{glm()} from the package \\texttt{stats}. Using the argument \\texttt{family} we specify that we want to use a Probit link function.
+\\end{keyconcepts}
+')
+```
 
 We now estimate a simple Probit model of the probability of a mortgage denial.
 
@@ -291,20 +341,39 @@ In this case, the estimated difference in denial probabilities is about $15.8\%$
 
 Key Concept 11.3 summarizes the main differences between Logit and Probit regression. 
 
+```{r, eval = my_output == "html", results='asis', echo=FALSE}
+cat('
 <div class = "keyconcept"> 
 <h3 class = "right"> Key Concept 11.3 </h3>
 <h3 class = "left"> Logit Regression </h3>
 
 The population Logit regression function is
 
-\begin{align*}
-  P(Y=1\vert X_1, X_2, \dots, X_k) =& \, F(\beta_0 + \beta_1 X_1 + \beta_2 X_2 + \dots + \beta_k X_k) \\
-  =& \, \frac{1}{1+e^{-(\beta_0 + \beta_1 X_1 + \beta_2 X_2 + \dots + \beta_k X_k)}}.
-\end{align*}
+\\begin{align*}
+  P(Y=1\\vert X_1, X_2, \\dots, X_k) =& \\, F(\\beta_0 + \\beta_1 X_1 + \\beta_2 X_2 + \\dots + \\beta_k X_k) \\\\
+  =& \\, \\frac{1}{1+e^{-(\\beta_0 + \\beta_1 X_1 + \\beta_2 X_2 + \\dots + \\beta_k X_k)}}.
+\\end{align*}
 
-The idea is similar to Probit regression except that a different CDF is used: $$F(x) = \frac{1}{1+e^{-x}}$$ is the CDF of a standard logistically distributed random variable.
+The idea is similar to Probit regression except that a different CDF is used: $$F(x) = \\frac{1}{1+e^{-x}}$$ is the CDF of a standard logistically distributed random variable.
 
 </div>
+')
+```
+
+```{r, eval = my_output == "latex", results='asis', echo=FALSE}
+cat('\\begin{keyconcepts}[Logit Regression]{11.3}
+The population Logit regression function is
+
+\\begin{align*}
+  P(Y=1\\vert X_1, X_2, \\dots, X_k) =& \\, F(\\beta_0 + \\beta_1 X_1 + \\beta_2 X_2 + \\dots + \\beta_k X_k) \\\\
+  =& \\, \\frac{1}{1+e^{-(\\beta_0 + \\beta_1 X_1 + \\beta_2 X_2 + \\dots + \\beta_k X_k)}}.
+\\end{align*}
+
+The idea is similar to Probit regression except that a different CDF is used: $$F(x) = \\frac{1}{1+e^{-x}}$$ is the CDF of a standard logistically distributed random variable.
+\\end{keyconcepts}
+')
+```
+
 
 As for Probit regression, there is no simple interpretation of the model coefficients and it is best to consider predicted probabilities or differences in predicted probabilities. Here again, $t$-statistics and confidence intervals based on large sample normal approximations can be computed as usual. 
 
@@ -575,8 +644,6 @@ probit_HMDA_4 <- glm(deny ~ black * (pirat + hirat) + lvrat + chist + mhist + ph
 Just as in previous chapters, we use the package `r ttcode("sandwich")` for computation of heteroskedasticity-robust standard errors of the coefficient estimators in all models and store these in an object of the type `r ttcode("list")` which is then used as the argument `r ttcode("se")` in `r ttcode("stargazer()")`.
 
 ```{r, eval=FALSE}
-library(stargazer)
-
 rob_se <- list(
   sqrt(diag(vcovHC(lpm_HMDA, type = "HC1"))),
   sqrt(diag(vcovHC(logit_HMDA, type = "HC1"))),
@@ -589,6 +656,7 @@ rob_se <- list(
 stargazer(lpm_HMDA, logit_HMDA, probit_HMDA_1, probit_HMDA_2, probit_HMDA_3, probit_HMDA_4,  
           digits = 3,
           type = "latex", 
+          header = FALSE,
           se = rob_se,
           model.numbers = FALSE,
           column.labels = c("(1)", "(2)", "(3)", "(4)", "(5)", "(6)")
@@ -597,7 +665,7 @@ stargazer(lpm_HMDA, logit_HMDA, probit_HMDA_1, probit_HMDA_2, probit_HMDA_3, pro
 
 <!--html_preserve-->
 
-```{r, message=F, warning=F, results='asis', echo=F, eval=my_output == "html"}
+```{r hmdad, message=F, warning=F, results='asis', echo=F, eval=my_output == "html"}
 library(stargazer)
 
 rob_se <- list(
@@ -610,13 +678,15 @@ rob_se <- list(
 )
 
 stargazer(lpm_HMDA, logit_HMDA, probit_HMDA_1, probit_HMDA_2, probit_HMDA_3, probit_HMDA_4, 
-          title = "HMDA Data: LPM, Probit and Logit Models",
           digits = 3,
           type = "html", 
           se = rob_se,
+          header = FALSE,
           model.numbers = FALSE,
           column.labels = c("(1)", "(2)", "(3)", "(4)", "(5)", "(6)")
           )
+
+stargazer_html_title("HMDA Data: LPM, Probit and Logit Models", "hmdad")
 ```
 
 <!--/html_preserve-->
@@ -634,20 +704,21 @@ rob_se <- list(
 )
 
 stargazer(lpm_HMDA, logit_HMDA, probit_HMDA_1, probit_HMDA_2, probit_HMDA_3, probit_HMDA_4, 
-          title = "HMDA Data: LPM, Probit and Logit Models",
+          title = "\\label{tab:hmdad} HMDA Data: LPM, Probit and Logit Models",
           digits = 3,
           type = "latex",
           float.env = "sidewaystable",
           column.sep.width = "-5pt",
           no.space = T,
           single.row = T,
+          header = FALSE,
           se = rob_se,
           model.numbers = FALSE,
           column.labels = c("(1)", "(2)", "(3)", "(4)", "(5)", "(6)")
           )
 ```
 
-Models (1), (2) and (3) are base specifications that include several financial control variables. They differ only in the way they model the denial probability. Model (1) is a linear probability model, model (2) is a Logit regression and model (3) uses the Probit approach.
+In Table \@ref(tab:hmdad), models (1), (2) and (3) are base specifications that include several financial control variables. They differ only in the way they model the denial probability. Model (1) is a linear probability model, model (2) is a Logit regression and model (3) uses the Probit approach.
 
 Since model (1) is a linear model, the coefficients have direct interpretation. For example, an increase in the consumer credit score by $1$ unit is estimated to increase the probability of a loan denial by about $0.031$ percentage points. We also find that having a high loan-to-value ratio is predicted not to be conductive for credit approval: the coefficient for a loan-to-value ratio higher than $0.95$ is $0.189$ so clients with this property are estimated to face an almost $19\%$ larger risk of denial than those with a low loan-to-value ratio, ceteris paribus. For the linear probability model, the coefficient on the race dummy is estimated to be $0.084$ which indicates the denial probability for African Americans is $8.4\%$ larger than for white applicants with the same characteristics except for race. Apart from housing expense-to-income ratio and the mortgage credit score, all coefficients are significant.
 

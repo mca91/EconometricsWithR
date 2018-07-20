@@ -13,6 +13,14 @@ This chapter discusses the following advanced topics in time series regression a
 
 If you are interested in reproducing the code examples on your own, install the `r ttcode("R")` packages listed below and make sure that the subsequent code chunk executes without any errors. 
 
++ `r ttcode("AER")` [@R-AER]
++ `r ttcode("dynlm")` [@R-dynlm]
++ `r ttcode("fGarch")` [@R-fGarch]
++ `r ttcode("quantmod")` [@R-quantmod]
++ `r ttcode("readxl")` [@R-readxl]
++ `r ttcode("scales")` [@R-scales]
++ `r ttcode("vars")` [@R-vars]
+
 ```{r, warning=FALSE, message=FALSE}
 library(AER)
 library(readxl)
@@ -27,6 +35,8 @@ library(fGarch)
 
 A Vector autoregressive (VAR) model is useful when one is interested in predicting multiple time series variables using a single model. At its core, the VAR model is an extension of the univariate autoregressive model we have dealt with in Chapters \@ref(ittsraf) and \@ref(eodce). Key Concept 16.1 summarizes the essentials of VAR.
 
+```{r, eval = my_output == "html", results='asis', echo=FALSE}
+cat('
 <div class = "keyconcept"> 
 <h3 class = "right"> Key Concept <br> 16.1</h3>          
 <h3 class = "left">Vector Autoregressions</h3>
@@ -34,17 +44,35 @@ A Vector autoregressive (VAR) model is useful when one is interested in predicti
 
 The vector autoregression (VAR) model extends the idea of univariate autoregression to $k$ time series regressions, where the lagged values of *all* $k$ series appear as regressors. Put differently, in a VAR model we regress a *vector* of time series variables on lagged vectors of these variables. As for AR($p$) models, the lag order is denoted by $p$ so the VAR($p$) model of two variables $X_t$ and $Y_t$ ($k=2$) is given by the equations
 
-\begin{align*}
-  Y_t =& \, \beta_{10} + \beta_{11} Y_{t-1} + \dots + \beta_{1p} Y_{t-p} + \gamma_{11} X_{t-1} + \dots + \gamma_{1p} X_{t-p} + u_{1t}, \\
-  X_t =& \, \beta_{20} + \beta_{21} Y_{t-1} + \dots + \beta_{2p} Y_{t-p} + \gamma_{21} X_{t-1} + \dots + \gamma_{2p} X_{t-p} + u_{2t}.
-\end{align*}
+\\begin{align*}
+  Y_t =& \\, \\beta_{10} + \\beta_{11} Y_{t-1} + \\dots + \\beta_{1p} Y_{t-p} + \\gamma_{11} X_{t-1} + \\dots + \\gamma_{1p} X_{t-p} + u_{1t}, \\\\
+  X_t =& \\, \\beta_{20} + \\beta_{21} Y_{t-1} + \\dots + \\beta_{2p} Y_{t-p} + \\gamma_{21} X_{t-1} + \\dots + \\gamma_{2p} X_{t-p} + u_{2t}.
+\\end{align*}
 
-The $\alpha$s and $\beta$s can be estimated using OLS on each equation. The assumptions for VARs are the time series assumptions presented in Key Concept 14.6 applied to each of the equations.
+The $\\alpha$s and $\\beta$s can be estimated using OLS on each equation. The assumptions for VARs are the time series assumptions presented in Key Concept 14.6 applied to each of the equations.
 
-It is straightforward to estimate VAR models in `r ttcode("R")`. A feasible approach is to simply use `r ttcode("lm()")` for estimation of the individual equations. Furthermore, the `r ttcode("R")` package `r ttcode("vars")` provides standard tools for estimation, diagnostic testing and prediction using this type of models.  
+It is straightforward to estimate VAR models in <tt>R</tt>. A feasible approach is to simply use <tt>lm()</tt> for estimation of the individual equations. Furthermore, the <tt>R</tt>package <tt>vars</tt> provides standard tools for estimation, diagnostic testing and prediction using this type of models.  
 
 </p>
 </div>
+')
+```
+
+```{r, eval = my_output == "latex", results='asis', echo=FALSE}
+cat('\\begin{keyconcepts}[Vector Autoregressions]{16.1}
+The vector autoregression (VAR) model extends the idea of univariate autoregression to $k$ time series regressions, where the lagged values of \\textit{all} $k$ series appear as regressors. Put differently, in a VAR model we regress a \\textit{vector} of time series variables on lagged vectors of these variables. As for AR($p$) models, the lag order is denoted by $p$ so the VAR($p$) model of two variables $X_t$ and $Y_t$ ($k=2$) is given by the equations
+
+\\begin{align*}
+  Y_t =& \\, \\beta_{10} + \\beta_{11} Y_{t-1} + \\dots + \\beta_{1p} Y_{t-p} + \\gamma_{11} X_{t-1} + \\dots + \\gamma_{1p} X_{t-p} + u_{1t}, \\\\
+  X_t =& \\, \\beta_{20} + \\beta_{21} Y_{t-1} + \\dots + \\beta_{2p} Y_{t-p} + \\gamma_{21} X_{t-1} + \\dots + \\gamma_{2p} X_{t-p} + u_{2t}.
+\\end{align*}
+
+The $\\alpha$s and $\\beta$s can be estimated using OLS on each equation. The assumptions for VARs are the time series assumptions presented in Key Concept 14.6 applied to each of the equations.\\newline
+
+It is straightforward to estimate VAR models in \\texttt{R}. A feasible approach is to simply use \\texttt{lm()} for estimation of the individual equations. Furthermore, the \\texttt{R} package \\texttt{vars} provides standard tools for estimation, diagnostic testing and prediction using this type of models.  
+\\end{keyconcepts}
+')
+```
 
 When the assumptions referred to in Key Concept 16.1 hold, the OLS estimators of the VAR coefficients are consistent and jointly normal in large samples so that the usual inferential methods such as confidence intervals and $t$-statistics can be used.
 
@@ -62,10 +90,10 @@ In the following we show how to estimate a VAR model of the GDP growth rate, $GD
 
 \begin{align*}
  GDPGR_t =& \, \beta_{10} + \beta_{11} GDPGR_{t-1} + \beta_{12} GDPGR_{t-2} + \gamma_{11} TSpread_{t-1} + \gamma_{12} TSpread_{t-2} + u_{1t}, \\
- TSpread_t =& \, \beta_{20} + \beta_{21} GDPGR_{t-1} + \beta_{22} GDPGR_{t-2} + \gamma_{21} TSpread_{t-1} + \gamma_{22} TSpread_{t-2} + u_{2t}
+ TSpread_t =& \, \beta_{20} + \beta_{21} GDPGR_{t-1} + \beta_{22} GDPGR_{t-2} + \gamma_{21} TSpread_{t-1} + \gamma_{22} TSpread_{t-2} + u_{2t}.
 \end{align*}
 
-The data set `r ttcode("us_macro_quarterly.xlsx")` is provided at the companion website to Stock and Watson (2014) and can be downloaded [here](http://wps.aw.com/aw_stock_ie_3/178/45691/11696965.cw/index.html). It contains data on  quarterly data on US real (i.e. inflation adjusted) GDP from years 1947 to 2004. We begin by importing the data set and do some formatting (we already worked with this data set in Chapter \@ref(ittsraf) so you may skip these steps if you have already loaded the data in your working environment).
+The data set `r ttcode("us_macro_quarterly.xlsx")` is provided at the companion website to @stock2015 and can be downloaded [here](http://wps.aw.com/aw_stock_ie_3/178/45691/11696965.cw/index.html). It contains data on  quarterly data on US real (i.e. inflation adjusted) GDP from years 1947 to 2004. We begin by importing the data set and do some formatting (we already worked with this data set in Chapter \@ref(ittsraf) so you may skip these steps if you have already loaded the data in your working environment).
 
 ```{r, eval=FALSE}
 # load US macroeconomic data
@@ -152,7 +180,7 @@ TB10YS <- ts(USMacroSWQ$GS10,
 TSpread <- TB10YS - TB3MS
 ```
 
-We estimate both equations separately by OLS and use `coeftest()` in conjunction with `NeweyWest()` to obtain HAC standard errors.
+We estimate both equations separately by OLS and use <tt>coeftest()</tt> in conjunction with <tt>NeweyWest()</tt> to obtain HAC standard errors.
 
 ```{r}
 # Estimate both equations using 'dynlm()'
@@ -192,7 +220,7 @@ VAR_est <- VAR(y = VAR_data, p = 2)
 VAR_est
 ```
 
-Notice that `r ttcode("VAR()")` returns a list of `lm` objects which can be passed to the usual function, for example `r ttcode("summary()")` and so it is straightforward to obtain model statistics for the individual equations.
+Notice that `r ttcode("VAR()")` returns a list of <tt>lm</tt> objects which can be passed to the usual function, for example `r ttcode("summary()")` and so it is straightforward to obtain model statistics for the individual equations.
 
 ```{r}
 # obtain the adj. R^2 from the output of 'VAR()'
@@ -222,13 +250,13 @@ We find that both Granger causality tests reject at the level of $5\%$. This is 
 
 The idea of an iterated forecast for period $T+2$ based on observations up to period $T$ is to use the one-period-ahead forecast as an intermediate step, that is the forecast for period $T+1$ is used as an observation when predicting the level of a series for period $T+2$. This can be generalized to a $h$-period-ahead forecast where all intervening periods between $T$ and $T+h$ must be forecasted as they are used as observations in the process (see Chapter 16.2 of the book for a more detailed argument on this concept). Iterated multiperiod forecasts are summarized in Key Concept 16.2.
 
+```{r, eval = my_output == "html", results='asis', echo=FALSE}
+cat('
 <div class = "keyconcept"> 
 <h3 class = "right"> Key Concept <br> 16.2 </h3>          
 <h3 class = "left"> Iterated Multiperiod Forecasts </h3>
-
 <p>
-
-The steps for an **interated multiperiod AR forecast** are:
+The steps for an *iterated multiperiod AR forecast* are:
 
 1. Estimate the AR($p$) model using OLS and compute the one-period-ahead forecast.
 
@@ -236,8 +264,7 @@ The steps for an **interated multiperiod AR forecast** are:
 
 3. Continue by iterating to obtain forecasts farther into the future.
 
-
-An **interated multiperiod VAR forecast** is done as follows:
+An *iterated multiperiod VAR forecast* is done as follows:
 
 1. Estimate the VAR($p$) model using OLS per equation and compute the one-period-ahead forecast for *all* variables in the VAR.
 
@@ -246,12 +273,34 @@ An **interated multiperiod VAR forecast** is done as follows:
 3. Continue by iterating to obtain forecasts of all variables in the VAR farther into the future.
 
 </p>
-
 </div>
+')
+```
+
+```{r, eval = my_output == "latex", results='asis', echo=FALSE}
+cat('\\begin{keyconcepts}[Iterated Multiperiod Forecasts]{16.2}
+The steps for an \\textit{iterated multiperiod AR forecast} are:\\newline
+
+\\begin{enumerate}
+\\item Estimate the AR($p$) model using OLS and compute the one-period-ahead forecast.
+\\item Use the one-period-ahead forecast to obtain the two-period-ahead forecast.
+\\item Continue by iterating to obtain forecasts farther into the future.
+\\end{enumerate}\\vspace{0.5cm}
+
+An \\textit{iterated multiperiod VAR forecast} is done as follows:\\newline
+
+\\begin{enumerate}
+\\item Estimate the VAR($p$) model using OLS per equation and compute the one-period-ahead forecast for \\textit{all} variables in the VAR.
+\\item Use the one-period-ahead forecasts to obtain the two-period-ahead forecasts.
+\\item Continue by iterating to obtain forecasts of all variables in the VAR farther into the future.
+\\end{enumerate}
+\\end{keyconcepts}
+')
+```
 
 Since in a VAR the variables are modeled using lags of the respective other variables, we need to compute forecasts for *all* variables. It can be cumbersome to do so when the VAR is large but fortunately there are `r ttcode("R")` functions that facilitate this. For example, the function `r ttcode("predict()")` can be used to obtain iterated multivariate forecasts for VAR models estimated by the function `r ttcode("VAR()")`. 
 
-The following code chunk shows how to compute iterated forecasts for GDP growth and the term spread  up to period 2015:Q1, that is $h=10$, using the model object `VAR_est`.
+The following code chunk shows how to compute iterated forecasts for GDP growth and the term spread  up to period 2015:Q1, that is $h=10$, using the model object `r ttcode("VAR_est")`.
 
 ```{r}
 # compute iterated forecasts for GDP growth and term spread for the next 10 quarters
@@ -263,7 +312,7 @@ From this we can tell that the two-quarter-ahead forecast of GDP growth in 2013:
 
 Notice that the matrices returned by `predict(VAR_est)` also include $95\%$ prediction intervals (however, the function does not adjust for autocorrelation or heteroskedasticity of the errors!). 
 
-We may also plot the iterated forecasts for both variables by simply calling `plot()` on the output of `predict(VAR_est)`.
+We may also plot the iterated forecasts for both variables by simply calling `r ttcode("plot()")` on the output of `predict(VAR_est)`.
 
 ```{r, fig.align='center', fig.height=6}
 # visualize the iterated forecasts
@@ -272,25 +321,39 @@ plot(forecasts)
 
 ##### Direct Multiperiod Forecasts {-}
 
-A direct multiperiod forecast takes the model as a starting point where the predictor variables are lagged appropriately such that available observation can be used *directly* to do the forecast. The idea of direct multiperiod forecasting is summarized in Key Concept 16.3.
+A direct multiperiod forecast uses a model where the predictors are lagged appropriately such that the available observations can be used *directly* to do the forecast. The idea of direct multiperiod forecasting is summarized in Key Concept 16.3.
 
+```{r, eval = my_output == "html", results='asis', echo=FALSE}
+cat('
 <div class = "keyconcept"> 
 <h3 class = "right"> Key Concept <br> 16.3 </h3>          
 <h3 class = "left"> Direct Multiperiod Forecasts </h3>
-
 <p>
+A *direct multiperiod forecast* that forecasts $h$ periods into the future using a model of $Y_t$ and an additional predictor $X_t$ with $p$ lags is done by first estimating
 
-A **direct multiperiod forecast** that forecasts $h$ periods into the future using a model of $Y_t$ and an additional predictor $X_t$ with $p$ lags is done by first estimating
-
-\begin{align*}
-  Y_t =& \, \delta_0 + \delta_1 Y_{t-h} + \dots + \delta_{p} Y_{t-p-h+1} + \delta_{p+1} X_{t-h} \\
-  &+ \dots + \delta_{2p} Y_{t-p-h+1} + u_t,  
-\end{align*}
+\\begin{align*}
+  Y_t =& \\, \\delta_0 + \\delta_1 Y_{t-h} + \\dots + \\delta_{p} Y_{t-p-h+1} + \\delta_{p+1} X_{t-h} \\\\
+  +& \\dots + \\delta_{2p} Y_{t-p-h+1} + u_t,  
+\\end{align*}
 
 which is then used to compute the forecast of $Y_{T+h}$ based on observations through period $T$.
-
 </p>
 </div>
+')
+```
+
+```{r, eval = my_output == "latex", results='asis', echo=FALSE}
+cat('\\begin{keyconcepts}[Direct Multiperiod Forecasts]{16.3}
+A \\textit{direct multiperiod forecast} that forecasts $h$ periods into the future using a model of $Y_t$ and an additional predictor $X_t$ with $p$ lags is done by first estimating
+\\begin{align*}
+  Y_t =& \\, \\delta_0 + \\delta_1 Y_{t-h} + \\dots + \\delta_{p} Y_{t-p-h+1} + \\delta_{p+1} X_{t-h} \\\\
+  +& \\dots + \\delta_{2p} Y_{t-p-h+1} + u_t,  
+\\end{align*}
+
+which is then used to compute the forecast of $Y_{T+h}$ based on observations through period $T$.
+\\end{keyconcepts}
+')
+```
 
 For example, to obtain two-quarter-ahead forecasts of GDP growth and the term spread we first estimate the equations
 
@@ -325,23 +388,39 @@ Applied economists often use the iterated method since this forecasts are more r
 
 Some economic time series have smoother trends than variables that can be described by random walk models. A way to model these time series is $$\Delta Y_t = \beta_0 + \Delta Y_{t-1} + u_t,$$ where $u_t$ is a serially uncorrelated error term. This model states that the first difference of a series is a random walk. Consequently, the series of second differences of $Y_t$ is stationary. Key Concept 16.4 summarizes the notation. 
 
+```{r, eval = my_output == "html", results='asis', echo=FALSE}
+cat('
 <div class = "keyconcept"> 
 <h3 class = "right"> Key Concept <br> 16.4 </h3>          
 <h3 class = "left"> Orders of Integration, Differencing and Stationarity </h3>
 <p>
 
-+ When a time series $Y_t$ has a unit autoregressive root, we say that $Y_t$ is integrated of order one. This is often denoted by $Y_t \sim I(1)$. We simply say that $Y_t$ is $I(1)$. If $Y_t$ is $I(1)$, its first difference $\Delta Y_t$ is stationary.
++ When a time series $Y_t$ has a unit autoregressive root, we say that $Y_t$ is integrated of order one. This is often denoted by $Y_t \\sim I(1)$. We simply say that $Y_t$ is $I(1)$. If $Y_t$ is $I(1)$, its first difference $\\Delta Y_t$ is stationary.
 
-+ We say that $Y_t$ is $I(2)$ when $Y_t$ needs to be differenced two times in order to obtain a stationary series. Using the notation introduced here we say that if $Y_t$ is $I(2)$, its first difference $\Delta Y_t$ is $I(1)$ and its second difference $\Delta^2 Y_t$ is stationary. We say that $Y_t$ is $I(d)$ when $Y_t$ must be differenced $d$ times to obtain a stationary series.
++ We say that $Y_t$ is $I(2)$ when $Y_t$ needs to be differenced two times in order to obtain a stationary series. Using the notation introduced here we say that if $Y_t$ is $I(2)$, its first difference $\\Delta Y_t$ is $I(1)$ and its second difference $\\Delta^2 Y_t$ is stationary. We say that $Y_t$ is $I(d)$ when $Y_t$ must be differenced $d$ times to obtain a stationary series.
 
 + When $Y_t$ is stationary, we say it is integrated of order $0$ so $Y_t$ is $I(0)$.
 
-It is fairly easy to obtain differences of time series in `r ttcode("R")`. For example, the function `r ttcode("diff()")` returns suitably lagged and iterated differences of numeric vectors, matrices and time series objects of the class `r ttcode("ts")`.
+It is fairly easy to obtain differences of time series in <tt>R</tt>. For example, the function <tt>diff()</tt> returns suitably lagged and iterated differences of numeric vectors, matrices and time series objects of the class <tt>ts</tt>.
 
 </p>
 </div>
+')
+```
 
-Following the book, we take the price level of the U.S. measured by the personal consumption expenditures price index as an example. 
+```{r, eval = my_output == "latex", results='asis', echo=FALSE}
+cat('\\begin{keyconcepts}[Orders of Integration, Differencing and Stationarity]{16.4}
+\\begin{itemize}
+\\item When a time series $Y_t$ has a unit autoregressive root, we say that $Y_t$ is integrated of order one. This is often denoted by $Y_t \\sim I(1)$. We simply say that $Y_t$ is $I(1)$. If $Y_t$ is $I(1)$, its first difference $\\Delta Y_t$ is stationary.
+\\item We say that $Y_t$ is $I(2)$ when $Y_t$ needs to be differenced two times in order to obtain a stationary series. Using the notation introduced here we say that if $Y_t$ is $I(2)$, its first difference $\\Delta Y_t$ is $I(1)$ and its second difference $\\Delta^2 Y_t$ is stationary. We say that $Y_t$ is $I(d)$ when $Y_t$ must be differenced $d$ times to obtain a stationary series.
+\\item When $Y_t$ is stationary, we say it is integrated of order $0$ so $Y_t$ is $I(0)$.
+\\end{itemize}\\vspace{0.5cm}
+It is fairly easy to obtain differences of time series in \\texttt{R}. For example, the function \\texttt{diff()} returns suitably lagged and iterated differences of numeric vectors, matrices and time series objects of the class \\texttt{ts}.
+\\end{keyconcepts}
+')
+```
+
+Following the book, we take the price level of the U.S. measured by the *Personal Consumption Expenditures Price Index* as an example. 
 
 ```{r, fig.align='center'}
 # define ts object of the U.S. PCE Price Index
@@ -355,7 +434,7 @@ plot(log(PCECTPI),
      lwd = 2)
 ```
 
-We see that the logarithm of the price level has a smoothly varying trend. This is typical for an $I(2)$ series. If the price level is indeed $I(2)$, the first differences of this series should be $I(1)$. Since we are considering the logarithm of the price level, we obtain growth rates by taking first differences, so the differenced price level series is the series of quarterly inflation rates. This is quickly done in `r ttcode("R")` using the function `r ttcode("Delt()")` from the package `r ttcode("quantmod")`. As explained in Chapter \@ref(tsdasc), multiplying the quarterly inflation rates by $400$ yields the quarterly rate of inflation, measured in percentage points at an annual rate.
+We see that the logarithm of the price level has a smoothly varying trend. This is typical for an $I(2)$ series. If the price level is indeed $I(2)$, the first differences of this series should be $I(1)$. Since we are considering the logarithm of the price level, we obtain growth rates by taking first differences. Therefore, the differenced price level series is the series of quarterly inflation rates. This is quickly done in `r ttcode("R")` using the function `r ttcode("Delt()")` from the package `r ttcode("quantmod")`. As explained in Chapter \@ref(tsdasc), multiplying the quarterly inflation rates by $400$ yields the quarterly rate of inflation, measured in percentage points at an annual rate.
 
 ```{r, fig.align='center'}
 # plot United States PCE price inflation
@@ -389,16 +468,29 @@ Inspecting the summary of the test we find that the test statistic is about -1.2
 
 ## Cointegration
 
+```{r, eval = my_output == "html", results='asis', echo=FALSE}
+cat('
 <div class = "keyconcept"> 
 <h3 class = "right"> Key Concept <br> 16.5 </h3>          
 <h3 class = "left"> Cointegration </h3>
 <p>
-When $X_t$ and $Y_t$ are $I(1)$ and if there is a $\theta$ such that $Y_t - \theta X_t$ is $I(0)$, we say that $X_t$ and $Y_t$ are cointegrated. Put differently, cointegration of $X_t$ and $Y_t$ means that $X_t$ and $Y_t$ have the same or a common stochastic trend and this trend can be eliminated by taking a specific difference of the series such that the resulting series is stationary.
+When $X_t$ and $Y_t$ are $I(1)$ and if there is a $\\theta$ such that $Y_t - \\theta X_t$ is $I(0)$, we say that $X_t$ and $Y_t$ are cointegrated. Put differently, cointegration of $X_t$ and $Y_t$ means that $X_t$ and $Y_t$ have the same or a common stochastic trend and this trend can be eliminated by taking a specific difference of the series such that the resulting series is stationary.
 
-`r ttcode("R")` functions for cointegration analysis are implemented in the package `r ttcode("urca")`. 
+<tt>R</tt> functions for cointegration analysis are implemented in the package <tt>urca</tt>. 
 
 </p>
 </div>
+')
+```
+
+```{r, eval = my_output == "latex", results='asis', echo=FALSE}
+cat('\\begin{keyconcepts}[Cointegration]{16.5}
+When $X_t$ and $Y_t$ are $I(1)$ and if there is a $\\theta$ such that $Y_t - \\theta X_t$ is $I(0)$, we say that $X_t$ and $Y_t$ are cointegrated. Put differently, cointegration of $X_t$ and $Y_t$ means that $X_t$ and $Y_t$ have the same or a common stochastic trend and this trend can be eliminated by taking a specific difference of the series such that the resulting series is stationary.
+
+\\texttt{R} functions for cointegration analysis are implemented in the package \\texttt{urca}. 
+\\end{keyconcepts}
+')
+```
 
 As an example, reconsider the the relation between short- and long-term interest rates by the example of U.S. 3-month treasury bills, U.S. 10-years treasury bonds and the spread in their interest rates which have been introduced in Chapter \@ref(cybtmpi). The next code chunk shows how to reproduce Figure 16.2 of the book.
 
@@ -443,7 +535,7 @@ legend("topright",
        lty = c(2, 1, 1)
        )
 ```
-The plot suggests that long-term and short-term interest rates are cointegrated: notice that both interest series seem to have the same long-run behavior. They share a common stochastic trend. The term spread which is obtained by taking the difference between long-term and short-term interest rates seems to be stationary. In fact, the expectations theory of the term structure suggests the cointegrating coefficient $\theta$ to be 1. This is consistent with the visual result.
+The plot suggests that long-term and short-term interest rates are cointegrated: notice that both interest series seem to have the same long-run behavior. They share a common stochastic trend. The term spread, which is obtained by taking the difference between long-term and short-term interest rates, seems to be stationary. In fact, the expectations theory of the term structure suggests the cointegrating coefficient $\theta$ to be 1. This is consistent with the visual result.
 
 ##### Testing for Cointegration {-}
 
@@ -455,7 +547,7 @@ Following Key Concept 16.5, it seems natural to construct a test for cointegrati
 
 2. **$\theta$ is unknown.** 
 
-    If $\theta$ is unknown, it must be estimated before the unit root test can be applied. This is done by estimating the regression $$Y_t = \alpha + \theta X_t + z_t$$ using OLS (this is refered to as the first-stage regression). Then, a Dickey-Fuller test is used for testing the hypothesis that $z_t$ is a nonstationary series. This is known as the Engle-Granger Augmented Dickey-Fuller test for cointegration (or **EG-ADF test**) after @engle1987. The critical values for this test are special as the associated null distribution is nonnormal and depends on the number of $I(1)$ variables used as regressors in the first stage regression. You may look them up in Table 16.2 of the book. When there are only two presumably cointegrated variables (and thus a single $I(1)$ variable is used in the first stage OLS regression) the critical values for the levels $10\%$, $5\%$ and $1\%$ are $-3.12$, $-3.41$ and $-3.96$.
+    If $\theta$ is unknown, it must be estimated before the unit root test can be applied. This is done by estimating the regression $$Y_t = \alpha + \theta X_t + z_t$$ using OLS (this is refered to as the first-stage regression). Then, a Dickey-Fuller test is used for testing the hypothesis that $z_t$ is a nonstationary series. This is known as the Engle-Granger Augmented Dickey-Fuller test for cointegration (or *EG-ADF test*) after @engle1987. The critical values for this test are special as the associated null distribution is nonnormal and depends on the number of $I(1)$ variables used as regressors in the first stage regression. You may look them up in Table 16.2 of the book. When there are only two presumably cointegrated variables (and thus a single $I(1)$ variable is used in the first stage OLS regression) the critical values for the levels $10\%$, $5\%$ and $1\%$ are $-3.12$, $-3.41$ and $-3.96$.
 
 
 #### Application to Interest Rates  {-}
@@ -543,7 +635,7 @@ ur.df(z_hat, lags = 6, type = "drift", selectlags = "AIC")
 
 The test statistic is $-3.19$ which is smaller than the $10\%$ critical value but larger than the $5\%$ critical value (see Table 16.2 of the book). Thus, the null hypothesis of no cointegration can be rejected at the $10\%$ level but not at the $5\%$ level. This indicates lower power of the EG-ADF test due to the estimation of $\theta$: when $\theta=1$ is the correct value, we expect the power of the ADF test for a unit root in the residuals series $\widehat{z} = TB10YS_t - \widehat{\beta}_0 - TB3MS$ to be higher than when some estimate $\widehat{\theta}$ is used.
 
-##### A Vector Error correction model for $TB10YS_t$ and $TB3MS$ {-}
+##### A Vector Error Correction Model for $TB10YS_t$ and $TB3MS$ {-}
 
 If two $I(1)$ time series $X_t$ and $Y_t$ are cointegrated, their differences are stationary and can be modeled in a VAR which is augmented by the regressor $Y_{t-1} - \theta X_{t-1}$. This is called a *vector error correction model* (VECM) and $Y_{t} - \theta X_{t}$ is called the *error correction term*. Lagged values of the error correction term are useful for predicting $\Delta X_t$ and/or $\Delta Y_t$.
 
@@ -572,8 +664,8 @@ coeftest(VECM_EQ2, vcov. = NeweyWest(VECM_EQ2, prewhite = F, adjust = T))
 
 Thus the two estimated equations of the VECM are 
 \begin{align*}
- \widehat{\Delta TB3MS}_t =& \, -\underset{(0.11)}{0.06} + \underset{(0.11)}{0.24} \Delta TB3MS_{t-1} -\underset{(0.15)}{0.16} \Delta TB3MS_{t-2} \\ &+ \underset{(0.13)}{0.11} \Delta TB10YS_{t-1} -\underset{(0.11)}{0.15} \Delta TB10YS_{t-2} + \underset{(0.05)}{0.03} ECT_{t-1} \\
- \widehat{\Delta TB10YS}_t =& \, \underset{(0.06)}{0.12} -\underset{(0.07)}{0.00} \Delta TB3MS_{t-1} -\underset{(0.04)}{0.07} \Delta TB3MS_{t-2} \\ &+ \underset{(0.10)}{0.23} \Delta TB10YS_{t-1} -\underset{(0.07)}{0.07} \Delta TB10YS_{t-2} -\underset{(0.03)}{0.09} ECT_{t-1}.
+ \widehat{\Delta TB3MS}_t =& \, -\underset{(0.11)}{0.06} + \underset{(0.11)}{0.24} \Delta TB3MS_{t-1} -\underset{(0.15)}{0.16} \Delta TB3MS_{t-2} \\ +& \underset{(0.13)}{0.11} \Delta TB10YS_{t-1} -\underset{(0.11)}{0.15} \Delta TB10YS_{t-2} + \underset{(0.05)}{0.03} ECT_{t-1} \\
+ \widehat{\Delta TB10YS}_t =& \, \underset{(0.06)}{0.12} -\underset{(0.07)}{0.00} \Delta TB3MS_{t-1} -\underset{(0.04)}{0.07} \Delta TB3MS_{t-2} \\ +& \underset{(0.10)}{0.23} \Delta TB10YS_{t-1} -\underset{(0.07)}{0.07} \Delta TB10YS_{t-2} -\underset{(0.03)}{0.09} ECT_{t-1}.
 \end{align*}
 
 The output produced by `r ttcode("coeftest()")` shows that there is little evidence that lagged values of the differenced interest series are useful for prediction. This finding is more pronounced for the equation of the differenced series of the 3-month treasury bill rate, where the error correction term (the lagged term spread) is not significantly different from zero at any common level of significance. However, for the model equation of the differenced 10-years treasury bonds rate we find that the error correction term is statistically significant at the $1\%$ level with an estimate of $-0.09$. This can be interpreted as follows: although both interest rates are nonstationary, their conintegrating relationship allows to predict the *change* in the 10-years treasury bonds rate using the VECM. In particular, the negative estimate of the coefficient on the error correction term indicates that there will be a negative change in the next period's 10-years treasury bonds rate when the 10-years treasury bonds rate is higher than the 3-month treasury bill rate in the current period.
@@ -620,15 +712,15 @@ plot(W5000_PC,
 abline(0, 0)
 ```
 
-The level of the series of daily percentage changes in the Wilshire index seems to randomly fluctuate near zero, meaning there is little amount autocorrelation so that it is difficult to predict future outcomes using e.g. an autoregressive model. However there is visual evidence that the series exhibits conditional heteroskedasticity since we observe volatility clustering. For some applications it is useful to measure and forecast these patterns. This can be done using models which assume that the volatility can be described by an autoregressive process.
+The level of the series of daily percentage changes in the Wilshire index seems to randomly fluctuate near zero, meaning there is little amount autocorrelation so that it is difficult to predict future outcomes using e.g. an autoregressive model. However, there is visual evidence that the series exhibits conditional heteroskedasticity since we observe volatility clustering. For some applications it is useful to measure and forecast these patterns. This can be done using models which assume that the volatility can be described by an autoregressive process.
 
 ### ARCH and GARCH Models {-}
 
-Consider $$Y_t = \beta_0 + \beta_1 Y_{t-1} + \gamma_1 X_{t-1} + u_t,$$ a simple ADL($1$,$1$) regression model. The econometrician Robert @engle1982 proposed to model $\sigma^2_t$, the variance of the normally distributed error $u_t$, by an order $p$ distributive lag model
+Consider $$Y_t = \beta_0 + \beta_1 Y_{t-1} + \gamma_1 X_{t-1} + u_t,$$ a simple ADL($1$,$1$) regression model. The econometrician Robert @engle1982 proposed to model $\sigma^2_t$, the variance of the normally distributed error $u_t$, by an order $p$ distributive lag model,
 \begin{align}
  \sigma^2_t = \alpha_0 + \alpha_1 u_{t-1}^2 + \alpha_2 u_{t-2}^2 + \dots + \alpha_p u_{t-p}^2, (\#eq:archmodel)
 \end{align}
-which is called the **autoregressive conditional heteroskedasticity** (ARCH) model of order $p$, or short ARCH($p$).^[Although we introduce the ARCH model as a component in an ADL($1$,$1$) model, it can be used for modelling the conditional zero-mean error term of any time series model.] The general idea is apparent from the model structure: positive coefficients $\alpha_0,\alpha_1,\dots,\alpha_p$ imply that recent large squared errors lead to a large variance, and thus large squared errors, in the current period.
+which is called the *autoregressive conditional heteroskedasticity* (ARCH) model of order $p$, or short ARCH($p$).^[Although we introduce the ARCH model as a component in an ADL($1$,$1$) model, it can be used for modelling the conditional zero-mean error term of any time series model.] The general idea is apparent from the model structure: positive coefficients $\alpha_0,\alpha_1,\dots,\alpha_p$ imply that recent large squared errors lead to a large variance, and thus large squared errors, in the current period.
 
 The generalized ARCH (GARCH) model, developed by Tim @bollerslev1986 is an extension of the ARCH model, where $\sigma^2_t$ is allowed to depend on its own lags and lags of the squared error term. The GARCH($p$,$q$) model is given by
 \begin{align}
@@ -661,7 +753,7 @@ We obtain
 \end{align}
 so the coefficients on $u_{t-1}^2$ and $\sigma^2_{t-1}$ are statistically significant at any common level of significance. One can show that the persistence of movements in $\sigma^2_t$ is determined by the sum of both coefficients which is $0.99$ here. This indicates that movements in the conditional variance are highly persistent, implying long-lasting periods of high volatility which is consistent with the visual evidence for volatility clustering presented above.  
 
-The estimated conditional variance $\widehat{\sigma}^2_t$ can be computed by plugging the residuals from \@ref(eq:w5000g11est1) into equation \@ref(eq:w5000g11est2). This is performed automatically by `r ttcode("garchFit()")`, so to obtain a vector of the estimated conditional standard deviations all we have to do is to read out the values from `GARCH_Wilshire` by appending `@sigma.t`.  
+The estimated conditional variance $\widehat{\sigma}^2_t$ can be computed by plugging the residuals from \@ref(eq:w5000g11est1) into equation \@ref(eq:w5000g11est2). This is performed automatically by `r ttcode("garchFit()")`, so to obtain a vector of the estimated conditional standard deviations all we have to do is to read out the values from `r ttcode("GARCH_Wilshire")` by appending `r ttcode("@sigma.t")`.  
 
 Using the vector containing the $\widehat{\sigma}_t$ we plot bands of $\pm$ one conditional standard deviation along with deviations of the series of daily percentage changes in the Wilshire 5000 index from its mean. The following code chunk reproduces Figure 16.4 of the book.
 
@@ -691,7 +783,7 @@ lines(W5000_PC$Date,
       lwd = 0.5)
 ```
 
-We see that the bands of estimated conditional standard deviation describe the observed heteroskedasticity in the series of daily changes of the Wilshire 5000 index quite well. This is useful for quantifying the time-varying volatility and the emerging risk for investors holding stocks summarized by the index. Furthermore, this GARCH model may also be used to produce forecast intervals whose widths depend on the volatility of the most recent regression residuals.
+We see that the bands of the estimated conditional standard deviations track the observed heteroskedasticity in the series of daily changes of the Wilshire 5000 index quite well. This is useful for quantifying the time-varying volatility and the emerging risk for investors holding stocks summarized by the index. Furthermore, this GARCH model may also be used to produce forecast intervals whose widths depend on the volatility of the most recent periods.
 
 ## Summary 
 

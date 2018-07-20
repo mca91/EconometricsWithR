@@ -1,8 +1,8 @@
 # Hypothesis Tests and Confidence Intervals in Multiple Regression {#htaciimr}
 
-This chapter discusses methods that allow to quantify the sampling uncertainty inherent to the OLS estimator of the coefficients in multiple regression models. The basis for this are  hypothesis tests and confidence intervals which, just as for the simple linear regression model, can be computed using basic <tt>R</tt> functions. We will also tackle the issue of testing joint hypotheses on these coefficients. 
+This chapter discusses methods that allow to quantify the sampling uncertainty inherent to the OLS estimator of the coefficients in multiple regression models. The basis for this are  hypothesis tests and confidence intervals which, just as for the simple linear regression model, can be computed using basic `r ttcode("R")` functions. We will also tackle the issue of testing joint hypotheses on these coefficients. 
 
-Make sure the packages `r ttcode("AER")` and `r ttcode("stargazer")` are installed before you go ahead and replicate the examples. The savest way to do so is by checking whether the following code chunk executes without any issues.
+Make sure the packages `r ttcode("AER")` [@R-AER] and `r ttcode("stargazer")` [@R-stargazer] are installed before you go ahead and replicate the examples. The safest way to do so is by checking whether the following code chunk executes without any issues.
 
 ```{r, warning=FALSE, message=FALSE, eval=FALSE}
 library(AER)
@@ -13,22 +13,39 @@ library(stargazer)
 
 First, we will discuss how to compute standard errors, how to test hypotheses and how to construct confidence intervals for a single regression coefficient $\beta_j$ in a multiple regression model. The basic idea is summarized in Key Concept 7.1.
 
-<div class = "keyconcept"> 
+```{r, eval = my_output == "html", results='asis', echo=FALSE}
+cat('<div class = "keyconcept"> 
 <h3 class = "right"> Key Concept 7.1 </h3>          
-<h3 class = "left"> Testing the Hypothesis $\beta_j = \beta_{j,0}$ <br>
-                    Against the Alternative $\beta_j \neq \beta_{j,0}$ </h3>
-
+<h3 class = "left"> Testing the Hypothesis $\\beta_j = \\beta_{j,0}$ <br>
+                    Against the Alternative $\\beta_j \\neq \\beta_{j,0}$ </h3>
 <p>
-1. Compute the standard error of $\hat{\beta_j}$
+1. Compute the standard error of $\\hat{\\beta_j}$
 2. Compute the $t$-statistic,
-$$t = \frac{\hat{\beta}_j - \beta_{j,0}} {SE(\hat{\beta_j})}$$
+$$t = \\frac{\\hat{\\beta}_j - \\beta_{j,0}} {SE(\\hat{\\beta_j})}$$
 3. Compute the $p$-value,
-$$p\text{-value} = 2 \Phi(-|t^{act}|)$$
+$$p\\text{-value} = 2 \\Phi(-|t^{act}|)$$
 
-where $t^{act}$ is the value of the $t$-statistic actually computed. Reject the hypothesis at the 5\% significance level if the $p$-value is less than $0.05$ or, equivalently, if $|t^{act}| > 1.96$. The standard error and (typically) the $t$-statistic and the corresponding $p$-value for testing $\beta_j = 0$ are computed automatically by suitable <tt>R</tt> functions, e.g. by <tt>summary()</tt>.
+where $t^{act}$ is the value of the $t$-statistic actually computed. Reject the hypothesis at the 5\\% significance level if the $p$-value is less than $0.05$ or, equivalently, if $|t^{act}| > 1.96$. The standard error and (typically) the $t$-statistic and the corresponding $p$-value for testing $\\beta_j = 0$ are computed automatically by suitable <tt>R</tt> functions, e.g. by <tt>summary</tt>.
 </p>
-  
 </div>
+')
+```
+
+```{r, eval = my_output == "latex", results='asis', echo=FALSE}
+cat('\\begin{keyconcepts}[Testing the Hypothesis $\\beta_j = \\beta_{j,0}$
+                    Against the Alternative $\\beta_j \\neq \\beta_{j,0}$]{7.1}
+\\begin{enumerate}
+\\item Compute the standard error of $\\hat{\\beta_j}$
+\\item Compute the $t$-statistic,
+$$t = \\frac{\\hat{\\beta}_j - \\beta_{j,0}} {SE(\\hat{\\beta_j})}$$
+\\item Compute the $p$-value,
+$$p\\text{-value} = 2 \\Phi(-|t^{act}|)$$
+where $t^{act}$ is the value of the $t$-statistic actually computed. Reject the hypothesis at the 5\\% significance level if the $p$-value is less than $0.05$ or, equivalently, if $|t^{act}| > 1.96$. \\end{enumerate}\\vspace{0.5cm}
+
+The standard error and (typically) the $t$-statistic and the corresponding $p$-value for testing $\\beta_j = 0$ are computed automatically by suitable \\texttt{R} functions, e.g. by \\texttt{summary()}.
+\\end{keyconcepts}
+')
+```
 
 It is straightforward to verify that principles of testing a single hypothesis about the significance of a coefficient in the multiple regression model is just as in in the simple regression model. 
 
@@ -45,43 +62,54 @@ CASchools$size <- CASchools$students/CASchools$teachers
 CASchools$score <- (CASchools$read + CASchools$math)/2
 
 model <- lm(score ~ size + english, data = CASchools)
-summary(model)
+coeftest(model, vcov. = vcovHC(model, type = "HC1"))
 ```
 
-You may check that these quantities are computed as in the simple regression model by computing the $t$-statistics or $p$-values by hand using the output above and <tt>R</tt> as a calculator.
+You may check that these quantities are computed as in the simple regression model by computing the $t$-statistics or $p$-values by hand using the output above and `r ttcode("R")` as a calculator.
 
-For example, using the definition of the $p$-value for a two-sided test as given in Key Concept 7.1, we can confirm the $p$-value for a test of the hypothesis that the coefficient $\beta_0$, that is the coefficient on <tt>(intercept)</tt>, is zero to be approximately zero.
+For example, using the definition of the $p$-value for a two-sided test as given in Key Concept 7.1, we can confirm the $p$-value for a test of the hypothesis that the coefficient $\beta_0$, the coefficient on `r ttcode("(intercept)")`, to be approximately zero.
 
 ```{r, warning=F, message=F}
-2*(1-pnorm(abs(92.566)))
+2*(1-pnorm(abs(78.5993)))
 ```
 
-Remember that, given a vector of quantiles, <tt>pnorm()</tt> calculates the associated probabilities for the standard normal distribution by default which is suitable here since we approximate with the standard normal distribution.
+Remember that, given a vector of quantiles, `r ttcode("pnorm()")` calculates the associated probabilities for the standard normal distribution by default which is suitable here since we approximate with the standard normal distribution.
 
+```{r, eval = my_output == "html", results='asis', echo=FALSE}
+cat('
 <div class = "keyconcept"> 
 <h3 class = "right"> Key Concept 7.2 </h3>          
 <h3 class = "left"> Confidence Intervals for a Single Coefficient in Multiple Regression </h3>
-
 <p>
-A $95\%$ two-sided confidence interval for the coefficient $\beta_j$ is an interval that contains the true value of $\beta_j$ with a $95 \%$ probability; that is, it contains the true value of $\beta_j$ in $95 \%$ of all randomly drawn samples. Equivalently, it is the set of values of $\beta_j$ that cannot be rejected by a $5 \%$ two-sided hypothesis test. When the sample size is large, the $95 \%$ confidence interval for $\beta_j$ is
-$$\left[\hat{\beta_j}- 1.96 \times SE(\hat{\beta}_j), \hat{\beta_j} + 1.96 \times SE(\hat{\beta_j})\right].$$
+A $95\\%$ two-sided confidence interval for the coefficient $\\beta_j$ is an interval that contains the true value of $\\beta_j$ with a $95 \\%$ probability; that is, it contains the true value of $\\beta_j$ in $95 \\%$ of all randomly drawn samples. Equivalently, it is the set of values of $\\beta_j$ that cannot be rejected by a $5 \\%$ two-sided hypothesis test. When the sample size is large, the $95 \\%$ confidence interval for $\\beta_j$ is
+$$\\left[\\hat{\\beta_j}- 1.96 \\times SE(\\hat{\\beta}_j), \\hat{\\beta_j} + 1.96 \\times SE(\\hat{\\beta_j})\\right].$$
 </p>
 </div>
+')
+```
+
+```{r, eval = my_output == "latex", results='asis', echo=FALSE}
+cat('\\begin{keyconcepts}[Confidence Intervals for a Single Coefficient in Multiple Regression]{7.2}
+A $95\\%$ two-sided confidence interval for the coefficient $\\beta_j$ is an interval that contains the true value of $\\beta_j$ with a $95 \\%$ probability; that is, it contains the true value of $\\beta_j$ in $95 \\%$ of all randomly drawn samples. Equivalently, it is the set of values of $\\beta_j$ that cannot be rejected by a $5 \\%$ two-sided hypothesis test. When the sample size is large, the $95 \\%$ confidence interval for $\\beta_j$ is
+$$\\left[\\hat{\\beta_j}- 1.96 \\times SE(\\hat{\\beta}_j), \\hat{\\beta_j} + 1.96 \\times SE(\\hat{\\beta_j})\\right].$$
+\\end{keyconcepts}
+')
+```
 
 ## An Application to Test Scores and the Student-Teacher Ratio
 
 Let us take a look at the regression from section 6.3 again.
 
-Computing confidence intervals for the individual coefficients in the multiple regression model can be done analogously as in the simple regression model using the function <tt>confint()</tt>.
+Computing confidence intervals for the individual coefficients in the multiple regression model can be done analogously as in the simple regression model using the function `r ttcode("confint()")`.
 
 ```{r, warning=F, message=F}
 model <- lm(score ~ size + english, data = CASchools)
 confint(model)
 ```
 
-We note that $95\%$ confidence intervals for all three coefficients are computed. 
+Notice that $95\%$ confidence intervals for all three coefficients are computed. 
 
-If we want to compute confidence intervals at another level, say $\alpha=0.1$, we just have to set the argument <tt>level</tt> in our call of <tt>confint()</tt> accordingly.
+If we want to compute confidence intervals at another level, say $\alpha=0.1$, we just have to set the argument `r ttcode("level")` in our call of `r ttcode("confint()")` accordingly.
 
 ```{r, warning=F, message=F}
 confint(model, level = 0.9)
@@ -89,23 +117,43 @@ confint(model, level = 0.9)
 
 The output now reports the desired $90\%$ confidence intervals for all model coefficients.
 
-Knowing how to use <tt>R</tt> to make inference about the coefficients in multiple regression models, you can now answer the following question: 
+A disadvantage of `r ttcode("confint()") is that is does not use robust standard errors to compute the confidence interval. This is quickly done manually as follows.
 
-Can the null hypothesis that a change in the student-teacher ratio, <tt>size</tt>, has no significant influence on test scores, <tt>scores</tt>, --- if we control for the percentage of students learning English in the district, <tt>english</tt>, --- be rejected at the $10\%$ and the $5\%$ level of significance?
+```{r, warning=F, message=F}
+# compute robust standard errors
+rob_se <- diag(vcovHC(model, type = "HC1"))^0.5
+
+# compute robust 95% confidence intervals
+rbind(
+  "lower" = coef(model)-qnorm(0.975) * rob_se,
+  "upper" = coef(model)+qnorm(0.975) * rob_se
+)
+
+# compute robust 90% confidence intervals
+
+rbind(
+  "lower" = coef(model)-qnorm(0.95) * rob_se,
+  "upper" = coef(model)+qnorm(0.95) * rob_se
+)
+```
+
+Knowing how to use `r ttcode("R")` to make inference about the coefficients in multiple regression models, you can now answer the following question: 
+
+Can the null hypothesis that a change in the student-teacher ratio, `r ttcode("size")`, has no significant influence on test scores, `r ttcode("scores")`, --- if we control for the percentage of students learning English in the district, `r ttcode("english")`, --- be rejected at the $10\%$ and the $5\%$ level of significance?
  
-The outputs above tell us that zero is not an element of the computed confidence intervals for the coefficient of <tt>size</tt> such that we can reject the null hypothesis at significance levels of $5\%$ and $10\%$.
+From the output above we can tell that zero is not an element of the computed confidence intervals for the coefficient on `r ttcode("size")` such that we can reject the null hypothesis at significance levels of $5\%$ and $10\%$.
 
 Note that rejection at the $5\%$-level implies rejection at the $10\%$ level (why?). 
 
-The same conclusion can be made when beholding the $p$-value for <tt>size</tt>: $0.00398 < 0.05 = \alpha$.
+The same conclusion can be made when beholding the $p$-value for `r ttcode("size")`: $0.00398 < 0.05 = \alpha$.
 
-The $95\%$ confidence interval tells us that we can be $95\%$ confident that a one-unit decrease in the student-teacher ratio has an effect on test scores that lies in the interval with a lower bound of $-1.8488$ and an upper bound of $-0.3538$.
+Remember from Chapter \@ref(cifrc) the $95\%$ confidence interval computed above *does not* tell us that a one-unit decrease in the student-teacher ratio has an effect on test scores that lies in the interval with a lower bound of $-1.9497$ and an upper bound of $-0.2529$. Once a confidence interval has been computed, a probabilistic statement like this is wrong: either the interval contains the true parameter or it does not. We do not know which is true.
 
 ### Another Augmentation of the Model {-}
 
 What is the average effect on test scores of reducing the student-teacher ratio when the expenditures per pupil and the percentage of english learning pupils are held constant?
 
-We can pursue this question by augmenting our model equation by an additional regressor that is a measure for spendings per pupil. Using <tt>?CASchools</tt> we find that <tt>CASchools</tt> contains the variable <tt>expenditure</tt> which provides expenditures per student.
+We can pursue this question by augmenting our model equation by an additional regressor that is a measure for spendings per pupil. Using `r ttcode("?CASchools")` we find that `r ttcode("CASchools")` contains the variable `r ttcode("expenditure")` which provides expenditures per student.
 
 The model we want the estimate now is 
 
@@ -126,10 +174,10 @@ CASchools$expenditure <- CASchools$expenditure/1000
 
 # estimate the model
 model <- lm(score ~ size + english + expenditure, data = CASchools)
-summary(model)
+coeftest(model, vcov. = vcovHC(model, type = "HC1"))
 ```
 
-We see that the estimated effect of a one unit change in the student-teacher ratio on test scores with expenditures per pupil and the share of english learning pupils held constant is $-0.29$ which is rather small. What is more, the coefficient on $size$ is not significantly different from zero anymore even at the level of $10\%$ since $p\text{-value}=0.55$. Can you come up with an interpretation for these findings (see Chapter 7.1 of the book)? The insignificance of $\beta_1$ could be due to a larger standard error of $\hat{\beta}_1$ resulting from adding $expenditure$ to the model so that we are estimating the true coefficient on $size$ less precisely. This illustrates the issue of strongly correlated regressors (imperfect multicollinearity). The correlation between $size$ and $expenditure$ can be computed using <tt>cor()</tt>.
+We see that the estimated effect of a one unit change in the student-teacher ratio on test scores with expenditures per pupil and the share of english learning pupils held constant is $-0.29$ which is rather small. What is more, the coefficient on $size$ is not significantly different from zero anymore even at the level of $10\%$ since $p\text{-value}=0.55$. Can you come up with an interpretation for these findings (see Chapter 7.1 of the book)? The insignificance of $\beta_1$ could be due to a larger standard error of $\hat{\beta}_1$ resulting from adding $expenditure$ to the model so that we are estimating the true coefficient on $size$ less precisely. This illustrates the issue of strongly correlated regressors (imperfect multicollinearity). The correlation between $size$ and $expenditure$ can be computed using `r ttcode("cor()")`.
 
 ```{r}
 # compute the sample correlation between 'size' and 'expenditure'
@@ -152,7 +200,7 @@ $$ F = \frac{(SSR_{restricted} - SSR_{unrestricted})/q}{SSR_{unrestricted} / (n-
 
 with $SSR_{restricted}$ being the sum of squared residuals from the restricted regression, i.e. the regression where we impose the restriction. $SSR_{unrestricted}$ is the sum of squared residuals from the full model, $q$ is the number of restriction under the null and $k$ is the number of regressors in the unrestricted regression.
 
-Luckily, it is fairly easy to conduct $F$-tests in <tt>R</tt>. We can use the function <tt>linearHypothesis()</tt> which is contained in the package <tt>car</tt>.
+Luckily, it is fairly easy to conduct $F$-tests in `r ttcode("R")`. We can use the function `r ttcode("linearHypothesis()")` which is contained in the package `r ttcode("car")`.
 
 ```{r, warning=F, message=F}
 # estimate the multiple regression model
@@ -165,13 +213,20 @@ linearHypothesis(model, c("size=0", "expenditure=0"))
 
 From the output we can infer that the $F$-statistic for this joint hypothesis test is about $8.01$ and the corresponding $p$-value is $0.0004$. Thus, we can reject the null hypothesis that both coefficients are zero at any level of significance commonly used in practice.
 
-**Note** The standard output of a model summary also reports an $F$-statistic and the corresponding $p$-value. The null hypothesis belonging to this $F$-test is that **all** of the population coefficients in the model except for the intercept are zero, so the hypotheses pair is
+A heteroskedasticity-robust version of this $F$-test (which leads to the same conclusion) can be conducted as follows.
+
+```{r, warning=F, message=F}
+# heteroskedasticity-robust F-test
+linearHypothesis(model, c("size=0", "expenditure=0"), white.adjust="hc1")
+```
+
+**Note:** The standard output of a model summary also reports an $F$-statistic and the corresponding $p$-value. The null hypothesis belonging to this $F$-test is that **all** of the population coefficients in the model except for the intercept are zero, so the hypotheses pair is
 
 $$H_0: \beta_1=0, \ \beta_2 =0, \ \beta_3 =0 \quad \text{vs.} \quad H_1: \beta_j \neq 0 \ \text{for at least one} \ j=1,2,3.$$
 
-This is also called the *overall regression F-statistic* and the null hypothesis is obviously different from testing if only $\beta_1$ and $\beta_3$ being zero.
+This is also called the *overall regression $F$-statistic* and the null hypothesis is obviously different from testing if only $\beta_1$ and $\beta_3$ being zero.
 
-We will now check whether the $F$-statistic belonging to the $p$-value listed in the model's summary coincides with the result reported by <tt>linearHypothesis()</tt>.
+We will now check whether the $F$-statistic belonging to the $p$-value listed in the model's summary coincides with the result reported by `r ttcode("linearHypothesis()")`.
 
 ```{r, warning=F, message=F}
 # execute the function on the model object and provide the linear restriction 
@@ -182,16 +237,16 @@ linearHypothesis(model, c("size=0", "english=0", "expenditure=0"))
 summary(model)$fstatistic
 ```
 
-The test rejects the null hypothesis that the model has no power in explaining test scores.
+The test rejects the null hypothesis that the model has no power in explaining test scores. It is important to know that the $F$-statistic reported by `r ttcode("summary")` is *not* robust to heteroskedasticity!
 
 ## Confidence Sets for Multiple Coefficients 
 
-Based on the $F$-statistic that we have previously encountered, we can specify confidence sets. Confidence sets are analogous to confidence intervals for single coefficients. As such, confidence sets consist of *combinations* of coefficients that contain the true combination of coefficients in, $95\%$ say, of all cases if we could draw random samples infinitely, just as in the univariate case. Put differently, a confidence set is the set of all coefficient combinations for which we cannot reject a joint null hypothesis tested using an $F$-test.  
+Based on the $F$-statistic that we have previously encountered, we can specify confidence sets. Confidence sets are analogous to confidence intervals for single coefficients. As such, confidence sets consist of *combinations* of coefficients that contain the true combination of coefficients in, $95\%$ say, of all cases if we could draw random samples infinitely, just like in the univariate case. Put differently, a confidence set is the set of all coefficient combinations for which we cannot reject a joint null hypothesis tested using an $F$-test.  
 
-If we consider two coefficients, their confidence set is an ellipse which is centered around the point defined by both coefficient estimates. Again, there is a very convenient way to plot the confidence set for two coefficients of model objects, namely the function <tt>confidenceEllipse()</tt> which is also coming with the <tt>car</tt> package.
+If we consider two coefficients, their confidence set is an ellipse which is centered around the point defined by both coefficient estimates. Again, there is a very convenient way to plot the confidence set for two coefficients of model objects, namely the function `r ttcode("confidenceEllipse()")` which is also coming with the `r ttcode("car")` package.
 
-In the following, we plot the $95\%$ confidence ellipse for the coefficients on <tt>size</tt> and <tt>expenditure</tt> from the regression conducted above.
-By specifying the additional argument <tt>fill</tt>, the confidence set is colored.
+In the following, we plot the $95\%$ confidence ellipse for the coefficients on `r ttcode("size")` and `r ttcode("expenditure")` from the regression conducted above.
+By specifying the additional argument `r ttcode("fill")`, the confidence set is colored.
 
 <div class="unfolded">
 ```{r, echo=2:3, fig.align = 'center', warning=F, message=F}
@@ -207,24 +262,61 @@ confidenceEllipse(model,
 
 We see that the ellipse is centered around $(-0.29, 3.87)$, the pair of coefficients estimates on $size$ and $expenditure$. What is more, $(0,0)$ is not element of the $95\%$ confidence set so that we can reject $H_0: \beta_1 = 0, \ \beta_3 = 0$.
 
+By default, `r ttcode("confidenceEllipse()")` uses homoskedasticity-only standard errors. The following code chunk shows how compute a robust confidence ellipse and how to overlay it with the previous plot.
+
+<div class="unfolded">
+```{r, fig.align = 'center', warning=F, message=F}
+# Draw the 95% confidence set for coefficients on size and expenditure (robust)
+confidenceEllipse(model, 
+                  fill = T, 
+                  which.coef = c("size", "expenditure"),
+                  main = "95% Confidence Sets",
+                  vcov. = vcovHC(model, type = "HC1"),
+                  col = "red"
+                  )
+                  
+# Draw the 95% confidence set for coefficients on size and expenditure
+confidenceEllipse(model, 
+                  fill = T, 
+                  which.coef = c("size", "expenditure"),
+                  add = T
+                  )
+```
+</div>
+
+Notice that since the robust standard errors are slightly larger than those valid under homoskedasticity only in this case, the robust confidence set is slightly larger. This is analogous to the confidence intervals for the individual coefficients.
+
 ## Model Specification for Multiple Regression
 
-Choosing a regression specifaction, i.e. selecting the variables to be included in a regression model, can be quite cumbersome. However, there are some guidelines on how to proceed. The goal is clear: obtaining an unbiased and precise estimate of the causal effect of interest. As a starting point, one should think about omitted variables, that is to avoid a possible estimation bias by using suitable control variables (omitted variables bias in the context of multiple regression is explained in Key Concept 7.3). A second step could be to compare different regression model specifications by measures of fit. However, as we shall see one should not rely solely on $\overline{R^2}$.
+Choosing a regression specification, i.e. selecting the variables to be included in a regression model, can be quite cumbersome. However, there are some guidelines on how to proceed. The goal is clear: obtaining an unbiased and precise estimate of the causal effect of interest. As a starting point, one should think about omitted variables, that is, to avoid a possible estimation bias by using suitable control variables (omitted variables bias in the context of multiple regression is explained in Key Concept 7.3). A second step could be to compare different regression model specifications by measures of fit. However, as we shall see one should not rely solely on $\overline{R^2}$.
 
+```{r, eval = my_output == "html", results='asis', echo=FALSE}
+cat('
 <div class = "keyconcept"> 
 <h3 class = "right"> Key Concept 7.3 </h3>          
 <h3 class = "left"> Omitted Variable Bias in Multiple Regression</h3>
-
 <p>
-
 Omitted variable bias is the bias in the OLS estimator that arises when one or more included regressors are correlated with an omitted variable. For omitted variable bias to arise, two things must be true: 
 
 1. At least one of the included regressors must be correlated with the omitted variable. 
 2. The omitted variable must be a determinant of the dependent variable, $Y$.
-
 </p>
-  
 </div>
+')
+```
+
+```{r, eval = my_output == "latex", results='asis', echo=FALSE}
+cat('\\begin{keyconcepts}[Omitted Variable Bias in Multiple Regression]{7.3}
+Omitted variable bias is the bias in the OLS estimator that arises when one or more included regressors are correlated with an omitted variable. For omitted variable bias to arise, two things must be true:\\newline
+
+\\begin{enumerate}
+\\item At least one of the included regressors must be correlated with the omitted variable. 
+\\item The omitted variable must be a determinant of the dependent variable, $Y$.
+\\end{enumerate}
+
+\\end{keyconcepts}
+')
+```
 
 We will now discuss an example were we face a potential omitted variable bias in a multiple regression model:
 
@@ -232,7 +324,7 @@ Consider again the estimated regression equation
 
 $$ \widehat{TestScore} = \underset{(8.7)}{686.0} - \underset{(0.43)}{1.10} \times size - \underset{(0.031)}{0.650} \times english. $$
 
-We are interested in estimating the causal effect of class size on test score. In this estimation, there might be a bias due to omitting "outside learning opportunities" from our regression since a measure like this could be a determinant of the students test scores and could also be correlated with both regressors already included in the model (so that both conditions of Key Concept 7.3 are fulfilled). "outside learning opportunities" are a complicated concept that is difficult to quantify. A surrogate we can consider instead is the students' economic background which should be strongly related to the outside learning opportunities: think of wealthy parents that are able to provide time and/or money for private tuition of their children. We thus augment the model with the variable <tt>lunch</tt>, the percentage of students that qualify for a free or subsidized lunch in school due to family incomes below a certain threshold, and estimate the model again.   
+We are interested in estimating the causal effect of class size on test score. In this estimation, there might be a bias due to omitting "outside learning opportunities" from our regression since a measure like this could be a determinant of the students test scores and could also be correlated with both regressors already included in the model (so that both conditions of Key Concept 7.3 are fulfilled). "outside learning opportunities" are a complicated concept that is difficult to quantify. A surrogate we can consider instead is the students' economic background which should be strongly related to the outside learning opportunities: think of wealthy parents that are able to provide time and/or money for private tuition of their children. We thus augment the model with the variable `r ttcode("lunch")`, the percentage of students that qualify for a free or subsidized lunch in school due to family incomes below a certain threshold, and estimate the model again.   
 
 ```{r, echo=6:8, warning=F, message=F}
 library(AER)
@@ -242,30 +334,32 @@ CASchools$score <- (CASchools$read + CASchools$math)/2
 
 # estimate the model and print the summary to console
 model <- lm(score ~ size + english + lunch, data = CASchools)
-summary(model)
+coeftest(model, vcov. = vcovHC(model, type = "HC1"))
 ```
 
 Thus, the estimated regression line is
 
-$$ \widehat{TestScore} = \underset{(4.7)}{700.15} - \underset{(0.24)}{1.00} \times size - \underset{(0.032)}{0.12} \times english + \underset{(0.022)}{0.55} \times lunch. $$
+$$ \widehat{TestScore} = \underset{(5.56)}{700.15} - \underset{(0.27)}{1.00} \times size - \underset{(0.03)}{0.12} \times english - \underset{(0.02)}{0.55} \times lunch. $$
 
 We observe no substantial changes in the conclusion about the effect of $size$ on $TestScore$: the coefficient on $size$ changes by only $0.1$ and keeps its significance. 
 
-Although the difference in estimated coefficients is not big in this case, it might be a good idea to keep <tt>lunch</tt> in the model to make the assumption of conditional mean independence more credible (see Chapter 7.5 of the book).
+Although the difference in estimated coefficients is not big in this case, it might be a good idea to keep `r ttcode("lunch")` in the model to make the assumption of conditional mean independence more credible (see Chapter 7.5 of the book).
 
 ### Model Specification in Theory and in Practice {-}
 
 Key Concept 7.4 names some common pitfalls when using $R^2$ and $\overline{R^2}$ to evaluate the predictive ability of regression models.
 
+```{r, eval = my_output == "html", results='asis', echo=FALSE}
+cat('
 <div class = "keyconcept"> 
 <h3 class = "right"> Key Concept 7.4 </h3>          
-<h3 class = "left"> $R^2$ and $\overline{R^2}$: What They Tell You --- and What They Don't  </h3>
+<h3 class = "left"> $R^2$ and $\\overline{R^2}$: What They Tell You --- and What They Do not </h3>
 
 <p>
 
-<b><i>The $R^2$ and $\overline{R^2}$ tell you</i></b> whether the regressors are good at predicting, or "explaining" the values of the independent variable in the sample of data at hand. if the $R^2$ (or $\overline{R^2}$) is nearly $1$, then the regressors produce good prediction of the dependent variable in that sample, in the sense that the variance of OLS residuals is small compared to the variance of the dependent variable. If the $R^2$ (or $\overline{R^2}$) is nearly $0$, the opposite is true.
+The $R^2$ and $\\overline{R^2}$ tell you whether the regressors are good at predicting, or "explaining" the values of the independent variable in the sample of data at hand. if the $R^2$ (or $\\overline{R^2}$) is nearly $1$, then the regressors produce a good prediction of the dependent variable in that sample, in the sense that the variance of OLS residuals is small compared to the variance of the dependent variable. If the $R^2$ (or $\\overline{R^2}$) is nearly $0$, the opposite is true.
 
-<b><i>The $R^2$ and $\overline{R^2}$ do <u>not</u> tell you </i></b> whether:
+The $R^2$ and $\\overline{R^2}$ do *not* tell you whether:
 
 1. An included variable is statistically significant. 
 2. The regressors are the true cause of the movements in the dependent variable
@@ -275,17 +369,38 @@ Key Concept 7.4 names some common pitfalls when using $R^2$ and $\overline{R^2}$
 </p>
   
 </div>
+')
+```
 
-For example, think of regressing $TestScore$ on $PLS$ which measures the available parking lot space in thousand square feet. You are likely to observe a significant coefficient of reasonable magnitude and moderate to high values for $R^2$ and $\overline{R^2}$. The reason for this is that parking lot space is correlated with many determinants of the test score like location, class size, financial endowment and so on. Although we do not have observations on $PLS$, we can use <tt>R</tt> to generate some relatively realistic data.
+```{r, eval = my_output == "latex", results='asis', echo=FALSE}
+cat('\\begin{keyconcepts}[$R^2$ and $\\overline{R^2}$: What They Tell You --- and What They Do not]{7.4}
+The $R^2$ and $\\overline{R^2}$ tell you whether the regressors are good at predicting, or "explaining" the values of the independent variable in the sample of data at hand. if the $R^2$ (or $\\overline{R^2}$) is nearly $1$, then the regressors produce a good prediction of the dependent variable in that sample, in the sense that the variance of OLS residuals is small compared to the variance of the dependent variable. If the $R^2$ (or $\\overline{R^2}$) is nearly $0$, the opposite is true.\\newline
 
-<div class="unfolded">
-```{r, fig.align='center'}
+The $R^2$ and $\\overline{R^2}$ do \\textit{not} tell you whether:\\newline
+
+\\begin{enumerate}
+\\item An included variable is statistically significant. 
+\\item The regressors are the true cause of the movements in the dependent variable
+\\item There is omitted variable bias.
+\\item You have chosen the most appropriate set of regressors.
+\\end{enumerate}
+\\end{keyconcepts}
+')
+```
+
+For example, think of regressing $TestScore$ on $PLS$ which measures the available parking lot space in thousand square feet. You are likely to observe a significant coefficient of reasonable magnitude and moderate to high values for $R^2$ and $\overline{R^2}$. The reason for this is that parking lot space is correlated with many determinants of the test score like location, class size, financial endowment and so on. Although we do not have observations on $PLS$, we can use `r ttcode("R")` to generate some relatively realistic data.
+
+
+```{r}
 # Generate observations for parking lot space
-CASchools$PLS <- 5 + 0.6 * CASchools$expenditure 
+CASchools$PLS <- c(5 + 0.6 * CASchools$expenditure 
                    + 0.6*CASchools$income 
                    + CASchools$size/100 
-                   + rnorm(nrow(CASchools), sd = 1)
+                   + rnorm(nrow(CASchools), sd = 1))
+```
 
+<div class="unfolded">
+```{r, fig.align='center',}
 # plot parking lot space against test score
 plot(CASchools$PLS, 
      CASchools$score,
@@ -304,19 +419,19 @@ $PLS$ is generated as a linear function of $expenditure$, $income$, $size$ and a
 \begin{align}
 \widehat{TestScore} = \beta_0 + \beta_1 \times PLS + u (\#eq:plsmod) 
 \end{align}
-using <tt>lm()</tt> we find that the coefficient on $PLS$ is positive and significantly different from zero. Also $R^2$ and $\overline{R^2}$ are about $0.47$ which is a lot more than the roughly $0.05$ observed when regressing the test scores on the class sizes only. This suggests that increasing the parking lot space boosts a school's test scores and that model \@ref(eq:plsmod) does even better in explaining heterogeneity in the dependent variable than a model with $size$ as the only regressor. Keeping in mind how $PLS$ is constructed this comes of no surprise. It is evident that the high $R^2$ <it>cannot</it> be used to the conclude that the estimated relation between parking lot space and test scores is causal: the (relatively) high $R^2$ is due to correlation between $PLS$ and other determinants and/or control variables. Increasing parking lot space <it>is not</it> an appropriate measure to generate more learning success!
+using `r ttcode("lm()")` we find that the coefficient on $PLS$ is positive and significantly different from zero. Also $R^2$ and $\overline{R^2}$ are about $0.47$ which is a lot more than the roughly $0.05$ observed when regressing the test scores on the class sizes only. This suggests that increasing the parking lot space boosts a school's test scores and that model \@ref(eq:plsmod) does even better in explaining heterogeneity in the dependent variable than a model with $size$ as the only regressor. Keeping in mind how $PLS$ is constructed this comes of no surprise. It is evident that the high $R^2$ <it>cannot</it> be used to the conclude that the estimated relation between parking lot space and test scores is causal: the (relatively) high $R^2$ is due to correlation between $PLS$ and other determinants and/or control variables. Increasing parking lot space <it>is not</it> an appropriate measure to generate more learning success!
 
 ## Analysis of the Test Score Data Set
 
-Chapter \@ref(rmwmr) and some of the previous sections have stressed that it is important to include control variables in regression models if it is plausible that there are omitted factors that cannot be measured directly. Recall that in our example of test scores we are interested in estimating the causal effect of a change in the student-teacher ratio on test scores. In what follows, we will provide an example how to use multiple regression models in order to alleviate omitted variable bias and we will demonstrate how to report results using <tt>R</tt>.
+Chapter \@ref(rmwmr) and some of the previous sections have stressed that it is important to include control variables in regression models if it is plausible that there are omitted factors that cannot be measured directly. Recall that in our example of test scores we are interested in estimating the causal effect of a change in the student-teacher ratio on test scores. In what follows, we will provide an example how to use multiple regression models in order to alleviate omitted variable bias and we will demonstrate how to report results using `r ttcode("R")`.
 
 So far we have considered two variables that control for unobservable student characteristics which correlate with the student-teacher ratio *and* are assumed to have an impact on test scores: 
 
-  + $english$, the percentage of english learning students 
+  + $English$, the percentage of English learning students 
   
   + $lunch$, the share of students that qualify for a subsidized or even a free lunch at school
   
-Another new variable provided with <tt>CASchools</tt> is $calworks$, the percentage of students that qualify for the *CalWorks* income assistance program. Students eligible for *CalWorks* live in families with a total income below the threshold for the subsidized lunch program so both variables are indicators for the share of economically disadvantaged children. Using <tt>R</tt> we can confirm that both indicators are highly correlated: 
+Another new variable provided with `r ttcode("CASchools")` is `r ttcode("calworks")`, the percentage of students that qualify for the *CalWorks* income assistance program. Students eligible for *CalWorks* live in families with a total income below the threshold for the subsidized lunch program so both variables are indicators for the share of economically disadvantaged children. Using `r ttcode("R")` we can confirm that both indicators are highly correlated: 
 
 ```{r} 
 # estimate the correlation between 'calworks' and 'lunch'
@@ -357,7 +472,7 @@ plot(score ~ calworks,
      main = "Percentage qualifying for income assistance")
 ```
 
-We see that all relationships are negative. We can use <tt>R</tt> to estimate the correlation coefficients.
+We see that all relationships are negative. We can use `r ttcode("R")` to estimate the correlation coefficients.
 
 ```{r}
 # estimate correlation between student characteristics and test scores
@@ -369,86 +484,138 @@ cor(CASchools$score, CASchools$calworks)
 We will consider $5$ different model equations:
 
 \begin{align*}
-  (I) \quad \widehat{TestScore} =& \, \beta_0 + \beta_1 \times size + u \\
-  (II) \quad \widehat{TestScore} =& \, \beta_0 + \beta_1 \times size + \beta_2 \times english + u \\
-  (III) \quad \widehat{TestScore} =& \, \beta_0 + \beta_1 \times size + \beta_2 \times english + \beta_3 \times lunch + u \\
-  (IV) \quad \widehat{TestScore} =& \, \beta_0 + \beta_1 \times size + \beta_2 \times english + \beta_4 \times calworks + u \\
-  (V) \quad \widehat{TestScore} =& \, \beta_0 + \beta_1 \times size + \beta_2 \times english + \beta_3 \times lunch + \beta_4 \times calworks + u
+  (I) \quad TestScore=& \, \beta_0 + \beta_1 \times size + u \\
+  (II) \quad TestScore=& \, \beta_0 + \beta_1 \times size + \beta_2 \times english + u \\
+  (III) \quad TestScore=& \, \beta_0 + \beta_1 \times size + \beta_2 \times english + \beta_3 \times lunch + u \\
+  (IV) \quad TestScore=& \, \beta_0 + \beta_1 \times size + \beta_2 \times english + \beta_4 \times calworks + u \\
+  (V) \quad TestScore=& \, \beta_0 + \beta_1 \times size + \beta_2 \times english + \beta_3 \times lunch + \beta_4 \times calworks + u
 \end{align*}
 
-The best way to communicate regression results is in a table. The <tt>stargazer</tt> package is very convenient for this purpose. It provides a function that generates professionally looking HTML and LaTeX tables that satisfy scientific standards. One simply has to provide one or multiple object(s) of class <tt>lm</tt> and the rest is done by the function <tt>stargazer()</tt>.
+The best way to communicate regression results is in a table. The `r ttcode("stargazer")` package is very convenient for this purpose. It provides a function that generates professionally looking HTML and LaTeX tables that satisfy scientific standards. One simply has to provide one or multiple object(s) of class `r ttcode("lm")` and the rest is done by the function `r ttcode("stargazer()")`.
 
 ```{r, eval=F}
 # load the stargazer library
 library(stargazer)
 
 # estimate different model specifications
-spec1 <- lm(score ~ size , data = CASchools)
+spec1 <- lm(score ~ size, data = CASchools)
 spec2 <- lm(score ~ size + english, data = CASchools)
 spec3 <- lm(score ~ size + english + lunch, data = CASchools)
 spec4 <- lm(score ~ size + english + calworks, data = CASchools)
 spec5 <- lm(score ~ size + english + lunch + calworks, data = CASchools)
 
-# generate a Latex table using stargazer
-stargazer(spec1, spec2, spec3, spec4, spec5, 
+# gather robust standard errors in a list
+rob_se <- list(
+  sqrt(diag(vcovHC(spec1, type = "HC1"))),
+  sqrt(diag(vcovHC(spec2, type = "HC1"))),
+  sqrt(diag(vcovHC(spec3, type = "HC1"))),
+  sqrt(diag(vcovHC(spec4, type = "HC1"))),
+  sqrt(diag(vcovHC(spec5, type = "HC1")))
+)
+
+# generate a LaTeX table using stargazer
+stargazer(spec1, spec2, spec3, spec4, spec5,
+          se = rob_se,
+          digits = 3,
           column.labels = c("(I)", "(II)", "(III)", "(IV)", "(V)")
           )
 ```
 
 <!--html_preserve-->
 
-```{r, results='asis', echo=F, cache=T, message=FALSE, warning=FALSE}
+```{r, results='asis', echo=F, cache=T, message=FALSE, warning=FALSE, eval=my_output == "html"}
 library(stargazer)
-spec1 <- lm(score ~ size , data = CASchools)
+spec1 <- lm(score ~ size, data = CASchools)
 spec2 <- lm(score ~ size + english, data = CASchools)
 spec3 <- lm(score ~ size + english + lunch, data = CASchools)
 spec4 <- lm(score ~ size + english + calworks, data = CASchools)
 spec5 <- lm(score ~ size + english + lunch + calworks, data = CASchools)
 
-if(knitr:::is_latex_output()) {
-  sgtype <- "latex"
-} else {
-  sgtype <- "html"
-}
+# gather robust standard errors in a list
+rob_se <- list(
+  sqrt(diag(vcovHC(spec1, type = "HC1"))),
+  sqrt(diag(vcovHC(spec2, type = "HC1"))),
+  sqrt(diag(vcovHC(spec3, type = "HC1"))),
+  sqrt(diag(vcovHC(spec4, type = "HC1"))),
+  sqrt(diag(vcovHC(spec5, type = "HC1")))
+)
 
 stargazer(spec1, spec2, spec3, spec4, spec5, 
-          type = sgtype,
+          type = "html",
+          se = rob_se,
+          digits = 3,
           float.env = "sidewaystable",
+          object.names = TRUE,
+          dep.var.caption = "Dependent Variable: Test Score",
+          model.numbers = FALSE,
+          column.labels = c("(I)", "(II)", "(III)", "(IV)", "(V)")
+          )
+
+stargazer_html_title("Regressions of Test Scores on the Student-Teacher Ratio and Control Variables", "rotsostracv")
+```
+
+<!--/html_preserve-->
+
+```{r, results='asis', echo=F, cache=T, message=FALSE, warning=FALSE, eval=my_output == "latex"}
+library(stargazer)
+spec1 <- lm(score ~ size, data = CASchools)
+spec2 <- lm(score ~ size + english, data = CASchools)
+spec3 <- lm(score ~ size + english + lunch, data = CASchools)
+spec4 <- lm(score ~ size + english + calworks, data = CASchools)
+spec5 <- lm(score ~ size + english + lunch + calworks, data = CASchools)
+
+# gather robust standard errors in a list
+rob_se <- list(
+  sqrt(diag(vcovHC(spec1, type = "HC1"))),
+  sqrt(diag(vcovHC(spec2, type = "HC1"))),
+  sqrt(diag(vcovHC(spec3, type = "HC1"))),
+  sqrt(diag(vcovHC(spec4, type = "HC1"))),
+  sqrt(diag(vcovHC(spec5, type = "HC1")))
+)
+
+stargazer(spec1, spec2, spec3, spec4, spec5, 
+          type = "latex",
+          title = "\\label{tab:rotsostracv} Regressions of Test Scores on the Student-Teacher Ratio and Control Variables",
+          float.env = "sidewaystable",
+          se = rob_se,
+          digits = 3,
+          dep.var.caption = "Dependent Variable: Test Score",
           object.names = TRUE,
           model.numbers = FALSE,
           column.labels = c("(I)", "(II)", "(III)", "(IV)", "(V)")
           )
 ```
 
-<!--/html_preserve-->
-
-The table states that $scores$ is the dependent variable and that we consider $5$ models. We see that the columns of Table 7.1 contain all the information provided by <tt>summary()</tt> for the regression models <tt>spec1</tt> to <tt>spec5</tt>: the coefficient section of the table presents coefficients estimates equipped with significance codes (the asterisks) and standard errors in parentheses below. Although there are no $t$-statistics, it is straightforward for the reader to compute them simply by dividing a coefficient estimate by the corresponding standard error. At the bottom of the table we find summary statistics for each model and a legend. For an in-depth discussion of the tabular presentation of regression results, see Chapter 7.6 of the book.
+Table \@ref(tab:rotsostracv) states that $scores$ is the dependent variable and that we consider five models. We see that the columns of Table \@ref(tab:rotsostracv) contain most of the information provided by `r ttcode("coeftest()")` and `r ttcode("summary()")` the regression models under consideration: the coefficient section of the table presents coefficients estimates equipped with significance codes (the asterisks) and standard errors in parentheses below. Although there are no $t$-statistics, it is straightforward for the reader to compute them simply by dividing a coefficient estimate by the corresponding standard error. At the bottom of the table we find summary statistics for each model and a legend. For an in-depth discussion of the tabular presentation of regression results, see Chapter 7.6 of the book.
 
 What can we conclude from the model comparison? 
 
-1. We see that adding control variables roughly halves the coefficient on <tt>size</tt>. Also the estimate is not very sensitive to the set of control variables used. The conclusion is that decreasing the student-teacher ratio ceteris paribus by one unit leads to an estimated average increase in test scores of about $1$ point.
+1. We see that adding control variables roughly halves the coefficient on `r ttcode("size")`. Also the estimate is not very sensitive to the set of control variables used. The conclusion is that decreasing the student-teacher ratio ceteris paribus by one unit leads to an estimated average increase in test scores of about $1$ point.
 
-2. Adding student characteristics as controls boosts $R^2$ and $\overline{R^2}$ from $0.049$ (<tt>spec1</tt>) up to $0.773$ (<tt>spec3</tt> and <tt>spec5</tt>), so we can consider these variables as suitable predictors for test scores. Moreover, the estimated coefficients on all control variables are consistent with the impressions gained from Figure 7.2 of the book.
+2. Adding student characteristics as controls boosts $R^2$ and $\overline{R^2}$ from $0.049$ (`r ttcode("spec1")`) up to $0.773$ (`r ttcode("spec3")` and `r ttcode("spec5")`), so we can consider these variables as suitable predictors for test scores. Moreover, the estimated coefficients on all control variables are consistent with the impressions gained from Figure 7.2 of the book.
 
-3. We see that the control variables are not in all models statistically significant: for example in <tt>spec5</tt> we see that the coefficient on $calworks$ is not significantly different from zero at the level of $5\%$ since $\lvert-0.048/0.061\rvert=0.79 < 1.64$. We also observe that the effect on the estimate (and its standard error) of the coefficient on $size$ of adding $calworks$ to the base specification <tt>spec3</tt> is negligible. We can therefore consider <tt>calworks</tt> as a redundant control variable in this model.
+3. We see that the control variables are not statistically significant in all models. For example in `r ttcode("spec5")` we see that the coefficient on $calworks$ is not significantly different from zero at the level of $5\%$ since $\lvert-0.048/0.059\rvert=0.81 < 1.64$. We also observe that the effect on the estimate (and its standard error) of the coefficient on $size$ of adding $calworks$ to the base specification `r ttcode("spec3")` is negligible. We can therefore consider `r ttcode("calworks")` as a redundant control variable in this model.
 
 ## Exercises
 
+```{r, echo=FALSE, results='asis'}
+if (my_output=="html") {
+  cat('
 <div  class = "DCexercise">
 
-#### 1. Hypothesis Testing in a Multiple Regression Model - t statistics and p values {-}
+#### 1. Hypothesis Testing in a Multiple Regression Model - t-statistics and p-values {-}
 
 Reconsider the <tt>Boston</tt> data set and the following estimated model (with homoscedasticity-only standard errors in parentheses) from the previous chapter:
 
-$$\widehat{medv}_i = \underset{(0.75)}{32.828} \underset{(0.05)}{-0.994} \times lstat_i \underset{(0.04)}{-0.083} \times crim_i + \underset{(0.01)}{0.038} \times age_i.$$
+$$\\widehat{medv}_i = \\underset{(0.75)}{32.828} \\underset{(0.05)}{-0.994} \\times lstat_i \\underset{(0.04)}{-0.083} \\times crim_i + \\underset{(0.01)}{0.038} \\times age_i.$$
 
-Just as in the simple linear regression framework we can conduct hypothesis tests for each coefficient in the multiple regression framework as well. To do so assume that we want to test the null $H_0:\beta_j=0$ against the alternative $H_1:\beta_j\ne 0$ for all $j$.
+Just as in the simple linear regression framework we can conduct hypothesis tests for each coefficient in the multiple regression framework as well. To do so assume that we want to test the null $H_0:\\beta_j=0$ against the alternative $H_1:\\beta_j\\ne 0$ for all $j$.
 
 The packages <tt>AER</tt> and <tt>MASS</tt> have been loaded. The coefficients of the model as well as the corresponding standard errors are already available in <tt>coef</tt> and <tt>se</tt>, respectively.
 
 **Instructions:**
 
-+ Compute t statistics for each coefficient by using the predefined objects <tt>coef</tt> and <tt>se</tt>. Assign them to <tt>tstat</tt>.
++ Compute t-statistics for each coefficient by using the predefined objects <tt>coef</tt> and <tt>se</tt>. Assign them to <tt>tstat</tt>.
 
 + Compute p values for each coefficient and assign them to <tt>pval</tt>.
 
@@ -465,10 +632,10 @@ The packages <tt>AER</tt> and <tt>MASS</tt> have been loaded. The coefficients o
   se   <- summary(lm(medv ~ lstat + crim + age, data = Boston))$coef[, 2]
 </code>
 <code data-type="sample-code">
-  # Compute t statistics for each coefficient. Assign them to tstat.
+  # Compute t-statistics for each coefficient. Assign them to tstat.
   
   
-  # Compute p values for each coefficient. Assign them to pval.
+  # Compute p-values for each coefficient. Assign them to pval.
   
   
   # Check whether the hypotheses are rejected at a 1% significance level.
@@ -476,7 +643,7 @@ The packages <tt>AER</tt> and <tt>MASS</tt> have been loaded. The coefficients o
   
 </code>
 <code data-type="solution">
-  # Compute t statistics for each coefficient. Assign them to tstat.
+  # Compute t-statistics for each coefficient. Assign them to tstat.
   tstat <- coef/se
   
   # Compute p values for each coefficient. Assign them to pval.
@@ -499,25 +666,30 @@ The packages <tt>AER</tt> and <tt>MASS</tt> have been loaded. The coefficients o
 
 **Hints:**
 
-+ The t statistic for each coefficient is defined as $t=\frac{\widehat{\beta}_j-\beta_{j,0}}{SE(\widehat{\beta}_j)}$.
++ The t-statistic for each coefficient is defined as $t=\\frac{\\widehat{\\beta}_j-\\beta_{j,0}}{SE(\\widehat{\\beta}_j)}$.
 
-+ The p value can be computed as $2\Phi(-|t^{act}|)$ where $t^{act}$ denotes the computed t statistic.
++ The p value can be computed as $2\\Phi(-|t^{act}|)$ where $t^{act}$ denotes the computed t-statistic.
 
-</div>
+</div>') } else {
+  cat("\\begin{center}\\textit{This interactive part of URFITE is only available in the HTML version.}\\end{center}")
+}
+```
 
+```{r, echo=FALSE, results='asis', eval=my_output == "html"}
+cat('
 <div  class = "DCexercise">
 
 #### 2. Hypothesis Testing in a Multiple Regression Model - Confidence Intervals {-}
 
 Again consider the model 
 
-$$\widehat{medv}_i = \underset{(0.75)}{32.828} \underset{(0.05)}{-0.994} \times lstat_i \underset{(0.04)}{-0.083} \times crim_i + \underset{(0.01)}{0.038} \times age_i.$$
+$$\\widehat{medv}_i = \\underset{(0.75)}{32.828} \\underset{(0.05)}{-0.994} \\times lstat_i \\underset{(0.04)}{-0.083} \\times crim_i + \\underset{(0.01)}{0.038} \\times age_i.$$
 
 which is available as <tt>mod</tt> in your working environment. The packages <tt>AER</tt> and <tt>MASS</tt> have been loaded.
 
 **Instruction:**
 
-+ Construct a 99% confidence interval for all model coefficients. Decide whether we can reject the null $H_0:\beta_j=0$ for all $j$.
++ Construct a 99% confidence interval for all model coefficients. Decide whether we can reject the null $H_0:\\beta_j=0$ for all $j$.
 
 <!--html_preserve-->
 
@@ -539,8 +711,8 @@ which is available as <tt>mod</tt> in your working environment. The packages <tt
   
 </code>
 <code data-type="sct">
-  test_function('confint', args = c('object', 'level'))
-  success_msg('Correct! Analogously to the previous exercise we can see that 0 is not an element for all confidence intervals but   for the one of the crime rate. Hence, as expected, the test decision remains the same.')
+  test_function("confint", args = c("object", "level"))
+  success_msg("Correct! Analogously to the previous exercise we can see that 0 is not an element for all confidence intervals but   for the one of the crime rate. Hence, as expected, the test decision remains the same.")
 </code>
 
 </div>
@@ -551,15 +723,18 @@ which is available as <tt>mod</tt> in your working environment. The packages <tt
 
 + You can use <tt>confint()</tt> to construct confidence intervals. The confidence level can be set via <tt>level</tt>.
 
-</div>
+</div>')
+```
 
+```{r, echo=FALSE, results='asis', eval=my_output == "html"}
+cat('
 <div  class = "DCexercise">
 
 #### 3. Hypothesis Testing in a Multiple Regression Model - Can we do more robust? {-}
 
 <tt>mod</tt>, the <tt>lm</tt> object with the estimated model
 
-$$\widehat{medv}_i = 32.828 - 0.994 \times lstat_i - 0.083 \times crim_i + 0.038 \times age_i.$$
+$$\\widehat{medv}_i = 32.828 - 0.994 \\times lstat_i - 0.083 \\times crim_i + 0.038 \\times age_i.$$
 
 is available in your working environment. The packages <tt>AER</tt> and <tt>MASS</tt> have been loaded.
 
@@ -595,9 +770,9 @@ is available in your working environment. The packages <tt>AER</tt> and <tt>MASS
   
 </code>
 <code data-type="sct">
-  test_function_result('coeftest')
-  test_or(test_output_contains("coeftest(mod, vcov. = vcovHC)[, 4] < 0.01", incorrect_msg = 'Not correct! Please make sure you     select the correct entries of the matrix.'), test_output_contains("coeftest(mod, vcov. = vcovHC)[, 4] > 0.01", incorrect_msg =   'Not correct! Please make sure you select the correct entries of the matrix.'))
-  success_msg('Correct! We see that by using robust standard errors the coefficient for the crime rate (crim) becomes              significant, whereas the coefficient for the average age of the buildings (age) becomes insignificant at a 1% significance       level.')
+  test_function_result("coeftest")
+  test_or(test_output_contains("coeftest(mod, vcov. = vcovHC)[, 4] < 0.01", incorrect_msg = "Not correct! Please make sure you     select the correct entries of the matrix."), test_output_contains("coeftest(mod, vcov. = vcovHC)[, 4] > 0.01", incorrect_msg =   "Not correct! Please make sure you select the correct entries of the matrix."))
+  success_msg("Correct! We see that by using robust standard errors the coefficient for the crime rate (crim) becomes              significant, whereas the coefficient for the average age of the buildings (age) becomes insignificant at a 1% significance level.")
 </code>
 
 </div>
@@ -610,20 +785,23 @@ is available in your working environment. The packages <tt>AER</tt> and <tt>MASS
 
 + The p values are contained in the fourth column of the matrix. Use square brackets to access them.
 
-</div>
+</div>')
+```
 
+```{r, echo=FALSE, results='asis', eval=my_output == "html"}
+cat('
 <div  class = "DCexercise">
 
 #### 4. Joint Hypothesis Testing - F Test I {-}
 
 Besides testing single hypotheses we can also test joint hypotheses which impose restrictions on multiple regression coefficients. For example in the model 
 
-$$medv_i = \beta_0 + \beta_1\times lstat_i + \beta_2\times crim_i + \beta_3\times age_i + u_i$$
+$$medv_i = \\beta_0 + \\beta_1\\times lstat_i + \\beta_2\\times crim_i + \\beta_3\\times age_i + u_i$$
 
-we could test the null $H_0: \beta_2=\beta_3$ vs. the alternative $H_1: \beta_2\ne\beta_3$ (which in fact is a joint hypothesis as we impose a restriction on two regression coefficients).
+we could test the null $H_0: \\beta_2=\\beta_3$ vs. the alternative $H_1: \\beta_2\\ne\\beta_3$ (which in fact is a joint hypothesis as we impose a restriction on two regression coefficients).
 
-The basic idea behind testing such a hypothesis is now to conduct two regressions. For one of the regressions we incorporate the restriction (we call this the restricted model), whereas for the other regression the restriction is left out (we call this the unrestricted model). From this starting point we can then construct a test statistic which, under the null, follows a well known distribution, namely a $F$ distribution (see next exercise).
-However in this exercise we start with the initial steps or computations necessary to construct the test statistic. So please do the following:
+The basic idea behind testing such a hypothesis is now to conduct two regressions. For one of the regressions we incorporate the restriction (we call this the restricted model), whereas for the other regression the restriction is left out (we call this the unrestricted model). From this starting point we can then construct a test-statistic which, under the null, follows a well known distribution, namely a $F$ distribution (see next exercise).
+However in this exercise we start with the initial steps or computations necessary to construct the test-statistic. So please do the following:
 
 The packages <tt>AER</tt> and <tt>MASS</tt> have been loaded.
 
@@ -676,44 +854,44 @@ The packages <tt>AER</tt> and <tt>MASS</tt> have been loaded.
 <code data-type="sct">
   test_or({
   
-  test_function('lm', 
-               args = c('formula', 'data'),
-               not_called_msg = "Something's wrong.",
-               args_not_specified_msg = "Something's wrong."
+  test_function("lm", 
+               args = c("formula", "data"),
+               not_called_msg = "Something is wrong.",
+               args_not_specified_msg = "Something is wrong."
                )
                
   
   },{
   
   sol <- ex() %>% override_solution("model_res <- lm(medv ~ lstat + I(crim + age), data = Boston)")
-  sol %>% check_function('lm') %>% check_arg('formula') %>% check_equal()
+  sol %>% check_function("lm") %>% check_arg("formula") %>% check_equal()
   
   },{
   
   sol <- ex() %>% override_solution("model_res <- lm(Boston$medv ~ Boston$lstat + I(Boston$crim + Boston$age))")
-  sol %>% check_function('lm') %>% check_arg('formula') %>% check_equal()
+  sol %>% check_function("lm") %>% check_arg("formula") %>% check_equal()
   
   })
   test_object("model_res", eval = F)
   test_object("RSSR")
   test_or({
   
-  test_function('lm', 
-               args = c('formula', 'data'),
-               not_called_msg = "Something's wrong.",
-               args_not_specified_msg = "Something's wrong."
+  test_function("lm", 
+               args = c("formula", "data"),
+               not_called_msg = "Something is wrong.",
+               args_not_specified_msg = "Something is wrong."
                )
                 
   
   },{
   
   sol <- ex() %>% override_solution("model_unres <- lm(medv ~ lstat + crim + age, data = Boston)")
-  sol %>% check_function('lm') %>% check_arg('formula') %>% check_equal()
+  sol %>% check_function("lm") %>% check_arg("formula") %>% check_equal()
   
   },{
   
   sol <- ex() %>% override_solution("model_unres <- lm(Boston$medv ~ Boston$lstat + Boston$crim + Boston$age)")
-  sol %>% check_function('lm') %>% check_arg('formula') %>% check_equal()
+  sol %>% check_function("lm") %>% check_arg("formula") %>% check_equal()
   
   })
   test_object("model_unres", eval = F)
@@ -727,7 +905,7 @@ The packages <tt>AER</tt> and <tt>MASS</tt> have been loaded.
 
 **Hints:**
 
-+ The restricted model can be written as $medv_i = \beta_0 + \beta_1\times lstat_i + \beta_2\times crim_i + \beta_2\times age_i + u_i$ which, after rearranging, can be expressed as $medv_i = \beta_0 + \beta_1\times lstat_i + \beta_2\times(crim_i+age_i) + u_i$.
++ The restricted model can be written as $medv_i = \\beta_0 + \\beta_1\\times lstat_i + \\beta_2\\times crim_i + \\beta_2\\times age_i + u_i$ which, after rearranging, can be expressed as $medv_i = \\beta_0 + \\beta_1\\times lstat_i + \\beta_2\\times(crim_i+age_i) + u_i$.
 
 + The SSR is defined as the sum of the squared residuals.
 
@@ -735,17 +913,20 @@ The packages <tt>AER</tt> and <tt>MASS</tt> have been loaded.
 
 </div>
 
-<div  class = "DCexercise">
+<div  class = "DCexercise">')
+```
 
+```{r, echo=FALSE, results='asis', eval=my_output == "html"}
+cat('
 #### 5. Joint Hypothesis Testing - F Test II {-}
 
-After estimating the necessary models and computing the SSR we can now compute the test statistic and conduct the hypothesis test. As mentioned in the last exercise the test statistic follows a $F$ distribution or more precisely a $F_{q,n-k-1}$ distribution where $q$ and $k$ denote the number of restrictions under the null and regressors in the unrestricted model, respectively.
+After estimating the necessary models and computing the SSR we can now compute the test-statistic and conduct the hypothesis test. As mentioned in the last exercise the test-statistic follows a $F$ distribution or more precisely a $F_{q,n-k-1}$ distribution where $q$ and $k$ denote the number of restrictions under the null and regressors in the unrestricted model, respectively.
 
 The packages <tt>AER</tt> and <tt>MASS</tt> have been loaded. Both models (<tt>model_res</tt> and <tt>model_unres</tt>) as well as their SSR (<tt>RSSR</tt> and <tt>USSR</tt>) are available in your working environment.
 
 **Instructions:**
 
-+ Compute the F statistic and assign it to <tt>Fstat</tt>.
++ Compute the F-statistic and assign it to <tt>Fstat</tt>.
 
 + Compute the p value and assign it to <tt>pval</tt>. 
 
@@ -766,7 +947,7 @@ The packages <tt>AER</tt> and <tt>MASS</tt> have been loaded. Both models (<tt>m
   USSR <- sum(model_unres$residuals^2)
 </code>
 <code data-type="sample-code">
-  # Compute the F statistic and assign it to Fstat.
+  # Compute the F-statistic and assign it to Fstat.
   
   
   # Compute the p value and assign it to pval.
@@ -780,7 +961,7 @@ The packages <tt>AER</tt> and <tt>MASS</tt> have been loaded. Both models (<tt>m
   
 </code>
 <code data-type="solution">
-  # Compute the F statistic and assign it to Fstat.
+  # Compute the F-statistic and assign it to Fstat.
   Fstat <- ((RSSR-USSR)/1)/(USSR/(nrow(Boston)-3-1))
   
   # Compute the p value and assign it to pval.
@@ -807,25 +988,28 @@ The packages <tt>AER</tt> and <tt>MASS</tt> have been loaded. Both models (<tt>m
 
 **Hints:**
 
-+ The F statistic is defined as $\frac{RSSR-USSR/q}{USSR/(n-k-1)}$.
++ The F-statistic is defined as $\\frac{RSSR-USSR/q}{USSR/(n-k-1)}$.
 
-+ The p value can be computed as $1-F_{q,n-k-1}(F^{act})$ where $F_{q,n-k-1}$ denotes the CDF of the F distribution (<tt>pf()</tt>) with degrees of freedom $q$ and $n-k-1$ and $F^{act}$ the computed F statistic.
++ The p value can be computed as $1-F_{q,n-k-1}(F^{act})$ where $F_{q,n-k-1}$ denotes the CDF of the F distribution (<tt>pf()</tt>) with degrees of freedom $q$ and $n-k-1$ and $F^{act}$ the computed F-statistic.
 
 + <tt>linearHypothesis()</tt> expects the unrestricted model as well as the null hypothesis.
 
-</div>
+</div>')
+```
 
+```{r, echo=FALSE, results='asis', eval=my_output == "html"}
+cat('
 <div  class = "DCexercise">
 
 #### 6. Joint Hypothesis Testing - Confidence Set {-}
 
-As you know from previous chapters constructing a confidence set for a single regression coefficient results in a simple confidence interval on the real line. However if we consider $n$ regression coefficients jointly (as we do in a joint hypothesis testing setting) we move from $\mathbb{R}$ to $\mathbb{R}^n$ resulting in a n-dimensional confidence set. For the sake of illustration we then often choose $n=2$, so that we end up with a representable two-dimensional plane.
+As you know from previous chapters constructing a confidence set for a single regression coefficient results in a simple confidence interval on the real line. However if we consider $n$ regression coefficients jointly (as we do in a joint hypothesis testing setting) we move from $\\mathbb{R}$ to $\\mathbb{R}^n$ resulting in a n-dimensional confidence set. For the sake of illustration we then often choose $n=2$, so that we end up with a representable two-dimensional plane.
 
 Now recall the estimated model 
 
-$$\widehat{medv}_i = \underset{(0.75)}{32.828} \underset{(0.05)}{-0.994} \times lstat_i \underset{(0.04)}{-0.083} \times crim_i + \underset{(0.01)}{0.038} \times age_i.$$
+$$\\widehat{medv}_i = \\underset{(0.75)}{32.828} \\underset{(0.05)}{-0.994} \\times lstat_i \\underset{(0.04)}{-0.083} \\times crim_i + \\underset{(0.01)}{0.038} \\times age_i.$$
 
-which is available as <tt>mod</tt> in your working environment and assume we want to test the null $H_0: \beta_2=\beta_3=0$ vs. $H_1: \beta_2\ne 0$ or $\beta_3\ne 0$.
+which is available as <tt>mod</tt> in your working environment and assume we want to test the null $H_0: \\beta_2=\\beta_3=0$ vs. $H_1: \\beta_2\\ne 0$ or $\\beta_3\\ne 0$.
 
 The packages <tt>AER</tt> and <tt>MASS</tt> have been loaded.
 
@@ -862,18 +1046,18 @@ The packages <tt>AER</tt> and <tt>MASS</tt> have been loaded.
 </code>
 <code data-type="sct">
   test_or({
-    fun <- ex() %>% check_function('confidenceEllipse')
-    fun %>% check_arg('model') %>% check_equal()
-    fun %>% check_arg('which.coef') %>% check_equal()
-    fun %>% check_arg('levels') %>% check_equal()
+    fun <- ex() %>% check_function("confidenceEllipse")
+    fun %>% check_arg("model") %>% check_equal()
+    fun %>% check_arg("which.coef") %>% check_equal()
+    fun %>% check_arg("levels") %>% check_equal()
   }, {
-    fun <- ex() %>% override_solution('confidenceEllipse(mod, which.coef = c("lstat", "crim"), levels = 0.99)') %>%                  check_function('confidenceEllipse')
-    fun %>% check_arg('model') %>% check_equal()
-    fun %>% check_arg('which.coef') %>% check_equal()
-    fun %>% check_arg('levels') %>% check_equal()
+    fun <- ex() %>% override_solution("confidenceEllipse(mod, which.coef = c("lstat", "crim"), levels = 0.99)") %>%                  check_function("confidenceEllipse")
+    fun %>% check_arg("model") %>% check_equal()
+    fun %>% check_arg("which.coef") %>% check_equal()
+    fun %>% check_arg("levels") %>% check_equal()
   })
-  test_function_result('linearHypothesis')
-  success_msg("Correct! Since (0,0) is not an element of the 99% confidence set, the null hypothesis is rejected at a 1%           significance level.")
+  test_function_result("linearHypothesis")
+  success_msg("Correct! Since (0,0) is not an element of the 99% confidence set, the null hypothesis is rejected at a 1% significance level.")
 </code>
 
 </div>
@@ -886,4 +1070,5 @@ The packages <tt>AER</tt> and <tt>MASS</tt> have been loaded.
 
 + As usual you can use <tt>linearHypothesis()</tt> to conduct a F test. However note that we test two restrictions now, hence you have to pass a vector consisting of both linear restrictions.
 
-</div>
+</div>')
+```

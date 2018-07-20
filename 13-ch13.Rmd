@@ -13,14 +13,14 @@ However sometimes it is the case that external circumstances which appear random
 
 The following packages and their dependencies are needed for reproduction of the code chunks presented throughout this chapter:
 
-+ `r ttcode("AER")`
-+ `r ttcode("dplyr")`
-+ `r ttcode("MASS")`
-+ `r ttcode("mvtnorm")`
-+ `r ttcode("rddtools")`
-+ `r ttcode("scales")`
-+ `r ttcode("stargazer")`
-+ `r ttcode("tidyr")`
++ `r ttcode("AER")` [@R-AER]
++ `r ttcode("dplyr")` [@R-dplyr]
++ `r ttcode("MASS")` [@R-MASS]
++ `r ttcode("mvtnorm")` [@R-mvtnorm]
++ `r ttcode("rddtools")` [@R-rddtools]
++ `r ttcode("scales")` [@R-scales]
++ `r ttcode("stargazer")`[@R-stargazer]
++ `r ttcode("tidyr")` [@R-tidyr]
 
 Make sure the following code chunk runs without any errors.
 
@@ -187,15 +187,15 @@ coeftest(fm2, vcov = vcovHC(fm2, type= "HC0"))
 coeftest(fm3, vcov = vcovHC(fm3, type= "HC0"))
 ```
 
-We gather the results and present them in a LaTeX or HTML table using `r ttcode("stargazer()")`.
+We gather the results and present them in a LaTeX table using `r ttcode("stargazer()")`.
 
 ```{r}
 # compute robust standard errors for each model and gather them in a list
 rob_se_1 <- list(
-  sqrt(diag(vcovHC(fmk, type = "HC0"))),
-  sqrt(diag(vcovHC(fm1, type = "HC0"))),
-  sqrt(diag(vcovHC(fm2, type = "HC0"))),
-  sqrt(diag(vcovHC(fm2, type = "HC0")))
+  sqrt(diag(vcovHC(fmk, type = "HC1"))),
+  sqrt(diag(vcovHC(fm1, type = "HC1"))),
+  sqrt(diag(vcovHC(fm2, type = "HC1"))),
+  sqrt(diag(vcovHC(fm2, type = "HC1")))
 )
 ```
 
@@ -208,11 +208,11 @@ stargazer(fmk,fm1,fm2,fm3,
   type = "latex",
   model.numbers = F,
   omit.table.layout = "n",
-  digits = 2, 
+  digits = 3, 
   column.labels = c("K", "1", "2", "3"),
   dep.var.caption  = "Grade",
   dep.var.labels.include = FALSE,
-  se = rob_se_1) 
+  se = rob_se_1)
 ```
 
 <!--html_preserve-->
@@ -221,16 +221,17 @@ stargazer(fmk,fm1,fm2,fm3,
 library(stargazer)
 
 stargazer(fmk,fm1,fm2,fm3,
-  title = "Table 13.2: Project STAR - Differences Estimates",
   header = FALSE, 
   type = "html",
   model.numbers = F,
   omit.table.layout = "n",
   digits = 2, 
   column.labels = c("K", "1", "2", "3"),
-  dep.var.caption  = "Grade",
+  dep.var.caption  = "Dependent Variable: Grade",
   dep.var.labels.include = FALSE,
-  se = rob_se_1) 
+  se = rob_se_1)
+
+stargazer_html_title("Project STAR - Differences Estimates", "psde")
 ```
 
 <!--/html_preserve-->
@@ -239,7 +240,7 @@ stargazer(fmk,fm1,fm2,fm3,
 library(stargazer)
 
 stargazer(fmk,fm1,fm2,fm3,
-  title = "Project STAR - Differences Estimates",
+  title = "\\label{tab:psde} Project STAR - Differences Estimates",
   header = FALSE, 
   digits = 3,
   type = "latex",
@@ -248,12 +249,12 @@ stargazer(fmk,fm1,fm2,fm3,
   model.numbers = F,
   omit.table.layout = "n",
   column.labels = c("K", "1", "2", "3"),
-  dep.var.caption  = "Grade",
+  dep.var.caption  = "Dependent Variable: Grade",
   dep.var.labels.include = FALSE,
   se = rob_se_1) 
 ```
 
-The estimates suggest that the class size reduction does improve performance of the students. Except for grade 1, the estimates of the coefficient on $SmallClass$ are roughly of the same magnitude (the estimates lie between 13.90 and 19.39 points) and they are statistically significant at the level of $1\%$. Furthermore we see that adding a teaching aide to a regular class has little, possibly zero, effect on the performance of the students. 
+The estimates presented in Table \@ref(tab:psde) suggest that the class size reduction does improve performance of the students. Except for grade 1, the estimates of the coefficient on $SmallClass$ are roughly of the same magnitude (the estimates lie between 13.90 and 19.39 points) and they are statistically significant at the level of $1\%$. Furthermore we see that adding a teaching aide to a regular class has little, possibly zero, effect on the performance of the students. 
 
 Following the book, we continue by augmenting the regression model \@ref(eq:starpopreg) by different sets of additional regressors for two reasons: 
 
@@ -269,14 +270,16 @@ In particular, we consider the following student and teacher characteristics
 - $race$ --- Student's race is other than black or white (dummy)
 - $\text{schoolid}$ --- School indicator variables
 
-in four different population regression specifications:
+in the four population regression specifications
 \begin{align}
-  Y_i =& \beta_0 + \beta_1 SmallClass_i + \beta_2 RegAide_i + u_i, (\#eq:augstarpopreg1) \\
-  Y_i =& \beta_0 + \beta_1 SmallClass_i + \beta_2 RegAide_i + \beta_3 experience_i + u_i, (\#eq:augstarpopreg2) \\
-  Y_i =& \beta_0 + \beta_1 SmallClass_i + \beta_2 RegAide_i + \beta_3 experience_i + \text{school indicators} + u_i (\#eq:augstarpopreg3) \\
-  \begin{split}
-  Y_i =& \beta_0 + \beta_1 SmallClass_i + \beta_2 RegAide_i + u_i + \beta_3 experience_i + \beta_4 boy + \beta_5 lunch  \\ +& \beta_6 black + \beta_7 race + \text{schoolid} + u_i 
-  \end{split} (\#eq:augstarpopreg4)
+Y_i =& \beta_0 + \beta_1 SmallClass_i + \beta_2 RegAide_i + u_i, (\#eq:augstarpopreg1) \\
+Y_i =& \beta_0 + \beta_1 SmallClass_i + \beta_2 RegAide_i + \beta_3 experience_i + u_i, (\#eq:augstarpopreg2) \\
+Y_i =& \beta_0 + \beta_1 SmallClass_i + \beta_2 RegAide_i + \beta_3 experience_i + \text{school indicators} + u_i, (\#eq:augstarpopreg3)
+\end{align}
+and
+\begin{align}
+Y_i =& \beta_0 + \beta_1 SmallClass_i + \beta_2 RegAide_i + \beta_3 experience_i + \beta_4 boy + \beta_5 lunch \\ 
++& \beta_6 black + \beta_7 race + \text{schoolid} + u_i. (\#eq:augstarpopreg4)
 \end{align}
 
 Beforehand to estimation, we perform some subsetting and some data wrangling. We do this using functions from the packages `r ttcode("dplyr")` and `r ttcode("tidyr")` which are both part of `r ttcode("tidyverse")`, a collection of `r ttcode("R")` packages designed for data science and handling big data sets.^[See the [official site](https://www.tidyverse.org/) for more on `r ttcode("tidyverse")` packages.] The functions `r ttcode("%>%")`, `r ttcode("transmute()")` and `r ttcode("mutate()")` are sufficient for us here: 
@@ -347,15 +350,15 @@ rob_se_2 <- list(
 
 ```{r, message=F, warning=F, results='asis', eval=FALSE}
 stargazer(fmk, fm1, fm2, fm3,
-  title = "Table 13.3: Project STAR - Differences Estimates with 
+  title = "Project STAR - Differences Estimates with 
   Additional Regressors for Kindergarten",
   header = FALSE, 
   type = "latex",
   model.numbers = F,
   omit.table.layout = "n",
-  digits = 2, 
+  digits = 3, 
   column.labels = c("(1)", "(2)", "(3)", "(4)"),
-  dep.var.caption  = "Test Score in Kindergarten",
+  dep.var.caption  = "Dependent Variable: Test Score in Kindergarten",
   dep.var.labels.include = FALSE,
   se = rob_se_2) 
 ```
@@ -364,29 +367,30 @@ stargazer(fmk, fm1, fm2, fm3,
 
 ```{r, message=F, warning=F, results='asis', echo=F, eval=my_output=="html"}
 stargazer(fmk,gradeK1,gradeK2,gradeK3,
-  title = "Table 13.3: Project STAR - Differences Estimates with Additional Regressors for Kindergarten",
   header = FALSE, 
   type = "html",
   model.numbers = F,
   omit.table.layout = "n",
-  digits = 2, 
+  digits = 3, 
   column.labels = c("(1)", "(2)", "(3)", "(4)"),
-  dep.var.caption  = "Test Score in Kindergarten",
+  dep.var.caption  = "Dependent Variable: Test Score in Kindergarten",
   dep.var.labels.include = FALSE,
   se = rob_se_2,
   omit = "schoolid",
   nobs = TRUE,
   add.lines = list(
-                   c("School indicators?","no", "no", "yes", "yes")
+                   c("School indicators?", "no", "no", "yes", "yes")
                    )
   ) 
+
+stargazer_html_title("Project STAR - Differences Estimates with Additional Regressors for Kindergarten", "psdewarfk")
 ```
 
 <!--/html_preserve-->
 
 ```{r, message=F, warning=F, results='asis', echo=F, eval=my_output=="latex"}
 stargazer(fmk,gradeK1,gradeK2,gradeK3,
-  title = "Project STAR - Differences Estimates with 
+  title = "\\label{tab:psdewarfk} Project STAR - Differences Estimates with 
   Additional Regressors for Kindergarten",
   header = FALSE, 
   digits = 3,
@@ -396,22 +400,22 @@ stargazer(fmk,gradeK1,gradeK2,gradeK3,
   model.numbers = F,
   omit.table.layout = "n",
   column.labels = c("(1)", "(2)", "(3)", "(4)"),
-  dep.var.caption  = "Test Score in Kindergarten",
+  dep.var.caption  = "Dependent Variable: Test Score in Kindergarten",
   dep.var.labels.include = FALSE,
   se = rob_se_2,
   omit = "schoolid",
   nobs = TRUE,
   add.lines = list(
-                   c("School indicators?","no", "no", "yes", "yes")
+                   c("School indicators?", "no", "no", "yes", "yes")
                    )
   ) 
 ```
 
-While the results in column (1) of table Table 13.3 are just a repetition of the outcomes obtained for \@ref(eq:starpopreg) before, columns (2) to (4) reveal that adding student characteristics and school fixed effects does not lead to significantly different estimates of the treatment effects. This result makes it more plausible that the estimates of the effects obtained using model \@ref(eq:starpopreg) do not suffer from failure of random assignment. Note that there is some decrease in the standard errors and some increase in $\overline{R}^2$, implying that the estimates are more precise.
+While the results in column (1) of table Table \@ref(tab:psdewarfk) are just a repetition of the outcomes obtained for \@ref(eq:starpopreg) before, columns (2) to (4) reveal that adding student characteristics and school fixed effects does not lead to significantly different estimates of the treatment effects. This result makes it more plausible that the estimates of the effects obtained using model \@ref(eq:starpopreg) do not suffer from failure of random assignment. Note that there is some decrease in the standard errors and some increase in $\overline{R}^2$, implying that the estimates are more precise.
 
-Because teachers where randomly assigned to classes, inclusion of school fixed effect allows us to estimate the causal effect of a teacher's experience on test scores of students in kindergarten. For regression (3) we find that the average effect of 10 years experience on test scores is predicted to be $10*0.74=7.4$ points. It is important to be aware of the fact that the other estimates on student characteristics used in regression (4) *do not* have causal interpretation due to nonrandom assignment.^[See Chapter 13.3 of the book for a detailed discussion.]
+Because teachers were randomly assigned to classes, inclusion of school fixed effect allows us to estimate the causal effect of a teacher's experience on test scores of students in kindergarten. For regression (3) we find that the average effect of 10 years experience on test scores is predicted to be $10*0.74=7.4$ points. It is important to be aware of the fact that the other estimates on student characteristics used in regression (4) *do not* have causal interpretation due to nonrandom assignment.^[See Chapter 13.3 of the book for a detailed discussion.]
 
-To answer the question whether the estimated effects presented in Table 13.2 are large or small in a practical sense, we translate the predicted changes in test scores to units of standard deviation in order to allow for a comparison (see Section \@ref(etsacs) for a similar argument).
+To answer the question whether the estimated effects presented in Table \@ref(tab:psdewarfk) are large or small in a practical sense, we translate the predicted changes in test scores to units of standard deviation in order to allow for a comparison (see Section \@ref(etsacs) for a similar argument).
 
 ```{r}
 # compute sample standard deviations of test scores
@@ -468,29 +472,34 @@ It is fairly easy to turn the `r ttcode("data.frame")` `r ttcode("df")` into a L
 ```{r, eval=FALSE}
 # generate simple LaTeX table using stargazer
 stargazer(df,
-          title = "Table 13.4: Estimated Class Size Effects 
+          title = "Estimated Class Size Effects 
           (in Units of Standard Deviations)",
           type = "html", 
-          summary = FALSE)
+          summary = FALSE,
+          header = FALSE
+          )
 ```
 
 <!--html_preserve-->
 
 ```{r, message=F, warning=F, results='asis', echo=F, eval=my_output=="html"}
 stargazer(df,
-          title = "Table 13.4: Estimated Class Size Effects 
-          (in Units of Standard Deviations)",
-          type = "html", 
+          type = "html",
+          header = FALSE,
           summary = FALSE)
+
+stargazer_html_title("Estimated Class Size Effects 
+          (in Units of Standard Deviations)", "ecse")
 ```
 
 <!--/html_preserve-->
 
 ```{r, message=F, warning=F, results='asis', echo=F, eval=my_output=="latex"}
 stargazer(df,
-          title = "Estimated Class Size Effects 
+          title = "\\label{tab:ecse} Estimated Class Size Effects 
           (in Units of Standard Deviations)",
-          type = "latex", 
+          type = "latex",
+          header = FALSE,
           summary = FALSE)
 ```
 
@@ -817,7 +826,7 @@ abline(v = 0, lty = 2)
 ```
 </div>
 
-Obviously, receipt of treatment is no longer a deterministic function of the running variable $W$. Some observations with $W\geq0$ *did not* receive the treatment. We may estimate a FRDD by additionally setting `r ttcode("treatProb")` as the assignment variable `r ttcode("z")` in `r ttcode("rdd_data()")`. Then `r ttcode("rdd_reg_lm()")` applies the following TSLS procedure: treatment is predicted using $W_i$ and the cutoff dummy $Z_i$, the instrumental variable, in the first stage regression. The fitted values from the first stage regression are used to obtain an unbiased estimate of the treatment effect using the second stage where the outcome $Y$ is regressed on the fitted values and the running variable $W_i$.
+Obviously, receipt of treatment is no longer a deterministic function of the running variable $W$. Some observations with $W\geq0$ *did not* receive the treatment. We may estimate a FRDD by additionally setting `r ttcode("treatProb")` as the assignment variable `r ttcode("z")` in `r ttcode("rdd_data()")`. Then `r ttcode("rdd_reg_lm()")` applies the following TSLS procedure: treatment is predicted using $W_i$ and the cutoff dummy $Z_i$, the instrumental variable, in the first stage regression. The fitted values from the first stage regression are used to obtain an unbiased estimate of the treatment effect using the second stage where the outcome $Y$ is regressed on the fitted values and the running variable $W$.
 
 ```{r}
 # Estimate the Fuzzy RDD

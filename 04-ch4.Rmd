@@ -1,7 +1,7 @@
 # Linear Regression with One Regressor {#lrwor} 
 
 This chapter introduces the basics in linear regression and shows how to perform regression analysis in `r ttcode("R")`. In linear regression, the aim is to model the relationship between a dependent variable $Y$ and one or more explanatory variables denoted by $X_1, X_2, \dots, X_k$. Following the book we will focus on the concept of simple linear regression throughout the whole chapter. In simple linear regression, there is just one explanatory variable $X_1$. <br> 
-If for example a school cuts the class sizes by hiring new teachers, that is the school lowers $X_1$, the student-teacher ratios of their classes, how would this affect $Y$, the performance of the students involved in a standardized test? With linear regression we can not only examine whether the student-teacher ratio *does have* an impact on the test results but we can also learn about the *direction* and the *strength* of this effect. 
+If for example a school cuts the class sizes by hiring new teachers, that is, the school lowers $X_1$, the student-teacher ratios of their classes, how would this affect $Y$, the performance of the students involved in a standardized test? With linear regression we can not only examine whether the student-teacher ratio *does have* an impact on the test results but we can also learn about the *direction* and the *strength* of this effect. 
 
 The following packages are needed for reproducing the code presented in this chapter:
 
@@ -20,7 +20,7 @@ library(MASS)
 
 To start with an easy example, consider the following combinations of average test score and the average student-teacher ratio in some fictional school districts.
 
-```{r kable, echo=F}
+```{r kable, echo=F, eval=my_output=="html"}
 library(knitr)
 library(kableExtra)
 
@@ -30,7 +30,21 @@ frame <- data.frame(
          )
 rownames(frame) <- 1:7
 
-t(frame) %>% kable("html")
+t(frame) %>% kable("latex", booktabs = T) %>%
+kable_styling(latex_options = "striped")
+```
+
+```{r, echo=F, eval=my_output=="latex"}
+library(knitr)
+library(kableExtra)
+
+frame <- data.frame(
+  TestScore = c(680, 640, 670, 660, 630, 660, 635),
+  STR = c(15, 17, 19, 20, 22, 23.5, 25)
+         )
+rownames(frame) <- 1:7
+
+kable(t(frame), "latex", booktabs = T) %>% kable_styling(position = "center")
 ```
 
 To work with these data in `r ttcode("R")` we begin by generating two vectors: one for the student-teacher ratios (`r ttcode("STR")`) and one for test scores (`r ttcode("TestScore")`), both containing the data from the table above. 
@@ -60,7 +74,7 @@ For our purpose it is suitable to use the function `r ttcode("plot()")` to produ
 function `r ttcode("abline()")`. We just have to call this function with arguments `r ttcode("a")` (representing the intercept) 
 and `r ttcode("b")` (representing the slope) after executing `r ttcode("plot()")` in order to add the line to our scatter plot. 
 
-The following code reproduces figure 4.1 from the textbook. 
+The following code reproduces Figure 4.1 from the textbook. 
 
 <div class="unfolded">
 ```{r , echo=TRUE, fig.align='center', cache=TRUE}
@@ -85,29 +99,50 @@ $$ Y_i = \beta_0 + \beta_1 X_i + u_i. $$
 
 Key Concept 4.1 summarizes the terminology of the simple linear regression model.   
 
+```{r, eval = my_output == "html", results='asis', echo=FALSE}
+cat('
 <div class = "keyconcept"> 
 <h3 class = "right"> Key Concept 4.1 </h3>          
 <h3 class = "left"> Terminology for the Linear Regression Model with a Single Regressor </h3>
 
 <p> The linear regression model is 
 
-$$Y_i = \beta_0 + \beta_1 X_1 + u_i $$
+$$Y_i = \\beta_0 + \\beta_1 X_1 + u_i$$
 
 where
 
-- the index $i$ runs over the observations, $i=1,\dots,n$
-- $Y_i$ is the *dependent variable*, the *regressand*, or simply the *left-hand variable*
-- $X_i$ is the *independent variable*, the *regressor*, or simply the *right-hand variable*
-- $Y = \beta_0 + \beta_1 X$ is the *population regression line* also called the *population regression function*
-- $\beta_0$ is the *intercept* of the population regression line
-- $\beta_1$ is the *slope* of the population regression line
-- $u_i$ is the *error term*.
+- the index $i$ runs over the observations, $i=1,\\dots,n$
+- $Y_i$ is the \\textit{dependent variable}, the \\textit{regressand}, or simply the \\textit{left-hand variable}
+- $X_i$ is the \\textit{independent variable}, the \\textit{regressor}, or simply the \\textit{right-hand variable}
+- $Y = \\beta_0 + \\beta_1 X$ is the \\textit{population regression line} also called the \\textit{population regression function}
+- $\\beta_0$ is the \\textit{intercept} of the population regression line
+- $\\beta_1$ is the \\textit{slope} of the population regression line
+- $u_i$ is the \\textit{error term}.
 </p>
 </div>
+')
+```
+
+```{r, eval = my_output == "latex", results='asis', echo=FALSE}
+cat('\\begin{keyconcepts}[Terminology for the Linear Regression Model with a Single Regressor]{4.1}
+The linear regression model is $$Y_i = \\beta_0 + \\beta_1 X_1 + u_i$$
+where
+\\begin{itemize}
+\\item the index $i$ runs over the observations, $i=1,\\dots,n$
+\\item $Y_i$ is the \\textit{dependent variable}, the \\textit{regressand}, or simply the \\textit{left-hand variable}
+\\item $X_i$ is the \\textit{independent variable}, the \\textit{regressor}, or simply the \\textit{right-hand variable}
+\\item $Y = \\beta_0 + \\beta_1 X$ is the \\textit{population regression line} also called the \\textit{population regression function}
+\\item $\\beta_0$ is the \\textit{intercept} of the population regression line
+\\item $\\beta_1$ is the \\textit{slope} of the population regression line
+\\item $u_i$ is the \\textit{error term}.
+\\end{itemize}
+\\end{keyconcepts}
+')
+```
 
 ## Estimating the Coefficients of the Linear Regression Model
 
-In practice, the intercept $\beta_0$ and slope $\beta_1$ of the population regression line are unknown. Therefore, we must employ data to estimate both unknown parameters. In the following a real world example will be used to demonstrate how this is achieved. We want to relate test scores to student-teacher ratios measured in Californian schools. The test score is the district-wide average of reading and math scores for fifth graders. Again, the class size is measured as the number of students divided by the number of teachers (the student-teacher ratio). As for the data, the California School data set (`r ttcode("CASchools")`) comes with an `r ttcode("R")` package called `r ttcode("AER")`, an acronym for [Applied Econometrics with R](https://cran.r-project.org/web/packages/AER/AER.pdf). After installing the package with `r ttcode('install.packages("AER")')` and attaching it with `r ttcode('library("AER")')` the data set can be loaded using the `r ttcode("data()")` function. 
+In practice, the intercept $\beta_0$ and slope $\beta_1$ of the population regression line are unknown. Therefore, we must employ data to estimate both unknown parameters. In the following a real world example will be used to demonstrate how this is achieved. We want to relate test scores to student-teacher ratios measured in Californian schools. The test score is the district-wide average of reading and math scores for fifth graders. Again, the class size is measured as the number of students divided by the number of teachers (the student-teacher ratio). As for the data, the California School data set (`r ttcode("CASchools")`) comes with an `r ttcode("R")` package called `r ttcode("AER")`, an acronym for [Applied Econometrics with R](https://cran.r-project.org/web/packages/AER/AER.pdf) [@R-AER]. After installing the package with `r ttcode('install.packages("AER")')` and attaching it with `r ttcode('library("AER")')` the data set can be loaded using the `r ttcode("data()")` function. 
 
 ```{r, message=FALSE, warning=FALSE, eval=FALSE}
 # install the AER package (once)
@@ -217,7 +252,7 @@ plot(score ~ STR,
 ```
 </div>
 
-The plot (figure 4.2 in the book) shows the scatter plot of all observations on student-teacher ratio and Test score. We see that the points are strongly scattered and an apparent relationship cannot be detected by only looking at them. Yet it can be assumed that both variables are negatively correlated, that is we expect to observe lower test scores in bigger classes.
+The plot (figure 4.2 in the book) shows the scatter plot of all observations on student-teacher ratio and Test score. We see that the points are strongly scattered and an apparent relationship cannot be detected by only looking at them. Yet it can be assumed that both variables are negatively correlated, that is, we expect to observe lower test scores in bigger classes.
 
 The function `r ttcode("cor()")` (type and execute `r ttcode("?cor")` for further info) can be used to compute the correlation between two *numeric* vectors. 
 
@@ -237,31 +272,45 @@ $$ \sum^n_{i = 1} (Y_i - b_0 - b_1 X_i)^2. $$
 
 The OLS estimator in the simple regression model is the pair of estimators for intercept and slope which minimizes the expression above. The derivation of the OLS estimators for both parameters are presented in Appendix 4.1 of the book. The results are summarized in Key Concept 4.2.
 
+```{r, eval = my_output == "html", results='asis', echo=FALSE}
+cat('
 <div class = "keyconcept"> 
 <h3 class = "right"> Key Concept 4.2 </h3>          
 <h3 class = "left"> The OLS Estimator, Predicted Values, and Residuals </h3>
+<p> The OLS estimators of the slope $\\beta_1$ and the intercept $\\beta_0$ in the simple linear regression model are
+\\begin{align}
+  \\hat\\beta_1 & = \\frac{ \\sum_{i = 1}^n (X_i - \\overline{X})(Y_i - \\overline{Y}) } { \\sum_{i=1}^n (X_i - \\overline{X})^2},  \\\\
+  \\\\
+  \\hat\\beta_0 & =  \\overline{Y} - \\hat\\beta_1 \\overline{X}. 
+\\end{align}
+The OLS predicted values $\\widehat{Y}_i$ and residuals $\\hat{u}_i$ are
+\\begin{align}
+  \\widehat{Y}_i & =  \\hat\\beta_0 + \\hat\\beta_1 X_i,\\\\
+  \\\\
+  \\hat{u}_i & =  Y_i - \\widehat{Y}_i. 
+\\end{align}
 
-<p> The OLS estimators of the slope $\beta_1$ and the intercept $\beta_0$ in the simple linear regression model are
-
-\begin{align}
-  \hat\beta_1 & = \frac{ \sum_{i = 1}^n (X_i - \overline{X})(Y_i - \overline{Y}) } { \sum_{i=1}^n (X_i - \overline{X})^2}  \\
-  \\
-  \hat\beta_0 & =  \overline{Y} - \hat\beta_1 \overline{X} 
-\end{align}
-
-The OLS predicted values $\widehat{Y}_i$ and residuals $\hat{u}_i$ are
-
-\begin{align}
-  \widehat{Y}_i & =  \hat\beta_0 + \hat\beta_1 X_i,\\
-  \\
-  \hat{u}_i & =  Y_i - \widehat{Y}_i. 
-\end{align}
-
-The estimated intercept $\hat{\beta}_0$, the slope parameter $\hat{\beta}_1$ and the residuals $\left(\hat{u}_i\right)$ are computed from a sample of $n$ observations of $X_i$ and $Y_i$, $i$, $...$,  $n$. These are *estimates* of the unknown true population intercept $\left(\beta_0 \right)$, slope $\left(\beta_1\right)$, and error term $(u_i)$.
-
+The estimated intercept $\\hat{\\beta}_0$, the slope parameter $\\hat{\\beta}_1$ and the residuals $\\left(\\hat{u}_i\\right)$ are computed from a sample of $n$ observations of $X_i$ and $Y_i$, $i$, $...$,  $n$. These are *estimates* of the unknown true population intercept $\\left(\\beta_0 \\right)$, slope $\\left(\\beta_1\\right)$, and error term $(u_i)$.
 </p>
-
 </div>
+')
+```
+
+```{r, eval = my_output == "latex", results='asis', echo=FALSE}
+cat('\\begin{keyconcepts}[The OLS Estimator, Predicted Values, and Residuals]{4.2}
+The OLS estimators of the slope $\\beta_1$ and the intercept $\\beta_0$ in the simple linear regression model are
+\\begin{align*}
+  \\hat\\beta_1 & = \\frac{ \\sum_{i = 1}^n (X_i - \\overline{X})(Y_i - \\overline{Y}) } { \\sum_{i=1}^n (X_i - \\overline{X})^2},  \\\\
+\\hat\\beta_0 & =  \\overline{Y} - \\hat\\beta_1 \\overline{X}. 
+\\intertext{The OLS predicted values $\\widehat{Y}_i$ and residuals $\\hat{u}_i$ are}
+  \\widehat{Y}_i & =  \\hat\\beta_0 + \\hat\\beta_1 X_i,\\\\
+  \\hat{u}_i & =  Y_i - \\widehat{Y}_i. 
+\\end{align*}
+
+The estimated intercept $\\hat{\\beta}_0$, the slope parameter $\\hat{\\beta}_1$ and the residuals $\\left(\\hat{u}_i\\right)$ are computed from a sample of $n$ observations of $X_i$ and $Y_i$, $i$, $...$,  $n$. These are \\textit{estimates} of the unknown true population intercept $\\left(\\beta_0 \\right)$, slope $\\left(\\beta_1\\right)$, and error term $(u_i)$.
+\\end{keyconcepts}
+')
+```
 
 The formulas presented above may not be very intuitive at first glance. The following interactive application aims to help you understand the mechanics of OLS. You can add observations by clicking into the coordinate system where the data are represented by points. If two or more observations are available, the application computes a regression line using OLS and some statistics which are displayed in the right panel. The results are updated as you add further observations to the left panel. A double-click resets the application i.e. all data are removed.
 
@@ -351,7 +400,7 @@ The *Standard Error of the Regression* ($SER$) is an estimator of the standard d
 
 $$ SER = s_{\hat{u}} = \sqrt{s_{\hat{u}}^2} \ \ \ \text{where} \ \ \ s_{\hat{u} }^2 = \frac{1}{n-2} \sum_{i = 1}^n \hat{u}^2_i = \frac{SSR}{n - 2} $$
 
-Remember that the $u_i$ are *unobserved*. That is why we use their estimated counterparts, the residuals $\hat{u}_i$ instead. See Chapter 4.3 of the book for a more detailed comment on the $SER$.
+Remember that the $u_i$ are *unobserved*. This is why we use their estimated counterparts, the residuals $\hat{u}_i$ instead. See Chapter 4.3 of the book for a more detailed comment on the $SER$.
 
 ### Application to the Test Score Data {-}
 
@@ -394,18 +443,36 @@ We find that the results coincide. Note that the values provided by `r ttcode("s
 OLS performs well under a quite broad variety of different circumstances. However, there are some assumptions which are posed on the data 
 which need to be satisfied in order to achieve reliable results.  
 
+```{r, eval = my_output == "html", results='asis', echo=FALSE}
+cat('
 <div class = "keyconcept"> 
 <h3 class = "right"> Key Concept 4.3 </h3>          
 <h3 class = "left"> The Least Squares Assumptions </h3>
 <p> 
-$$Y_i = \beta_0 + \beta_1 X_i + u_i \text{, } i = 1, ...,n$$
+$$Y_i = \\beta_0 + \\beta_1 X_i + u_i \\text{, } i = 1,\\dots,n$$
 where
 
 1. The error term $u_i$ has conditional mean zero given $X_i$: $E(u_i|X_i) = 0$.
-2. $(X_i,Y_i), i = 1,...,n$ are independent and identically distributed (i.i.d.) draws from their joint distribution.
+2. $(X_i,Y_i), i = 1,\\dots,n$ are independent and identically distributed (i.i.d.) draws from their joint distribution.
 3. Large outliers are unlikely: $X_i$ and $Y_i$ have nonzero finite fourth moments.
 </p>
 </div>
+')
+```
+
+```{r, eval = my_output == "latex", results='asis', echo=FALSE}
+cat('\\begin{keyconcepts}[The Least Squares Assumptions]{4.3}
+$$Y_i = \\beta_0 + \\beta_1 X_i + u_i \\text{, } i = 1,\\dots,n$$
+where
+
+\\begin{enumerate}
+\\item The error term $u_i$ has conditional mean zero given $X_i$: $E(u_i|X_i) = 0$.
+\\item $(X_i,Y_i), i = 1,\\dots,n$ are independent and identically distributed (i.i.d.) draws from their joint distribution.
+\\item Large outliers are unlikely: $X_i$ and $Y_i$ have nonzero finite fourth moments.
+\\end{enumerate}
+\\end{keyconcepts}
+')
+```
 
 ### Assumption #1: The Error Term has Conditional Mean of Zero {-}
 
@@ -529,25 +596,54 @@ Because $\hat{\beta_0}$ and $\hat{\beta_1}$ are computed from a randomly drawn s
 $$ E(\hat{\beta_0}) = \beta_0 \ \ \text{and} \ \  E(\hat{\beta_1}) = \beta_1,$$
 that is, $\hat\beta_0$ and $\hat\beta_1$ are unbiased estimators of $\beta_0$ and $\beta_1$, the true parameters. If the sample is sufficiently large, by the central limit theorem the *joint* sampling distribution of the estimators is well approximated by the bivariate normal distribution (<a href="#mjx-eqn-2.1">2.1</a>). This implies that the marginal distributions are also normal in large samples. Core facts on the large-sample distributions of $\beta_0$ and $\beta_1$ are presented in Key Concept 4.4. 
 
+```{r, eval = my_output == "html", results='asis', echo=FALSE}
+cat('
 <div class = "keyconcept"> 
 <h3 class = "right"> Key Concept 4.4 </h3>          
-<h3 class = "left"> Large Sample Distribution of $\hat\beta_0$ and $\hat\beta_1$ </h3>
+<h3 class = "left"> Large Sample Distribution of $\\hat\\beta_0$ and $\\hat\\beta_1$ </h3>
 
-<p> If the least squares assumptions in Key Concept 4.3 hold, then in large samples $\hat\beta_0$ and $\hat\beta_1$ have a joint normal sampling distribution. The large sample normal distribution of $\hat\beta_1$ is $N(\beta_1, \sigma^2_{\hat\beta_1})$, where the variance of the distribution, $\sigma^2_{\hat\beta_1}$, is 
+<p> If the least squares assumptions in Key Concept 4.3 hold, then in large samples $\\hat\\beta_0$ and $\\hat\\beta_1$ have a joint normal sampling distribution. The large sample normal distribution of $\\hat\\beta_1$ is $N(\\beta_1, \\sigma^2_{\\hat\\beta_1})$, where the variance of the distribution, $\\sigma^2_{\\hat\\beta_1}$, is 
 
-$$ \sigma^2_{\hat\beta_1} = \frac{1}{n} \frac{Var \left[ \left(X_i - \mu_X \right) u_i  \right]}  {\left[  Var \left(X_i \right)  \right]^2} \tag{4.1}. $$
+\\begin{align}
+\\sigma^2_{\\hat\\beta_1} = \\frac{1}{n} \\frac{Var \\left[ \\left(X_i - \\mu_X \\right) u_i  \\right]}  {\\left[  Var \\left(X_i \\right)  \\right]^2}. (\\#eq:olsvar1)
+\\end{align}
 
-The large sample normal distribution of $\hat\beta_0$ is $N(\beta_0, \sigma^2_{\hat\beta_0})$ with
+The large sample normal distribution of $\\hat\\beta_0$ is $N(\\beta_0, \\sigma^2_{\\hat\\beta_0})$ with
 
-$$ \sigma^2_{\hat\beta_0} =  \frac{1}{n} \frac{Var \left( H_i u_i \right)}{ \left[  E \left(H_i^2  \right)  \right]^2 } \ , \ \text{where} \ \ H_i = 1 - \left[ \frac{\mu_X} {E \left( X_i^2\right)} \right] X_i. \tag{4.2} $$
+\\begin{align}
+\\sigma^2_{\\hat\\beta_0} =  \\frac{1}{n} \\frac{Var \\left( H_i u_i \\right)}{ \\left[  E \\left(H_i^2  \\right)  \\right]^2 } \\ , \\ \\text{where} \\ \\ H_i = 1 - \\left[ \\frac{\\mu_X} {E \\left( X_i^2\\right)} \\right] X_i. (\\#eq:olsvar2)
+\\end{align}
 
-The interactive simulation below continuously generates random samples $(X_i,Y_i)$ of $200$ observations where $E(Y\vert X) = 100 + 3X$, estimates a simple regression model, stores the estimate of the slope $\beta_1$ and visualizes the distribution of the $\widehat{\beta}_1$'s observed so far using a histogram. The idea here is that for a large number of $\widehat{\beta}_1$'s, the histogram gives a good approximation to the sampling distribution of the estimator. By decreasing the time between two sampling iterations, it becomes clear that the shape of the histogram approaches the characteristic bell shape of a normal distribution centered at the true slope of $3$.
+The interactive simulation below continuously generates random samples $(X_i,Y_i)$ of $200$ observations where $E(Y\\vert X) = 100 + 3X$, estimates a simple regression model, stores the estimate of the slope $\\beta_1$ and visualizes the distribution of the $\\widehat{\\beta}_1$s observed so far using a histogram. The idea here is that for a large number of $\\widehat{\\beta}_1$s, the histogram gives a good approximation to the sampling distribution of the estimator. By decreasing the time between two sampling iterations, it becomes clear that the shape of the histogram approaches the characteristic bell shape of a normal distribution centered at the true slope of $3$.
 
 <iframe height="470" width="700" frameborder="0" scrolling="no" src="SmallSampleDIstReg.html"></iframe>
 
 </p>
 </div>
+')
+```
 
+```{r, eval = my_output == "latex", results='asis', echo=FALSE}
+cat('\\begin{keyconcepts}[Large Sample Distribution of $\\hat\\beta_0$ and $\\hat\\beta_1$]{4.4}
+If the least squares assumptions in Key Concept 4.3 hold, then in large samples $\\hat\\beta_0$ and $\\hat\\beta_1$ have a joint normal sampling distribution. The large sample normal distribution of $\\hat\\beta_1$ is $N(\\beta_1, \\sigma^2_{\\hat\\beta_1})$, where the variance of the distribution, $\\sigma^2_{\\hat\\beta_1}$, is 
+
+\\begin{equation}
+\\sigma^2_{\\hat\\beta_1} = \\frac{1}{n} \\frac{Var \\left[ \\left(X_i - \\mu_X \\right) u_i  \\right]}  {\\left[  Var \\left(X_i \\right)  \\right]^2}.
+\\end{equation}
+
+The large sample normal distribution of $\\hat\\beta_0$ is $N(\\beta_0, \\sigma^2_{\\hat\\beta_0})$ with
+
+\\begin{equation}
+\\sigma^2_{\\hat\\beta_0} =  \\frac{1}{n} \\frac{Var \\left( H_i u_i \\right)}{ \\left[  E \\left(H_i^2  \\right)  \\right]^2 } \\ , \\ \\text{where} \\ \\ H_i = 1 - \\left[ \\frac{\\mu_X} {E \\left( X_i^2\\right)} \\right] X_i.
+\\end{equation}
+
+The interactive simulation below continuously generates random samples $(X_i,Y_i)$ of $200$ observations where $E(Y\\vert X) = 100 + 3X$, estimates a simple regression model, stores the estimate of the slope $\\beta_1$ and visualizes the distribution of the $\\widehat{\\beta}_1$s observed so far using a histogram. The idea here is that for a large number of $\\widehat{\\beta}_1$s, the histogram gives a good approximation to the sampling distribution of the estimator. By decreasing the time between two sampling iterations, it becomes clear that the shape of the histogram approaches the characteristic bell shape of a normal distribution centered at the true slope of $3$.\\vspace{0.5cm}
+
+\\begin{center}\\textit{This interactive part of URFITE is only available in the HTML version.}\\end{center}
+
+\\end{keyconcepts}
+')
+```
 
 ### Simulation Study 1 {-}
 
@@ -684,7 +780,7 @@ We find that, as $n$ increases, the distribution of $\hat\beta_1$ concentrates a
 
 ### Simulation Study 3 {-}
 
-Furthermore, (<a href="#mjx-eqn-4.1">4.1</a>) reveals that the variance of the OLS estimator for $\beta_1$ decreases as the variance of the $X_i$ increases. In other words, as we increase the amount of information provided by the regressor, that is increasing $Var(X)$, which is used to estimate $\beta_1$, we are more confident that the estimate is close to the true value (i.e. $Var(\hat\beta_1)$ decreases).<br>
+Furthermore, (4.1) reveals that the variance of the OLS estimator for $\beta_1$ decreases as the variance of the $X_i$ increases. In other words, as we increase the amount of information provided by the regressor, that is, increasing $Var(X)$, which is used to estimate $\beta_1$, we are more confident that the estimate is close to the true value (i.e. $Var(\hat\beta_1)$ decreases).<br>
 We can visualize this by reproducing Figure 4.6 from the book. To do this, we sample observations $(X_i,Y_i)$, $i=1,\dots,100$ from a bivariate normal distribution with 
 
 $$E(X)=E(Y)=5,$$ 
@@ -712,7 +808,7 @@ Formally, this is written down as
   \right]. \tag{4.3}
 \end{align}
 
-To carry out the random sampling, we make use of the function `r ttcode("mvrnorm()")` from the package `r ttcode("MASS")` which allows to draw random samples from multivariate normal distributions, see `?mvtnorm`. Next, we use `r ttcode("subset()")` to split the sample into two subsets such that the first set, `r ttcode("set1")`, consists of observations that fulfill the condition $\lvert X - \overline{X} \rvert > 1$ and the second set, `r ttcode("set2")`, includes the remainder of the sample. We then plot both sets and use different colors to make the observations distinguishable.
+To carry out the random sampling, we make use of the function `r ttcode("mvrnorm()")` from the package `r ttcode("MASS")` [@R-MASS] which allows to draw random samples from multivariate normal distributions, see `?mvtnorm`. Next, we use `r ttcode("subset()")` to split the sample into two subsets such that the first set, `r ttcode("set1")`, consists of observations that fulfill the condition $\lvert X - \overline{X} \rvert > 1$ and the second set, `r ttcode("set2")`, includes the remainder of the sample. We then plot both sets and use different colors to make the observations distinguishable.
 
 <div class="unfolded"> 
 ```{r, fig.align = 'center', cache = T}

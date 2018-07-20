@@ -20,13 +20,13 @@ Most empirical applications in this chapter are concerned with forecasting and u
 
 The following packages and their dependencies are needed for reproduction of the code chunks presented throughout this chapter:
 
-+ `r ttcode("AER")` 
-+ `r ttcode("dynlm")`
-+ `r ttcode("forecast")`
-+ `r ttcode("readxl")` 
-+ `r ttcode("stargazer")`
-+ `r ttcode("scales")` 
-+ `r ttcode("quantmod")`
++ `r ttcode("AER")` [@R-AER]
++ `r ttcode("dynlm")` [@R-dynlm]
++ `r ttcode("forecast")` [@R-forecast]
++ `r ttcode("readxl")` [@R-readxl]
++ `r ttcode("stargazer")` [@R-stargazer]
++ `r ttcode("scales")` [@R-scales]
++ `r ttcode("quantmod")` [@R-quantmod]
 
 Please verify that the following code chunk runs on your machine without any errors.
 
@@ -66,7 +66,7 @@ In a time series context, the parent could use data on present and past years te
 
 ## Time Series Data and Serial Correlation {#tsdasc}
 
-GDP measures the productivity of an economy. It is commonly defined as the value of goods and services produced over a given time period. The data set <tt>us_macro_quarterly.xlsx</tt> is provided by the authors and can be downloaded [here](http://wps.aw.com/aw_stock_ie_3/178/45691/11696965.cw/index.html). It provides quarterly data on U.S. real (i.e. inflation adjusted) GDP from years 1947 to 2004.
+GDP measures the productivity of an economy. It is commonly defined as the value of goods and services produced over a given time period. The data set `r ttcode("us_macro_quarterly.xlsx")` is provided by the authors and can be downloaded [here](http://wps.aw.com/aw_stock_ie_3/178/45691/11696965.cw/index.html). It provides quarterly data on U.S. real (i.e. inflation adjusted) GDP from years 1947 to 2004.
 
 As before, a good point to start with in pre-estimation is plotting the data. The package `r ttcode("quantmod")` provides some very convenient functions for plotting and computing with time series data. We also load the package `r ttcode("readxl")` to read the data into `r ttcode("R")`.
 
@@ -92,7 +92,7 @@ colnames(USMacroSWQ) <- c("Date", "GDPC96", "JAPAN_IP", "PCECTPI",
                           "GS10", "GS1", "TB3MS", "UNRATE", "EXUSUK", "CPIAUCSL")
 ```
 
-When dealing with time series data in <tt>R</tt> it is preferable to work with time-series objects that keep track of the frequency of the data and are extensible. In what follows we will use objects of the class <tt>xts</tt>, see `?xts`. Since the data in `USMacroSWQ` are in quarterly frequency we convert the first column to `yearqtr` format before generating the <tt>xts</tt> object `GDP`.
+When dealing with time series data in `r ttcode("R")` it is preferable to work with time-series objects that keep track of the frequency of the data and are extensible. In what follows we will use objects of the class `r ttcode("xts")`, see `?xts`. Since the data in `USMacroSWQ` are in quarterly frequency we convert the first column to `yearqtr` format before generating the `r ttcode("xts")` object `GDP`.
 
 The function `Delt()` from the package `quantmod` computes growth rates. We annualize the quarterly changes to obtain annual growth rates as $$Rate_{annual} = (1+Rate_{quarterly})^4-1.$$
 
@@ -136,19 +136,35 @@ plot(as.zoo(GDPGrowth),
 
 If observations of a variable $Y$ are recorded over time, we denote $Y_t$ the value observed at time $t$. The period between two sequential observations $Y_t$ and $Y_{t-1}$ is a unit of time: hours, days, weeks, months, quarters, years and so on. Key Concept 14.1 introduces the essential terminology and notation for time series data we will use in the subsequent sections.
 
+```{r, eval = my_output == "html", results='asis', echo=FALSE}
+cat('
 <div class = "keyconcept"> 
 <h3 class = "right"> Key Concept 14.1 </h3>
 <h3 class = "left"> Lags, First Differences, Logarithms and Growth Rates </h3>
 
-- Previous values of a time series are called *lags*. The first lag of $Y_t$ is $Y_{t-1}$. The $j^{th}$ lag of $Y_t$ is $Y_{t-j}$. In <tt>R</tt>, lags of univariate or multivariate time series are conveniently computed by `lag()`, see `?lag`
+- Previous values of a time series are called *lags*. The first lag of $Y_t$ is $Y_{t-1}$. The $j^{th}$ lag of $Y_t$ is $Y_{t-j}$. In <tt>r ttcode("R")</tt>, lags of univariate or multivariate time series are conveniently computed by <tt>lag()</tt>, see <tt>?lag</tt>.
 
-- Sometimes we need to work with a differenced series. The first difference of a series is $\Delta Y_{t} = Y_t - Y_{t-1}$, the difference between periods $t$ and $t-1$. If `Y` is a time series, the series of first differences is computed as `Y-lag(Y)`.
+- Sometimes we need to work with a differenced series. The first difference of a series is $\\Delta Y_{t} = Y_t - Y_{t-1}$, the difference between periods $t$ and $t-1$. If <tt>Y</tt> is a time series, the series of first differences is computed as <tt>Y-lag(Y)</tt>.
 
-- It may be convenient to work with the first difference in logarithms of a series. We denote this by $\Delta \log(Y_t) = \log(Y_t) - \log(Y_{t-1})$. For a time series `Y`, this is obtained using `log(Y/lag(Y))`. 
+- It may be convenient to work with the first difference in logarithms of a series. We denote this by $\\Delta \\log(Y_t) = \\log(Y_t) - \\log(Y_{t-1})$. For a time series <tt>Y</tt>, this is obtained using <tt>log(Y/lag(Y))</tt>. 
 
-- $100 \Delta \log (Y_t)$ is an approximation for the percentage change between $Y_t$ and $Y_{t-1}$.
+- $100 \\Delta \\log (Y_t)$ is an approximation for the percentage change between $Y_t$ and $Y_{t-1}$.
 
 </div>
+')
+```
+
+```{r, eval = my_output == "latex", results='asis', echo=FALSE}
+cat('\\begin{keyconcepts}[Lags, First Differences, Logarithms and Growth Rates]{14.1}
+\\begin{itemize}
+\\item Previous values of a time series are called \\textit{lags}. The first lag of $Y_t$ is $Y_{t-1}$. The $j^{th}$ lag of $Y_t$ is $Y_{t-j}$. In \\texttt{R}, lags of univariate or multivariate time series are conveniently computed by \\texttt{lag()}, see \\texttt{?lag}.
+\\item Sometimes we need to work with a differenced series. The first difference of a series is $\\Delta Y_{t} = Y_t - Y_{t-1}$, the difference between periods $t$ and $t-1$. If \\texttt{Y} is a time series, the series of first differences is computed as \\texttt{Y-lag(Y)}.
+\\item It may be convenient to work with the first difference in logarithms of a series. We denote this by $\\Delta \\log(Y_t) = \\log(Y_t) - \\log(Y_{t-1})$. For a time series \\texttt{Y}, this is obtained using \\texttt{log(Y/lag(Y))}. 
+\\item $100 \\Delta \\log (Y_t)$ is an approximation for the percentage change between $Y_t$ and $Y_{t-1}$.
+\\end{itemize}
+\\end{keyconcepts}
+')
+```
 
 The definitions made in Key Concept 14.1 are useful because of two properties that are common to many economic time series:
 
@@ -186,6 +202,8 @@ quants(GDP["2011-07::2013-01"])
 
 Observations of a time series are typically correlated. This type of correlation is called *autocorrelation* or *serial correlation*. Key Concept 14.2 summarizes the concepts of population autocovariance and population autocorrelation and shows how to compute their sample equivalents.
 
+```{r, eval = my_output == "html", results='asis', echo=FALSE}
+cat('
 <div class = "keyconcept"> 
 <h3 class = "right"> Key Concept 14.2 </h3>
 <h3 class = "left"> Autocorrelation and Autocovariance </h3>
@@ -193,21 +211,42 @@ Observations of a time series are typically correlated. This type of correlation
 The covariance between $Y_t$ and its $j^{th}$ lag, $Y_{t-j}$, is called the $j^{th}$ *autocovariance* of the series $Y_t$. The $j^{th}$ *autocorrelation coefficient*, also called the *serial correlation coefficient*, measures the correlation between $Y_t$ and $Y_{t-j}$.
 
 We thus have
-\begin{align*}
-  j^{th} \text{autocovariance} =& \, Cov(Y_t,Y_{t-j}), \\
-  j^{th} \text{autocorrelation} = \rho_j =& \, \rho_{Y_t,Y_{t-j}} = \frac{Cov(Y_t,Y_{t-j)}}{\sqrt{Var(Y_t)Var{Y_{t-j}}}}.
-\end{align*}
+\\begin{align*}
+  j^{th} \\text{autocovariance} =& \\, Cov(Y_t,Y_{t-j}), \\\\
+  j^{th} \\text{autocorrelation} = \\rho_j =& \\, \\rho_{Y_t,Y_{t-j}} = \\frac{Cov(Y_t,Y_{t-j)}}{\\sqrt{Var(Y_t)Var{Y_{t-j}}}}.
+\\end{align*}
 
-Population Autocovariance and population autocorrelation can be estimated by $\widehat{Cov(Y_t,Y_{t-j})}$, the sample autocovariance, and $\widehat{\rho}_j$, the sample autocorrelation.
+Population autocovariance and population autocorrelation can be estimated by $\\widehat{Cov(Y_t,Y_{t-j})}$, the sample autocovariance, and $\\widehat{\\rho}_j$, the sample autocorrelation:
 
-\begin{align*}
-  \widehat{Cov(Y_t,Y_{t-j})} =& \, \frac{1}{T} \sum_{t=j+1}^T (Y_t - \overline{Y}_{j+1:T})(Y_{t-j} - \overline{Y}_{1:T-j}) \\
-  \widehat{\rho}_j =& \, \frac{\widehat{Cov(Y_t,Y_{t-j})}}{\widehat{Var(Y_t)}}.
-\end{align*}
+\\begin{align*}
+  \\widehat{Cov(Y_t,Y_{t-j})} =& \\, \\frac{1}{T} \\sum_{t=j+1}^T (Y_t - \\overline{Y}_{j+1:T})(Y_{t-j} - \\overline{Y}_{1:T-j}), \\\\
+  \\widehat{\\rho}_j =& \\, \\frac{\\widehat{Cov(Y_t,Y_{t-j})}}{\\widehat{Var(Y_t)}}
+\\end{align*}
 
-In <tt>R</tt> the function `acf()` from the package <tt>stats</tt> computes the sample autocovariance or the sample autocorrelation function.
+In <tt>R</tt> the function <tt>acf()</tt> from the package <tt>stats</tt> computes the sample autocovariance or the sample autocorrelation function.
 
 </div>
+')
+```
+
+```{r, eval = my_output == "latex", results='asis', echo=FALSE}
+cat('\\begin{keyconcepts}[Autocorrelation and Autocovariance]{14.2}
+The covariance between $Y_t$ and its $j^{th}$ lag, $Y_{t-j}$, is called the $j^{th}$ *autocovariance* of the series $Y_t$. The $j^{th}$ *autocorrelation coefficient*, also called the *serial correlation coefficient*, measures the correlation between $Y_t$ and $Y_{t-j}$. We thus have
+\\begin{align*}
+  j^{th} \\text{autocovariance} =& \\, Cov(Y_t,Y_{t-j}), \\\\
+  j^{th} \\text{autocorrelation} = \\rho_j =& \\, \\rho_{Y_t,Y_{t-j}} = \\frac{Cov(Y_t,Y_{t-j)}}{\\sqrt{Var(Y_t)Var{Y_{t-j}}}}.
+\\end{align*}
+
+Population autocovariance and population autocorrelation can be estimated by $\\widehat{Cov(Y_t,Y_{t-j})}$, the sample autocovariance, and $\\widehat{\\rho}_j$, the sample autocorrelation:
+\\begin{align*}
+  \\widehat{Cov(Y_t,Y_{t-j})} =& \\, \\frac{1}{T} \\sum_{t=j+1}^T (Y_t - \\overline{Y}_{j+1:T})(Y_{t-j} - \\overline{Y}_{1:T-j}), \\\\
+  \\widehat{\\rho}_j =& \\, \\frac{\\widehat{Cov(Y_t,Y_{t-j})}}{\\widehat{Var(Y_t)}}.
+\\end{align*}
+
+In \\texttt{R} the function \\texttt{acf()} from the package \\texttt{stats} computes the sample autocovariance or the sample autocorrelation function.
+\\end{keyconcepts}
+')
+```
 
 Using `acf()` it is straightforward to compute the first four sample autocorrelations of the series `GDPGrowth`.
 
@@ -293,7 +332,7 @@ Furthermore, note that NYSWSW series shows a pattern which econometricians call 
 
 ## Autoregressions
 
-Growth forecasts are important for many economic entities. For example, the production sector relies on forecasts of GDP growth published by the central bank when deciding on future budgets and production plans. Autoregressive models are heavily used in economic forecasting. An autoregressive model relates a time series variable to its past values. This chapter discusses the basic ideas of autoregressions models, shows how they are estimated and discusses an application to forecasting of GDP growth using <tt>R</tt>.
+Growth forecasts are important for many economic entities. For example, the production sector relies on forecasts of GDP growth published by the central bank when deciding on future budgets and production plans. Autoregressive models are heavily used in economic forecasting. An autoregressive model relates a time series variable to its past values. This chapter discusses the basic ideas of autoregressions models, shows how they are estimated and discusses an application to forecasting of GDP growth using `r ttcode("R")`.
 
 #### The First-Order Autoregressive Model {-}
 
@@ -307,7 +346,7 @@ For the GDP growth series, an autoregressive model of order one uses only the in
 \begin{align}
   \widehat{GDPGR}_t = \beta_0 + \beta_1 GDPGR_{t-1} + u_t. (\#eq:GDPGRAR1)
 \end{align}
-Following the book we use data from 1962 to 2012 to estimate \@ref(eq:GDPGRAR1). This is easily done with the function `ar.ols()` from package <tt>stats</tt>.
+Following the book we use data from 1962 to 2012 to estimate \@ref(eq:GDPGRAR1). This is easily done with the function `ar.ols()` from package `r ttcode("stats")`.
 
 ```{r}
 # subset data
@@ -377,7 +416,7 @@ Using \@ref(eq:gdpgrar1), the estimated AR(1) model of GDP growth, we may perfor
   \widehat{GDPGR}_{2013:Q1} = 1.995 + 0.348 \cdot 0.15 = 2.047.
 \end{align*}
 
-The function `forecast()` from the <tt>forecast</tt> package has some useful features for forecasting of time series data.
+The function `forecast()` from the `r ttcode("forecast")` package has some useful features for forecasting of time series data.
 
 ```{r, message=FALSE}
 library(forecast)
@@ -404,21 +443,36 @@ summary(armod)$r.squared
 summary(armod)$sigma
 ```
 
-### The $p^{th}$-Order Autoregressive Model {-}
+### Autoregressive Models of Order p {-}
 
 For forecasting GPD growth in period $t$, the AR($1$) model \@ref(eq:gdpgrar1) disregards any information in the past of the series that is more distant than one period. An AR($p$) model incorporates the information of $p$ lags of the series. The idea is explained in Key Concept 14.3.
 
+```{r, eval = my_output == "html", results='asis', echo=FALSE}
+cat('
 <div class = "keyconcept"> 
 <h3 class = "right"> Key Concept 14.3 </h3>
 <h3 class = "left"> Autoregressions </h3>
-
+<p>
 An AR($p$) model assumes that a time series $Y_t$ can be represented by a linear function of the first $p$ of its lagged values. We say that
-\begin{align*}
-  Y_t = \beta_0 + \beta_1 Y_{t-1} + \beta_2 Y_{t-2} + \dots + \beta_p Y_{t-p} + u_t
-\end{align*}
-is an autoregressive model of order $p$ where $E(u_t\vert Y_{t-1}, Y_{t-2}, \dots,Y_{t-p})=0$.
-
+\\begin{align*}
+  Y_t = \\beta_0 + \\beta_1 Y_{t-1} + \\beta_2 Y_{t-2} + \\dots + \\beta_p Y_{t-p} + u_t
+\\end{align*}
+is an autoregressive model of order $p$ where $E(u_t\\vert Y_{t-1}, Y_{t-2}, \\dots,Y_{t-p})=0$.
+</p>
 </div>
+')
+```
+
+```{r, eval = my_output == "latex", results='asis', echo=FALSE}
+cat('\\begin{keyconcepts}[Autoregressions]{14.3}
+An AR($p$) model assumes that a time series $Y_t$ can be represented by a linear function of the first $p$ of its lagged values. We say that
+\\begin{align*}
+  Y_t = \\beta_0 + \\beta_1 Y_{t-1} + \\beta_2 Y_{t-2} + \\dots + \\beta_p Y_{t-p} + u_t
+\\end{align*}
+is an autoregressive model of order $p$ where $E(u_t\\vert Y_{t-1}, Y_{t-2}, \\dots,Y_{t-p})=0$.
+\\end{keyconcepts}
+')
+```
 
 Following the book, we estimate an AR($2$) model of the GDP growth series from 1962:Q1 to 2012:Q4.
 
@@ -473,7 +527,7 @@ SReturns <- read_xlsx("Data/Stock_Returns_1931_2002.xlsx",
                       )
 ```
 
-We continue by converting the data to an object of class <tt>ts</tt>.
+We continue by converting the data to an object of class `r ttcode("ts")`.
 
 ```{r}
 # convert to ts object
@@ -499,7 +553,7 @@ SR_AR4 <- dynlm(ExReturn ~ L(ExReturn) + L(ExReturn, 2) + L(ExReturn, 3) + L(ExR
       data = StockReturns, start = c(1960, 1), end = c(2002, 12))
 ```
 
-After computing robust standard errors, we gather the results in a table generated by <tt>stargazer()</tt>.
+After computing robust standard errors, we gather the results in a table generated by `r ttcode("stargazer()")`.
 
 ```{r}
 rob_se <- list(
@@ -519,13 +573,13 @@ stargazer(SR_AR1, SR_AR2, SR_AR4,
   omit.table.layout = "n",
   digits = 2, 
   column.labels = c("AR(1)", "AR(2)", "AR(4)"),
-  dep.var.caption  = "Excess returns on the CSRP value-weighted index",
+  dep.var.caption  = "Dependent Variable: Excess returns on the CSRP Value-Weighted Index",
   dep.var.labels.include = FALSE,
   covariate.labels = c("$excess return_{t-1}$", "$excess return_{t-2}$", 
                        "$excess return_{t-3}$", "$excess return_{t-4}$", 
                        "Intercept"),
   se = rob_se,
-  omit.stat = c("rsq")
+  omit.stat = "rsq"
   ) 
 ```
 
@@ -533,33 +587,34 @@ stargazer(SR_AR1, SR_AR2, SR_AR4,
 
 ```{r, message=F, warning=F, results='asis', echo=F, eval=my_output=="html"}
 stargazer(SR_AR1, SR_AR2, SR_AR4,
-  title = "Autoregressive Models of Monthly Excess Stock Returns",
   header = FALSE, 
   type = "html",
   model.numbers = F,
   omit.table.layout = "n",
-  digits = 2, 
+  digits = 3, 
   column.labels = c("AR(1)", "AR(2)", "AR(4)"),
-  dep.var.caption  = "Excess returns on the CSRP value-weighted index",
+  dep.var.caption  = "Dependent Variable: Excess returns on the CSRP Value-Weighted Index",
   dep.var.labels.include = FALSE,
   covariate.labels = c("$excess return_{t-1}$", "$excess return_{t-2}$", "$excess return_{t-3}$", "$excess return_{t-4}$", "Intercept"),
   se = rob_se,
   omit.stat = c("rsq")
-  ) 
+  )
+
+stargazer_html_title("Autoregressive Models of Monthly Excess Stock Returns", "amomesr")
 ```
 
 <!--/html_preserve-->
 
 ```{r, message=F, warning=F, results='asis', echo=F, eval=my_output=="latex"}
 stargazer(SR_AR1, SR_AR2, SR_AR4,
-  title = "Autoregressive Models of Monthly Excess Stock Returns",
+  title = "\\label{tab:amomesr} Autoregressive Models of Monthly Excess Stock Returns",
   header = FALSE, 
   type = "latex",
   model.numbers = F,
   omit.table.layout = "n",
   digits = 2, 
   column.labels = c("AR(1)", "AR(2)", "AR(4)"),
-  dep.var.caption  = "Excess returns on the CSRP value-weighted index",
+  dep.var.caption  = "Dependent Variable: Excess returns on the CSRP Value-Weighted Index",
   dep.var.labels.include = FALSE,
   covariate.labels = c("$excess return_{t-1}$", "$excess return_{t-2}$", "$excess return_{t-3}$", "$excess return_{t-4}$", "Intercept"),
   se = rob_se,
@@ -567,23 +622,40 @@ stargazer(SR_AR1, SR_AR2, SR_AR4,
   ) 
 ```
 
-The results presented above are consistent with the hypothesis of efficient financial markets: there are no statistically significant coefficients in any of estimated models and the the hypotheses that the respective set of lags has no power in explaining today's returns cannot be rejected. Notice also that $\overline{R^2}$ is almost zero in all models and even negative for the AR($4$) model. This suggests that none of the models are useful for forecasting stock returns.
+The results presented above are consistent with the hypothesis of efficient financial markets: there are no statistically significant coefficients in any of the estimated models and the hypotheses that the respective set of lags has no power in explaining today's returns cannot be rejected. Notice also that $\overline{R^2}$ is almost zero in all models and even negative for the AR($4$) model. This suggests that none of the models are useful for forecasting stock returns.
 
 ## Additional Predictors and The ADL Model {#apatadlm}
 
 Instead of only using the dependent variable's lags as predictors, an autoregressive distributed lag (ADL) model also uses lags of other variables for forecasting. The general ADL model is summarized in Key Concept 14.4
 
+```{r, eval = my_output == "html", results='asis', echo=FALSE}
+cat('
 <div class = "keyconcept"> 
 <h3 class = "right"> Key Concept 14.4 </h3>
 <h3 class = "left"> The Autoregressive Distributed Lag Model </h3>
-
+<p>
 An ADL($p$,$q$) model assumes that a time series $Y_t$ can be represented by a linear function of $p$ of its lagged values and $q$ lags of $X_t$, another time series. We say that
-\begin{align*}
-  Y_t =& \, \beta_0 + \beta_1 Y_{t-1} + \beta_2 Y_{t-2} + \dots + \beta_p Y_{t-p} \\ 
-      +& \, \delta_1 X_{t-1} + \delta_2 X_{t-2} + \dots + \delta_q X_{t-q} X_{t-q} + u_t.
-\end{align*}
-is an *autoregressive distributed lag model* with $p$ lags of $Y_t$ and $q$ lags of $X_t$ where $$E(u_t\vert Y_{t-1}, Y_{t-2}, \dots, X_{t-1}, X_{t-2}, \dots)=0$$.
+\\begin{align*}
+  Y_t =& \\, \\beta_0 + \\beta_1 Y_{t-1} + \\beta_2 Y_{t-2} + \\dots + \\beta_p Y_{t-p} \\\\ 
+      +& \\, \\delta_1 X_{t-1} + \\delta_2 X_{t-2} + \\dots + \\delta_q X_{t-q} X_{t-q} + u_t.
+\\end{align*}
+is an *autoregressive distributed lag model* with $p$ lags of $Y_t$ and $q$ lags of $X_t$ where $$E(u_t\\vert Y_{t-1}, Y_{t-2}, \\dots, X_{t-1}, X_{t-2}, \\dots)=0.$$
+</p>
 </div>
+')
+```
+
+```{r, eval = my_output == "latex", results='asis', echo=FALSE}
+cat('\\begin{keyconcepts}[The Autoregressive Distributed Lag Model]{14.4}
+An ADL($p$,$q$) model assumes that a time series $Y_t$ can be represented by a linear function of $p$ of its lagged values and $q$ lags of $X_t$, another time series. We say that
+\\begin{align*}
+  Y_t =& \\, \\beta_0 + \\beta_1 Y_{t-1} + \\beta_2 Y_{t-2} + \\dots + \\beta_p Y_{t-p} \\\\ 
+      +& \\, \\delta_1 X_{t-1} + \\delta_2 X_{t-2} + \\dots + \\delta_q X_{t-q} X_{t-q} + u_t.
+\\end{align*}
+is an \\textit{autoregressive distributed lag model} with $p$ lags of $Y_t$ and $q$ lags of $X_t$ where $$E(u_t\\vert Y_{t-1}, Y_{t-2}, \\dots, X_{t-1}, X_{t-2}, \\dots)=0.$$
+\\end{keyconcepts}
+')
+```
 
 #### Forecasting GDP Growth Using the Term Spread {-}
 
@@ -694,7 +766,7 @@ coeftest(GDPGR_ADL22, vcov. = sandwich)
 For the ADL($2$,$2$) model we obtain
 \begin{align}
   \widehat{GDPGR}_t =& \, \underset{(0.47)}{0.98} + \underset{(0.08)}{0.24} GDPGR_{t-1} \\
-                        +& \, \underset{(0.08)}{0.18} GDPGR_{t-2} + -\underset{(0.42)}{0.14} TSpread_{t-1} + \underset{(0.43)}{0.66} TSpread_{t-2}. (\#eq:gdpgradl22)
+                        +& \, \underset{(0.08)}{0.18} GDPGR_{t-2} -\underset{(0.42)}{0.14} TSpread_{t-1} + \underset{(0.43)}{0.66} TSpread_{t-2}. (\#eq:gdpgradl22)
 \end{align}
 
 The coefficients on both lags of the term spread are not significant at the $10\%$ level.
@@ -738,52 +810,101 @@ linearHypothesis(GDPGR_ADL22,
 
 In general, forecasts an be improved by using multiple predictors --- just as in cross-sectional regression. For time series regressions to yield reliable models, the assumption of *stationarity* must be fulfilled. Key Concept 14.5 explains what stationarity is. 
 
+```{r, eval = my_output == "html", results='asis', echo=FALSE}
+cat('
 <div class = "keyconcept"> 
 <h3 class = "right"> Key Concept 14.5 </h3>
 <h3 class = "left"> Stationarity </h3>
+We say that a time series $Y_t$ is stationary if its probability distribution is time independent, that is the joint distribution of $Y_{s+1}, Y_{s+2},\\dots,Y_{s+T}$ does not change as $s$ is varied, regardless of $T$.
 
-We say that a time series $Y_t$ is stationary if its probability distribution is time independent, that is the joint distribution of $Y_{s+1}, Y_{s+2},\dots,Y_{s+T}$ does not change as $s$ is varied, regardless of $T$.
-
-Similarly, we say that two time series $X_t$ and $Y_t$ are *jointly stationary* if the joint distribution of $(X_{s+1},Y_{s+1}, X_{s+2},Y_{s+2} \dots, X_{s+T}Y_{s+T})$ does not depend on $s$, regardless of $T$.
+Similarly, we say that two time series $X_t$ and $Y_t$ are *jointly stationary* if the joint distribution of $(X_{s+1},Y_{s+1}, X_{s+2},Y_{s+2} \\dots, X_{s+T},Y_{s+T})$ does not depend on $s$, regardless of $T$.
 
 In a probabilistic sense, stationarity means that information about how a time series evolves in the future is inherent to its past. If this is not the case, we cannot use the past of a series as a reliable guideline for its future.
 </div>
+')
+```
+
+```{r, eval = my_output == "latex", results='asis', echo=FALSE}
+cat('\\begin{keyconcepts}[Stationarity]{14.5}
+We say that a time series $Y_t$ is stationary if its probability distribution is time independent, that is the joint distribution of $Y_{s+1}, Y_{s+2},\\dots,Y_{s+T}$ does not change as $s$ is varied, regardless of $T$.\\newline
+
+Similarly, we say that two time series $X_t$ and $Y_t$ are \\textit{jointly stationary} if the joint distribution of $(X_{s+1},Y_{s+1}, X_{s+2},Y_{s+2} \\dots, X_{s+T}, Y_{s+T})$ does not depend on $s$, regardless of $T$.\\newline
+
+In a probabilistic sense, stationarity means that information about how a time series evolves in the future is inherent to its past. If this is not the case, we cannot use the past of a series as a reliable guideline for its future.
+\\end{keyconcepts}
+')
+```
 
 #### Time Series Regression with Multiple Predictors {-}
 
 The concept of stationarity is a key assumption in the general time series regression model with multiple predictors. Key Concept 14.6 elaborates this model and its assumptions.
 
+```{r, eval = my_output == "html", results='asis', echo=FALSE}
+cat('
 <div class = "keyconcept"> 
 <h3 class = "right"> Key Concept 14.6 </h3>
 <h3 class = "left"> Time Series Regression with Multiple Predictors </h3>
+The general time series regression model extends the ADL such that multiple regressors and their lags are included. It uses $p$ lags of the dependent variable and $q_l$ lags of $l$ additional predictors where $l=1,\\dots,k$:
 
-The general time series regression model extends the ADL such that multiple regressors and their lags are included. It uses $p$ lags of the dependent variable and $q_l$ lags of $l$ additional predictors where $l=1,\dots,k$:
-
-\begin{equation}
-  \begin{aligned}
-  Y_t =& \, \beta_0 + \beta_1 Y_{t-1} + \beta_2 Y_{t-2} + \dots + \beta_{p} Y_{t-p} \\
-      +& \, \delta_{11} X_{1,t-1} + \delta_{12} X_{1,t-2} + \dots + \delta_{1q} X_{1,t-q} \\
-      +& \, \dots \\
-      +& \, \delta_{k1} X_{k,t-1} + \delta_{k2} X_{k,t-2} + \dots + \delta_{kq} X_{k,t-q} \\
-      +& \, u_t 
-\end{aligned}
-\end{equation}
+\\begin{equation}
+  \\begin{aligned}
+  Y_t =& \\, \\beta_0 + \\beta_1 Y_{t-1} + \\beta_2 Y_{t-2} + \\dots + \\beta_{p} Y_{t-p} \\\\
+      +& \\, \\delta_{11} X_{1,t-1} + \\delta_{12} X_{1,t-2} + \\dots + \\delta_{1q} X_{1,t-q} \\\\
+      +& \\, \\dots \\\\
+      +& \\, \\delta_{k1} X_{k,t-1} + \\delta_{k2} X_{k,t-2} + \\dots + \\delta_{kq} X_{k,t-q} \\\\
+      +& \\, u_t 
+  \\end{aligned}
+\\end{equation}
 
 For estimation we make the following assumptions:
 
-1. The error term $u_t$ has conditional mean zero given all regressors and their lags: $$E(u_t\vert Y_{t-1}, Y_{t-2}, \dots, X_{1,t-1}, X_{1,t-2} \dots, X_{k,t-1}, X_{k,t-2}, \dots)$$ This assumption is an extension of the conditional mean zero assumption used for AR and ADL models and guarantees that the general time series regression model stated above gives the best forecast of $Y_t$ given its lags, the additional regressors $X_{1,t},\dots,X_{k,t}$ and their lags.  
+1. The error term $u_t$ has conditional mean zero given all regressors and their lags: $$E(u_t\\vert Y_{t-1}, Y_{t-2}, \\dots, X_{1,t-1}, X_{1,t-2} \\dots, X_{k,t-1}, X_{k,t-2}, \\dots)$$ This assumption is an extension of the conditional mean zero assumption used for AR and ADL models and guarantees that the general time series regression model stated above gives the best forecast of $Y_t$ given its lags, the additional regressors $X_{1,t},\\dots,X_{k,t}$ and their lags.  
 
-2. The $i.i.d$ assumption for cross-sectional data is not (entirely) meaningful for time series data. We replace it by the following assumption witch consists of two parts:
+2. The $i.i.d.$ assumption for cross-sectional data is not (entirely) meaningful for time series data. We replace it by the following assumption witch consists of two parts:
 
-    (a) The $(Y_{t}, X_{1,t}, \dots, X_{k,t})$ have a stationary distribution (the "identically distributed" part of the i.i.d. assumption for cross-setional data). If this does not hold, forecasts may be biased and inference can be strongly misleading.    
+    (a) The $(Y_{t}, X_{1,t}, \\dots, X_{k,t})$ have a stationary distribution (the "identically distributed" part of the i.i.d. assumption for cross-setional data). If this does not hold, forecasts may be biased and inference can be strongly misleading.    
   
-    (b) $(Y_{t}, X_{1,t}, \dots, X_{k,t})$ and $(Y_{t-j}, X_{1,t-j}, \dots, X_{k,t-j})$ become independent as $j$ gets large (the "idependly" distributed part of the i.i.d. assumption for cross-sectional data). This assumption is also called *weak dependence*. It ensures that the WLLN and the CLT hold in large samples.
+    (b) $(Y_{t}, X_{1,t}, \\dots, X_{k,t})$ and $(Y_{t-j}, X_{1,t-j}, \\dots, X_{k,t-j})$ become independent as $j$ gets large (the "idependently" distributed part of the i.i.d. assumption for cross-sectional data). This assumption is also called *weak dependence*. It ensures that the WLLN and the CLT hold in large samples.
     
-3. Large outliers are unlikely: $E(X_{1,t}^4), E(X_{2,t}^4), \dots, E(X_{k,t}^4)$ and $E(Y_t^4)$ have nonzero, finite fourth moments.  
+3. Large outliers are unlikely: $E(X_{1,t}^4), E(X_{2,t}^4), \\dots, E(X_{k,t}^4)$ and $E(Y_t^4)$ have nonzero, finite fourth moments.  
 
 4. No perfect multicollinearity.
 
 </div>
+')
+```
+
+```{r, eval = my_output == "latex", results='asis', echo=FALSE}
+cat('\\begin{keyconcepts}[Time Series Regression with Multiple Predictors]{14.6}
+The general time series regression model extends the ADL such that multiple regressors and their lags are included. It uses $p$ lags of the dependent variable and $q_l$ lags of $l$ additional predictors where $l=1,\\dots,k$:
+\\begin{equation}
+  \\begin{aligned}
+  Y_t =& \\, \\beta_0 + \\beta_1 Y_{t-1} + \\beta_2 Y_{t-2} + \\dots + \\beta_{p} Y_{t-p} \\\\
+      +& \\, \\delta_{11} X_{1,t-1} + \\delta_{12} X_{1,t-2} + \\dots + \\delta_{1q} X_{1,t-q} \\\\
+      +& \\, \\dots \\\\
+      +& \\, \\delta_{k1} X_{k,t-1} + \\delta_{k2} X_{k,t-2} + \\dots + \\delta_{kq} X_{k,t-q} \\\\
+      +& \\, u_t 
+  \\end{aligned}
+\\end{equation}
+
+For estimation we make the following assumptions:\\newline
+
+\\begin{enumerate}
+\\item The error term $u_t$ has conditional mean zero given all regressors and their lags: $$E(u_t\\vert Y_{t-1}, Y_{t-2}, \\dots, X_{1,t-1}, X_{1,t-2} \\dots, X_{k,t-1}, X_{k,t-2}, \\dots)$$ This assumption is an extension of the conditional mean zero assumption used for AR and ADL models and guarantees that the general time series regression model stated above gives the best forecast of $Y_t$ given its lags, the additional regressors $X_{1,t},\\dots,X_{k,t}$ and their lags.  
+\\item The $i.i.d.$ assumption for cross-sectional data is not (entirely) meaningful for time series data. We replace it by the following assumption witch consists of two parts:\\newline
+\\begin{itemize}
+    \\item[(a)] The $(Y_{t}, X_{1,t}, \\dots, X_{k,t})$ have a stationary distribution (the "identically distributed" part of the i.i.d. assumption for cross-setional data). If this does not hold, forecasts may be biased and inference can be strongly misleading.    
+  
+    \\item[(b)] $(Y_{t}, X_{1,t}, \\dots, X_{k,t})$ and $(Y_{t-j}, X_{1,t-j}, \\dots, X_{k,t-j})$ become independent as $j$ gets large (the "idependently" distributed part of the i.i.d. assumption for cross-sectional data). This assumption is also called \\textit{weak dependence}. It ensures that the WLLN and the CLT hold in large samples.
+\\end{itemize}\\vspace{0.5cm}
+    
+\\item Large outliers are unlikely: $E(X_{1,t}^4), E(X_{2,t}^4), \\dots, E(X_{k,t}^4)$ and $E(Y_t^4)$ have nonzero, finite fourth moments.  
+
+\\item No perfect multicollinearity.
+\\end{enumerate}
+\\end{keyconcepts}
+')
+```
 
 Since many economic time series appear to be nonstationary, assumption two of Key Concept 14.6 is a crucial one in applied macroeconomics and finance which is why statistical test for stationarity or nonstationarity have been developed. Chapters \@ref(llsuic) and \@ref(nit) are devoted to this topic. 
 
@@ -791,13 +912,22 @@ Since many economic time series appear to be nonstationary, assumption two of Ke
 
 If a $X$ is a useful predictor for $Y$, in a regression of $Y_t$ on lags of its own and lags of $X_t$, not all of the coefficients on the lags on $X_t$ are zero. This concept is called *Granger causality* and is an interesting hypothesis to test. Key Concept 14.7 summarizes the idea.
 
+```{r, eval = my_output == "html", results='asis', echo=FALSE}
+cat('
 <div class = "keyconcept"> 
 <h3 class = "right"> Key Concept 14.7 </h3>
 <h3 class = "left"> Granger Causality Tests </h3>
-
-The Granger causality test [@granger1969] is an $F$-test of the null hypothesis that *all* lags of a variable $X$ included in a time series regression model do not have predictive power for $Y_t$. The Granger causality test does not test whether $X$ actually *causes* $Y$ but whether the included lags are informative in terms of predicting $Y$.
-
+The Granger causality test @granger1969 is an $F$ test of the null hypothesis that *all* lags of a variable $X$ included in a time series regression model do not have predictive power for $Y_t$. The Granger causality test does not test whether $X$ actually *causes* $Y$ but whether the included lags are informative in terms of predicting $Y$.
 </div>
+')
+```
+
+```{r, eval = my_output == "latex", results='asis', echo=FALSE}
+cat('\\begin{keyconcepts}[Granger Causality Tests]{14.7}
+The Granger causality test \\citep{granger1969} is an $F$ test of the null hypothesis that \\textit{all} lags of a variable $X$ included in a time series regression model do not have predictive power for $Y_t$. The Granger causality test does not test whether $X$ actually \\textit{causes} $Y$ but whether the included lags are informative in terms of predicting $Y$.
+\\end{keyconcepts}
+')
+```
 
 Notice that we have already performed a Granger causality test on the coefficients of term spread in \@ref(eq:gdpgradl22), the ADL($2$,$2$) model of GDP growth and concluded that at least one of the first two lags of term spread has predictive power for GDP growth.
 
@@ -859,7 +989,7 @@ The selection of lag lengths in AR and ADL models can be partially governed by e
 
 The order of an AR model can be determined using two approaches:
 
-1. ** The $F$-test approach**
+1. ** The F-test approach**
 
     Estimate an AR($p$) model and test the significance of the largest lag(s). If the test rejects, drop the respective lag(s) from the model. This approach has the tendency to produce models where the order is too large: in a significance test we always face the risk of rejecting a true null hypothesis!
 
@@ -953,7 +1083,7 @@ BICs <- sapply(order,
 BICs
 ```
 
-Notice that from the definition of `BIC()`, for ADL models with $p=q$ it follows that <tt>p</tt> reports the number of estimated coefficients *excluding* the intercept. Thus the lag order is obtained by dividing <tt>p</tt> by 2.
+Notice that from the definition of `BIC()`, for ADL models with $p=q$ it follows that `r ttcode("p")` reports the number of estimated coefficients *excluding* the intercept. Thus the lag order is obtained by dividing `r ttcode("p")` by 2.
 
 ```{r}
 # select the ADL model with the smallest BIC
@@ -1004,7 +1134,7 @@ Thus the variance of a random walk depends on $t$ which violates the assumption 
 
 Obviously, \@ref(eq:randomwalk) is a special case of an AR($1$) model where $\beta_1 = 1$. One can show that a time series that follows an AR($1$) model is stationary if $\lvert\beta_1\rvert < 1$. In a general AR($p$) model, stationarity is linked to the roots of the polynomial $$1-\beta_1 z - \beta_2 z^2 - \beta_3 z^3 - \dots - \beta_p z^p.$$ If all roots are greater than $1$ in absolute value, the AR($p$) series is stationary. If at least one root equals $1$, the AR($p$) is said to have a *unit root* and thus has a stochastic trend.
 
-It is straightforward to simulate random walks in <tt>R</tt> using `arima.sim()`. 
+It is straightforward to simulate random walks in `r ttcode("R")` using `arima.sim()`. 
 The function `matplot()` is convenient for simple plots of the columns of a matrix.
 
 <div class="unfolded">
@@ -1148,7 +1278,7 @@ coeftest(SR_Unemp2, vcov = sandwich)
 
 When estimating the same model, this time with data from 1986 to 2012, we obtain 
 \begin{align}
-  \widehat{U.S. UR}_t = \underset{(5.41)}{41.78} + -\underset{(1.17)}{7.78} \log(JapaneseIP)_t (\#eq:urjpip2)
+  \widehat{U.S. UR}_t = \underset{(5.41)}{41.78} -\underset{(1.17)}{7.78} \log(JapaneseIP)_t (\#eq:urjpip2)
 \end{align}
 which is surprisingly quite different from \@ref(eq:urjpip1) which indicates a moderate positive relationship, in contrast to the large negative coefficient in \@ref(eq:urjpip2). This phenomenon can be attributed to stochastic trends in the series: since there is no economic reasoning that relates both trends, both regressions are spurious.
 
@@ -1166,35 +1296,60 @@ where $\delta_1 = \beta_1 - 1$. The testing problem then becomes
 \begin{align*}
   H_0: \delta_1 = 0 \ \ \ \text{vs.} \ \ \ H_1: \beta_1 < 0
 \end{align*}
-which is convenient since the corresponding test statistic is reported by many relevant <tt>R</tt> functions.^[The $t$-statistic of the Dickey-Fuller test is computed using homoskedasticity-only standard errors since under the null hypothesis, the usual $t$-statistic is robust to heteroskedasticity.]
+which is convenient since the corresponding test statistic is reported by many relevant `r ttcode("R")` functions.^[The $t$-statistic of the Dickey-Fuller test is computed using homoskedasticity-only standard errors since under the null hypothesis, the usual $t$-statistic is robust to heteroskedasticity.]
 
 The Dickey-Fuller test can also be applied in an AR($p$) model. The *Augmented Dickey-Fuller (ADF) test* is summarized in Key Concept 14.8.
 
+```{r, eval = my_output == "html", results='asis', echo=FALSE}
+cat('
 <div class = "keyconcept"> 
 <h3 class = "right"> Key Concept 14.8 </h3>
 <h3 class = "left"> The ADF Test for a Unit Root </h3>
-
 Consider the regression
-\begin{align}
-  \Delta Y_t = \beta_0 + \delta Y_{t-1} + \gamma_1 \Delta_1 Y_{t-1} + \gamma_2 \Delta Y_{t-2} + \dots + \gamma_p \Delta Y_{t-p} + u_t. (\#eq:ADFreg1)
-\end{align}
+\\begin{align}
+  \\Delta Y_t = \\beta_0 + \\delta Y_{t-1} + \\gamma_1 \\Delta_1 Y_{t-1} + \\gamma_2 \\Delta Y_{t-2} + \\dots + \\gamma_p \\Delta Y_{t-p} + u_t. (\\#eq:ADFreg1)
+\\end{align}
 
-The ADF test for a unit autoregressive root tests the hypothesis $H_0: \delta = 0$ (stochastic trend) against the one-sided alternative $H_1: \delta < 0$ (stationarity) using the usual OLS $t$-statistic.
+The ADF test for a unit autoregressive root tests the hypothesis $H_0: \\delta = 0$ (stochastic trend) against the one-sided alternative $H_1: \\delta < 0$ (stationarity) using the usual OLS $t$-statistic.
 
 If it is assumed that $Y_t$ is stationary around a deterministic linear time trend, the model is augmented by the regressor $t$, that is $Y_t$ becomes
-\begin{align}
-  \Delta Y_t = \beta_0 + at + \delta Y_{t-1} + \gamma_1 \Delta_1 Y_{t-1} + \gamma_2 \Delta Y_{t-2} + \dots + \gamma_p \Delta Y_{t-p} + u_t,  (\#eq:ADFreg2)
-\end{align}
-where again $H_0: \delta = 0$ is tested against $H_1: \delta < 0$.
+\\begin{align}
+  \\Delta Y_t = \\beta_0 + at + \\delta Y_{t-1} + \\gamma_1 \\Delta_1 Y_{t-1} + \\gamma_2 \\Delta Y_{t-2} + \\dots + \\gamma_p \\Delta Y_{t-p} + u_t,  (\\#eq:ADFreg2)
+\\end{align}
+where again $H_0: \\delta = 0$ is tested against $H_1: \\delta < 0$.
 
-The optimal lag length $p$ can be estimated using information criteria. Notice that in the regression \@ref(eq:ADFreg1), $p=0$ (that is no lags of $\Delta Y_t$ are used as regressors) corresponds to a simple AR($1$).
+The optimal lag length $p$ can be estimated using information criteria. Notice that in the regression \\@ref(eq:ADFreg1), $p=0$ (that is no lags of $\\Delta Y_t$ are used as regressors) corresponds to a simple AR($1$).
 
-Under the null hypothesis, the $t$-statistic corresponding to $H_0: \delta = 0$ does not have a normal distribution. The critical values can only be obtained from simulation and differ for regressions \@ref(eq:ADFreg1) and \@ref(eq:ADFreg2) since the distribution of the ADF test statistic is sensitive to the deterministic components included in the regression.
+Under the null hypothesis, the $t$-statistic corresponding to $H_0: \\delta = 0$ does not have a normal distribution. The critical values can only be obtained from simulation and differ for regressions \\@ref(eq:ADFreg1) and \\@ref(eq:ADFreg2) since the distribution of the ADF test statistic is sensitive to the deterministic components included in the regression.
 </div>
+')
+```
+
+```{r, eval = my_output == "latex", results='asis', echo=FALSE}
+cat('\\begin{keyconcepts}[The ADF Test for a Unit Root]{14.8}
+Consider the regression
+\\begin{align}
+  \\Delta Y_t = \\beta_0 + \\delta Y_{t-1} + \\gamma_1 \\Delta_1 Y_{t-1} + \\gamma_2 \\Delta Y_{t-2} + \\dots + \\gamma_p \\Delta Y_{t-p} + u_t. \\label{eq:ADFreg1}
+\\end{align}
+
+The ADF test for a unit autoregressive root tests the hypothesis $H_0: \\delta = 0$ (stochastic trend) against the one-sided alternative $H_1: \\delta < 0$ (stationarity) using the usual OLS $t$-statistic.\\newline
+
+If it is assumed that $Y_t$ is stationary around a deterministic linear time trend, the model is augmented by the regressor $t$, that is $Y_t$ becomes
+\\begin{align}
+  \\Delta Y_t = \\beta_0 + at + \\delta Y_{t-1} + \\gamma_1 \\Delta_1 Y_{t-1} + \\gamma_2 \\Delta Y_{t-2} + \\dots + \\gamma_p \\Delta Y_{t-p} + u_t,  \\label{eq:ADFreg2}
+\\end{align}
+where again $H_0: \\delta = 0$ is tested against $H_1: \\delta < 0$.\\newline
+
+The optimal lag length $p$ can be estimated using information criteria. Notice that in the regression \\ref{eq:ADFreg1}, $p=0$ (that is no lags of $\\Delta Y_t$ are used as regressors) corresponds to a simple AR($1$).\\newline
+
+Under the null hypothesis, the $t$-statistic corresponding to $H_0: \\delta = 0$ does not have a normal distribution. The critical values can only be obtained from simulation and differ for regressions (\\ref{eq:ADFreg1}) and (\\ref{eq:ADFreg2}) since the distribution of the ADF test statistic is sensitive to the deterministic components included in the regression.
+\\end{keyconcepts}
+')
+```
 
 #### Critical Values for the ADF Statistic {-}
 
-Key Concept 14.8 states that the critical values for the ADF test in the regressions \@ref(eq:ADFreg1) and \@ref(eq:ADFreg2) can only be determined using simulation. The idea of the simulation study is to simulate a large number of ADF test test statistics and use them to estimate quantiles of their *asymptotic* distribution. This section shows how this is feasible within <tt>R</tt>.
+Key Concept 14.8 states that the critical values for the ADF test in the regressions \@ref(eq:ADFreg1) and \@ref(eq:ADFreg2) can only be determined using simulation. The idea of the simulation study is to simulate a large number of ADF test test statistics and use them to estimate quantiles of their *asymptotic* distribution. This section shows how this is feasible within `r ttcode("R")`.
 
 First, consider an AR($1$) model with drift. The procedure is as follows:
 
@@ -1331,14 +1486,15 @@ LogGDP <- ts(log(GDP["1962::2012"]))
 
 # estimate the model
 coeftest(
-  dynlm(diff(LogGDP) ~ trend(LogGDP, scale = F) + L(LogGDP) + diff(L(LogGDP)) + diff(L(LogGDP), 2))
+  dynlm(diff(LogGDP) ~ trend(LogGDP, scale = F) + L(LogGDP) 
+                     + diff(L(LogGDP)) + diff(L(LogGDP), 2))
   )
 ```
 
 The estimation yields 
 \begin{align*}
-  \Delta\log(GDP_t) =& \, \underset{(0.118)}{0.28} + \underset{(0.0001)}{0.0002} t + -\underset{(0.014)}{0.033} \log(GDP_{t-1}) \\
-  & \, + \underset{(0.113)}{0.083} \Delta \log(GDP_{t-1}) + \underset{(0.071)}{0.188} \Delta \log(GDP_{t-2}) + u_t,
+  \Delta\log(GDP_t) =& \, \underset{(0.118)}{0.28} + \underset{(0.0001)}{0.0002} t -\underset{(0.014)}{0.033} \log(GDP_{t-1}) \\
+  + & \, \underset{(0.113)}{0.083} \Delta \log(GDP_{t-1}) + \underset{(0.071)}{0.188} \Delta \log(GDP_{t-2}) + u_t,
 \end{align*}
 so the ADF test statistic is $t=-0.033/0.014 = - 2.35$. The corresponding $5\%$ critical value from table \@ref(tab:DFcrits) is $-3.41$ so we cannot reject the null hypothesis that $\log(GDP)$ has a stochastic trend in favor of the alternative that it is stationary around a deterministic linear time trend.
 
@@ -1356,40 +1512,57 @@ where we allow for discrete changes in $\beta_0$, $\beta_1$ and $\beta_2$ at the
 
 When the break date is unknown the *Quandt likelihood ratio* (QLR) *test* [@quandt1960] may be used. It is a modified version of the Chow test which uses the largest of all $F$-statistics obtained when applying the Chow test for all possible break dates in a predetermined range $\left[\tau_0,\tau_1\right]$. The QLR test is summarized in Key Concept 14.9.
 
+```{r, eval = my_output == "html", results='asis', echo=FALSE}
+cat('
 <div class = "keyconcept"> 
 <h3 class = "right"> Key Concept 14.9 </h3>
 <h3 class = "left"> The QLR Test for Coefficient Stability </h3>
-
 <p>
-
-The QLR test can be used to test for a break in the population regression function if the date of the break is unknown. The QLR test statistic is the largest (Chow) $F(\tau)$-statistic computed over a range of eligible break dates  $\tau_0 \leq \tau \leq \tau_1$:
-\begin{align}
-  QLR = \max\left[F(\tau_0),F(\tau_0 +1),\dots,F(\tau_1)\right]. (\#eq:QLRstatistic)
-\end{align}
-
+The QLR test can be used to test for a break in the population regression function if the date of the break is unknown. The QLR test statistic is the largest (Chow) $F(\\tau)$ statistic computed over a range of eligible break dates  $\\tau_0 \\leq \\tau \\leq \\tau_1$:
+\\begin{align}
+  QLR = \\max\\left[F(\\tau_0),F(\\tau_0 +1),\\dots,F(\\tau_1)\\right]. (\\#eq:QLRstatistic)
+\\end{align}
 </p>
-
 The most important properties are:
 
 + The QLR test can be applied to test whether a subset of the coefficients in the population regression function breaks but the test also rejects if there is a slow evolution of the regression function. 
 
-+ When there is a single discrete break in the population regression function, the $QLR$ test statistic is $F(\widehat{\tau})$ and $\widehat{\tau}/T$ is a consistent estimator of the true break date.
++ When there is a single discrete break in the population regression function, the $QLR$ test statistic is $F(\\widehat{\\tau})$ and $\\widehat{\\tau}/T$ is a consistent estimator of the true break date.
 
-+ The large-sample distribution of $QLR$ depends on $q$, the number of restrictions being tested and both ratios of end points to the sample size, $\tau_0/T, \tau_1/T$. 
++ The large-sample distribution of $QLR$ depends on $q$, the number of restrictions being tested and both ratios of end points to the sample size, $\\tau_0/T, \\tau_1/T$. 
 
 + Similar to the ADF test, the large-sample distribution of $QLR$ is nonstandard. Critical values are presented in Table 14.5 of the book.
 
 </div>
+')
+```
+
+```{r, eval = my_output == "latex", results='asis', echo=FALSE}
+cat('\\begin{keyconcepts}[The QLR Test for Coefficient Stability]{14.9}
+The QLR test can be used to test for a break in the population regression function if the date of the break is unknown. The QLR test statistic is the largest (Chow) $F(\\tau)$ statistic computed over a range of eligible break dates  $\\tau_0 \\leq \\tau \\leq \\tau_1$:\\newline
+\\begin{align}
+  QLR = \\max\\left[F(\\tau_0),F(\\tau_0 +1),\\dots,F(\\tau_1)\\right]. \\label{eq:QLRstatistic}
+\\end{align}\\vspace{0.5cm}
+The most important properties are:
+\\begin{itemize}
+\\item The QLR test can be applied to test whether a subset of the coefficients in the population regression function breaks but the test also rejects if there is a slow evolution of the regression function. 
+\\item When there is a single discrete break in the population regression function, the $QLR$ test statistic is $F(\\widehat{\\tau})$ and $\\widehat{\\tau}/T$ is a consistent estimator of the true break date.
+\\item The large-sample distribution of $QLR$ depends on $q$, the number of restrictions being tested and both ratios of end points to the sample size, $\\tau_0/T, \\tau_1/T$. 
+\\item Similar to the ADF test, the large-sample distribution of $QLR$ is nonstandard. Critical values are presented in Table 14.5 of the book.
+\\end{itemize}
+\\end{keyconcepts}
+')
+```
 
 #### Has the Predictive Power of the term spread been stable? {-}
 
 Using the QLR statistic we may test whether there is a break in the coefficients on the lags of the term spread in \@ref(eq:gdpgradl22), the ADL($2$,$2$) regression model of GDP growth. Following Key Concept 14.9 we modify the specification of \@ref(eq:gdpgradl22) by adding a break dummy $D(\tau)$ and its interactions with both lags of term spread and choose the range of break points to be tested as 1970:Q1 - 2005:Q2 (these periods are the center 70\% of the sample data from 1962:Q2 - 2012:Q4). Thus, the model becomes
 \begin{align*}
-    GDPGR_t =& \, \beta_0 + \beta_1 GDPGR_{t-1} + \beta_2 GDPGR_{t-2} \\
-            &\,+  \beta_3  TSpread_{t-1} + \beta_4 TSpread_{t-2} \\
-            &\,+ \gamma_1 D(\tau) + \gamma_2 (D(\tau) TSpread_{t-1}) \\
-            &\,+ \gamma_3 (D(\tau) TSpread_{t-2}) \\
-            &\,+ u_t.
+    GDPGR_t =&\, \beta_0 + \beta_1 GDPGR_{t-1} + \beta_2 GDPGR_{t-2} \\
+            +&\,  \beta_3  TSpread_{t-1} + \beta_4 TSpread_{t-2} \\
+            +&\, \gamma_1 D(\tau) + \gamma_2 (D(\tau) TSpread_{t-1}) \\
+            +&\, \gamma_3 (D(\tau) TSpread_{t-2}) \\
+            +&\, u_t.
 \end{align*}
 
 Next, we estimate the model for each break point and compute the $F$-statistic corresponding to the null hypothesis $H_0: \gamma_1=\gamma_2=\gamma_3=0$. The $QLR$-statistic is the largest of the $F$-statistics obtained in this manner. 
@@ -1415,7 +1588,8 @@ for(i in 1:length(tau)) {
   
   # compute and save the F-statistic
   Fstats[i] <- linearHypothesis(test, 
-                                c("DTRUE=0", "DTRUE:L(TSpread_ts)", "DTRUE:L(TSpread_ts, 2)"),
+                                c("DTRUE=0", "DTRUE:L(TSpread_ts)", 
+                                  "DTRUE:L(TSpread_ts, 2)"),
                                 vcov. = sandwich)$F[2]
 
 }
@@ -1475,21 +1649,36 @@ text(1980.75, QLR+0.2, "QLR Statistic")
 
 Pseudo out-of-sample forecasts are used to simulate the out-of-sample performance (the real time forecast performance) of a time series regression model. In particular, pseudo out-of-sample forecast allow estimation of the $RMSFE$ of the model and enable researchers to compare different model specifications with respect to their reliability. Key Concept 14.10 summarizes this idea.
 
+```{r, eval = my_output == "html", results='asis', echo=FALSE}
+cat('
 <div class = "keyconcept"> 
 <h3 class = "right"> Key Concept 14.10 </h3>
 <h3 class = "left"> Pseudo Out-of-Sample Forecasting </h3>
-
 1. Divide the sample data into $s=T-P$ and $P$ subsequent observations. The $P$ observations are used as pseudo-out-of-sample observations.
 
 2. Estimate the model using the first $s$ observations. 
 
-3. Compute the pseudo-forecast $\overset{\sim}{Y}_{s+1\vert s}$.
+3. Compute the pseudo-forecast $\\overset{\\sim}{Y}_{s+1\\vert s}$.
 
-4. Compute the pseudo-forecast-error $\overset{\sim}{u}_{s+1} = Y_{s+1} - \overset{\sim}{Y}_{s+1\vert s}$.
+4. Compute the pseudo-forecast-error $\\overset{\\sim}{u}_{s+1} = Y_{s+1} - \\overset{\\sim}{Y}_{s+1\\vert s}$.
 
 5. Repeat steps 2 trough 4 for all remaining pseudo-out-of-sample dates.
-
 </div>
+')
+```
+
+```{r, eval = my_output == "latex", results='asis', echo=FALSE}
+cat('\\begin{keyconcepts}[Pseudo Out-of-Sample Forecasting]{14.10}
+\\begin{enumerate}
+\\item Divide the sample data into $s=T-P$ and $P$ subsequent observations. The $P$ observations are used as pseudo-out-of-sample observations.
+\\item Estimate the model using the first $s$ observations. 
+\\item Compute the pseudo-forecast $\\overset{\\sim}{Y}_{s+1\\vert s}$.
+\\item Compute the pseudo-forecast-error $\\overset{\\sim}{u}_{s+1} = Y_{s+1} - \\overset{\\sim}{Y}_{s+1\\vert s}$.
+\\item Repeat steps 2 trough 4 for all remaining pseudo-out-of-sample dates.
+\\end{enumerate}
+\\end{keyconcepts}
+')
+```
 
 #### Did the Predictive Power of the Term Spread Change During the 2000s? {-}
 
@@ -1508,7 +1697,8 @@ SER <- forecasts
 for(i in 1:length(EndOfSample)) {
 
   # estimate ADL(2,2) model
-  m <- dynlm(GDPGrowth_ts ~ L(GDPGrowth_ts) + L(GDPGrowth_ts, 2) + L(TSpread_ts) + L(TSpread_ts, 2), 
+  m <- dynlm(GDPGrowth_ts ~ L(GDPGrowth_ts) + L(GDPGrowth_ts, 2) 
+                          + L(TSpread_ts) + L(TSpread_ts, 2), 
                 start = c(1981, 1), 
                 end = EndOfSample[i])
   
@@ -1527,7 +1717,7 @@ for(i in 1:length(EndOfSample)) {
 POOSFCE <- window(GDPGrowth_ts, c(2003, 1), c(2012, 4)) - forecasts
 ```
 
-We next translate the pseudo-out-of-sample forecasts into an object of class <tt>ts</tt> and plot the real GDP growth rate against the forecasted series.
+We next translate the pseudo-out-of-sample forecasts into an object of class `r ttcode("ts")` and plot the real GDP growth rate against the forecasted series.
 
 <div class="unfolded">
 ```{r, fig.align='center'}
@@ -1595,7 +1785,7 @@ t.test(POOSFCE)
 
 The hypothesis cannot be rejected at the $10\%$ significance level. Altogether the analysis suggests that the ADL($2$,$2$) model coefficients have been stable since the presumed break in the early 1980s.
 
-## Can You Beat the Market? Part II
+## Can You Beat the Market? (Part II)
 
 The dividend yield (the ratio of current dividends to the stock price) can be considered as an indicator of future dividends: if a stock has a high current dividend yield, it can be considered undervalued and it can be presumed that the price of the stock goes up in the future, meaning that future excess returns go up.
 
@@ -1647,7 +1837,8 @@ CRSP_ADL_1 <- dynlm(ExReturn ~ L(ExReturn) + d(L(ln_DivYield)),
               )
 
 # ADL(2,2) (1st & 2nd differences of log dividend yield)
-CRSP_ADL_2 <- dynlm(ExReturn ~ L(ExReturn) + L(ExReturn, 2) + d(L(ln_DivYield)) + d(L(ln_DivYield, 2)), 
+CRSP_ADL_2 <- dynlm(ExReturn ~ L(ExReturn) + L(ExReturn, 2) 
+                   + d(L(ln_DivYield)) + d(L(ln_DivYield, 2)), 
                    data = StockReturns,
                    start = c(1960, 1), end = c(2002, 12)
               )
@@ -1669,26 +1860,7 @@ rob_se_CRSP_ADL <- list(
 
 A tabular representation of the results can then be generated using `r ttcode("stargazer()")`. 
 
-<!--html_preserve-->
-
-```{r, message=F, warning=F, results='asis', echo=F, eval=my_output=="html"}
-stargazer(CRSP_ADL_1, CRSP_ADL_2, CRSP_ADL_3,
-  title = "ADL Models of Monthly Excess Stock Returns",
-  header = FALSE, 
-  type = "html",
-  digits = 3, 
-  column.labels = c("ADL(1,1)", "ADL(2,2)", "ADL(1,1)"),
-  dep.var.caption  = "Excess returns on the CSRP value-weighted index",
-  dep.var.labels.include = FALSE,
-  covariate.labels = c("$excess return_{t-1}$", "$excess return_{t-2}$", "$1^{st} diff log(dividend yield_{t-1})$", "$1^{st} diff log(dividend yield_{t-2})$", "$log(dividend yield_{t-1})$", "Constant"),
-  se = rob_se_CRSP_ADL,
-  no.space = T
-  ) 
-```
-
-<!--/html_preserve-->
-
-```{r, message=F, warning=F, results='asis', echo=F, eval=my_output=="latex"}
+```{r, message=F, warning=F, results='asis', eval=F}
 stargazer(CRSP_ADL_1, CRSP_ADL_2, CRSP_ADL_3,
   title = "ADL Models of Monthly Excess Stock Returns",
   header = FALSE, 
@@ -1697,7 +1869,48 @@ stargazer(CRSP_ADL_1, CRSP_ADL_2, CRSP_ADL_3,
   no.space = T,
   digits = 3, 
   column.labels = c("ADL(1,1)", "ADL(2,2)", "ADL(1,1)"),
-  dep.var.caption  = "Excess returns on the CSRP value-weighted index",
+  dep.var.caption  = "Dependent Variable: Excess returns on the CSRP value-weighted index",
+  dep.var.labels.include = FALSE,
+  covariate.labels = c("$excess return_{t-1}$", 
+                       "$excess return_{t-2}$", 
+                       "$1^{st} diff log(dividend yield_{t-1})$", 
+                       "$1^{st} diff log(dividend yield_{t-2})$", 
+                       "$log(dividend yield_{t-1})$", 
+                       "Constant"),
+  se = rob_se_CRSP_ADL
+  ) 
+```
+
+<!--html_preserve-->
+
+```{r, message=F, warning=F, results='asis', echo=F, eval=my_output=="html"}
+stargazer(CRSP_ADL_1, CRSP_ADL_2, CRSP_ADL_3,
+  header = FALSE, 
+  type = "html",
+  digits = 3, 
+  column.labels = c("ADL(1,1)", "ADL(2,2)", "ADL(1,1)"),
+  dep.var.caption  = "Dependent Variable: Excess Returns on the CSRP Value-Weighted Index",
+  dep.var.labels.include = FALSE,
+  covariate.labels = c("$excess return_{t-1}$", "$excess return_{t-2}$", "$1^{st} diff log(dividend yield_{t-1})$", "$1^{st} diff log(dividend yield_{t-2})$", "$log(dividend yield_{t-1})$", "Constant"),
+  se = rob_se_CRSP_ADL,
+  no.space = T
+  )
+
+stargazer_html_title("ADL Models of Monthly Excess Stock Returns", "adlmomesr")
+```
+
+<!--/html_preserve-->
+
+```{r, message=F, warning=F, results='asis', echo=F, eval=my_output=="latex"}
+stargazer(CRSP_ADL_1, CRSP_ADL_2, CRSP_ADL_3,
+  title = "\\label{tab:adlmomesr} ADL Models of Monthly Excess Stock Returns",
+  header = FALSE, 
+  type = "latex",
+  column.sep.width = "-5pt",
+  no.space = T,
+  digits = 3, 
+  column.labels = c("ADL(1,1)", "ADL(2,2)", "ADL(1,1)"),
+  dep.var.caption  = "Dependent Variable: Excess returns on the CSRP Value-Weighted Index",
   dep.var.labels.include = FALSE,
   covariate.labels = c("$excess return_{t-1}$", "$excess return_{t-2}$", "$1^{st} diff log(dividend yield_{t-1})$", "$1^{st} diff log(dividend yield_{t-2})$", "$log(dividend yield_{t-1})$", "Constant"),
   se = rob_se_CRSP_ADL
@@ -1708,7 +1921,7 @@ Notice that for models (1) and (2) none of the individual $t$-statistics suggest
 
 Things are different for model (3). The coefficient on the level of the logarithm of the dividend yield is different from zero at the $5\%$ level and the $F$-test does not reject at this level either. But we should be suspicious: the high degree of persistence in the dividend yield series probably renders this inference useless because $t$- and $F$-statistics may follow distributions that deviate considerably from their theoretical large-sample distributions such that the usual critical values cannot be applied.
 
-If model (3) would be of any use for predicting excess returns, pseudo-out-of-sample forecasts based on (3) should outperform forecasts of an intercept-only model in terms of the sample RMSFE. We can perform this type of comparison using <tt>R</tt> code in the fashion of the applications of Chapter \@ref(niib).
+If model (3) would be of any use for predicting excess returns, pseudo-out-of-sample forecasts based on (3) should outperform forecasts of an intercept-only model in terms of the sample RMSFE. We can perform this type of comparison using `r ttcode("R")` code in the fashion of the applications of Chapter \@ref(niib).
 
 ```{r, cache=T}
 # end of sample dates
@@ -1763,15 +1976,15 @@ The comparison indicates that model (3) is not useful since it is outperformed i
 
 #### Summary {-}
 
-This chapter dealt with introductory topics in time series regression analysis, where variables are generally correlated from one observation to the next, a concept termed serial correlation. At the beginning, several ways of storing and plotting time series data using <tt>R</tt> have been presented and used for informal analysis of economic example data.
+This chapter dealt with introductory topics in time series regression analysis, where variables are generally correlated from one observation to the next, a concept termed serial correlation. At the beginning, several ways of storing and plotting time series data using `r ttcode("R")` have been presented and used for informal analysis of economic example data.
 
-We have introduced AR and ADL models and applied them in the context of forecasting of macroeconomic and financial time series using <tt>R</tt>. The discussion also included the topic of lag length selection. It was shown how to set up a simple function that computes the BIC for a model object supplied.
+We have introduced AR and ADL models and applied them in the context of forecasting of macroeconomic and financial time series using `r ttcode("R")`. The discussion also included the topic of lag length selection. It was shown how to set up a simple function that computes the BIC for a model object supplied.
 
-We have also seen how to write simple <tt>R</tt> code for performing and evaluating forecasts and demonstrated some more sophisticated approaches to conduct pseudo-out-of-sample forecasts for assessment of a model's predictive power for unobserved future outcomes of a series, to check model stability and to compare different models.
+We have also seen how to write simple `r ttcode("R")` code for performing and evaluating forecasts and demonstrated some more sophisticated approaches to conduct pseudo-out-of-sample forecasts for assessment of a model's predictive power for unobserved future outcomes of a series, to check model stability and to compare different models.
 
-Furthermore, some more technical aspects like the concept of stationarity were addressed. This included applications to testing for an autoregressive unit root with the Dickey-Fuller test and the detection of a break in the population regression function using the $QLR$ statistic. For both methods, the distribution of the relevant test statistic is non-normal, even in large samples. Concerning the Dickey-Fuller test we have used <tt>R</tt>'s random number generation facilities to produce evidence for this by means of a Monte-Carlo simulation and motivated usage of the quantiles tabulated in the book.
+Furthermore, some more technical aspects like the concept of stationarity were addressed. This included applications to testing for an autoregressive unit root with the Dickey-Fuller test and the detection of a break in the population regression function using the $QLR$ statistic. For both methods, the distribution of the relevant test statistic is non-normal, even in large samples. Concerning the Dickey-Fuller test we have used `r ttcode("R")`'s random number generation facilities to produce evidence for this by means of a Monte-Carlo simulation and motivated usage of the quantiles tabulated in the book.
 
-Also, empirical studies regarding the validity of the weak and the strong form efficiency hypothesis which are presented in the applications *Can You Beat the Market? Part I & II* in the book have been reproduced using <tt>R</tt>.
+Also, empirical studies regarding the validity of the weak and the strong form efficiency hypothesis which are presented in the applications *Can You Beat the Market? Part I & II* in the book have been reproduced using `r ttcode("R")`.
 
 In all applications presented in this chapter, the focus was layed on forecasting future outcomes rather than estimation of causal relationships between time series variables. However, the framework of methods needed for the latter is very similar. Chapter \@ref(eodce) is devoted to estimation of so called *dynamic causal effects*.
 
