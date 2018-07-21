@@ -1,11 +1,11 @@
 # Linear Regression with One Regressor {#lrwor} 
 
 This chapter introduces the basics in linear regression and shows how to perform regression analysis in `r ttcode("R")`. In linear regression, the aim is to model the relationship between a dependent variable $Y$ and one or more explanatory variables denoted by $X_1, X_2, \dots, X_k$. Following the book we will focus on the concept of simple linear regression throughout the whole chapter. In simple linear regression, there is just one explanatory variable $X_1$. <br> 
-If for example a school cuts the class sizes by hiring new teachers, that is, the school lowers $X_1$, the student-teacher ratios of their classes, how would this affect $Y$, the performance of the students involved in a standardized test? With linear regression we can not only examine whether the student-teacher ratio *does have* an impact on the test results but we can also learn about the *direction* and the *strength* of this effect. 
+If for example a school cuts its class sizes by hiring new teachers, that is, the school lowers $X_1$, the student-teacher ratios of their classes, how would this affect $Y$, the performance of the students involved in a standardized test? With linear regression we can not only examine whether the student-teacher ratio *does have* an impact on the test results but we can also learn about the *direction* and the *strength* of this effect. 
 
 The following packages are needed for reproducing the code presented in this chapter:
 
-+ `r ttcode("AER")` - accompanies the Book *Applied Econometrics with R* by Zeileis (2008) and provides useful functions and data sets.
++ `r ttcode("AER")` - accompanies the Book *Applied Econometrics with R* @kleiber2008 and provides useful functions and data sets.
 
 + `r ttcode("MASS")` - a collection of functions for applied statistics.
 
@@ -59,8 +59,8 @@ STR
 TestScore
 ```
 
-If we use a simple linear regression model, we assume that the true relationship 
-between both variables can be represented by a straight line, formally
+If we use a simple linear regression model, we model the true relationship 
+between both variables by a straight line, formally
 
 $$ Y = b \cdot X + a. $$ 
 
@@ -69,8 +69,7 @@ to each other is
 
 $$TestScore = 713 - 3 \times STR.$$
 
-If possible, it is always a good idea to visualize the data you work with in an appropriate way.
-For our purpose it is suitable to use the function `r ttcode("plot()")` to produce a scatter plot with `r ttcode("STR")` on the $X$-axis and `r ttcode("TestScore")` on the $Y$ axis. An easy way to do so is to call `plot(y_variable ~ x_variable)` whereby `r ttcode("y_variable")` and `r ttcode("x_variable")` are placeholders for the vectors of observations we want to plot. Furthermore, we might want to add the true relationship to the plot. To draw a straight line, `r ttcode("R")` provides the
+It is always a good idea to visualize the data you work with. For our purpose it is suitable to use the function `r ttcode("plot()")` to produce a scatter plot with `r ttcode("STR")` on the $X$-axis and `r ttcode("TestScore")` on the $Y$-axis. An easy way to do so is to call `plot(y_variable ~ x_variable)` whereby `r ttcode("y_variable")` and `r ttcode("x_variable")` are placeholders for the vectors of observations we want to plot. Furthermore, we might want to add the true relationship to the plot. To draw a straight line, `r ttcode("R")` provides the
 function `r ttcode("abline()")`. We just have to call this function with arguments `r ttcode("a")` (representing the intercept) 
 and `r ttcode("b")` (representing the slope) after executing `r ttcode("plot()")` in order to add the line to our scatter plot. 
 
@@ -112,12 +111,12 @@ $$Y_i = \\beta_0 + \\beta_1 X_1 + u_i$$
 where
 
 - the index $i$ runs over the observations, $i=1,\\dots,n$
-- $Y_i$ is the \\textit{dependent variable}, the \\textit{regressand}, or simply the \\textit{left-hand variable}
-- $X_i$ is the \\textit{independent variable}, the \\textit{regressor}, or simply the \\textit{right-hand variable}
-- $Y = \\beta_0 + \\beta_1 X$ is the \\textit{population regression line} also called the \\textit{population regression function}
-- $\\beta_0$ is the \\textit{intercept} of the population regression line
-- $\\beta_1$ is the \\textit{slope} of the population regression line
-- $u_i$ is the \\textit{error term}.
+- $Y_i$ is the *dependent variable*, the *regressand*, or simply the *left-hand variable*
+- $X_i$ is the *independent variable*, the *regressor*, or simply the *right-hand variable*
+- $Y = \\beta_0 + \\beta_1 X$ is the *population regression line* also called the *population regression function*
+- $\\beta_0$ is the *intercept* of the population regression line
+- $\\beta_1$ is the *slope* of the population regression line
+- $u_i$ is the *error term*.
 </p>
 </div>
 ')
@@ -163,9 +162,9 @@ library(AER)
 data(CASchools) 
 ```
 
-Note that once a package has been installed it is available for use at further occasions when invoked with `r ttcode("library()")` --- there is no need to run `r ttcode("install.packages()")` again!
+Once a package has been installed it is available for use at further occasions when invoked with `r ttcode("library()")` --- there is no need to run `r ttcode("install.packages()")` again!
 
-For several reasons it is interesting to know what kind of object we are dealing with. 
+It is interesting to know what kind of object we are dealing with. 
 `r ttcode("class()")` returns the class of an object. Depending on the class of an object some functions (for example `r ttcode("plot()")` and `r ttcode("summary()")`) behave differently.
 
 Let us check the class of the object `r ttcode("CASchools")`.
@@ -188,7 +187,7 @@ head(CASchools)
 
 We find that the data set consists of plenty of variables and most of them are numeric. 
 
-By the way: an alternative to `r ttcode("class()")` and `r ttcode("head()")` is `r ttcode("str()")` which is deduced from 'structure' and gives a comprehensive overview of the object. Try this!
+By the way: an alternative to `r ttcode("class()")` and `r ttcode("head()")` is `r ttcode("str()")` which is deduced from 'structure' and gives a comprehensive overview of the object. Try!
 
 Turning back to `r ttcode("CASchools")`, the two variables we are interested in (i.e. average test score and the student-teacher ratio) are *not* included. However, it is possible to calculate both from the provided data. To obtain the student-teacher ratios, we simply divide the number of students by the number of teachers. The average test score is the arithmetic mean of the test score for reading and the score of the math test. The next code chunk shows how the two variables can be constructed as vectors and how they are appended to `r ttcode("CASchools")`.
 
@@ -200,9 +199,9 @@ CASchools$STR <- CASchools$students/CASchools$teachers
 CASchools$score <- (CASchools$read + CASchools$math)/2     
 ```
 
-If we ran `r ttcode("head(CASchools)")` again we would find the two variables of interest as additional columns named `r ttcode("STR")` and ")`score")` (check this!).
+If we ran `r ttcode("head(CASchools)")` again we would find the two variables of interest as additional columns named `r ttcode("STR")` and `r ttcode("score")`. (check this!)
 
-Table 4.1 from the text book summarizes the distribution of test scores and student-teacher ratios. Remember that there are several functions which can be used to produce similar results, e.g.
+Table 4.1 from the text book summarizes the distribution of test scores and student-teacher ratios. There are several functions which can be used to produce similar results, e.g.
 
 - `r ttcode("mean()")` (computes the arithmetic mean of the provided numbers)
 
@@ -237,9 +236,9 @@ DistributionSummary <- data.frame(
 DistributionSummary
 ```
 
-As done for the sample data, we use `r ttcode("plot()")` for a visual survey. This allows us to detect specific characteristics of our data, such as outliers which are hard to discover by looking at mere numbers. This time we add some additional arguments to the call of `r ttcode("plot()")`.
+As for the sample data, we use `r ttcode("plot()")` for a visual survey. This allows us to detect specific characteristics of our data, such as outliers which are hard to discover by looking at mere numbers. This time we add some additional arguments to the call of `r ttcode("plot()")`.
 
-The first argument in our call of `r ttcode("plot()")`, `r ttcode("score ~ STR")`, is again a formula that states the dependent variable and the regressor. However, this time the two variables are not saved in separate vectors but are columns of `r ttcode("CASchools")`. Therefore, `r ttcode("R")` would not find them without the argument `r ttcode("data")` being correctly specified. `r ttcode("data")` must be in accordance with the name of the `r ttcode("data.frame")` to which the variables belong to, in this case `r ttcode("CASchools")`. Further arguments are used to change the appearance of the plot: while `r ttcode("main")` adds a title, `r ttcode("xlab")` and `r ttcode("ylab")` are adding custom labels to both axes.  
+The first argument in our call of `r ttcode("plot()")`, `r ttcode("score ~ STR")`, is again a formula that states the dependent variable and the regressor. However, this time the two variables are not saved in separate vectors but are columns of `r ttcode("CASchools")`. Therefore, `r ttcode("R")` would not find them without the argument `r ttcode("data")` being correctly specified. `r ttcode("data")` must be in accordance with the name of the `r ttcode("data.frame")` to which the variables belong to, in this case `r ttcode("CASchools")`. Further arguments are used to change the appearance of the plot: while `r ttcode("main")` adds a title, `r ttcode("xlab")` and `r ttcode("ylab")` add custom labels to both axes.  
 
 <div class="unfolded">
 ```{r, fig.align='center'}
@@ -337,7 +336,7 @@ beta_0
 
 Of course there are also other and even more manual ways to do the same tasks. Luckily, OLS is one of the most widely-used estimation techniques. Being a statistical programming language, R already contains a built-in function named `r ttcode("lm()")` (**l**inear **m**odel) which can be used to carry out regression analysis.
 
-The first argument of the function to be specified is, similar to `r ttcode("plot()")`, the regression formula with the basic syntax `r ttcode("y ~ x")` where ")`y")` is the dependent variable and `r ttcode("x")` the explanatory variable. The argument `r ttcode("data")` determines the data set to be used in the regression. We now revisit the example from the book where the relationship between the test scores and the class sizes is analysed. The following code uses `r ttcode("lm()")` to replicate the results presented in figure 4.3 of the book. 
+The first argument of the function to be specified is, similar to `r ttcode("plot()")`, the regression formula with the basic syntax `r ttcode("y ~ x")` where `r ttcode("y")` is the dependent variable and `r ttcode("x")` the explanatory variable. The argument `r ttcode("data")` determines the data set to be used in the regression. We now revisit the example from the book where the relationship between the test scores and the class sizes is analysed. The following code uses `r ttcode("lm()")` to replicate the results presented in figure 4.3 of the book. 
 
 ```{r}
 # estimate the model and assign the result to linear_model
@@ -366,7 +365,7 @@ abline(linear_model)
 ```
 </div>
 
-Did you notice that this time, we did not pass the intercept and slope parameters to `r ttcode("abline")`? If you call `r ttcode("abline()")` on an object of class `r ttcode("lm")` that only contains a single regressor variable, `r ttcode("R")` draws the regression line automatically! 
+Did you notice that this time, we did not pass the intercept and slope parameters to `r ttcode("abline")`? If you call `r ttcode("abline()")` on an object of class `r ttcode("lm")` that only contains a single regressor, `r ttcode("R")` draws the regression line automatically! 
 
 ## Measures of Fit
 
@@ -474,7 +473,7 @@ where
 ')
 ```
 
-### Assumption #1: The Error Term has Conditional Mean of Zero {-}
+### Assumption 1: The Error Term has Conditional Mean of Zero {-}
 
 This means that no matter which value we choose for $X$, the error term $u$ must not show any systematic pattern and must have a mean of $0$.
 Consider the case that $E(u) = 0$ but for low and high values of $X$, the error term tends to be positive and for midrange values of
@@ -520,7 +519,7 @@ The plot shows what is meant by $E(u_i|X_i) = 0$ and why it does not hold for th
 
 Using the quadratic model (represented by the black curve) we see that there are no systematic deviations of the observation from the predicted relation. It is credible that the assumption is not violated when such a model is employed. However, using a simple linear regression model we see that the assumption is probably violated as $E(u_i|X_i)$ varies with the $X_i$.
 
-### Assumption #2: Independently and Identically Distributed Data {-}
+### Assumption 2: Independently and Identically Distributed Data {-}
 
 Most sampling schemes used when collecting data from populations produce i.i.d. samples. For example, we could use `r ttcode("R")`'s random number generator to randomly select student IDs from a university's enrollment list and record age $X$ and earnings $Y$ of the corresponding students. This is a typical example of simple random sampling and ensures that all the $(X_i, Y_i)$ are drawn randomly from the same population.
 
@@ -552,9 +551,9 @@ plot(Date, X, type = "l", col="steelblue", ylab = "Workers", xlab = "Time")
 
 It is evident that the observations on the number of employees cannot be independent in this example: the level of today's employment is correlated with tomorrows employment level. Thus, the i.i.d. assumption is violated.
 
-### Assumption #3: Large Outliers are Unlikely {-}
+### Assumption 3: Large Outliers are Unlikely {-}
 
-It is easy to come up with situations where extreme observations, i.e. observations that deviate considerably from the usual range of the data, may occur. Such observations are called outliers. Technically speaking, assumption #3 requires that $X$ and $Y$ have a finite kurtosis.^[See Chapter 4.4 of the book.]
+It is easy to come up with situations where extreme observations, i.e. observations that deviate considerably from the usual range of the data, may occur. Such observations are called outliers. Technically speaking, assumption 3 requires that $X$ and $Y$ have a finite kurtosis.^[See Chapter 4.4 of the book.]
 
 Common cases where we want to exclude or (if possible) correct such outliers is when they are apparently typos, conversion errors or measurement errors. Even if it seems like extreme observations have been recorded correctly, it is advisable to exclude them before estimating a model since OLS suffers from *sensitivity to outliers*.
 
@@ -614,7 +613,7 @@ The large sample normal distribution of $\\hat\\beta_0$ is $N(\\beta_0, \\sigma^
 \\sigma^2_{\\hat\\beta_0} =  \\frac{1}{n} \\frac{Var \\left( H_i u_i \\right)}{ \\left[  E \\left(H_i^2  \\right)  \\right]^2 } \\ , \\ \\text{where} \\ \\ H_i = 1 - \\left[ \\frac{\\mu_X} {E \\left( X_i^2\\right)} \\right] X_i. (\\#eq:olsvar2)
 \\end{align}
 
-The interactive simulation below continuously generates random samples $(X_i,Y_i)$ of $200$ observations where $E(Y\\vert X) = 100 + 3X$, estimates a simple regression model, stores the estimate of the slope $\\beta_1$ and visualizes the distribution of the $\\widehat{\\beta}_1$s observed so far using a histogram. The idea here is that for a large number of $\\widehat{\\beta}_1$s, the histogram gives a good approximation to the sampling distribution of the estimator. By decreasing the time between two sampling iterations, it becomes clear that the shape of the histogram approaches the characteristic bell shape of a normal distribution centered at the true slope of $3$.
+The interactive simulation below continuously generates random samples $(X_i,Y_i)$ of $200$ observations where $E(Y\\vert X) = 100 + 3X$, estimates a simple regression model, stores the estimate of the slope $\\beta_1$ and visualizes the distribution of the $\\widehat{\\beta}_1$s observed so far using a histogram. The idea here is that for a large number of $\\widehat{\\beta}_1$s, the histogram gives a good approximation of the sampling distribution of the estimator. By decreasing the time between two sampling iterations, it becomes clear that the shape of the histogram approaches the characteristic bell shape of a normal distribution centered at the true slope of $3$.
 
 <iframe height="470" width="700" frameborder="0" scrolling="no" src="SmallSampleDIstReg.html"></iframe>
 
@@ -637,7 +636,7 @@ The large sample normal distribution of $\\hat\\beta_0$ is $N(\\beta_0, \\sigma^
 \\sigma^2_{\\hat\\beta_0} =  \\frac{1}{n} \\frac{Var \\left( H_i u_i \\right)}{ \\left[  E \\left(H_i^2  \\right)  \\right]^2 } \\ , \\ \\text{where} \\ \\ H_i = 1 - \\left[ \\frac{\\mu_X} {E \\left( X_i^2\\right)} \\right] X_i.
 \\end{equation}
 
-The interactive simulation below continuously generates random samples $(X_i,Y_i)$ of $200$ observations where $E(Y\\vert X) = 100 + 3X$, estimates a simple regression model, stores the estimate of the slope $\\beta_1$ and visualizes the distribution of the $\\widehat{\\beta}_1$s observed so far using a histogram. The idea here is that for a large number of $\\widehat{\\beta}_1$s, the histogram gives a good approximation to the sampling distribution of the estimator. By decreasing the time between two sampling iterations, it becomes clear that the shape of the histogram approaches the characteristic bell shape of a normal distribution centered at the true slope of $3$.\\vspace{0.5cm}
+The interactive simulation below continuously generates random samples $(X_i,Y_i)$ of $200$ observations where $E(Y\\vert X) = 100 + 3X$, estimates a simple regression model, stores the estimate of the slope $\\beta_1$ and visualizes the distribution of the $\\widehat{\\beta}_1$s observed so far using a histogram. The idea here is that for a large number of $\\widehat{\\beta}_1$s, the histogram gives a good approximation of the sampling distribution of the estimator. By decreasing the time between two sampling iterations, it becomes clear that the shape of the histogram approaches the characteristic bell shape of a normal distribution centered at the true slope of $3$.\\vspace{0.5cm}
 
 \\begin{center}\\textit{This interactive part of URFITE is only available in the HTML version.}\\end{center}
 
@@ -690,7 +689,7 @@ Now let us assume that we do not know the true values of $\beta_0$ and $\beta_1$
 
 To achieve this in R, we employ the following approach:
 
-- We assign the number of repetitions, say $10000$, to `reps`. Then we initialize a matrix `r ttcode("fit")` were the estimates obtained in each sampling iteration shall be stored row-wise. Thus `r ttcode("fit")` has to be a matrix of dimensions `r ttcode("reps")`$\times2$.
+- We assign the number of repetitions, say $10000$, to `r ttcode("reps")` and then initialize a matrix `r ttcode("fit")` were the estimates obtained in each sampling iteration shall be stored row-wise. Thus `r ttcode("fit")` has to be a matrix of dimensions `r ttcode("reps")`$\times2$.
 - In the next step we draw `r ttcode("reps")` random samples of size `r ttcode("n")` from the population and obtain the OLS estimates for each sample. The results are stored as row entries in the outcome matrix `r ttcode("fit")`. This is done using a `r ttcode("for()")` loop.
 - At last, we estimate variances of both estimators using the sampled outcomes and plot histograms of the latter. We also add a plot of the density functions belonging to the distributions that follow from Key Concept 4.4. The function `r ttcode("bquote()")` is used to obtain math expressions in the titles and labels of both plots. See `r ttcode("?bquote")`.
 
@@ -740,7 +739,7 @@ We are now able to say the following: first, our variance estimates are in favor
 ### Simulation Study 2 {-}
 
 A further result implied by Key Concept 4.4 is that both estimators are consistent i.e. they converge in probability to the true parameters we are interested in. This is since their variances converge to $0$ as $n$ increases. We can check this by repeating the simulation above for an increasing sequence of sample sizes. This means we no longer assign the sample size but a *vector* of sample sizes: `r ttcode("n <- c(...)")`. <br>
-Let us look at the distributions of $\beta_1$. The idea here is to add an additional call of `r ttcode("for()")` to the code. This is done in order to loop over the vector of sample sizes `r ttcode("n")`. For each of the sample sizes we carry out the same simulation as before but plot a density estimate for the outcomes of each iteration over `r ttcode("n")`. Notice that we have to change `r ttcode("n")` to ")`n[j]")` in the inner loop to ensure that the `r ttcode("j")`$^{th}$ element of `r ttcode("n")` is used. In the simulation, we use sample sizes of $100, 250, 1000$ and $3000$. Consequently we have a total of four distinct simulations using different sample sizes.
+Let us look at the distributions of $\beta_1$. The idea here is to add an additional call of `r ttcode("for()")` to the code. This is done in order to loop over the vector of sample sizes `r ttcode("n")`. For each of the sample sizes we carry out the same simulation as before but plot a density estimate for the outcomes of each iteration over `r ttcode("n")`. Notice that we have to change `r ttcode("n")` to `r ttcode("n[j]")` in the inner loop to ensure that the `r ttcode("j")`$^{th}$ element of `r ttcode("n")` is used. In the simulation, we use sample sizes of $100, 250, 1000$ and $3000$. Consequently we have a total of four distinct simulations using different sample sizes.
 
 <div class="unfolded"> 
 ```{r, fig.align='center', cache=T}
