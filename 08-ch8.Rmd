@@ -1,6 +1,6 @@
 # Nonlinear Regression Functions {#nrf}
 
-Until now we assumed the regression function to be linear, i.e. we have treated the slope parameter of the regression function as a constant. This implies that the effect on $Y$ of a one unit change in $X$ does not depend on the level of $X$. If however the effect of a change in $X$ on $Y$ does depend on the value of $X$, we have to model the relationship using a nonlinear regression function.
+Until now we assumed the regression function to be linear, i.e. we have treated the slope parameter of the regression function as a constant. This implies that the effect on $Y$ of a one unit change in $X$ does not depend on the level of $X$. If, however, the effect of a change in $X$ on $Y$ does depend on the value of $X$, we have to model the relationship using a nonlinear regression function.
 
 Just like for the previous chapter, the packages <tt>AER</tt> [@R-AER] and <tt>stargazer</tt> [@R-stargazer] are required for reproduction of the code presented in this chapter. Check whether the code chunk below executes without any error messages.
 
@@ -27,14 +27,14 @@ We start our analysis by computing the correlation between both variables.
 cor(CASchools$income, CASchools$score)
 ```
 
-The correlation coefficient is about $0.71$. This means that income and test scores are positively correlated. In other words, children whose parents have an above average income tend to achieve above average test scores. Can we use the correlation coefficient to assess whether a linear regression model does fit the data adequately? To answer this question we visualize the data and add a linear regression line to the plot.
+The correlation coefficient is about $0.71$. This means that income and test scores are positively related: children whose parents have an above average income tend to achieve above average test scores. Can we use the correlation coefficient to assess whether a linear regression fuction models the data adequately? To answer this question we visualize the data and add a linear regression line to the plot.
 
 <div class="unfolded">
 ```{r fig.align = 'center'}
-#Fit linear model
+# fit linear model
 linear_model<- lm(score ~ income, data = CASchools)
 
-# Plot observations
+# plot observations
 plot(CASchools$income, CASchools$score,
      col = "steelblue",
      pch = 20,
@@ -54,31 +54,31 @@ Fortunately, usage of the OLS estimator is not restricted to linear functions of
 
 $$TestScore_i = \beta_0 + \beta_1 income_i + \beta_2 income_i^2 + u_i.$$
 
-This equation is called the *quadratic regression model*. Note, that $income^2$ is treated as an additional explanatory variable. Hence, the quadratic model is a special case of a multivariate regression model. When fitting the model with <tt>lm()</tt> we have to use the <tt>^</tt> operator in conjunction with the function <tt>I()</tt> to add the quadratic term as an additional regressor to the argument <tt>formula</tt>. 
+This is called a *quadratic regression model*. Note, that $income^2$ is treated as an additional explanatory variable. Hence, the quadratic model is a special case of a multivariate regression model. When fitting the model with <tt>lm()</tt> we have to use the <tt>^</tt> operator in conjunction with the function <tt>I()</tt> to add the quadratic term as an additional regressor to the argument <tt>formula</tt>. 
 
 ```{r}
-# Fit the quadratic Model
+# fit the quadratic Model
 quadratic_model <- lm(score ~ income + I(income^2), data = CASchools)
 
-# Generate model summary
+# obtain the model summary
 coeftest(quadratic_model, vcov. = vcovHC(quadratic_model, type = "HC1"))
 ```
 
 The output tells us that the estimated regression function is
 
-$$\widehat{TestScore}_i = \underset{(2.90)}{607.3} + \underset{(0.)}{3.85} \times income_i - \underset{(0.0048)}{0.0423} \times income_i^2.$$
+$$\widehat{TestScore}_i = \underset{(2.90)}{607.3} + \underset{(0.27)}{3.85} \times income_i - \underset{(0.0048)}{0.0423} \times income_i^2.$$
 
-Notice that this estimated model equation allows us to test the hypothesis that the relationship between test scores and district income is linear against the alternative hypothesis that it is quadratic. This corresponds to testing
+Notice that this estimate of the model allows us to test the hypothesis that the relationship between test scores and district income is linear against the alternative hypothesis that it is quadratic. This corresponds to testing
 
 $$H_0: \beta_2 = 0 \ \ \text{vs.} \ \  H_1: \beta_2\neq0,$$
 
-since $\beta_2=0$ corresponds to a simple linear equation and $\beta_2\neq0$ implies a quadratic relationship. We find that $t=(\hat\beta_2 - 0)/SE(\hat\beta_2) = -0.0423/0.0048 = -8.81$ so the null is rejected at any common level of significance and we conclude that the relationship is nonlinear. This is consistent with the impression gained from inspection of the plotted data.
+since $\beta_2=0$ corresponds to a simple linear equation and $\beta_2\neq0$ implies a quadratic relationship. We find that $t=(\hat\beta_2 - 0)/SE(\hat\beta_2) = -0.0423/0.0048 = -8.81$ so the null is rejected at any common level of significance and we conclude that the relationship is nonlinear. This is consistent with the impression gained from the plotted data.
 
-We can now draw the same scatter plot as for the linear model and add the regression line for the quadratic model. Because <tt>abline()</tt> can only draw straight lines, it cannot be used for this task. A function which can be used to draw lines without being restricted to straight lines is <tt>lines()</tt>, see `?lines`. The most basic call of <tt>lines()</tt> is <tt>lines(x_values, y_values)</tt> where <tt>x_values</tt> and <tt>y_values</tt> are vectors of the same length that provide coordinates of the points to be *sequentially* connected by a line. This makes it necessary to sort the coordinate pairs according to the X-values. Otherwise you will not get the desired result! In this example we use the function <tt>order()</tt> to sort the fitted values of <tt>score</tt> according to the observations of <tt>income</tt>.
+We now draw the same scatter plot as for the linear model and add the regression line for the quadratic model. Because <tt>abline()</tt> can only draw straight lines, it cannot be used for this task. A function which can be used to draw lines without being restricted to straight lines is <tt>lines()</tt>, see `?lines`. The most basic call of <tt>lines()</tt> is <tt>lines(x_values, y_values)</tt> where <tt>x_values</tt> and <tt>y_values</tt> are vectors of the same length that provide coordinates of the points to be *sequentially* connected by a line. This makes it necessary to sort the coordinate pairs according to the X-values. Otherwise you will not get the desired result! In this example we use the function <tt>order()</tt> to sort the fitted values of <tt>score</tt> according to the observations of <tt>income</tt>.
 
 <div class="unfolded">
 ```{r, fig.align="center"}
-# Scatterplot of observation for income and TestScore
+# draw scatterplot of observations for income and TestScore
 plot(CASchools$income, CASchools$score,
      col  = "steelblue",
      pch = 20,
@@ -86,10 +86,10 @@ plot(CASchools$income, CASchools$score,
      ylab = "Test Score",
      main = "Estimated Linear and Quadratic Regression Functions")
 
-#Add linear function to the plot
+# add linear function to the plot
 abline(linear_model, col = "black", lwd = 2)
 
-#Add quatratic function to the plot
+# add quatratic function to the plot
 order_id <- order(CASchools$income)
 
 lines(x = CASchools$income[order_id], 
@@ -99,7 +99,7 @@ lines(x = CASchools$income[order_id],
 ```
 </div>
 
-We see that the quadratic model does much better in fitting the data than the linear model.
+We see that the quadratic function does fit the data much better than the linear function.
 
 ## Nonlinear Functions of a Single Independent Variable {#nfoasiv}
 
@@ -118,10 +118,11 @@ In practice the question will arise which polynomial order should be chosen. Fir
 
 $$ H_0: \beta_2=0, \ \beta_3=0,\dots,\beta_r=0 \ \ \ \text{vs.} \ \ \ H_1: \text{at least one} \ \beta_j\neq0, \ j=2,\dots,r $$
 
-This is a joint null hypothesis with $r-1$ restrictions so it can be tested using the $F$-test presented in Chapter \@ref(htaciimr). Remember that the function <tt>linearHypothesis()</tt> can used to conduct such tests. If, for example, we would like to test the null hypothesis of a linear model against the alternative of a polynomial of a maximal degree $r=3$, we could simply do the following:
+This is a joint null hypothesis with $r-1$ restrictions so it can be tested using the $F$-test presented in Chapter \@ref(htaciimr). Remember that the function <tt>linearHypothesis()</tt> can be used to conduct such tests. If, for example, we would like to test the null hypothesis of a linear model against the alternative of a polynomial of a maximal degree $r=3$, we could simply do the following:
 
 ```{r, warning=F, message=F}
-# test the hypothesis
+# test the hypothesis of a linear model against quadratic or polynomial
+# alternatives
 linearHypothesis(cubic_model, 
                  c("I(income^2)=0", "I(income^3)=0"),
                  white.adj = "hc1"
@@ -131,8 +132,8 @@ linearHypothesis(cubic_model,
 The $p$-value for this test is very small so that we reject the null hypothesis. However, this does not tell us *which* $r$ to choose. In practice, one approach to determine the degree of the polynomial is to use *sequential testing*:
 
 1. Estimate a polynomial model for some maximum value $r$.
-2. Use a $t$-test to test whether $\beta_r = 0$. <b>Rejection</b> of the null means that $X^r$ belongs in the regression equation.
-3. <b>Acceptance</b> of the null in step 2 means that $X^r$ can be eliminated from the model. Continue by repeating step 1 with order $r-1$ and test whether $\beta_{r-1}=0$. If the test rejects, use a polynomial model of order $r-1$.
+2. Use a $t$-test to test whether $\beta_r = 0$. *Rejection* of the null means that $X^r$ belongs in the regression equation.
+3. *Acceptance* of the null in step 2 means that $X^r$ can be eliminated from the model. Continue by repeating step 1 with order $r-1$ and test whether $\beta_{r-1}=0$. If the test rejects, use a polynomial model of order $r-1$.
 4. If the tests from step 3 rejects, continue with the procedure until the coefficient on the highest power is statistically significant.
 
 There is no unambiguous guideline how to choose $r$ in step one. However, as pointed out in @stock2015, economic data is often smooth such that it is appropriate to choose small orders like $2$, $3$, or $4$.
@@ -171,7 +172,7 @@ With a $p$-value of $9.043e^{-16}$, i.e. much less than $0.05$, the null hypothe
 
 #### Interpretation of Coefficients in Nonlinear Regression Models {-}
 
-The coefficients in polynomial regression models do not have a simple interpretation. Why is that? Think of a quadratic model: it is not helpful to think of the coefficient on $X$ as the expected change in $Y$ associated with a change in $X$ holding the other regressors constant because one other is $X^2$ which changes as $X$ is varied. This is also the case for other deviations from linearity, for example in models where regressors and/or the dependent variable are log-transformed. The best way to approach this is to calculate the estimated effect on $Y$ associated with a change in $X$ for one or more values of $X$. This idea is summarized in Key Concept 8.1.
+The coefficients in polynomial regression models do not have a simple interpretation. Why is that? Think of a quadratic model: it is not helpful to think of the coefficient on $X$ as the expected change in $Y$ associated with a change in $X$ holding the other regressors constant because one other regressor is $X^2$ which changes as $X$ is varied. This is also the case for other deviations from linearity, for example in models where regressors and/or the dependent variable are log-transformed. A way to approach this is to calculate the estimated effect on $Y$ associated with a change in $X$ for one or more values of $X$. This idea is summarized in Key Concept 8.1.
 
 ```{r, eval = my_output == "html", results='asis', echo=FALSE}
 cat('

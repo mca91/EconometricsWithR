@@ -3,23 +3,23 @@
 This chapter reviews some basic concepts of probability theory and demonstrates how they can be
 applied in `r ttcode("R")`.
 
-Most of the statistical functionalities in `r ttcode("R")`'s standard version are collected in the `r ttcode("stats")` package. It provides simple functions which compute descriptive measures and facilitate calculus involving a variety of probability distributions. However, it also holds more sophisticated routines that e.g. enable the user to estimate a large number of models based on the same data or help to conduct extensive simulation studies. `r ttcode("stats")` is part of the base distribution of `r ttcode("R")`, meaning that it is installed by default so there is no need to run `install.packages("stats")` or `library("stats")`. Simply execute `library(help = "stats")` in the console to view the documentation and a complete list of all functions gathered in `r ttcode("stats")`. For most packages a documentation that can be viewed within *RStudio* is available. Documentations can be invoked using the `r ttcode("?")` operator, e.g. upon execution of `?stats` the documentation of the `r ttcode("stats")` package is shown in the help tab of the bottom-right pane.
+Most of the statistical functionalities in `r ttcode("R")`'s standard version are collected in the `r ttcode("stats")` package. It provides simple functions which compute descriptive measures and facilitate computations involving a variety of probability distributions. It also contains more sophisticated routines that, e.g., enable the user to estimate a large number of models based on the same data or help to conduct extensive simulation studies. `r ttcode("stats")` is part of the base distribution of `r ttcode("R")`, meaning that it is installed by default so there is no need to run `install.packages("stats")` or `library("stats")`. Simply execute `library(help = "stats")` in the console to view the documentation and a complete list of all functions gathered in `r ttcode("stats")`. For most packages a documentation that can be viewed within *RStudio* is available. Documentations can be invoked using the `r ttcode("?")` operator, e.g., upon execution of `?stats` the documentation of the `r ttcode("stats")` package is shown in the help tab of the bottom-right pane.
 
-In what follows, we lay our focus on (some of) the probability distributions that are handled by `r ttcode("R")` and show how to use the relevant functions to solve simple problems. Thereby we will repeat some core concepts of probability theory. Among other things, you will learn how to draw random numbers, how to compute densities, probabilities, quantiles and alike. As we shall see, it is very convenient to rely on these routines, especially when writing custom functions.
+In what follows, our focus is on (some of) the probability distributions that are handled by `r ttcode("R")` and show how to use the relevant functions to solve simple problems. Thereby, we refresh some core concepts of probability theory. Among other things, you will learn how to draw random numbers, how to compute densities, probabilities, quantiles and alike. As we shall see, it is very convenient to rely on these routines.
 
 ## Random Variables and Probability Distributions
 
-For a start, let us briefly review some basic concepts of probability theory.
+Let us briefly review some basic concepts of probability theory.
 
-- The mutually exclusive results of a random process are called the *outcomes*. 'Mutually exclusive' means that only one of the possible outcomes is observed. 
-- We refer to the *probability* of an outcome as the proportion of the time that the outcome occurs in the long run, that is, if the experiment is repeated very often. 
+- The mutually exclusive results of a random process are called the *outcomes*. 'Mutually exclusive' means that only one of the possible outcomes can be observed. 
+- We refer to the *probability* of an outcome as the proportion that the outcome occurs in the long run, that is, if the experiment is repeated very often. 
 - The set of all possible outcomes of a random variable is called the *sample space*. 
 - An *event* is a subset of the sample space and consists of one or more outcomes.
 
 These ideas are unified in the concept of a *random variable* which is a numerical summary of random outcomes. Random variables can be *discrete* or *continuous*.
 
 - Discrete random variables have discrete outcomes, e.g. $0$ and $1$. 
-- A continuous random variable takes on a continuum of possible values.
+- A continuous random variable may take on a continuum of possible values.
 
 ### Probability Distributions of Discrete Random Variables {-}
 
@@ -27,10 +27,10 @@ A typical example for a discrete random variable $D$ is the result of a dice
 roll: in terms of a random experiment this is nothing but randomly selecting a
 sample of size $1$ from a set of numbers which are mutually exclusive outcomes.
 Here, the sample space is $\{1,2,3,4,5,6\}$ and we can think of many different
-events, e.g. 'the observed outcome lies between $2$ and $5$'.
+events, e.g., 'the observed outcome lies between $2$ and $5$'.
 
 A basic function to draw random samples from a specified set of elements is the
-the function `r ttcode("sample()")`, see `?sample`. We can use it to simulate the random outcome of a dice roll. Let's role the dice!
+the function `r ttcode("sample()")`, see `?sample`. We can use it to simulate the random outcome of a dice roll. Let's roll the dice!
 
 ```{r, echo = T, eval = T, message = F, warning = F} 
 sample(1:6, 1) 
@@ -38,17 +38,16 @@ sample(1:6, 1)
 
 The probability distribution of a discrete random variable is the list of all
 possible values of the variable and their probabilities which sum to $1$. The
-cumulative probability distribution function states the probability that the random variable is less than or equal to a particular value.
+cumulative probability distribution function gives the probability that the random variable is less than or equal to a particular value.
 
-For the dice roll, the probability distribution and the cumulative probability distribution  are summarized in a Table \@ref(tab:pdist).
+For the dice roll, the probability distribution and the cumulative probability distribution  are summarized in Table \@ref(tab:pdist).
 
 ```{r pdist, echo=FALSE}
 pdfdata <- rbind("Outcome"=as.character(1:6), "Probability"=c("1/6","1/6","1/6","1/6","1/6","1/6"), "Cumulative Probability"=c("1/6","2/6","3/6","4/6","5/6","1"))
 knitr::kable(pdfdata, format = my_output, caption = "PDF and CDF of a Dice Roll")
 ```
 
-We can easily plot both functions using `r ttcode("R")`. Since the probability equals $1/6$
-for each outcome, we set up the vector `r ttcode("probability")` by using the function `r ttcode("rep()")` which replicates a given value a specified number of times.
+We can easily plot both functions using `r ttcode("R")`. Since the probability equals $1/6$ for each outcome, we set up the vector `r ttcode("probability")` by using the function `r ttcode("rep()")` which replicates a given value a specified number of times.
 
 <div class="unfolded"> 
 ```{r, eval = T, message = F, warning = F, fig.align='center', fig.pos="h"} 
@@ -58,24 +57,22 @@ probability <- rep(1/6, 6)
 # plot the probabilites 
 plot(probability, 
      main = "Probability Distribution",
-     xlab = "outcomes" 
-     ) 
+     xlab = "outcomes") 
 ``` 
 </div>
 
 For the cumulative probability distribution we need the cumulative
-probabilities i.e. we need the cumulative sums of the vector `r ttcode("probability")`. These sums can be computed using `r ttcode("cumsum()")`.
+probabilities, i.e., we need the cumulative sums of the vector `r ttcode("probability")`. These sums can be computed using `r ttcode("cumsum()")`.
 
 <div class="unfolded"> 
 ```{r, echo = T, eval = T, message = F, warning = F, fig.align='center'} 
-#generate the vector of cumulative probabilities 
+# generate the vector of cumulative probabilities 
 cum_probability <- cumsum(probability) 
 
 # plot the probabilites 
 plot(cum_probability, 
      xlab = "outcomes", 
-     main = "Cumulative Probability Distribution"
-     ) 
+     main = "Cumulative Probability Distribution") 
 ```
 </div>
 
@@ -92,25 +89,18 @@ sample(c("H", "T"), 1)
 The result of a single coin toss is a *Bernoulli* distributed random variable i.e. a variable with two possible distinct outcomes.
 
 Imagine you are about to toss a coin $10$ times in a row and wonder how likely it
-is to end up with a sequence of outcomes like
+is to end up with a $5$ times heads. This is a typical example of what we call a *Bernoulli experiment* as it consists of $n=10$ Bernoulli trials that are independent of each other and we are interested in the likelihood of observing $k=5$ successes $H$ that occur with probability $p=0.5$ (assuming a fair coin) in each trial. Note that the order of the outcomes does not matter here.
 
-$$ H \, H \, T \, T \,T \,H \,T \,T \, H \, H .$$
-
-This is a typical example of what we call a *Bernoulli experiment* as it consists of $n=10$
-Bernoulli trials that are independent of each other and we are interested in the
-likelihood of observing $k=5$ successes $H$ that occur with probability $p=0.5$
-(assuming a fair coin) in each trial. Note that the order of the outcomes does not matter here.
-
-It is a well known result that the number of successes $k$ in a Bernoulli experiment follows a binomial distribution. We denote this as
+It is a [well known result](https://en.wikipedia.org/wiki/Binomial_distribution) that the number of successes $k$ in a Bernoulli experiment follows a binomial distribution. We denote this as
 
 $$k \sim B(n,p).$$
 
 The probability of observing $k$ successes in the experiment $B(n,p)$ is given by
 
 $$f(k)=P(k)=\begin{pmatrix}n\\ k \end{pmatrix} \cdot p^k \cdot
-q^{n-k}=\frac{n!}{k!(n-k)!} \cdot p^k \cdot q^{n-k}$$
+(1-p)^{n-k}=\frac{n!}{k!(n-k)!} \cdot p^k \cdot (1-p)^{n-k}$$
 
-where $\begin{pmatrix}n\\ k \end{pmatrix}$ means the binomial coefficient. 
+with $\begin{pmatrix}n\\ k \end{pmatrix}$ the binomial coefficient. 
 
 In `r ttcode("R")`, we can solve the problem stated above by means of the function `r ttcode("dbinom()")` which calculates the probability of the binomial distribution given the parameters `r ttcode("x")`,
 `r ttcode("size")`, and `r ttcode("prob")`, see `?binom`.
@@ -125,21 +115,27 @@ dbinom(x = 5,
 We conclude that the probability of observing Head $k=5$ times when tossing the
 coin $n=10$ times is about $24.6\%$.
 
-Now assume we are interested in $P(4 \leq k \leq 7)$ i.e. the probability of
-observing $4$, $5$, $6$ or $7$ successes for $B(10,0.5)$. This is easily computed by
+Now assume we are interested in $P(4 \leq k \leq 7)$, i.e., the probability of
+observing $4$, $5$, $6$ or $7$ successes for $B(10,0.5)$. This may be computed by
 providing a vector as the argument `r ttcode("x")` in our call of `r ttcode("dbinom()")` and summing up using  `r ttcode("sum()")`.
 
 ```{r, echo = T, eval = T, message = F, warning = F} 
+# compute P(4 <= k <= 7) using 'dbinom()'
 sum(
   dbinom(x = 4:7, 
          size = 10, 
-         prob = 0.5
-         )
-  )
+         prob = 0.5))
+```
+
+An alternative approach is to use `r ttcode("pbinom()")`, the distribution function of the binomial distribution to compute $$P(4 \leq k \leq 7) = P(k \leq 7) - P(k\leq3 ).$$
+
+```{r, echo = T, eval = T, message = F, warning = F}
+# compute P(4 <= k <= 7) using 'pbinom()'
+pbinom(size = 10, prob = 0.5, q = 7) - pbinom(size = 10, prob = 0.5, q = 3) 
 ```
 
 The probability distribution of a discrete random variable is nothing but a list
-of all possible outcomes that can occur and their respective probabilities. In the coin tossing example we face $11$ possible outcomes for $k$.
+of all possible outcomes that can occur and their respective probabilities. In the coin tossing example we have $11$ possible outcomes for $k$.
 
 ```{r, echo = T, eval = T, message = F, warning = F}
 # set up vector of possible outcomes
@@ -150,17 +146,15 @@ To visualize the probability distribution function of $k$ we may therefore do th
 
 <div class="unfolded"> 
 ```{r, echo = T, eval = T, message = F, warning = F, fig.align='center'} 
-# assign probabilities
+# assign the probabilities
 probability <- dbinom(x = k,
                       size = 10, 
-                      prob = 0.5
-                      )
+                      prob = 0.5)
 
-# plot outcomes against probabilities
+# plot the outcomes against their probabilities
 plot(x = k, 
      y = probability,
-     main = "Probability Distribution Function"
-     ) 
+     main = "Probability Distribution Function") 
 ``` 
 </div>
 
@@ -170,12 +164,9 @@ executing the following code chunk:
 <div class="unfolded"> 
 ```{r, echo = T, eval = T, message = F, warning = F, fig.align='center'} 
 # compute cumulative probabilities
-prob <- cumsum(
-              dbinom(x = 0:10, 
-                     size = 10, 
-                     prob = 0.5
-                     )
-              )
+prob <- dbinom(x = 0:10, 
+               size = 10, 
+               prob = 0.5)
 
 # plot the cumulative probabilities
 plot(x = k, 
@@ -187,7 +178,7 @@ plot(x = k,
 
 ### Expected Value, Mean and Variance {-}
 
-The expected value of a random variable is the long-run average value of its outcomes when the number of repeated trials is large. For a discrete random variable, the
+The expected value of a random variable is, loosely, the long-run average value of its outcomes when the number of repeated trials is large. For a discrete random variable, the
 expected value is computed as a weighted average of its possible outcomes
 whereby the weights are the related probabilities. This is formalized in Key
 Concept 2.1.
@@ -208,7 +199,7 @@ $$ E(Y) = y_1 p_1 + y_2 p_2 + \\cdots + y_k p_k = \\sum_{i=1}^k y_i p_i $$
 
 where the notation $\\sum_{i=1}^k y_i p_i$ means "the sum of $y_i$ $p_i$ for $i$
 running from $1$ to $k$". The expected value of $Y$ is also called the mean of $Y$
-or the expectation of $Y$ and is denoted by $\\mu_y$.
+or the expectation of $Y$ and is denoted by $\\mu_Y$.
 </p> 
 </div>')
 ```
@@ -223,23 +214,22 @@ $p_2$ and so forth. The expected value of $Y$, $E(Y)$ is defined as
 
 $$ E(Y) = y_1 p_1 + y_2 p_2 + \\cdots + y_k p_k = \\sum_{i=1}^k y_i p_i $$
 
-where the notation $\\sum_{i=1}^k y_i p_i$ means "the sum of $y_i$ $p_i$ for $i$
-running from $1$ to $k$". The expected value of $Y$ is also called the mean of $Y$
-or the expectation of $Y$ and is denoted by $\\mu_y$.
+where the notation $\\sum_{i=1}^k y_i p_i$ means \\"the sum of $y_i$ $p_i$ for $i$
+running from $1$ to $k$\\". The expected value of $Y$ is also called the mean of $Y$
+or the expectation of $Y$ and is denoted by $\\mu_Y$.
 \\end{keyconcepts}')
 ```
   
 In the dice example, the random variable, $D$ say, takes on $6$ possible values
-$d_1 = 1, d_2 = 2, \dots, d_6 = 6$. Assuming a fair dice, each of the $6$ outcomes occurs
-with a probability of $1/6$. It is therefore easy to calculate the exact value
-of $E(D)$ by hand:
+$d_1 = 1, d_2 = 2, \dots, d_6 = 6$. Assuming a fair dice, each of the $6$ outcomes occurs with a probability of $1/6$. It is therefore easy to calculate the exact value of $E(D)$ by hand:
 
 $$ E(D) = 1/6 \sum_{i=1}^6 d_i = 3.5 $$
 
-$E(D)$ is simply the average of the natural numbers from $1$ to $6$ since all wights $p_i$ are $1/6$. Convince yourself that this can be easily calculated using the function `r ttcode("mean()")` which computes the
+$E(D)$ is simply the average of the natural numbers from $1$ to $6$ since all wights $p_i$ are $1/6$. This can be easily calculated using the function `r ttcode("mean()")` which computes the
 arithmetic mean of a numeric vector.
 
 ```{r, echo = T, eval = T, message = F, warning = F} 
+# compute mean of natural numbers from 1 to 6
 mean(1:6)
 ```
 
@@ -256,8 +246,8 @@ sample(1:6, 3, replace = T)
 Of course we could also consider a much bigger number of trials, $10000$ say.
 Doing so, it would be pointless to simply print the results to the console: by
 default `r ttcode("R")` displays up to $1000$ entries of large vectors and omits the
-remainder (give it a go). Eyeballing the numbers does not reveal too much.
-Instead let us calculate the sample average of the outcomes using `r ttcode("mean()")` and
+remainder (give it a try). Eyeballing the numbers does not reveal much.
+Instead, let us calculate the sample average of the outcomes using `r ttcode("mean()")` and
 see if the result comes close to the expected value $E(D)=3.5$.
 
 ```{r, eval = T, message = F, warning = F} 
@@ -265,12 +255,9 @@ see if the result comes close to the expected value $E(D)=3.5$.
 set.seed(1)
 
 # compute the sample mean of 10000 dice rolls
-mean(
-    sample(1:6, 
+mean(sample(1:6, 
            10000, 
-           replace = T
-           )
-    )
+           replace = T))
 ```
 
 We find the sample mean to be fairly close to the expected value. This result will be discussed in Chapter \@ref(RSATDOSA) in more detail. 
@@ -283,7 +270,7 @@ cat('<div class = "keyconcept">
 <h3 class= "left"> Variance and Standard Deviation </h3> 
 
 <p> 
-The Variance of the discrete random variable $Y$, denoted $\\sigma^2_Y$, is
+The variance of the discrete random variable $Y$, denoted $\\sigma^2_Y$, is
 $$ \\sigma^2_Y = \\text{Var}(Y) = E\\left[(Y-\\mu_y)^2\\right] = \\sum_{i=1}^k (y_i - \\mu_y)^2 p_i $$
 The standard deviation of $Y$ is $\\sigma_Y$, the square root of the variance. The units of the standard deviation are the same as the units of $Y$.
 </p> 
@@ -292,19 +279,19 @@ The standard deviation of $Y$ is $\\sigma_Y$, the square root of the variance. T
 
 ```{r, eval = my_output == "latex", results='asis', echo=FALSE}
 cat('\\begin{keyconcepts}[Variance and Standard Deviation]{2.2}
-The Variance of the discrete \\textit{random variable} $Y$, denoted $\\sigma^2_Y$, is
-$$ \\sigma^2_Y = \\text{Var}(Y) = E\\left[(Y-\\mu_y)^2\\right] = \\sum_{i=1}^k (y_i - \\mu_y)^2 p_i $$
+The variance of the discrete \\textit{random variable} $Y$, denoted $\\sigma^2_Y$, is
+$$ \\sigma^2_Y = \\text{Var}(Y) = E\\left[(Y-\\mu_Y)^2\\right] = \\sum_{i=1}^k (y_i - \\mu_Y)^2 p_i $$
 The standard deviation of $Y$ is $\\sigma_Y$, the square root of the variance. The units of the standard deviation are the same as the units of $Y$.
 \\end{keyconcepts}')
 ```
   
-The variance as defined in Key Concept 2.2 *is not* implemented as a function in R. Instead we have the function `r ttcode("var()")` which computes the *sample variance* 
+The variance as defined in Key Concept 2.2, beeing a population quantity, *is not* implemented as a function in R. Instead we have the function `r ttcode("var()")` which computes the *sample variance* 
 
 $$ s^2_Y = \frac{1}{n-1} \sum_{i=1}^n (y_i - \overline{y})^2. $$
 
-Remember that $s^2_Y$ is different from the so called *population variance* of $Y$, 
+Remember that $s^2_Y$ is different from the so called *population variance* of a discrete random variable $Y$, 
 
-$$ \text{Var}(Y) = \frac{1}{N} \sum_{i=1}^N (y_i - \mu_Y)^2, $$
+$$ \text{Var}(Y) = \frac{1}{N} \sum_{i=1}^N (y_i - \mu_Y)^2. $$
 
 since it measures how the data is dispersed around the sample average $\overline{y}$ instead of the population mean $\mu_Y$. This becomes clear when we look at our dice rolling example. For $D$ we have
 
@@ -329,7 +316,7 @@ The sample variance as computed by `r ttcode("var()")` is an *estimator* of the 
 
 <!--/html_preserve-->
 
-## Probability Distributions of Continuous Random Variables
+### Probability Distributions of Continuous Random Variables {-}
 
 Since a continuous random variable takes on a continuum of possible values, we
 cannot use the concept of a probability distribution as used for discrete random
@@ -349,7 +336,7 @@ cat('<div class = "keyconcept">
 
 <p> 
 
-Let $f_Y(y)$ denote the probability density function of $Y$. Because probabilities cannot be negative, we have $f_Y\\geq 0$ for all $y$. The Probability that $Y$ falls between $a$ and $b$ where $a < b$ is 
+Let $f_Y(y)$ denote the probability density function of $Y$. The probability that $Y$ falls between $a$ and $b$ where $a < b$ is 
 $$ P(a \\leq Y \\leq b) = \\int_a^b f_Y(y) \\mathrm{d}y. $$
 We further have that $P(-\\infty \\leq Y \\leq \\infty) = 1$ and therefore $\\int_{-\\infty}^{\\infty} f_Y(y) \\mathrm{d}y = 1$.
 
@@ -367,7 +354,7 @@ $$\\text{Var}(Y) =  \\sigma_Y^2 = \\int (y - \\mu_Y)^2 f_Y(y) \\mathrm{d}y.$$
 ```{r, eval = my_output == "latex", results='asis', echo=FALSE}
 cat('
 \\begin{keyconcepts}[Probabilities\\comma Expected Value and Variance of a Continuous Random Variable]{2.3}
-Let $f_Y(y)$ denote the probability density function of $Y$. Because probabilities cannot be negative, we have $f_Y\\geq 0$ for all $y$. The Probability that $Y$ falls between $a$ and $b$ where $a < b$ is 
+Let $f_Y(y)$ denote the probability density function of $Y$. The Probability that $Y$ falls between $a$ and $b$ where $a < b$ is 
 $$ P(a \\leq Y \\leq b) = \\int_a^b f_Y(y) \\mathrm{d}y. $$
 We further have that $P(-\\infty \\leq Y \\leq \\infty) = 1$ and therefore $\\int_{-\\infty}^{\\infty} f_Y(y) \\mathrm{d}y = 1$.
 
@@ -415,9 +402,9 @@ $$ f_X(x) = \frac{3}{x^4}, x>1. $$
   =& 3
 \end{align}
 
-So we have shown that the area under the curve equals one, that the expectation is  $E(X)=\frac{3}{2} \ $ and we found the variance to be $\text{Var}(X) = \frac{3}{4}$. However, this was quite tedious and, as we shall see soon, an analytic approach is not applicable for some probability density functions e.g. if integrals have no closed form solutions.
+So we have shown that the area under the curve equals one, that the expectation is  $E(X)=\frac{3}{2} \ $ and we found the variance to be $\text{Var}(X) = \frac{3}{4}$. However, this was tedious and, as we shall see, an analytic approach is not applicable for some probability density functions, e.g., if integrals have no closed form solutions.
 
-Luckily, `r ttcode("R")` enables us to find the results derived above in an instant. The tool we use for this is the function `r ttcode("integrate()")`. First, we have to define the functions we want to calculate integrals for as `r ttcode("R")` functions, i.e. the PDF $f_X(x)$ as well as the expressions $x\cdot f_X(x)$ and $x^2\cdot f_X(x)$.
+Luckily, `r ttcode("R")` also enables us to easily find the results derived above. The tool we use for this is the function `r ttcode("integrate()")`. First, we have to define the functions we want to calculate integrals for as `r ttcode("R")` functions, i.e., the PDF $f_X(x)$ as well as the expressions $x\cdot f_X(x)$ and $x^2\cdot f_X(x)$.
 
 ```{r, echo = T, eval = T, message = F, warning = F}
 # define functions
@@ -426,29 +413,26 @@ g <- function(x) x*f(x)
 h <- function(x) x^2*f(x)
 ```
 
-Next, we use `r ttcode("integrate()")` and set lower and upper limits of integration to $1$ and $\infty$ using arguments `r ttcode("lower")` and `r ttcode("upper")`. By default, `r ttcode("integrate()")` prints the result along with an estimate of the approximation error to the console. However, the outcome is not a numeric value one can do further calculation with readily. In order to get only a numeric value of the integral, we need to use the <tt>$</tt> operator in conjunction with `r ttcode("value")`. 
-
+Next, we use `r ttcode("integrate()")` and set lower and upper limits of integration to $1$ and $\infty$ using arguments `r ttcode("lower")` and `r ttcode("upper")`. By default, `r ttcode("integrate()")` prints the result along with an estimate of the approximation error to the console. However, the outcome is not a numeric value one can readily do further calculation with. In order to get only a numeric value of the integral, we need to use the `r ttcode("$")` operator in conjunction with `r ttcode("value")`. The `r ttcode("$")` operator is used to extract elements by name from an object of type `r ttcode("list")`. 
 
 ```{r, echo = T, eval = T, message = F, warning = F}
-# calculate area under curve
-AUC <- integrate(f, 
+# compute area under the density curve
+area <- integrate(f, 
                  lower = 1, 
-                 upper = Inf
-                 )
-AUC 
+                 upper = Inf)$value
+area 
 
-# calculate E(X)
+# compute E(X)
 EX <- integrate(g,
                 lower = 1,
-                upper = Inf
-                )
+                upper = Inf)$value
 EX
 
-# calculate Var(X)
+# compute Var(X)
 VarX <- integrate(h,
                   lower = 1,
                   upper = Inf
-                  )$value - EX$value^2 
+                  )$value - EX^2 
 VarX
 ```
 
@@ -470,15 +454,15 @@ Thus, for the normal distribution we have the `r ttcode("R")` functions `r ttcod
 ### The Normal Distribution {-}
 
 The probably most important probability distribution considered here is the normal
-distribution. This is not least due to the special role of the standard normal distribution and the Central Limit Theorem which is treated shortly during the course of this section. Distributions of the normal family have a familiar symmetric, bell-shaped probability density. A normal distribution is characterized by its mean $\mu$ and its standard deviation $\sigma$ what is concisely expressed by
+distribution. This is not least due to the special role of the standard normal distribution and the Central Limit Theorem which is to be treated shortly. Normal distributions are symmetric and bell-shaped. A normal distribution is characterized by its mean $\mu$ and its standard deviation $\sigma$, concisely expressed by
 $N(\mu,\sigma^2)$. The normal distribution has the PDF
 
 \begin{align}
-f(x) = \frac{1}{\sqrt{2 \pi} \sigma} e^{-(x - μ)^2/(2 σ^2)}.
+f(x) = \frac{1}{\sqrt{2 \pi} \sigma} \exp{-(x - \mu)^2/(2 \sigma^2)}.
 \end{align}
 
 For the standard normal distribution we have $\mu=0$ and $\sigma=1$. Standard normal variates are often denoted by $Z$. Usually, the standard normal PDF is denoted by $\phi$ and the standard normal CDF is denoted by $\Phi$. Hence,
-$$ \phi(c) = \Phi'(c) \ \ , \ \ \Phi(c) = P(Z \leq c) \ \ , \ \ Z \sim N(0,1).$$ In `r ttcode("R")`, we can conveniently obtain density values of normal distributions using
+$$ \phi(c) = \Phi'(c) \ \ , \ \ \Phi(c) = P(Z \leq c) \ \ , \ \ Z \sim N(0,1).$$ In `r ttcode("R")`, we can conveniently obtain densities of normal distributions using
 the function `r ttcode("dnorm()")`. Let us draw a plot of the standard normal density function
 using `r ttcode("curve()")` in conjunction with `r ttcode("dnorm()")`.
 
@@ -488,13 +472,11 @@ using `r ttcode("curve()")` in conjunction with `r ttcode("dnorm()")`.
 curve(dnorm(x),
       xlim=c(-3.5, 3.5),
       ylab = "Density", 
-      main = "Standard Normal Density Function"
-      ) 
+      main = "Standard Normal Density Function") 
 ```
 </div>
 
-We can obtain the density at different positions by passing a vector of
-quantiles to `r ttcode("dnorm()")`.
+We can obtain the density at different positions by passing a vector to `r ttcode("dnorm()")`.
 
 ```{r, echo = T, eval = T, message = F, warning = F}
 # compute denstiy at x=-1.96, x=0 and x=1.96
@@ -509,8 +491,7 @@ Similar to the PDF, we can plot the standard normal CDF using `r ttcode("curve()
 curve(pnorm(x), 
       xlim=c(-3.5, 3.5), 
       ylab = "Density", 
-      main = "Standard Normal Cumulative Distribution Function"
-      )
+      main = "Standard Normal Cumulative Distribution Function")
 ```
 </div>
 
