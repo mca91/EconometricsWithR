@@ -7,7 +7,7 @@ This chapter discusses statistical tools that are commonly applied in program ev
 
 Note that *experimental* data is fundamentally different from *observational* data. For example, one might be interested in measuring how much the performance of students in a standardized test differs between two classes where one of which has a student-teacher ratio which is considered regular and the other one has fewer students, using a randomized controlled experiment. The data produced by such an experiment would be different from e.g. the observed cross-section data on the students' performance used throughout Chapters \@ref(lrwor) to \@ref(nrf) where class sizes are not randomly assigned to students but instead are the results of an economic decision where educational objectives and budgetary aspects were balanced.
 
-For economists, randomized controlled experiments are often difficult or even infeasable to implement. For example, due to ethic, moral and legal reasons it is practically impossible for a business owner to estimate the causal effect on the productivity of workers of setting them under psychological stress using an experiment where workers are randomly assigned either to the treatment group that is pressed under time or to the control group where work is under regular conditions, at best without knowledge of being in an experiment.^[See the box *The Hawthorne Effect* on p. 528 of the book.]
+For economists, randomized controlled experiments are often difficult or even infeasible to implement. For example, due to ethic, moral and legal reasons it is practically impossible for a business owner to estimate the causal effect on the productivity of workers of setting them under psychological stress using an experiment where workers are randomly assigned either to the treatment group that is pressed under time or to the control group where work is under regular conditions, at best without knowledge of being in an experiment.^[See the box *The Hawthorne Effect* on p. 528 of the book.]
 
 However sometimes it is the case that external circumstances which appear random produce what is called a *quasi-experiment* or *natural experiment*. This "as if" randomness allows for estimation of causal effects that are of interest for economist using tools which are very similar to those valid for ideal randomized controlled experiments. These tools draw heavily on the theory of multiple regression and also on IV regression (see Chapter \@ref(ivr)). We will review the core aspects of these methods and demonstrate how to apply them in R using the STAR data set.^[See the [description](https://dataverse.harvard.edu/dataset.xhtml?persistentId=hdl:1902.1/10766) of the data set.]
 
@@ -35,7 +35,7 @@ library(stargazer)
 library(tidyr)
 ```
 
-## Potential Outcomes, Causal Effects and Idealized Experiments
+## Potential Outcomes, Causal Effects and Idealized Experiments {#poceaie}
 
 In the following we will briefly recap the idea of the average causal effect and how it can be estimated using the *differences estimator*. We advise you to work through Chapter 13.1 of the book for a better understanding.
 
@@ -164,7 +164,7 @@ with test score $Y_i$, the small class indicator $SmallClass_i$ and $RegAide_i$,
 We can easily reproduce the results presented in Table 13.1 of the book by performing the regression \@ref(eq:starpopreg) for each grade separately. Note that for each student, the dependent variable is simply the sum of the points scored in the math and reading parts of the test which is why we make use of the function `r ttcode("I()")`.
 
 ```{r}
-# compute differences Estimates for each grades
+# compute differences Estimates for each grade
 fmk <- lm(I(readk + mathk) ~ stark, data = STAR)
 fm1 <- lm(I(read1 + math1) ~ star1, data = STAR)
 fm2 <- lm(I(read2 + math2) ~ star2, data = STAR)
@@ -172,19 +172,19 @@ fm3 <- lm(I(read3 + math3) ~ star3, data = STAR)
 ```
 
 ```{r, eval=FALSE}
-# obtain coefficient matrix using robust standard errors
-coeftest(fmk, vcov = vcovHC(fmk, type= "HC0"))
-coeftest(fm1, vcov = vcovHC(fm1, type= "HC0"))
-coeftest(fm2, vcov = vcovHC(fm2, type= "HC0"))
-coeftest(fm3, vcov = vcovHC(fm3, type= "HC0"))
+# obtain coefficient section with robust standard errors
+coeftest(fmk, vcov = vcovHC(fmk, type= "HC1"))
+coeftest(fm1, vcov = vcovHC(fm1, type= "HC1"))
+coeftest(fm2, vcov = vcovHC(fm2, type= "HC1"))
+coeftest(fm3, vcov = vcovHC(fm3, type= "HC1"))
 ```
 
 ```{r, echo=FALSE}
-# obtain coefficient matrix using robust standard errors
-coeftest(fmk, vcov = vcovHC(fmk, type= "HC0"))
-coeftest(fm1, vcov = vcovHC(fm1, type= "HC0"))
-coeftest(fm2, vcov = vcovHC(fm2, type= "HC0"))
-coeftest(fm3, vcov = vcovHC(fm3, type= "HC0"))
+# obtain coefficient section with robust standard errors
+coeftest(fmk, vcov = vcovHC(fmk, type= "HC1"))
+coeftest(fm1, vcov = vcovHC(fm1, type= "HC1"))
+coeftest(fm2, vcov = vcovHC(fm2, type= "HC1"))
+coeftest(fm3, vcov = vcovHC(fm3, type= "HC1"))
 ```
 
 We gather the results and present them in a LaTeX table using `r ttcode("stargazer()")`.
@@ -202,7 +202,7 @@ rob_se_1 <- list(
 ```{r, message=F, warning=F, results='asis', eval=FALSE}
 library(stargazer)
 
-stargazer(fmk,fm1,fm2,fm3,
+stargazer(fmk, fm1, fm2, fm3,
   title = "Project STAR: Differences Estimates",
   header = FALSE, 
   type = "latex",
@@ -210,7 +210,7 @@ stargazer(fmk,fm1,fm2,fm3,
   omit.table.layout = "n",
   digits = 3, 
   column.labels = c("K", "1", "2", "3"),
-  dep.var.caption  = "Grade",
+  dep.var.caption  = "Dependent Variable: Grade",
   dep.var.labels.include = FALSE,
   se = rob_se_1)
 ```
@@ -509,23 +509,25 @@ The remainder of Chapter 13.3 in the book discusses to what extent these experim
 
 ## Quasi Experiments
 
-In quasi-experiments, "as if" randomness is exploited to use methods similar to those that have been discussed in the previous chapter. There are two types of quasi-experiments:^[See Chapter 13.4 of the book for some example studies that are based on quasi-experiments.]
+In quasi-experiments, "as if" randomness is exploited by applying methods similar to those that have been discussed in the previous chapter. There are two types of quasi-experiments:^[See Chapter 13.4 of the book for some example studies that are based on quasi-experiments.]
 
 1. Random variations in individual circumstances allow to view the treatment "as if" it was randomly determined.
 
 2. The treatment is only partially determined by "as if" random variation.
 
-The former allows to estimate the effect using either model \@ref(eq:diffestwar), i.e. the *difference estimator with additional regressors*, or, if there is doubt that the "as if" randomness does not entirely ensure that there are no systematic differences between control and treatment group, using the *differences-in-differences* (DID) estimator. In the latter case, an IV approach for estimation of a model like \@ref(eq:diffestwar) which uses the source of "as if" randomness in treatment assignment as the instrument may be applied.
+The former allows to estimate the treatment effect using either model \@ref(eq:diffestwar), i.e. the *difference estimator with additional regressors*, or, if there is doubt that the "as if" randomness does not entirely ensure that there are no systematic differences between control and treatment group, using the *differences-in-differences* (DID) estimator. In the latter case, an IV approach for estimation of a model like \@ref(eq:diffestwar) which uses the source of "as if" randomness in treatment assignment as the instrument may be applied.
 
-Some more advanced techniques that are helpful in settings where the treatment assignment is (partially) determined by a threshold in a so-called running variable are *sharp regression discontinuity design* (RDD) and *fuzzy regression discontinuity design* (FRDD).
+Some more advanced techniques that are helpful in settings where the treatment assignment is (partially) determined by a threshold value in a so-called running variable are *sharp regression discontinuity design* (RDD) and *fuzzy regression discontinuity design* (FRDD).
 
-We will briefly review these techniques and, since the book does not provide any empirical examples in this section, we will use our own simulated data in a minimal example to discuss how DID, RDD and FRDD can be applied in `r ttcode("R")`.
+We will briefly review these techniques and, since the book does not provide any empirical examples in this section, we will use our own simulated data in minimal examples to discuss how DID, RDD and FRDD can be applied in `r ttcode("R")`.
 
 ### The Differences-in-Differences Estimator {-} 
 
-In quasi-experiments it is often the case that the source of "as if" randomness in treatment assignment cannot entirely prevent systematic differences between control and treatment group. This problem was encountered by @card1994 who use geography as the "as if" random treatment assignment to study the effect on employment of workers in the fast-food restaurants caused by an increase in the state minimum wage in New Jersey in the year of 1992. Their idea was to use the fact that the increase in minimum wage applied to employees in New Jersey (treatment group) but not to those living in the neighboring Pennsylvania (control group). 
+In quasi-experiments it is often the case that the source of "as if" randomness in treatment assignment cannot entirely prevent systematic differences between control and treatment group. This problem was encountered by @card1994 who study the effect on employment of workers in the fast-food restaurants caused by an increase in the state minimum wage in New Jersey in the year of 1992. Their idea was to use use geography as the "as if" random treatment assignment to estimate the average effect of the wage increase since the increase in minimum wage applied to employees in New Jersey (treatment group) but not to those living in the neighboring Pennsylvania (control group). 
 
-It is quite conceivable that such a wage hike is not correlated with other determinants of employment. However, there still might be some state-specific differences and thus differences between control and treatment group. This would render the *differences estimator* biased and inconsistent. @card1994 solved this by using a DID estimator: they collected data in February 1992 (before the treatment) and November 1992 (after the treatment) for the same restaurants and estimated the effect of the wage hike by analyzing differences in the differences in employment for New Jersey and Pennsylvania before and after the increase.^[See also the box *What is the Effect on Employment of the Minimum Wage?* in Chapter 13.4 of the book.] The DID estimator is
+It is conceivable that such a wage hike is not correlated with other determinants of employment. However, there still might be some state-specific differences (i.e. differences between control and treatment group) that impact employment. This would render the *differences estimator* (see Section \@ref{poceaie}) biased and inconsistent. @card1994 solved this by using a DID estimator: they collected data in February 1992 (before the treatment) and November 1992 (after the treatment) for the same restaurants and estimated the effect of the wage hike by analyzing differences in the differences in employment for New Jersey and Pennsylvania before and after the increase.^[See also the box *What is the Effect on Employment of the Minimum Wage?* in Chapter 13.4 of the book.] 
+
+The DID estimator is
 
 \begin{align}
   \widehat{\beta}_1^{\text{diffs-in-diffs}} =& \, (\overline{Y}^{\text{treatment,after}} - \overline{Y}^{\text{treatment,before}}) - (\overline{Y}^{\text{control,after}} - \overline{Y}^{\text{control,before}}) \\
@@ -534,13 +536,13 @@ It is quite conceivable that such a wage hike is not correlated with other deter
 
 with
 
-+ $\overline{Y}^{\text{treatment,before}}$ - the sample average in the treatment group before the treatment
++ $\overline{Y}^{\text{treatment,before}}$ the sample average in the treatment group before the treatment,
 
-+ $\overline{Y}^{\text{treatment,after}}$ - the sample average in the treatment group after the treatment
++ $\overline{Y}^{\text{treatment,after}}$ the sample average in the treatment group after the treatment,
 
-+ $\overline{Y}^{\text{treatment,before}}$ - the sample average in the control group before the treatment
++ $\overline{Y}^{\text{treatment,before}}$ the sample average in the control group before the treatment,
 
-+ $\overline{Y}^{\text{treatment,after}}$ - the sample average in the control group after the treatment.
++ $\overline{Y}^{\text{treatment,after}}$ the sample average in the control group after the treatment.
 
 We now use `r ttcode("R")` to reproduce Figure 13.1 of the book.
 
@@ -559,6 +561,8 @@ plot(c(0, 1), c(6, 8),
      xaxt = "n",
      yaxt = "n"
 )
+
+# add axis
 axis(1, at = c(0, 1), labels = c("before", "after"))
 axis(2, at = c(0, 13))
 
@@ -595,38 +599,41 @@ Adding additional regressors that measure pre-treatment characteristics to \@ref
 \end{align}
 the *difference-in-differences estimator* with additional regressors. The additional regressors may lead to a more precise estimate of $\beta_1$. 
 
-We will keep things simple and focus on estimation of the treatment effect using DID in the simplest case, that is a control and a treatment group observed for two time periods --- one before and one after the treatment. In particular, we will see that there are three different ways to proceed.
-\pagebreak
+We will focus on estimation of the treatment effect using DID in the simplest case, that is a control and a treatment group observed for two time periods --- one before and one after the treatment. In particular, we will see that there are three different ways to proceed.
+
 First, we simulate pre- and post-treatment data using R. 
 
 ```{r}
-# sample size
+# set sample size
 n <- 200
 
-# treatment effect
+# specify treatment effect
 TEffect <- 4
 
-# treatment dummy
+# set up treatment dummy 
 TDummy <- c(rep(0, n/2), rep(1, n/2))
 
 # simulate pre- and post-treatment values of the dep. variable
+# pre-treatment
 y_pre <- 7 + rnorm(n)
 y_pre[1:n/2] <- y_pre[1:n/2] - 1
+# post-treatment
 y_post <- 7 + 2 + TEffect * TDummy + rnorm(n)
 y_post[1:n/2] <- y_post[1:n/2] - 1 
 ```
 
-We continue by plotting the data. The function `r ttcode("jitter()")` is used to add some artificial dispersion in the horizontal component of the points so that there is less overplotting. The function `r ttcode("alpha()")` from the package `r ttcode("scales")` allows to adjust the opacity of colors used in plots.
+We continue by plotting the data. The function `r ttcode("jitter()")` is used to add some dispersion in the horizontal component of the points so that there is less overplotting. The function `r ttcode("alpha()")` from the package `r ttcode("scales")` allows to adjust the opacity of colors used in the plot.
 
 <div class="unfolded">
 ```{r, fig.align='center'}
 library(scales)
 
+# indicators pre- and post-treatment
 pre <- rep(0, length(y_pre[TDummy==0]))
 post <- rep(1, length(y_pre[TDummy==0]))
 
-# plot control group in t=1
-plot(jitter(pre, 0.6), 
+# plot control group in pre-treatment
+plot(jitter(pre, 5), 
      y_pre[TDummy==0], 
      ylim = c(0, 16), 
      col = alpha("steelblue", 0.3),
@@ -637,24 +644,26 @@ plot(jitter(pre, 0.6),
      xaxt = "n",
      main = "Artificial Data for DID Estimation"
      )
+
+# add x axis
 axis(1, at = c(0, 1), labels = c("before", "after"))
 
-# add treatment group in t=1
-points(jitter(pre, 0.6), 
+# add treatment group pre-treatment
+points(jitter(pre, 5), 
        y_pre[TDummy==1], 
        col = alpha("darkred", 0.3), 
        pch = 20
        )
 
-# add control group in t=2
-points(jitter(post, 0.6),
+# add control group post-treatment
+points(jitter(post, 5),
        y_post[TDummy==0], 
        col = alpha("steelblue", 0.5),
        pch = 20
        )
 
-# add treatment group in t=2
-points(jitter(post, 0.6), 
+# add treatment group post-treatment
+points(jitter(post, 5), 
        y_post[TDummy==1], 
        col = alpha("darkred", 0.5),
        pch = 20
@@ -662,28 +671,28 @@ points(jitter(post, 0.6),
 ```
 </div>
 
-Notice that both observations from control and treatment group have a higher sample mean after the treatment but that the increase is stronger for the treatment group. Using DID we may estimate how much of that difference in the difference between groups is due to the treatment.
+Notice both control and treatment group have a higher sample mean after the treatment but that the increase is stronger for the treatment group. Using DID we may estimate *how much* of that difference in the difference between groups is due to the treatment.
 
-It is straightforward to compute the DID estimate in the fashion of \@ref(eq:DID).
+It is straightforward to compute the DID estimate as stated in \@ref(eq:DID).
 
 ```{r}
-# compute the DID estimator for the treatment effect 'by hand'
+# compute the DID estimate for the treatment effect by hand
 mean(y_post[TDummy==1]) - mean(y_pre[TDummy==1]) - 
 (mean(y_post[TDummy==0]) - mean(y_pre[TDummy==0]))
 ```
 
-Notice that the estimate is close to $4$, the value chosen as the treatment effect `r ttcode("TEffect")` above. Since \@ref(eq:did) is a simple linear model, we may perform OLS estimation of this regression specification using `r ttcode("lm()")`.
+Notice that the estimate is close to $4$, the value chosen as the treatment effect `r ttcode("TEffect")` above. Since \@ref(eq:did) is a simple linear model, we may also perform OLS estimation of this regression specification using `r ttcode("lm()")`.
 
 ```{r}
-# compute the DiD estimator using a linear model
+# compute the DiD estimator using the linear model
 lm(I(y_post - y_pre) ~ TDummy)
 ```
 
-We find that the estimates coincide. Furthermore, one can show that the DID estimate obtained by estimating specification \@ref(eq:did) OLS is the same as the OLS estimate of $\beta_{TE}$ in 
+We find that the estimates coincide. Furthermore, one can show that the DID estimate obtained by estimating specification \@ref(eq:did) by OLS is the same as the OLS estimate of $\beta_{TE}$ in 
 \begin{align}
   Y_i =& \beta_0 + \beta_1 D_i + \beta_2 Period_i + \beta_{TE} (Period_i \times D_i) (\#eq:DIDint)
 \end{align}
-where $D_i$ is the binary treatment indicator, $Period_i$ is a binary indicator for the after-treatment period and the $Period_i \times D_i$ is the interaction of both.
+where $D_i$ is the binary treatment indicator, $Period_i$ is a binary indicator for the after-treatment period and $Period_i \times D_i$ is the interaction of both.
 
 As for \@ref(eq:did), estimation of \@ref(eq:DIDint) using `r ttcode("R")` is straightforward. See Chapter \@ref(nrf) for a discussion of interaction terms in regression models.
 
@@ -716,7 +725,7 @@ X_i =&
   \end{cases}
 \end{align*}
 
-so that the receipt of treatment, $X_i$, is determined by some threshold $c$ of a continuous variable $W_i$, the so called running variable. The idea of *regression discontinuity design* is to use observations with a $W_i$ close to $c$ for estimation of $\beta_1$. $\beta_1$ is the average treatment effect for individuals with $W_i = c$ which is assumed to be a good approximation to the treatment effect in the population. \@ref(eq:SRDDsetting) is called a *sharp regression discontinuity design* because treatment assignment is deterministic and discontinuous at the cutoff: all observations with $W_i < c$ do not receive treatment and all observations where $W_i \geq c$ are treated.   
+so that the receipt of treatment, $X_i$, is determined by some threshold $c$ of a continuous variable $W_i$, the so called running variable. The idea of *regression discontinuity design* is to use observations with a $W_i$ close to $c$ for estimation of $\beta_1$. $\beta_1$ is the average treatment effect for individuals with $W_i = c$ which is assumed to be a good approximation to the treatment effect in the population. \@ref(eq:SRDDsetting) is called a *sharp regression discontinuity design* because treatment assignment is deterministic and discontinuous at the cutoff $W = c$: all observations with $W_i < c$ do not receive treatment and all observations with $W_i \geq c$ are treated.   
 
 The subsequent code chunks show how to estimate a linear SRDD using `r ttcode("R")` and how to produce plots in the way of Figure 13.2 of the book.
 
@@ -731,7 +740,7 @@ y <- 3 + 2 * W + 10 * (W>=0) + rnorm(1000)
 # load the package 'rddtools'
 library(rddtools)
 
-# construct rdd_data 
+# transform using 'rdd_data()' 
 data <- rdd_data(y, W, cutpoint = 0)
 
 # plot the sample data
@@ -746,7 +755,7 @@ plot(data,
 
 The argument `r ttcode("nbins")` sets the number of bins the running variable is divided in for aggregation. The dots represent bin averages of the outcome variable.
 
-We may use the function `r ttcode("rdd_reg_lm()")` to estimate the treatment effect using model \@ref(eq:SRDDsetting) for the artificial data generated above. By choosing `r ttcode('slope = "same"')` we restrict the slopes of the estimated regression function to be the same on both sides of the jump at the cutpoint $W=0$. 
+We may use the function `r ttcode("rdd_reg_lm()")` to estimate the treatment effect using model \@ref(eq:SRDDsetting) for the artificial data generated above. By choosing `r ttcode('slope = "same"')` we restrict the slopes of the estimated regression function to be the same on both sides of the jump at $W=0$. 
 
 ```{r, message=FALSE, warning=FALSE}
 # estimate the sharp RDD model
@@ -755,7 +764,7 @@ rdd_mod <- rdd_reg_lm(rdd_object = data,
 summary(rdd_mod)
 ```
 
-The coefficient estimate of interest is labeled `r ttcode("D")`. Note that the estimate is very close to the treatment effect chosen in the DGP above. 
+In the output, the coefficient estimate of interest is labeled `r ttcode("D")`. Note that the estimate is very close to the treatment effect chosen in the DGP above. 
 
 It is easy to visualize the result: simply call `r ttcode("plot()")` on the estimated model object.
 
@@ -771,42 +780,49 @@ plot(rdd_mod,
 
 Note that, as above, the dots represent averages of binned observations.
 
-So far we have assumed that crossing of the threshold determines receipt of treatment so that the jump of the population regression functions at the threshold can be regarded as the causal effect of the treatment.
+So far we have assumed that crossing the threshold determines receipt of treatment so that the magnitude of the jump in the population regression functions at the threshold can be regarded as the causal effect of the treatment.
 
-When crossing of the threshold $c$ is not the only cause for receipt of the treatment and instead other, treatment is not a deterministic function of $W_i$. Instead, it is useful to think of the $c$ as a threshold where the *probability* of receiving the treatment jumps.
+When crossing of the threshold $c$ is not the only cause for receipt of the treatment and there other influences, treatment is no longer a deterministic function of $W_i$. However, there are cases where it is useful to think of the $c$ as a threshold where the *probability* of receiving the treatment jumps.
 
-This jump may be due to unobservable variables that have impact on the probability of being treated. Thus, $X_i$ in \@ref(eq:SRDDsetting) will be correlated with the error $u_i$ and it becomes more difficult to consistently estimate the treatment effect. In this setting, using a *fuzzy regression discontinuity design* which is based an IV approach may be a remedy: take the binary variable $Z_i$ as an indicator for crossing of the threshold,
+This jump may be due to unobservable variables that impact the probability of being treated. Thus, $X_i$ in \@ref(eq:SRDDsetting) will be correlated with the error $u_i$ and it becomes more difficult to consistently estimate the treatment effect. In such a setting, using a *fuzzy regression discontinuity design* which is based on an IV approach may be a remedy: take the binary variable $Z_i$ as an indicator for crossing of the threshold,
 \begin{align*}
   Z_i = \begin{cases}
     1, & W_i \geq c \\
     0, & W_i < c,
   \end{cases}
 \end{align*}
-and assume that $Z_i$ relates to $Y_i$ only through the treatment indicator $X_i$. Then $Z_i$ and $u_i$ are uncorrelated but $Z_i$ influences receipt of treatment so it is correlated with $X_i$. Thus, $Z_i$ is a valid instrument for $X_i$ and \@ref(eq:SRDDsetting) can be estimated using TSLS.  
+and assume that $Z_i$ relates to $Y_i$ *only* through the treatment indicator $X_i$. Then $Z_i$ and $u_i$ are uncorrelated but $Z_i$ influences receipt of treatment so it is correlated with $X_i$. Thus, $Z_i$ is a valid instrument for $X_i$ and \@ref(eq:SRDDsetting) can be estimated using TSLS.  
 
-The following code chunk generates sample data where observations with a value of the running variable $W_i$ below the cutoff $c=0$ do not receive treatment and observations with $W_i \geq 0$ do receive treatment with a probability of $80\%$ so that treatment status is only partially determined by the running variable and the cutoff. Treatment leads to an increase in $Y$ by $2$ units. Observations with $W_i \geq 0$ that do not receive treatment are called *no-shows*: think of an individual that was assigned to receive the treatment but somehow manages to avoid it.
+The following code chunk generates sample data where observations with $W_i < 0$  do not receive treatment and observations with $W_i \geq 0$ do receive treatment with a probability of $80\%$ so that treatment status is only partially determined by the running variable and the cutoff. Treatment leads to an increase in $Y$ by $2$ units. Observations with $W_i \geq 0$ that do not receive treatment are called *no-shows*: think of an individual that was assigned to receive the treatment but somehow manages to avoid it.
 
 ```{r, message=FALSE}
 library(MASS)
 
 # generate sample data
+set.seed(1234)
+
+# number of observations
+N <- 2000
+
+# parameters for bivariate normal distribution
 mu <- c(0, 0)
 sigma <- matrix(c(1, 0.7, 0.7, 1), ncol = 2)
 
-set.seed(1234)
-d <- as.data.frame(mvrnorm(2000, mu, sigma))
+# sample data
+d <- as.data.frame(mvrnorm(N, mu, sigma))
 colnames(d) <- c("W", "Y")
 
-# introduce fuzziness
+# introduce 'fuzziness'
 d$treatProb <- ifelse(d$W < 0, 0, 0.8)
 
+# 'sapply()' applies a function to each element of a vector
 fuzz <- sapply(d$treatProb, function(x) rbinom(1, 1, prob = x))
 
 # treatment effect
 d$Y <- d$Y + fuzz * 2
 ```
 
-We plot all observations and use blue color to mark individuals that did not receive the treatment and use red color for those who received the treatment. 
+Next we plot all observations and use blue color to mark individuals that did not receive the treatment and use red color for those who received the treatment. 
 
 <div class="unfolded">
 ```{r, fig.align='center'}
@@ -826,10 +842,14 @@ abline(v = 0, lty = 2)
 ```
 </div>
 
-Obviously, receipt of treatment is no longer a deterministic function of the running variable $W$. Some observations with $W\geq0$ *did not* receive the treatment. We may estimate a FRDD by additionally setting `r ttcode("treatProb")` as the assignment variable `r ttcode("z")` in `r ttcode("rdd_data()")`. Then `r ttcode("rdd_reg_lm()")` applies the following TSLS procedure: treatment is predicted using $W_i$ and the cutoff dummy $Z_i$, the instrumental variable, in the first stage regression. The fitted values from the first stage regression are used to obtain an unbiased estimate of the treatment effect using the second stage where the outcome $Y$ is regressed on the fitted values and the running variable $W$.
+Receipt of treatment is no longer a deterministic function of the running variable $W$: some observations with $W\geq0$ did *not* receive the treatment. We may estimate a FRDD by additionally setting `r ttcode("treatProb")` as the assignment variable `r ttcode("z")` in `r ttcode("rdd_data()")`. Then `r ttcode("rdd_reg_lm()")` applies the following TSLS procedure:
+
+1. Treatment is predicted using $W_i$ and the cutoff dummy $Z_i$, the instrumental variable, in the first stage regression. 
+
+2. The fitted values from the first stage regression are used to obtain an unbiased estimate of the treatment effect using the second stage regression where the outcome variable $Y$ is regressed on the fitted values and the running variable $W$.
 
 ```{r}
-# Estimate the Fuzzy RDD
+# Estimate the FRDD
 data <- rdd_data(d$Y, d$W, 
                  cutpoint = 0, 
                  z = d$treatProb)
@@ -839,7 +859,7 @@ frdd_mod <- rdd_reg_lm(rdd_object = data,
 frdd_mod
 ```
 
-The estimate is close to $2$, the population treatment effect. We may call `r ttcode("plot()")` on the model object to obtain a graph consisting of binned data and the estimated regression function. 
+The estimate is close to $2$, the population treatment effect. We may call `r ttcode("plot()")` on the model object `r ttcode("frdd_mod")` to obtain a graph consisting of binned data and the estimated regression function. 
 
 <div class="unfolded">
 ```{r, fig.align='center'}
@@ -867,13 +887,13 @@ srdd_mod <- rdd_reg_lm(rdd_object = data,
 srdd_mod
 ```
 
-The estimate obtained using a SRDD shows a substantial downward bias. In fact this procedure is inconsistent for the true causal effect so enlarging the sample does not alleviate the bias.
+The estimate obtained using a SRDD shows a downward bias. In fact this procedure is inconsistent for the true causal effect so enlarging the sample does not alleviate the bias. (check this!)
 
-Hereinafter the book continues with a discussion of potential problems with quasi-experiments. As for all empirical studies, these potential problems are related to internal and external validity. This part is followed by a technical discussion of treatment effect estimation when the causal effect of treatment is heterogeneous in the population. We encourage you to work on these sections on your own.
+Hereinafter, the book continues with a discussion of potential problems with quasi-experiments. As for all empirical studies, these potential problems are related to internal and external validity. This part is followed by a technical discussion of treatment effect estimation when the causal effect of treatment is heterogeneous in the population. We encourage you to work on these sections on your own.
 
 #### Summary {-}
 
-In this chapter we have introduced the concept of causal effect in randomized controlled experiments and quasi-experiments where variations in circumstances or accidents of nature are treated as sources of "as if" random assignment to treatment. We have also discussed methods that allow for unbiased and consistent estimation of these effects in both settings. This included the *differences estimator*, the *differences-in-differences estimator* as well as *sharp* and *fuzzy regression discontinuity design* estimators. It was shown how to apply these estimation techniques in `r ttcode("R")`.
+In this chapter we have introduced the concept of causal effects in randomized controlled experiments and quasi-experiments where variations in circumstances or accidents of nature are treated as sources of "as if" random assignment to treatment. We have also discussed methods that allow for unbiased and consistent estimation of these effects in both settings. This included the *differences estimator*, the *differences-in-differences estimator* as well as *sharp* and *fuzzy regression discontinuity design* estimators. It was shown how to apply these methods using `r ttcode("R")`.
 
 In an empirical application we have shown how to replicate the results of the analysis of the STAR data presented in Chapter 13.3 of the book using `r ttcode("R")`. This study uses a randomized controlled experiment to assess whether smaller classes improve students' performance on standardized tests. We have stressed that, being related to a randomized controlled experiment, the data produced by this study are fundamentally different to those used in the cross-section studies Chapters \@ref(lrwor) to \@ref(nrf) and therefore we have motivated usage of a *differences estimator*.
 
