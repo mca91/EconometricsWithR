@@ -384,14 +384,23 @@ For the first $100$ samples, the true null hypothesis is rejected in four cases 
 Let us now come back to the example of test scores and class sizes. The regression model from Chapter \@ref(lrwor) is stored in `r ttcode('linear_model')`. An easy way to get $95\%$ confidence intervals for $\beta_0$ and $\beta_1$, the coefficients on `r ttcode('(intercept)')` and `r ttcode('STR')`, is to use the function `r ttcode('confint()')`. We only have to provide a fitted model object as an input to this function. The confidence level is set to $95\%$ by default but can be modified by setting the argument `r ttcode('level')`, see `r ttcode('?confint')`. 
 
 ```{r}
+# compute 95% confidence interval for coefficients in 'linear_model'
 confint(linear_model)
 ```
 
-Let us check if the calculation is done as we expect it to be. For $\beta_1$, the coefficient on `r ttcode('STR')`, according to the formula presented above the interval bounds are computed as
+Let us check if the calculation is done as we expect it to be for $\beta_1$, the coefficient on `r ttcode('STR')`.
 
-\[  -2.279808 \pm 1.96 \times 0.4798255 \, \Rightarrow \, \text{CI}_{0.95}^{\beta_1} = \left[ -3.22, -1.34 \right]  \]
+```{r}
+# compute 95% confidence interval for coefficients in 'linear_model' by hand
+lm_summ <- summary(linear_model)
 
-so this actually leads to the same interval. Obviously, this interval *does not* contain the value zero which, as we have already seen in the previous section, leads to the rejection of the null hypothesis $\beta_{1,0} = 0$.
+c(
+  "lower" = lm_summ$coef[2,1] - qt(0.975, df = lm_summ$df[2]) * lm_summ$coef[2,2],
+  "upper" = lm_summ$coef[2,1] + qt(0.975, df = lm_summ$df[2]) * lm_summ$coef[2,2]
+)
+```
+
+The upper and the lower bounds coincide. We have used the $0.975$-quantile of the $t_{418}$ distribution to get the exact result reported by `r ttcode("confint")`.  Obviously, this interval *does not* contain the value zero which, as we have already seen in the previous section, leads to the rejection of the null hypothesis $\beta_{1,0} = 0$.
 
 ## Regression when X is a Binary Variable {#rwxiabv}
 
@@ -399,8 +408,7 @@ Instead of using a continuous regressor $X$, we might be interested in running t
 
 \[ Y_i = \beta_0 + \beta_1 D_i + u_i \tag{5.2} \]
 
-where $D_i$ is a binary variable, a so-called *dummy variable*. 
-For example, we may define $D_i$ in the following way:
+where $D_i$ is a binary variable, a so-called *dummy variable*. For example, we may define $D_i$ as follows:
 
 \[ D_i = \begin{cases}
         1 \ \ \text{if $STR$ in $i^{th}$ school district < 20} \\
@@ -419,22 +427,22 @@ Let us see how these data look like in a scatter plot:
 CASchools$D <- CASchools$STR < 20
 
 # Plot the data
-plot(CASchools$D, CASchools$score,            # provide the data to be ploted
+plot(CASchools$D, CASchools$score,            # provide the data to be plotted
      pch = 20,                                # use filled circles as plot symbols
      cex = 0.5,                               # set size of plot symbols to 0.5
      col = "Steelblue",                       # set the symbols' color to "Steelblue"
      xlab = expression(D[i]),                 # Set title and axis names
      ylab = "Test Score",
-     main = "Dummy Regression"
-     )
+     main = "Dummy Regression")
 ```
 </div>
 
 <div class="unfolded">
 ```{r, fig.align='center', echo=F}
 # Create the dummy variable as defined above
-D <- CASchools$STR < 20
-CASchools$D <- D
+CASchools$D <- CASchools$STR < 20
+
+# estimte the dummy regression
 dummy_model <- lm(score ~ D, data = CASchools)
 
 # Plot the data
@@ -443,15 +451,16 @@ plot(CASchools$D, CASchools$score,
      xlab = expression(D[i]), ylab = "Test Score",
      main = "Dummy Regression"
      )
+#
 points(CASchools$D, predict(dummy_model), col = "red", pch = 20)
 ```
 </div>
 
-We see that with $D$ as the regressor, it is not useful to think of $\beta_1$ as a slope parameter since $D_i \in \{0,1\}$, i.e. we only observe two discrete values instead of a continuum of regressor values lying in some range on the real line. There is no continuous line depicting the conditional expectation function $E(TestScore_i | D_i)$ since this function is solely defined for $X$-positions $0$ and $1$. 
+With $D$ as the regressor, it is not useful to think of $\beta_1$ as a slope parameter since $D_i \in \{0,1\}$, i.e., we only observe two discrete values instead of a continuum of regressor values. There is no continuous line depicting the conditional expectation function $E(TestScore_i | D_i)$ since this function is solely defined for $x$-positions $0$ and $1$. 
 
-Therefore, the interpretation of the coefficients in our regression model is as follows:
+Therefore, the interpretation of the coefficients in this regression model is as follows:
 
-- $E(Y_i | D_i = 0) = \beta_0$, so $\beta_0$ is the expected test score in districts where $D_i=0$ i.e. where $STR$ is below $20$.
+- $E(Y_i | D_i = 0) = \beta_0$, so $\beta_0$ is the expected test score in districts where $D_i=0$ where $STR$ is below $20$.
 
 - $E(Y_i | D_i = 1) = \beta_0 + \beta_1$ or, using the result above, $\beta_1 = E(Y_i | D_i = 1) - E(Y_i | D_i = 0)$. Thus, $\beta_1$ is *the difference in group specific expectations*, i.e. the difference in expected test score between districts with $STR < 20$ and those with $STR \geq 20$. 
 
@@ -464,6 +473,8 @@ dummy_model <- lm(score ~ D, data = CASchools)
 summary(dummy_model)
 ```
 </div>
+
+The vector `r ttcode("CASchools$D")` has the type `r ttcode("logical")` (to see this, use `r ttcode("typeof(CASchools$D)")`) which is shown in the output of `r ttcode("summary(dummy_model)")`: `r ttcode("DTRUE")` states that all entries `r ttcode("TRUE")` are coded as `r ttcode("1")` and all entries `r ttcode("FALSE")` are coded as `r ttcode("0")`. Thus, the interpretation of the coefficient `r ttcode("DTRUE")` is as stated above for $\beta_1$.  
 
 One can see that the expected test score in districts with $STR < 20$ ($D_i = 1$) is predicted to be $650.1 + 7.17 = 657.27$ while districts with $STR \geq 20$ ($D_i = 0$) are expected to have an average test score of only $650.1$.
 
@@ -479,9 +490,9 @@ points(x = CASchools$D,
 
 Here we use the function `r ttcode('predict()')` to obtain estimates of the group specific means. The red dots represent these sample group averages. Accordingly, $\hat{\beta}_1 = 7.17$ can be seen as the difference in group averages.
 
-`r ttcode('summary(dummy_model)')` also provides an answer to the question whether there is a statistically significant difference in group means. This in turn would support the hypothesis that students perform differently when they are taught in small classes compared to those taught in large classes. We can assess this by a two-tailed test of the hypothesis $H_0: \beta_1 = 0$. Conveniently, the $t$-statistic and the corresponding $p$-value for this test are computed by `r ttcode('summary()')`.
+`r ttcode('summary(dummy_model)')` also answers the question whether there is a statistically significant difference in group means. This in turn would support the hypothesis that students perform differently when they are taught in small classes. We can assess this by a two-tailed test of the hypothesis $H_0: \beta_1 = 0$. Conveniently, the $t$-statistic and the corresponding $p$-value for this test are computed by `r ttcode('summary()')`.
 
-Since `r ttcode('t value')` $= 3.88 > 1.96$ we reject the null hypothesis at the $5\%$ level of significance. The same conclusion can be made when using the $p$-value which reports significance to the $0.00012\%$ level. 
+Since `r ttcode('t value')` $= 3.88 > 1.96$ we reject the null hypothesis at the $5\%$ level of significance. The same conclusion results when using the $p$-value, which reports significance up to the $0.00012\%$ level. 
 
 As done with `r ttcode("linear_model")`, we may alternatively use the function `r ttcode('confint()')` to compute a $95\%$ confidence interval for the true difference in means and see if the hypothesized value is an element of this confidence set. 
 
@@ -494,7 +505,7 @@ We reject the hypothesis that there is no difference between group means at the 
 
 ## Heteroskedasticity and Homoskedasticity {#hah}
 
-All inference made in the previous chapters relies on the assumption that the error variance does not vary as regressor values change. But this will not necessarily be the case in empirical applications.
+All inference made in the previous chapters relies on the assumption that the error variance does not vary as regressor values change. But this will often not be the case in empirical applications.
 
 ```{r, eval = my_output == "html", results='asis', echo=FALSE}
 cat('
@@ -566,14 +577,13 @@ plot(x = x,
      cex = 0.5, 
      pch = 19, 
      xlim = c(8, 27), 
-     ylim = c(600, 710)
-     )
+     ylim = c(600, 710))
 
 # Add the regression line to the plot
 abline(mod, col = "darkred")
 
 # Add boxplots to the plot
-boxplot(y ~ x, 
+boxplot(formula = y ~ x, 
         add = TRUE, 
         at = c(10, 15, 20, 25), 
         col = alpha("gray", 0.4), 
@@ -582,17 +592,19 @@ boxplot(y ~ x,
 ```
 </div>
 
-For this artificial data it is clear to see that we face unequal conditional error variances. Specifically, we observe that the variance in test scores (and therefore the variance of the errors committed) *increases* with the student teacher ratio.
+We have used the `r ttcode("formula")` argument `r ttcode("y ~ x")` in `r ttcode("boxplot()")` to specify that we want to split up the vector `r ttcode("y")` into groups according to `r ttcode("x")`. `r ttcode("boxplot(y ~ x)")` generates a boxplot for each of the groups in `r ttcode("y")` defined by `r ttcode("x")`.
+
+For this artificial data it is clear that the conditional error variances differ. Specifically, we observe that the variance in test scores (and therefore the variance of the errors committed) *increases* with the student teacher ratio.
 
 ### A Real-World Example for Heteroskedasticity {-}
 
-Think about the economic value of education: if there were no expected economic value-added to receiving education at university, you probably would not be reading this script right now. A starting point to empirical verification of such a relation is to have data on graduates. More precisely, we need data on wages and education of graduates in order to estimate a model like
+Think about the economic value of education: if there were no expected economic value-added to receiving university education, you probably would not be reading this script right now. A starting point to empiricaly verify such a relation is to have data on working individuals. More precisely, we need data on wages and education of workers in order to estimate a model like
 
 $$ wage_i = \beta_0 + \beta_1 \cdot education_i + u_i. $$
 
-What can be presumed about this relation? It is likely that, on average, higher educated workers earn more than workers with less education, so we expect to estimate an upward sloping regression line. <br> Also it seems plausible that earnings of better educated workers have a higher dispersion then those of low-skilled workers: solid education is not a guarantee for a high salary so even highly quialified workers take on low-income jobs. However, they are more likely to meet the requirements for the well-paid jobs than workers with less education for whom opportunities at the labor market are much more limited.
+What can be presumed about this relation? It is likely that, on average, higher educated workers earn more than workers with less education, so we expect to estimate an upward sloping regression line. Also, it seems plausible that earnings of better educated workers have a higher dispersion then those of low-skilled workers: solid education is not a guarantee for a high salary so even highly qualified workers take on low-income jobs. However, they are more likely to meet the requirements for the well-paid jobs than workers with less education for whom opportunities in the labor market are much more limited.
 
-To verify this empirically we may use real data on hourly earnings and the number of years of education of employees. Such data can be found in `r ttcode('CPSSWEducation')`. This data set is part of the package `r ttcode('AER')` and stems from the Current Population Survey (CPS) which is conducted periodically by the [Bureau of Labor Statistics](http://www.bls.gov/) in the United States. 
+To verify this empirically we may use real data on hourly earnings and the number of years of education of employees. Such data can be found in `r ttcode('CPSSWEducation')`. This data set is part of the package `r ttcode('AER')` and comes from the Current Population Survey (CPS) which is conducted periodically by the [Bureau of Labor Statistics](http://www.bls.gov/) in the United States. 
 
 The subsequent code chunks demonstrate how to import the data into `r ttcode('R')` and how to produce a plot in the fashion of Figure 5.3 in the book.
 
@@ -611,13 +623,11 @@ labor_model <- lm(earnings ~ education)
 # plot observations and add the regression line
 plot(education, 
      earnings, 
-     ylim = c(0, 150)
-     )
+     ylim = c(0, 150))
 
 abline(labor_model, 
        col = "steelblue", 
-       lwd = 2
-       )
+       lwd = 2)
 ```
 
 From inspecting the plot we can tell that the mean of the distribution of earnings increases with the level of education. This is also suggested by formal analysis: the estimated regression model stored in `r ttcode('labor_mod')` shows that there is a positive relation between years of education and earnings.
