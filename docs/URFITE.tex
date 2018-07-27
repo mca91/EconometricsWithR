@@ -116,15 +116,16 @@
 }
 
 \setlength{\droptitle}{-2em}
+
   \title{Using R for Introduction to Econometrics}
-  \pretitle{\vspace{\droptitle}\centering\huge}
+    \pretitle{\vspace{\droptitle}\centering\huge}
   \posttitle{\par}
-  \author{Christoph Hanck, Martin Arnold, Alexander Gerber and Martin Schmelzer}
-  \preauthor{\centering\large\emph}
+    \author{Christoph Hanck, Martin Arnold, Alexander Gerber and Martin Schmelzer}
+    \preauthor{\centering\large\emph}
   \postauthor{\par}
-  \predate{\centering\large\emph}
+      \predate{\centering\large\emph}
   \postdate{\par}
-  \date{2018-07-24}
+    \date{2018-07-26}
 
 \usepackage{booktabs}
 %\usepackage{amsmath}
@@ -133,6 +134,9 @@
 \usepackage{rotating, graphicx}
 \usepackage{multirow}
 \usepackage{tabularx}
+
+% new command for pretty oversets with \sim
+\newcommand\simcal[1]{\stackrel{\sim}{\smash{\mathcal{#1}}\rule{0pt}{0.5ex}}}
 
 \newcommand{\comma}{,\,}
 
@@ -210,6 +214,7 @@ colback=kcblue,colframe=kcdarkblue,fonttitle=\bfseries, title=Key Concept~#2, af
 \theoremstyle{remark}
 \newtheorem*{remark}{Remark}
 \newtheorem*{solution}{Solution}
+\let\BeginKnitrBlock\begin \let\EndKnitrBlock\end
 \begin{document}
 \maketitle
 
@@ -329,7 +334,7 @@ on \texttt{CRAN}. The code chunk is followed by the output produced.
 \end{Shaded}
 
 \begin{verbatim}
-## [1] 12740
+## [1] 12773
 \end{verbatim}
 
 Each code chunk is equipped with a button on the outer right hand side
@@ -521,1849 +526,1331 @@ widgets throughout the book. You may try them below.
 
 \begin{center}\textit{This interactive application is only available in the HTML version.}\end{center}
 
-\chapter{Probability Theory}\label{pt}
+\chapter{Linear Regression with One Regressor}\label{lrwor}
 
-This chapter reviews some basic concepts of probability theory and
-demonstrates how they can be applied in \texttt{R}.
+This chapter introduces the basics in linear regression and shows how to
+perform regression analysis in \texttt{R}. In linear regression, the aim
+is to model the relationship between a dependent variable \(Y\) and one
+or more explanatory variables denoted by \(X_1, X_2, \dots, X_k\).
+Following the book we will focus on the concept of simple linear
+regression throughout the whole chapter. In simple linear regression,
+there is just one explanatory variable \(X_1\). If, for example, a
+school cuts its class sizes by hiring new teachers, that is, the school
+lowers \(X_1\), the student-teacher ratios of its classes, how would
+this affect \(Y\), the performance of the students involved in a
+standardized test? With linear regression we can not only examine
+whether the student-teacher ratio \emph{does have} an impact on the test
+results but we can also learn about the \emph{direction} and the
+\emph{strength} of this effect.
 
-Most of the statistical functionalities in \texttt{R}'s standard version
-are collected in the \texttt{stats} package. It provides simple
-functions which compute descriptive measures and facilitate computations
-involving a variety of probability distributions. It also contains more
-sophisticated routines that, e.g., enable the user to estimate a large
-number of models based on the same data or help to conduct extensive
-simulation studies. \texttt{stats} is part of the base distribution of
-\texttt{R}, meaning that it is installed by default so there is no need
-to run \texttt{install.packages("stats")} or \texttt{library("stats")}.
-Simply execute \texttt{library(help\ =\ "stats")} in the console to view
-the documentation and a complete list of all functions gathered in
-\texttt{stats}. For most packages a documentation that can be viewed
-within \emph{RStudio} is available. Documentations can be invoked using
-the \texttt{?} operator, e.g., upon execution of \texttt{?stats} the
-documentation of the \texttt{stats} package is shown in the help tab of
-the bottom-right pane.
-
-In what follows, our focus is on (some of) the probability distributions
-that are handled by \texttt{R} and show how to use the relevant
-functions to solve simple problems. Thereby, we refresh some core
-concepts of probability theory. Among other things, you will learn how
-to draw random numbers, how to compute densities, probabilities,
-quantiles and alike. As we shall see, it is very convenient to rely on
-these routines.
-
-\section{Random Variables and Probability
-Distributions}\label{random-variables-and-probability-distributions}
-
-Let us briefly review some basic concepts of probability theory.
+The following packages are needed for reproducing the code presented in
+this chapter:
 
 \begin{itemize}
-\tightlist
 \item
-  The mutually exclusive results of a random process are called the
-  \emph{outcomes}. `Mutually exclusive' means that only one of the
-  possible outcomes can be observed.
+  \texttt{AER} - accompanies the Book \emph{Applied Econometrics with R}
+  \citet{kleiber2008} and provides useful functions and data sets.
 \item
-  We refer to the \emph{probability} of an outcome as the proportion
-  that the outcome occurs in the long run, that is, if the experiment is
-  repeated very often.
-\item
-  The set of all possible outcomes of a random variable is called the
-  \emph{sample space}.
-\item
-  An \emph{event} is a subset of the sample space and consists of one or
-  more outcomes.
+  \texttt{MASS} - a collection of functions for applied statistics.
 \end{itemize}
 
-These ideas are unified in the concept of a \emph{random variable} which
-is a numerical summary of random outcomes. Random variables can be
-\emph{discrete} or \emph{continuous}.
-
-\begin{itemize}
-\tightlist
-\item
-  Discrete random variables have discrete outcomes, e.g. \(0\) and
-  \(1\).
-\item
-  A continuous random variable may take on a continuum of possible
-  values.
-\end{itemize}
-
-\subsection*{Probability Distributions of Discrete Random
-Variables}\label{probability-distributions-of-discrete-random-variables}
-\addcontentsline{toc}{subsection}{Probability Distributions of Discrete
-Random Variables}
-
-A typical example for a discrete random variable \(D\) is the result of
-a dice roll: in terms of a random experiment this is nothing but
-randomly selecting a sample of size \(1\) from a set of numbers which
-are mutually exclusive outcomes. Here, the sample space is
-\(\{1,2,3,4,5,6\}\) and we can think of many different events, e.g.,
-`the observed outcome lies between \(2\) and \(5\)'.
-
-A basic function to draw random samples from a specified set of elements
-is the the function \texttt{sample()}, see \texttt{?sample}. We can use
-it to simulate the random outcome of a dice roll. Let's roll the dice!
+Make sure these are installed before you go ahead and try to replicate
+the examples. The safest way to do so is by checking whether the
+following code chunk executes without any errors.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\KeywordTok{sample}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\DecValTok{6}\NormalTok{, }\DecValTok{1}\NormalTok{) }
+\KeywordTok{library}\NormalTok{(AER)}
+\KeywordTok{library}\NormalTok{(MASS)}
 \end{Highlighting}
 \end{Shaded}
 
-\begin{verbatim}
-## [1] 4
-\end{verbatim}
+\section{Simple Linear Regression}\label{simple-linear-regression}
 
-The probability distribution of a discrete random variable is the list
-of all possible values of the variable and their probabilities which sum
-to \(1\). The cumulative probability distribution function gives the
-probability that the random variable is less than or equal to a
-particular value.
+To start with an easy example, consider the following combinations of
+average test score and the average student-teacher ratio in some
+fictional school districts.
 
-For the dice roll, the probability distribution and the cumulative
-probability distribution are summarized in Table \ref{tab:pdist}.
-
-\begin{table}
-
-\caption{\label{tab:pdist}PDF and CDF of a Dice Roll}
+\begin{table}[H]
 \centering
-\begin{tabular}[t]{l|l|l|l|l|l|l}
-\hline
-Outcome & 1 & 2 & 3 & 4 & 5 & 6\\
-\hline
-Probability & 1/6 & 1/6 & 1/6 & 1/6 & 1/6 & 1/6\\
-\hline
-Cumulative Probability & 1/6 & 2/6 & 3/6 & 4/6 & 5/6 & 1\\
-\hline
+\begin{tabular}{lrrrrrrr}
+\toprule
+  & 1 & 2 & 3 & 4 & 5 & 6 & 7\\
+\midrule
+TestScore & 680 & 640 & 670 & 660 & 630 & 660.0 & 635\\
+STR & 15 & 17 & 19 & 20 & 22 & 23.5 & 25\\
+\bottomrule
 \end{tabular}
 \end{table}
 
-We can easily plot both functions using \texttt{R}. Since the
-probability equals \(1/6\) for each outcome, we set up the vector
-\texttt{probability} by using the function \texttt{rep()} which
-replicates a given value a specified number of times.
+To work with these data in \texttt{R} we begin by generating two
+vectors: one for the student-teacher ratios (\texttt{STR}) and one for
+test scores (\texttt{TestScore}), both containing the data from the
+table above.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{# generate the vector of probabilities }
-\NormalTok{probability <-}\StringTok{ }\KeywordTok{rep}\NormalTok{(}\DecValTok{1}\OperatorTok{/}\DecValTok{6}\NormalTok{, }\DecValTok{6}\NormalTok{) }
+\CommentTok{# Create sample data}
+\NormalTok{STR <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{15}\NormalTok{, }\DecValTok{17}\NormalTok{, }\DecValTok{19}\NormalTok{, }\DecValTok{20}\NormalTok{, }\DecValTok{22}\NormalTok{, }\FloatTok{23.5}\NormalTok{, }\DecValTok{25}\NormalTok{)}
+\NormalTok{TestScore <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{680}\NormalTok{, }\DecValTok{640}\NormalTok{, }\DecValTok{670}\NormalTok{, }\DecValTok{660}\NormalTok{, }\DecValTok{630}\NormalTok{, }\DecValTok{660}\NormalTok{, }\DecValTok{635}\NormalTok{) }
 
-\CommentTok{# plot the probabilites }
-\KeywordTok{plot}\NormalTok{(probability, }
-     \DataTypeTok{main =} \StringTok{"Probability Distribution"}\NormalTok{,}
-     \DataTypeTok{xlab =} \StringTok{"outcomes"}\NormalTok{) }
-\end{Highlighting}
-\end{Shaded}
-
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-14-1} \end{center}
-
-For the cumulative probability distribution we need the cumulative
-probabilities, i.e., we need the cumulative sums of the vector
-\texttt{probability}. These sums can be computed using
-\texttt{cumsum()}.
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{# generate the vector of cumulative probabilities }
-\NormalTok{cum_probability <-}\StringTok{ }\KeywordTok{cumsum}\NormalTok{(probability) }
-
-\CommentTok{# plot the probabilites }
-\KeywordTok{plot}\NormalTok{(cum_probability, }
-     \DataTypeTok{xlab =} \StringTok{"outcomes"}\NormalTok{, }
-     \DataTypeTok{main =} \StringTok{"Cumulative Probability Distribution"}\NormalTok{) }
-\end{Highlighting}
-\end{Shaded}
-
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-15-1} \end{center}
-
-\subsection*{Bernoulli Trials}\label{bernoulli-trials}
-\addcontentsline{toc}{subsection}{Bernoulli Trials}
-
-The set of elements from which \texttt{sample()} draws outcomes does not
-have to consist of numbers only. We might as well simulate coin tossing
-with outcomes \(H\) (heads) and \(T\) (tails).
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\KeywordTok{sample}\NormalTok{(}\KeywordTok{c}\NormalTok{(}\StringTok{"H"}\NormalTok{, }\StringTok{"T"}\NormalTok{), }\DecValTok{1}\NormalTok{) }
+\CommentTok{# Print out sample data}
+\NormalTok{STR}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-## [1] "H"
+## [1] 15.0 17.0 19.0 20.0 22.0 23.5 25.0
 \end{verbatim}
-
-The result of a single coin toss is a \emph{Bernoulli} distributed
-random variable i.e.~a variable with two possible distinct outcomes.
-
-Imagine you are about to toss a coin \(10\) times in a row and wonder
-how likely it is to end up with a \(5\) times heads. This is a typical
-example of what we call a \emph{Bernoulli experiment} as it consists of
-\(n=10\) Bernoulli trials that are independent of each other and we are
-interested in the likelihood of observing \(k=5\) successes \(H\) that
-occur with probability \(p=0.5\) (assuming a fair coin) in each trial.
-Note that the order of the outcomes does not matter here.
-
-It is a \href{https://en.wikipedia.org/wiki/Binomial_distribution}{well
-known result} that the number of successes \(k\) in a Bernoulli
-experiment follows a binomial distribution. We denote this as
-
-\[k \sim B(n,p).\]
-
-The probability of observing \(k\) successes in the experiment
-\(B(n,p)\) is given by
-
-\[f(k)=P(k)=\begin{pmatrix}n\\ k \end{pmatrix} \cdot p^k \cdot
-(1-p)^{n-k}=\frac{n!}{k!(n-k)!} \cdot p^k \cdot (1-p)^{n-k}\]
-
-with \(\begin{pmatrix}n\\ k \end{pmatrix}\) the binomial coefficient.
-
-In \texttt{R}, we can solve the problem stated above by means of the
-function \texttt{dbinom()} which calculates the probability of the
-binomial distribution given the parameters \texttt{x}, \texttt{size},
-and \texttt{prob}, see \texttt{?binom}.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\KeywordTok{dbinom}\NormalTok{(}\DataTypeTok{x =} \DecValTok{5}\NormalTok{,}
-       \DataTypeTok{size =} \DecValTok{10}\NormalTok{,}
-       \DataTypeTok{prob =} \FloatTok{0.5}
-\NormalTok{       ) }
+\NormalTok{TestScore}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-## [1] 0.2460938
+## [1] 680 640 670 660 630 660 635
 \end{verbatim}
 
-We conclude that the probability of observing Head \(k=5\) times when
-tossing the coin \(n=10\) times is about \(24.6\%\).
+In a simple linear regression model, we model the relationship between
+both variables by a straight line, formally \[ Y = b \cdot X + a. \] For
+now, let us suppose that the function which relates test score and
+student-teacher ratio to each other is
+\[TestScore = 713 - 3 \times STR.\]
 
-Now assume we are interested in \(P(4 \leq k \leq 7)\), i.e., the
-probability of observing \(4\), \(5\), \(6\) or \(7\) successes for
-\(B(10,0.5)\). This may be computed by providing a vector as the
-argument \texttt{x} in our call of \texttt{dbinom()} and summing up
-using \texttt{sum()}.
+It is always a good idea to visualize the data you work with. Here, it
+is suitable to use \texttt{plot()} to produce a scatterplot with
+\texttt{STR} on the \(x\)-axis and \texttt{TestScore} on the \(y\)-axis.
+Just call \texttt{plot(y\_variable\ \textasciitilde{}\ x\_variable)}
+whereby \texttt{y\_variable} and \texttt{x\_variable} are placeholders
+for the vectors of observations we want to plot. Furthermore, we might
+want to add a systematic relationship to the plot. To draw a straight
+line, \texttt{R} provides the function \texttt{abline()}. We just have
+to call this function with arguments \texttt{a} (representing the
+intercept) and \texttt{b} (representing the slope) after executing
+\texttt{plot()} in order to add the line to our plot.
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{# compute P(4 <= k <= 7) using 'dbinom()'}
-\KeywordTok{sum}\NormalTok{(}
-  \KeywordTok{dbinom}\NormalTok{(}\DataTypeTok{x =} \DecValTok{4}\OperatorTok{:}\DecValTok{7}\NormalTok{, }
-         \DataTypeTok{size =} \DecValTok{10}\NormalTok{, }
-         \DataTypeTok{prob =} \FloatTok{0.5}\NormalTok{))}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-## [1] 0.7734375
-\end{verbatim}
-
-An alternative approach is to use \texttt{pbinom()}, the distribution
-function of the binomial distribution to compute
-\[P(4 \leq k \leq 7) = P(k \leq 7) - P(k\leq3 ).\]
+The following code reproduces Figure 4.1 from the textbook.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{# compute P(4 <= k <= 7) using 'pbinom()'}
-\KeywordTok{pbinom}\NormalTok{(}\DataTypeTok{size =} \DecValTok{10}\NormalTok{, }\DataTypeTok{prob =} \FloatTok{0.5}\NormalTok{, }\DataTypeTok{q =} \DecValTok{7}\NormalTok{) }\OperatorTok{-}\StringTok{ }\KeywordTok{pbinom}\NormalTok{(}\DataTypeTok{size =} \DecValTok{10}\NormalTok{, }\DataTypeTok{prob =} \FloatTok{0.5}\NormalTok{, }\DataTypeTok{q =} \DecValTok{3}\NormalTok{) }
+\CommentTok{# create a scatterplot of the data}
+\KeywordTok{plot}\NormalTok{(TestScore }\OperatorTok{~}\StringTok{ }\NormalTok{STR)}
+
+\CommentTok{# add the systematic relationship to the plot}
+\KeywordTok{abline}\NormalTok{(}\DataTypeTok{a =} \DecValTok{713}\NormalTok{, }\DataTypeTok{b =} \OperatorTok{-}\DecValTok{3}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
-\begin{verbatim}
-## [1] 0.7734375
-\end{verbatim}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-16-1} \end{center}
 
-The probability distribution of a discrete random variable is nothing
-but a list of all possible outcomes that can occur and their respective
-probabilities. In the coin tossing example we have \(11\) possible
-outcomes for \(k\).
+We find that the line does not touch any of the points although we
+claimed that it represents the systematic relationship. The reason for
+this is randomness. Most of the time there are additional influences
+which imply that there is no bivariate relationship between the two
+variables.
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{# set up vector of possible outcomes}
-\NormalTok{k <-}\StringTok{ }\DecValTok{0}\OperatorTok{:}\DecValTok{10}
-\end{Highlighting}
-\end{Shaded}
+In order to account for these differences between observed data and the
+systematic relationship, we extend our model from above by an
+\emph{error term} \(u\) which captures additional random effects. Put
+differently, \(u\) accounts for all the differences between the
+regression line and the actual observed data. Beside pure randomness,
+these deviations could also arise from measurement errors or, as will be
+discussed later, could be the consequence of leaving out other factors
+that are relevant in explaining the dependent variable.
 
-To visualize the probability distribution function of \(k\) we may
-therefore do the following:
+Which other factors are plausible in our example? For one thing, the
+test scores might be driven by the teachers' quality and the background
+of the students. It is also possible that in some classes, the students
+were lucky on the test days and thus achieved higher scores. For now, we
+will summarize such influences by an additive component:
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{# assign the probabilities}
-\NormalTok{probability <-}\StringTok{ }\KeywordTok{dbinom}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ k,}
-                      \DataTypeTok{size =} \DecValTok{10}\NormalTok{, }
-                      \DataTypeTok{prob =} \FloatTok{0.5}\NormalTok{)}
+\[ TestScore = \beta_0 + \beta_1 \times STR + \text{other factors} \]
 
-\CommentTok{# plot the outcomes against their probabilities}
-\KeywordTok{plot}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ k, }
-     \DataTypeTok{y =}\NormalTok{ probability,}
-     \DataTypeTok{main =} \StringTok{"Probability Distribution Function"}\NormalTok{) }
-\end{Highlighting}
-\end{Shaded}
+Of course this idea is very general as it can be easily extended to
+other situations that can be described with a linear model. The basic
+linear regression function we will work with hence is
 
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-21-1} \end{center}
+\[ Y_i = \beta_0 + \beta_1 X_i + u_i. \]
 
-In a similar fashion we may plot the cumulative distribution function of
-\(k\) by executing the following code chunk:
+Key Concept 4.1 summarizes the terminology of the simple linear
+regression model.
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{# compute cumulative probabilities}
-\NormalTok{prob <-}\StringTok{ }\KeywordTok{dbinom}\NormalTok{(}\DataTypeTok{x =} \DecValTok{0}\OperatorTok{:}\DecValTok{10}\NormalTok{, }
-               \DataTypeTok{size =} \DecValTok{10}\NormalTok{, }
-               \DataTypeTok{prob =} \FloatTok{0.5}\NormalTok{)}
-
-\CommentTok{# plot the cumulative probabilities}
-\KeywordTok{plot}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ k, }
-     \DataTypeTok{y =}\NormalTok{ prob,}
-     \DataTypeTok{main =} \StringTok{"Cumulative Distribution Function"}
-\NormalTok{     ) }
-\end{Highlighting}
-\end{Shaded}
-
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-22-1} \end{center}
-
-\subsection*{Expected Value, Mean and
-Variance}\label{expected-value-mean-and-variance}
-\addcontentsline{toc}{subsection}{Expected Value, Mean and Variance}
-
-The expected value of a random variable is, loosely, the long-run
-average value of its outcomes when the number of repeated trials is
-large. For a discrete random variable, the expected value is computed as
-a weighted average of its possible outcomes whereby the weights are the
-related probabilities. This is formalized in Key Concept 2.1.
-
-\begin{keyconcepts}[Expected Value and the Mean]{2.1}
-Suppose the random variable $Y$
-takes on $k$ possible values, $y_1, \dots, y_k$, where $y_1$ denotes the first
-value, $y_2$ denotes the second value, and so forth, and that the probability
-that $Y$ takes on $y_1$ is $p_1$, the probability that $Y$ takes on $y_2$ is
-$p_2$ and so forth. The expected value of $Y$, $E(Y)$ is defined as
-
-$$ E(Y) = y_1 p_1 + y_2 p_2 + \cdots + y_k p_k = \sum_{i=1}^k y_i p_i $$
-
-where the notation $\sum_{i=1}^k y_i p_i$ means \"the sum of $y_i$ $p_i$ for $i$
-running from $1$ to $k$\". The expected value of $Y$ is also called the mean of $Y$
-or the expectation of $Y$ and is denoted by $\mu_Y$.
+\begin{keyconcepts}[Terminology for the Linear Regression Model with a Single Regressor]{4.1}
+The linear regression model is $$Y_i = \beta_0 + \beta_1 X_1 + u_i$$
+where
+\begin{itemize}
+\item the index $i$ runs over the observations, $i=1,\dots,n$
+\item $Y_i$ is the \textit{dependent variable}, the \textit{regressand}, or simply the \textit{left-hand variable}
+\item $X_i$ is the \textit{independent variable}, the \textit{regressor}, or simply the \textit{right-hand variable}
+\item $Y = \beta_0 + \beta_1 X$ is the \textit{population regression line} also called the \textit{population regression function}
+\item $\beta_0$ is the \textit{intercept} of the population regression line
+\item $\beta_1$ is the \textit{slope} of the population regression line
+\item $u_i$ is the \textit{error term}.
+\end{itemize}
 \end{keyconcepts}
 
-In the dice example, the random variable, \(D\) say, takes on \(6\)
-possible values \(d_1 = 1, d_2 = 2, \dots, d_6 = 6\). Assuming a fair
-dice, each of the \(6\) outcomes occurs with a probability of \(1/6\).
-It is therefore easy to calculate the exact value of \(E(D)\) by hand:
+\section{Estimating the Coefficients of the Linear Regression
+Model}\label{estimating-the-coefficients-of-the-linear-regression-model}
 
-\[ E(D) = 1/6 \sum_{i=1}^6 d_i = 3.5 \]
-
-\(E(D)\) is simply the average of the natural numbers from \(1\) to
-\(6\) since all wights \(p_i\) are \(1/6\). This can be easily
-calculated using the function \texttt{mean()} which computes the
-arithmetic mean of a numeric vector.
+In practice, the intercept \(\beta_0\) and slope \(\beta_1\) of the
+population regression line are unknown. Therefore, we must employ data
+to estimate both unknown parameters. In the following, a real world
+example will be used to demonstrate how this is achieved. We want to
+relate test scores to student-teacher ratios measured in Californian
+schools. The test score is the district-wide average of reading and math
+scores for fifth graders. Again, the class size is measured as the
+number of students divided by the number of teachers (the
+student-teacher ratio). As for the data, the California School data set
+(\texttt{CASchools}) comes with an \texttt{R} package called
+\texttt{AER}, an acronym for
+\href{https://cran.r-project.org/web/packages/AER/AER.pdf}{Applied
+Econometrics with R} \citep{R-AER}. After installing the package with
+\texttt{install.packages("AER")} and attaching it with
+\texttt{library(AER)} the data set can be loaded using the function
+\texttt{data()}.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{# compute mean of natural numbers from 1 to 6}
-\KeywordTok{mean}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\DecValTok{6}\NormalTok{)}
+\CommentTok{# install the AER package (once)}
+\KeywordTok{install.packages}\NormalTok{(}\StringTok{"AER"}\NormalTok{)}
+
+\CommentTok{# load the AER package }
+\KeywordTok{library}\NormalTok{(AER)   }
+
+\CommentTok{# load the the data set in the workspace}
+\KeywordTok{data}\NormalTok{(CASchools) }
+\end{Highlighting}
+\end{Shaded}
+
+Once a package has been installed it is available for use at further
+occasions when invoked with \texttt{library()} --- there is no need to
+run \texttt{install.packages()} again!
+
+It is interesting to know what kind of object we are dealing with.
+\texttt{class()} returns the class of an object. Depending on the class
+of an object some functions (for example \texttt{plot()} and
+\texttt{summary()}) behave differently.
+
+Let us check the class of the object \texttt{CASchools}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{class}\NormalTok{(CASchools)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-## [1] 3.5
+## [1] "data.frame"
 \end{verbatim}
 
-An example of sampling with replacement is rolling a dice three times in
-a row.
+It turns out that \texttt{CASchools} is of class \texttt{data.frame}
+which is a convenient format to work with, especially for performing
+regression analysis.
+
+With help of \texttt{head()} we get a first overview of our data. This
+function shows only the first 6 rows of the data set which prevents an
+overcrowded console output.
+
+\BeginKnitrBlock{rmdnote}
+Press ctrl + L to clear the console. This command deletes any code that
+has been typed in and executed by you or printed to the console by R
+functions. The good news is that anything else is left untouched. You
+neither loose defined variables etc. nor the code history. It is still
+possible to recall previously executed R commands using the up and down
+keys. If you are working in \emph{RStudio}, press ctrl + Up on your
+keyboard (CMD + Up on a Mac) to review a list of previously entered
+commands.
+\EndKnitrBlock{rmdnote}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{# set random seed for reproducibility}
-\KeywordTok{set.seed}\NormalTok{(}\DecValTok{1}\NormalTok{)}
-
-\CommentTok{# rolling a dice three times in a row}
-\KeywordTok{sample}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\DecValTok{6}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DataTypeTok{replace =}\NormalTok{ T)}
+\KeywordTok{head}\NormalTok{(CASchools)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-## [1] 2 3 4
+##   district                          school  county grades students
+## 1    75119              Sunol Glen Unified Alameda  KK-08      195
+## 2    61499            Manzanita Elementary   Butte  KK-08      240
+## 3    61549     Thermalito Union Elementary   Butte  KK-08     1550
+## 4    61457 Golden Feather Union Elementary   Butte  KK-08      243
+## 5    61523        Palermo Union Elementary   Butte  KK-08     1335
+## 6    62042         Burrel Union Elementary  Fresno  KK-08      137
+##   teachers calworks   lunch computer expenditure    income   english  read
+## 1    10.90   0.5102  2.0408       67    6384.911 22.690001  0.000000 691.6
+## 2    11.15  15.4167 47.9167      101    5099.381  9.824000  4.583333 660.5
+## 3    82.90  55.0323 76.3226      169    5501.955  8.978000 30.000002 636.3
+## 4    14.00  36.4754 77.0492       85    7101.831  8.978000  0.000000 651.9
+## 5    71.50  33.1086 78.4270      171    5235.988  9.080333 13.857677 641.8
+## 6     6.40  12.3188 86.9565       25    5580.147 10.415000 12.408759 605.7
+##    math
+## 1 690.0
+## 2 661.9
+## 3 650.9
+## 4 643.5
+## 5 639.9
+## 6 605.4
 \end{verbatim}
 
-Of course we could also consider a much bigger number of trials,
-\(10000\) say. Doing so, it would be pointless to simply print the
-results to the console: by default \texttt{R} displays up to \(1000\)
-entries of large vectors and omits the remainder (give it a try).
-Eyeballing the numbers does not reveal much. Instead, let us calculate
-the sample average of the outcomes using \texttt{mean()} and see if the
-result comes close to the expected value \(E(D)=3.5\).
+We find that the data set consists of plenty of variables and that most
+of them are numeric.
+
+By the way: an alternative to \texttt{class()} and \texttt{head()} is
+\texttt{str()} which is deduced from `structure' and gives a
+comprehensive overview of the object. Try!
+
+Turning back to \texttt{CASchools}, the two variables we are interested
+in (i.e., average test score and the student-teacher ratio) are
+\emph{not} included. However, it is possible to calculate both from the
+provided data. To obtain the student-teacher ratios, we simply divide
+the number of students by the number of teachers. The average test score
+is the arithmetic mean of the test score for reading and the score of
+the math test. The next code chunk shows how the two variables can be
+constructed as vectors and how they are appended to \texttt{CASchools}.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{# set random seed for reproducibility}
-\KeywordTok{set.seed}\NormalTok{(}\DecValTok{1}\NormalTok{)}
+\CommentTok{# compute STR and append it to CASchools}
+\NormalTok{CASchools}\OperatorTok{$}\NormalTok{STR <-}\StringTok{ }\NormalTok{CASchools}\OperatorTok{$}\NormalTok{students}\OperatorTok{/}\NormalTok{CASchools}\OperatorTok{$}\NormalTok{teachers }
 
-\CommentTok{# compute the sample mean of 10000 dice rolls}
-\KeywordTok{mean}\NormalTok{(}\KeywordTok{sample}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\DecValTok{6}\NormalTok{, }
-           \DecValTok{10000}\NormalTok{, }
-           \DataTypeTok{replace =}\NormalTok{ T))}
+\CommentTok{# compute TestScore and append it to CASchools}
+\NormalTok{CASchools}\OperatorTok{$}\NormalTok{score <-}\StringTok{ }\NormalTok{(CASchools}\OperatorTok{$}\NormalTok{read }\OperatorTok{+}\StringTok{ }\NormalTok{CASchools}\OperatorTok{$}\NormalTok{math)}\OperatorTok{/}\DecValTok{2}     
+\end{Highlighting}
+\end{Shaded}
+
+If we ran \texttt{head(CASchools)} again we would find the two variables
+of interest as additional columns named \texttt{STR} and \texttt{score}
+(check this!).
+
+Table 4.1 from the textbook summarizes the distribution of test scores
+and student-teacher ratios. There are several functions which can be
+used to produce similar results, e.g.,
+
+\begin{itemize}
+\item
+  \texttt{mean()} (computes the arithmetic mean of the provided numbers)
+\item
+  \texttt{sd()} (computes the sample standard deviation)
+\item
+  \texttt{quantile()} (returns a vector of the specified sample
+  quantiles for the data).
+\end{itemize}
+
+The next code chunk shows how to achieve this. First, we compute summary
+statistics on the columns \texttt{STR} and \texttt{score} of
+\texttt{CASchools}. In order to get nice output we gather the measures
+in a \texttt{data.frame} named \texttt{DistributionSummary}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# compute sample averages of STR and score}
+\NormalTok{avg_STR <-}\StringTok{ }\KeywordTok{mean}\NormalTok{(CASchools}\OperatorTok{$}\NormalTok{STR) }
+\NormalTok{avg_score <-}\StringTok{ }\KeywordTok{mean}\NormalTok{(CASchools}\OperatorTok{$}\NormalTok{score)}
+
+\CommentTok{# compute sample standard deviations of STR and score}
+\NormalTok{sd_STR <-}\StringTok{ }\KeywordTok{sd}\NormalTok{(CASchools}\OperatorTok{$}\NormalTok{STR) }
+\NormalTok{sd_score <-}\StringTok{ }\KeywordTok{sd}\NormalTok{(CASchools}\OperatorTok{$}\NormalTok{score)}
+
+\CommentTok{# set up a vector of percentiles and compute the quantiles }
+\NormalTok{quantiles <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\FloatTok{0.10}\NormalTok{, }\FloatTok{0.25}\NormalTok{, }\FloatTok{0.4}\NormalTok{, }\FloatTok{0.5}\NormalTok{, }\FloatTok{0.6}\NormalTok{, }\FloatTok{0.75}\NormalTok{, }\FloatTok{0.9}\NormalTok{)}
+\NormalTok{quant_STR <-}\StringTok{ }\KeywordTok{quantile}\NormalTok{(CASchools}\OperatorTok{$}\NormalTok{STR, quantiles)}
+\NormalTok{quant_score <-}\StringTok{ }\KeywordTok{quantile}\NormalTok{(CASchools}\OperatorTok{$}\NormalTok{score, quantiles)}
+
+\CommentTok{# gather everything in a data.frame }
+\NormalTok{DistributionSummary <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}
+                                  \DataTypeTok{Average =} \KeywordTok{c}\NormalTok{(avg_STR, avg_score), }
+                                  \DataTypeTok{StandardDeviation =} \KeywordTok{c}\NormalTok{(sd_STR, sd_score), }
+                                  \DataTypeTok{quantile =} \KeywordTok{rbind}\NormalTok{(quant_STR, quant_score)}
+\NormalTok{                                  )}
+
+\CommentTok{# print the summary to the console}
+\NormalTok{DistributionSummary}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-## [1] 3.5039
+##               Average StandardDeviation quantile.10. quantile.25.
+## quant_STR    19.64043          1.891812      17.3486     18.58236
+## quant_score 654.15655         19.053347     630.3950    640.05000
+##             quantile.40. quantile.50. quantile.60. quantile.75.
+## quant_STR       19.26618     19.72321      20.0783     20.87181
+## quant_score    649.06999    654.45000     659.4000    666.66249
+##             quantile.90.
+## quant_STR       21.86741
+## quant_score    678.85999
 \end{verbatim}
 
-We find the sample mean to be fairly close to the expected value. This
-result will be discussed in Chapter \ref{RSATDOSA} in more detail.
+As for the sample data, we use \texttt{plot()}. This allows us to detect
+characteristics of our data, such as outliers which are harder to
+discover by looking at mere numbers. This time we add some additional
+arguments to the call of \texttt{plot()}.
 
-Other frequently encountered measures are the variance and the standard
-deviation. Both are measures of the \emph{dispersion} of a random
-variable.
+The first argument in our call of \texttt{plot()},
+\texttt{score \textasciitilde{} STR}, is again a formula that variables.
+However, this time the two variables are not saved in separate vectors
+but are columns of \texttt{CASchools}. Therefore, \texttt{R} would not
+find them without the argument \texttt{data} being correctly specified.
+\texttt{data} must be in accordance with the name of the
+\texttt{data.frame} to which the variables belong to, in this case
+\texttt{CASchools}. Further arguments are used to change the appearance
+of the plot: while \texttt{main} adds a title, \texttt{xlab} and
+\texttt{ylab} add custom labels to both axes.
 
-\begin{keyconcepts}[Variance and Standard Deviation]{2.2}
-The variance of the discrete \textit{random variable} $Y$, denoted $\sigma^2_Y$, is
-$$ \sigma^2_Y = \text{Var}(Y) = E\left[(Y-\mu_Y)^2\right] = \sum_{i=1}^k (y_i - \mu_Y)^2 p_i $$
-The standard deviation of $Y$ is $\sigma_Y$, the square root of the variance. The units of the standard deviation are the same as the units of $Y$.
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{plot}\NormalTok{(score }\OperatorTok{~}\StringTok{ }\NormalTok{STR, }
+     \DataTypeTok{data =}\NormalTok{ CASchools,}
+     \DataTypeTok{main =} \StringTok{"Scatterplot of TestScore and STR"}\NormalTok{, }
+     \DataTypeTok{xlab =} \StringTok{"STR (X)"}\NormalTok{,}
+     \DataTypeTok{ylab =} \StringTok{"Test Score (Y)"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-24-1} \end{center}
+
+The plot (Figure 4.2 in the book) shows the scatterplot of all
+observations on the student-teacher ratio and test score. We see that
+the points are strongly scattered, and that the variables are negatively
+correlated. That is, we expect to observe lower test scores in bigger
+classes.
+
+The function \texttt{cor()} (see \texttt{?cor} for further info) can be
+used to compute the correlation between two \emph{numeric} vectors.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{cor}\NormalTok{(CASchools}\OperatorTok{$}\NormalTok{STR, CASchools}\OperatorTok{$}\NormalTok{score)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] -0.2263627
+\end{verbatim}
+
+As the scatterplot already suggests, the correlation is negative but
+rather weak.
+
+The task we are now faceing is to find a line which best fits the data.
+Of course we could simply stick with graphical inspection and
+correlation analysis and then select the best fitting line by
+eyeballing. However, this would be rather subjective: different
+observers would draw different regression lines. On this account, we are
+interested in techniques that are less arbitrary. Such a technique is
+given by ordinary least squares (OLS) estimation.
+
+\subsection*{The Ordinary Least Squares
+Estimator}\label{the-ordinary-least-squares-estimator}
+\addcontentsline{toc}{subsection}{The Ordinary Least Squares Estimator}
+
+The OLS estimator chooses the regression coefficients such that the
+estimated regression line is as ``close'' as possible to the observed
+data points. Here, closeness is measured by the sum of the squared
+mistakes made in predicting \(Y\) given \(X\). Let \(b_0\) and \(b_1\)
+be some estimators of \(\beta_0\) and \(\beta_1\). Then the sum of
+squared estimation mistakes can be expressed as
+
+\[ \sum^n_{i = 1} (Y_i - b_0 - b_1 X_i)^2. \]
+
+The OLS estimator in the simple regression model is the pair of
+estimators for intercept and slope which minimizes the expression above.
+The derivation of the OLS estimators for both parameters are presented
+in Appendix 4.1 of the book. The results are summarized in Key Concept
+4.2.
+
+\begin{keyconcepts}[The OLS Estimator, Predicted Values, and Residuals]{4.2}
+The OLS estimators of the slope $\beta_1$ and the intercept $\beta_0$ in the simple linear regression model are
+\begin{align*}
+  \hat\beta_1 & = \frac{ \sum_{i = 1}^n (X_i - \overline{X})(Y_i - \overline{Y}) } { \sum_{i=1}^n (X_i - \overline{X})^2},  \\
+\hat\beta_0 & =  \overline{Y} - \hat\beta_1 \overline{X}. 
+\intertext{The OLS predicted values $\widehat{Y}_i$ and residuals $\hat{u}_i$ are}
+  \widehat{Y}_i & =  \hat\beta_0 + \hat\beta_1 X_i,\\
+  \hat{u}_i & =  Y_i - \widehat{Y}_i. 
+\end{align*}
+
+The estimated intercept $\hat{\beta}_0$, the slope parameter $\hat{\beta}_1$ and the residuals $\left(\hat{u}_i\right)$ are computed from a sample of $n$ observations of $X_i$ and $Y_i$, $i$, $...$,  $n$. These are \textit{estimates} of the unknown true population intercept $\left(\beta_0 \right)$, slope $\left(\beta_1\right)$, and error term $(u_i)$.
 \end{keyconcepts}
 
-The variance as defined in Key Concept 2.2, beeing a population
-quantity, \emph{is not} implemented as a function in R. Instead we have
-the function \texttt{var()} which computes the \emph{sample variance}
+The formulas presented above may not be very intuitive at first glance.
+The following interactive application aims to help you understand the
+mechanics of OLS. You can add observations by clicking into the
+coordinate system where the data are represented by points. Once two or
+more observations are available, the application computes a regression
+line using OLS and some statistics which are displayed in the right
+panel. The results are updated as you add further observations to the
+left panel. A double-click resets the application, i.e., all data are
+removed.
 
-\[ s^2_Y = \frac{1}{n-1} \sum_{i=1}^n (y_i - \overline{y})^2. \]
-
-Remember that \(s^2_Y\) is different from the so called \emph{population
-variance} of a discrete random variable \(Y\),
-
-\[ \text{Var}(Y) = \frac{1}{N} \sum_{i=1}^N (y_i - \mu_Y)^2. \]
-
-since it measures how the data is dispersed around the sample average
-\(\overline{y}\) instead of the population mean \(\mu_Y\). This becomes
-clear when we look at our dice rolling example. For \(D\) we have
-
-\[ \text{Var}(D) = 1/6 \sum_{i=1}^6 (d_i - 3.5)^2 = 2.92  \] which is
-obviously different from the result of \(s^2\) as computed by
-\texttt{var()}.
+There are many possible ways to compute \(\hat{\beta}_0\) and
+\(\hat{\beta}_1\) in \texttt{R}. For example, we could implement the
+formulas presented in Key Concept 4.2 with two of \texttt{R}'s most
+basic functions: \texttt{mean()} and \texttt{sum()}.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\KeywordTok{var}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\DecValTok{6}\NormalTok{)}
+\KeywordTok{attach}\NormalTok{(CASchools) }\CommentTok{# allows to use the variables contained in CASchools directly}
+
+\CommentTok{# compute beta_1_hat}
+\NormalTok{beta_}\DecValTok{1}\NormalTok{ <-}\StringTok{ }\KeywordTok{sum}\NormalTok{((STR }\OperatorTok{-}\StringTok{ }\KeywordTok{mean}\NormalTok{(STR))}\OperatorTok{*}\NormalTok{(score }\OperatorTok{-}\StringTok{ }\KeywordTok{mean}\NormalTok{(score))) }\OperatorTok{/}\StringTok{ }\KeywordTok{sum}\NormalTok{((STR }\OperatorTok{-}\StringTok{ }\KeywordTok{mean}\NormalTok{(STR))}\OperatorTok{^}\DecValTok{2}\NormalTok{)}
+
+\CommentTok{# compute beta_0_hat}
+\NormalTok{beta_}\DecValTok{0}\NormalTok{ <-}\StringTok{ }\KeywordTok{mean}\NormalTok{(score) }\OperatorTok{-}\StringTok{ }\NormalTok{beta_}\DecValTok{1} \OperatorTok{*}\StringTok{ }\KeywordTok{mean}\NormalTok{(STR)}
+
+\CommentTok{# print the results to the console}
+\NormalTok{beta_}\DecValTok{1}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-## [1] 3.5
+## [1] -2.279808
 \end{verbatim}
 
-The sample variance as computed by \texttt{var()} is an \emph{estimator}
-of the population variance.
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{beta_}\DecValTok{0}
+\end{Highlighting}
+\end{Shaded}
 
- \# You may use this widget to play around with the functions presented
-above
+\begin{verbatim}
+## [1] 698.9329
+\end{verbatim}
 
-\subsection*{Probability Distributions of Continuous Random
-Variables}\label{probability-distributions-of-continuous-random-variables}
-\addcontentsline{toc}{subsection}{Probability Distributions of
-Continuous Random Variables}
+Of course, there are even more manual ways to perform these tasks. With
+OLS being one of the most widely-used estimation techniques, \texttt{R}
+of course already contains a built-in function named \texttt{lm()}
+(\textbf{l}inear \textbf{m}odel) which can be used to carry out
+regression analysis.
 
-Since a continuous random variable takes on a continuum of possible
-values, we cannot use the concept of a probability distribution as used
-for discrete random variables. Instead, the probability distribution of
-a continuous random variable is summarized by its \emph{probability
-density function} (PDF).
+The first argument of the function to be specified is, similar to
+\texttt{plot()}, the regression formula with the basic syntax
+\texttt{y \textasciitilde{} x} where \texttt{y} is the dependent
+variable and \texttt{x} the explanatory variable. The argument
+\texttt{data} determines the data set to be used in the regression. We
+now revisit the example from the book where the relationship between the
+test scores and the class sizes is analyzed. The following code uses
+\texttt{lm()} to replicate the results presented in figure 4.3 of the
+book.
 
-The cumulative probability distribution function (CDF) for a continuous
-random variable is defined just as in the discrete case. Hence, the
-cumulative probability distribution of a continuous random variables
-states the probability that the random variable is less than or equal to
-a particular value.
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# estimate the model and assign the result to linear_model}
+\NormalTok{linear_model <-}\StringTok{ }\KeywordTok{lm}\NormalTok{(score }\OperatorTok{~}\StringTok{ }\NormalTok{STR, }\DataTypeTok{data =}\NormalTok{ CASchools)}
 
-For completeness, we present revisions of Key Concepts 2.1 and 2.2 for
-the continuous case.
+\CommentTok{# print the standard output of the estimated lm object to the console }
+\NormalTok{linear_model}
+\end{Highlighting}
+\end{Shaded}
 
-\begin{keyconcepts}[Probabilities\comma Expected Value and Variance of a Continuous Random Variable]{2.3}
-Let $f_Y(y)$ denote the probability density function of $Y$. The Probability that $Y$ falls between $a$ and $b$ where $a < b$ is 
-$$ P(a \leq Y \leq b) = \int_a^b f_Y(y) \mathrm{d}y. $$
-We further have that $P(-\infty \leq Y \leq \infty) = 1$ and therefore $\int_{-\infty}^{\infty} f_Y(y) \mathrm{d}y = 1$.
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = score ~ STR, data = CASchools)
+## 
+## Coefficients:
+## (Intercept)          STR  
+##      698.93        -2.28
+\end{verbatim}
 
-As for the discrete case, the expected value of $Y$ is the probability weighted average of its values. Due to continuity, we use integrals instead of sums. The expected value of $Y$ is defined as
+Let us add the estimated regression line to the plot. This time we also
+enlarge the ranges of both axes by setting the arguments \texttt{xlim}
+and \texttt{ylim}.
 
-$$ E(Y) =  \mu_Y = \int y f_Y(y) \mathrm{d}y. $$
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# plot the data}
+\KeywordTok{plot}\NormalTok{(score }\OperatorTok{~}\StringTok{ }\NormalTok{STR, }
+     \DataTypeTok{data =}\NormalTok{ CASchools,}
+     \DataTypeTok{main =} \StringTok{"Scatterplot of TestScore and STR"}\NormalTok{, }
+     \DataTypeTok{xlab =} \StringTok{"STR (X)"}\NormalTok{,}
+     \DataTypeTok{ylab =} \StringTok{"Test Score (Y)"}\NormalTok{,}
+     \DataTypeTok{xlim =} \KeywordTok{c}\NormalTok{(}\DecValTok{10}\NormalTok{, }\DecValTok{30}\NormalTok{),}
+     \DataTypeTok{ylim =} \KeywordTok{c}\NormalTok{(}\DecValTok{600}\NormalTok{, }\DecValTok{720}\NormalTok{))}
 
-The variance is the expected value of $(Y - \mu_Y)^2$. We thus have
+\CommentTok{# add the regression line}
+\KeywordTok{abline}\NormalTok{(linear_model) }
+\end{Highlighting}
+\end{Shaded}
 
-$$\text{Var}(Y) =  \sigma_Y^2 = \int (y - \mu_Y)^2 f_Y(y) \mathrm{d}y.$$
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-30-1} \end{center}
+
+Did you notice that this time, we did not pass the intercept and slope
+parameters to \texttt{abline}? If you call \texttt{abline()} on an
+object of class \texttt{lm} that only contains a single regressor,
+\texttt{R} draws the regression line automatically!
+
+\section{Measures of Fit}\label{measures-of-fit}
+
+After fitting a linear regression model, a natural question is how well
+the model describes the data. Visually, this amounts to assessing
+whether the observations are tightly clustered around the regression
+line. Both the \emph{coefficient of determination} and the
+\emph{standard error of the regression} measure how well the OLS
+Regression line fits the data.
+
+\subsection*{The Coefficient of
+Determination}\label{the-coefficient-of-determination}
+\addcontentsline{toc}{subsection}{The Coefficient of Determination}
+
+\(R^2\), the \emph{coefficient of determination}, is the fraction of the
+sample variance of \(Y_i\) that is explained by \(X_i\). Mathematically,
+the \(R^2\) can be written as the ratio of the explained sum of squares
+to the total sum of squares. The \emph{explained sum of squares}
+(\(ESS\)) is the sum of squared deviations of the predicted values
+\(\hat{Y_i}\), from the average of the \(Y_i\). The \emph{total sum of
+squares} (\(TSS\)) is the sum of squared deviations of the \(Y_i\) from
+their average. Thus we have
+
+\begin{align}
+  ESS & =  \sum_{i = 1}^n \left( \hat{Y_i} - \overline{Y} \right)^2,   \\
+  TSS & =  \sum_{i = 1}^n \left( Y_i - \overline{Y} \right)^2,   \\
+  R^2 & = \frac{ESS}{TSS}.
+\end{align}
+
+Since \(TSS = ESS + SSR\) we can also write
+
+\[ R^2 = 1- \frac{SSR}{TSS} \]
+
+where \(SSR\) is the sum of squared residuals, a measure for the errors
+made when predicting the \(Y\) by \(X\). The \(SSR\) is defined as
+
+\[ SSR = \sum_{i=1}^n \hat{u}_i^2. \]
+
+\(R^2\) lies between \(0\) and \(1\). It is easy to see that a perfect
+fit, i.e., no errors made when fitting the regression line, implies
+\(R^2 = 1\) since then we have \(SSR=0\). On the contrary, if our
+estimated regression line does not explain any variation in the \(Y_i\),
+we have \(ESS=0\) and consequently \(R^2=0\).
+
+\subsection*{The Standard Error of the
+Regression}\label{the-standard-error-of-the-regression}
+\addcontentsline{toc}{subsection}{The Standard Error of the Regression}
+
+The \emph{Standard Error of the Regression} (\(SER\)) is an estimator of
+the standard deviation of the residuals \(\hat{u}_i\). As such it
+measures the magnitude of a typical deviation from the regression line,
+i.e.~the magnitude of a typical residual.
+
+\[ SER = s_{\hat{u}} = \sqrt{s_{\hat{u}}^2} \ \ \ \text{where} \ \ \ s_{\hat{u} }^2 = \frac{1}{n-2} \sum_{i = 1}^n \hat{u}^2_i = \frac{SSR}{n - 2} \]
+
+Remember that the \(u_i\) are \emph{unobserved}. This is why we use
+their estimated counterparts, the residuals \(\hat{u}_i\), instead. See
+Chapter 4.3 of the book for a more detailed comment on the \(SER\).
+
+\subsection*{Application to the Test Score
+Data}\label{application-to-the-test-score-data}
+\addcontentsline{toc}{subsection}{Application to the Test Score Data}
+
+Both measures of fit can be obtained by using the function
+\texttt{summary()} with an \texttt{lm} object provided as the only
+argument. While the function \texttt{lm()} only prints out the estimated
+coefficients to the console, \texttt{summary()} provides additional
+predefined information such as the regression's \(R^2\) and the \(SER\).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{mod_summary <-}\StringTok{ }\KeywordTok{summary}\NormalTok{(linear_model)}
+\NormalTok{mod_summary}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = score ~ STR, data = CASchools)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -47.727 -14.251   0.483  12.822  48.540 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(>|t|)    
+## (Intercept) 698.9329     9.4675  73.825  < 2e-16 ***
+## STR          -2.2798     0.4798  -4.751 2.78e-06 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 18.58 on 418 degrees of freedom
+## Multiple R-squared:  0.05124,    Adjusted R-squared:  0.04897 
+## F-statistic: 22.58 on 1 and 418 DF,  p-value: 2.783e-06
+\end{verbatim}
+
+The \(R^2\) in the output is called \emph{Multiple R-squared} and has a
+value of \(0.051\). Hence, \(5.1 \%\) of the variance of the dependent
+variable \(score\) is explained by the explanatory variable \(STR\).
+That is, the regression explains little of the variance in \(score\),
+and much of the variation in test scores remains unexplained (cf.~Figure
+4.3 of the book).
+
+The \(SER\) is called \emph{Residual standard error} and equals
+\(18.58\). The unit of the \(SER\) is the same as the unit of the
+dependent variable. That is, on average the deviation of the actual
+achieved test score and the regression line is \(18.58\) points.
+
+Now, let us check whether \texttt{summary()} uses the same definitions
+for \(R^2\) and \(SER\) as we do when computing them manually.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# compute R^2 manually}
+\NormalTok{SSR <-}\StringTok{ }\KeywordTok{sum}\NormalTok{(mod_summary}\OperatorTok{$}\NormalTok{residuals}\OperatorTok{^}\DecValTok{2}\NormalTok{)}
+\NormalTok{TSS <-}\StringTok{ }\KeywordTok{sum}\NormalTok{((score }\OperatorTok{-}\StringTok{ }\KeywordTok{mean}\NormalTok{(score))}\OperatorTok{^}\DecValTok{2}\NormalTok{)}
+\NormalTok{R2 <-}\StringTok{ }\DecValTok{1} \OperatorTok{-}\StringTok{ }\NormalTok{SSR}\OperatorTok{/}\NormalTok{TSS}
+
+\CommentTok{# print the value to the console}
+\NormalTok{R2}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0.05124009
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# compute SER manually}
+\NormalTok{n <-}\StringTok{ }\KeywordTok{nrow}\NormalTok{(CASchools)}
+\NormalTok{SER <-}\StringTok{ }\KeywordTok{sqrt}\NormalTok{(SSR }\OperatorTok{/}\StringTok{ }\NormalTok{(n}\OperatorTok{-}\DecValTok{2}\NormalTok{))}
+
+\CommentTok{# print the value to the console}
+\NormalTok{SER}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 18.58097
+\end{verbatim}
+
+We find that the results coincide. Note that the values provided by
+\texttt{summary()} are rounded to two decimal places. Can you do so
+using \texttt{R}?
+
+\section{The Least Squares Assumptions}\label{tlsa}
+
+OLS performs well under a quite broad variety of different
+circumstances. However, there are some assumptions which need to be
+satisfied in order to achieve reliable results.
+
+\begin{keyconcepts}[The Least Squares Assumptions]{4.3}
+$$Y_i = \beta_0 + \beta_1 X_i + u_i \text{, } i = 1,\dots,n$$
+where
+
+\begin{enumerate}
+\item The error term $u_i$ has conditional mean zero given $X_i$: $E(u_i|X_i) = 0$.
+\item $(X_i,Y_i), i = 1,\dots,n$ are independent and identically distributed (i.i.d.) draws from their joint distribution.
+\item Large outliers are unlikely: $X_i$ and $Y_i$ have nonzero finite fourth moments.
+\end{enumerate}
 \end{keyconcepts}
 
-Let us discuss an example:
+\subsection*{Assumption 1: The Error Term has Conditional Mean of
+Zero}\label{assumption-1-the-error-term-has-conditional-mean-of-zero}
+\addcontentsline{toc}{subsection}{Assumption 1: The Error Term has
+Conditional Mean of Zero}
 
-Consider the continuous random variable \(X\) with probability density
-function
+This means that no matter which value we choose for \(X\), the error
+term \(u\) must not show any systematic pattern and must have a mean of
+\(0\). Consider the case that, unconditionally, \(E(u) = 0\), but for
+low and high values of \(X\), the error term tends to be positive and
+for midrange values of \(X\) the error tends to be negative. We can use
+R to construct such an example. To do so we generate our own data using
+\texttt{R}'s built-in random number generators.
 
-\[ f_X(x) = \frac{3}{x^4}, x>1. \]
-
-\begin{itemize}
-\tightlist
-\item
-  We can show analytically that the integral of \(f_X(x)\) over the real
-  line equals \(1\).
-\end{itemize}
-
-\begin{align}
- \int f_X(x) \mathrm{d}x =&  \int_{1}^{\infty} \frac{3}{x^4} \mathrm{d}x \\
-  =& \lim_{t \rightarrow \infty} \int_{1}^{t} \frac{3}{x^4} \mathrm{d}x \\
-  =& \lim_{t \rightarrow \infty}  -x^{-3} \rvert_{x=1}^t \\
-  =& -\left(\lim_{t \rightarrow \infty}\frac{1}{t^3} - 1\right) \\
-  =& 1
-\end{align}
+We will use the following functions:
 
 \begin{itemize}
 \tightlist
 \item
-  The expectation of \(X\) can be computed as follows:
+  \texttt{runif()} - generates uniformly distributed random numbers
+\item
+  \texttt{rnorm()} - generates normally distributed random numbers
+\item
+  \texttt{predict()} - does predictions based on the results of model
+  fitting functions like \texttt{lm()}
+\item
+  \texttt{lines()} - adds line segments to an existing plot
 \end{itemize}
 
-\begin{align}
- E(X) = \int x \cdot f_X(x) \mathrm{d}x =&  \int_{1}^{\infty} x \cdot \frac{3}{x^4} \mathrm{d}x \\
-  =& - \frac{3}{2} x^{-2} \rvert_{x=1}^{\infty} \\
-  =& -\frac{3}{2} \left( \lim_{t \rightarrow \infty} \frac{1}{t^2} - 1 \right) \\
-  =& \frac{3}{2}
-\end{align}
+We start by creating a vector containing values that are unifrormly
+distributed on the interval \([-5,5]\). This can be done with the
+function \texttt{runif()}. We also need to simulate the error term. For
+this we generate normally distributed random numbers with a mean equal
+to \(0\) and a variance of \(1\) using \texttt{rnorm()}. The \(Y\)
+values are obtained as a quadratic function of the \(X\) values and the
+error.
 
-\begin{itemize}
-\tightlist
-\item
-  Note that the variance of \(X\) can be expressed as
-  \(\text{Var}(X) = E(X^2) - E(X)^2\). Since \(E(X)\) has been computed
-  in the previous step, we seek \(E(X^2)\):
-\end{itemize}
-
-\begin{align}
- E(X^2)= \int x^2 \cdot f_X(x) \mathrm{d}x =&  \int_{1}^{\infty} x^2 \cdot \frac{3}{x^4} \mathrm{d}x \\
-  =& -3 x^{-1} \rvert_{x=1}^{\infty} \\
-  =& -3 \left( \lim_{t \rightarrow \infty} \frac{1}{t} - 1 \right) \\
-  =& 3
-\end{align}
-
-So we have shown that the area under the curve equals one, that the
-expectation is \(E(X)=\frac{3}{2} \ \) and we found the variance to be
-\(\text{Var}(X) = \frac{3}{4}\). However, this was tedious and, as we
-shall see, an analytic approach is not applicable for some probability
-density functions, e.g., if integrals have no closed form solutions.
-
-Luckily, \texttt{R} also enables us to easily find the results derived
-above. The tool we use for this is the function \texttt{integrate()}.
-First, we have to define the functions we want to calculate integrals
-for as \texttt{R} functions, i.e., the PDF \(f_X(x)\) as well as the
-expressions \(x\cdot f_X(x)\) and \(x^2\cdot f_X(x)\).
+After generating the data we estimate both a simple regression model and
+a quadratic model that also includes the regressor \(X^2\) (this is a
+multiple regression model, see Chapter \ref{rmwmr}). Finally, we plot
+the simulated data and add a the estimated regression line of a simple
+regression model as well as the predictions made with a quadratic model
+to compare the fit graphically.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{# define functions}
-\NormalTok{f <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(x) }\DecValTok{3}\OperatorTok{/}\NormalTok{x}\OperatorTok{^}\DecValTok{4}
-\NormalTok{g <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(x) x}\OperatorTok{*}\KeywordTok{f}\NormalTok{(x)}
-\NormalTok{h <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(x) x}\OperatorTok{^}\DecValTok{2}\OperatorTok{*}\KeywordTok{f}\NormalTok{(x)}
-\end{Highlighting}
-\end{Shaded}
+\CommentTok{# set a random seed to make the results reproducible}
+\KeywordTok{set.seed}\NormalTok{(}\DecValTok{321}\NormalTok{)}
 
-Next, we use \texttt{integrate()} and set lower and upper limits of
-integration to \(1\) and \(\infty\) using arguments \texttt{lower} and
-\texttt{upper}. By default, \texttt{integrate()} prints the result along
-with an estimate of the approximation error to the console. However, the
-outcome is not a numeric value one can readily do further calculation
-with. In order to get only a numeric value of the integral, we need to
-use the \texttt{\$} operator in conjunction with \texttt{value}. The
-\texttt{\$} operator is used to extract elements by name from an object
-of type \texttt{list}.
+\CommentTok{# simulate the data }
+\NormalTok{X <-}\StringTok{ }\KeywordTok{runif}\NormalTok{(}\DecValTok{50}\NormalTok{, }\DataTypeTok{min =} \OperatorTok{-}\DecValTok{5}\NormalTok{, }\DataTypeTok{max =} \DecValTok{5}\NormalTok{)}
+\NormalTok{u <-}\StringTok{ }\KeywordTok{rnorm}\NormalTok{(}\DecValTok{50}\NormalTok{, }\DataTypeTok{sd =} \DecValTok{5}\NormalTok{)  }
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{# compute area under the density curve}
-\NormalTok{area <-}\StringTok{ }\KeywordTok{integrate}\NormalTok{(f, }
-                 \DataTypeTok{lower =} \DecValTok{1}\NormalTok{, }
-                 \DataTypeTok{upper =} \OtherTok{Inf}\NormalTok{)}\OperatorTok{$}\NormalTok{value}
-\NormalTok{area }
-\end{Highlighting}
-\end{Shaded}
+\CommentTok{# the true relation  }
+\NormalTok{Y <-}\StringTok{ }\NormalTok{X}\OperatorTok{^}\DecValTok{2} \OperatorTok{+}\StringTok{ }\DecValTok{2}\OperatorTok{*}\NormalTok{X }\OperatorTok{+}\StringTok{ }\NormalTok{u                }
 
-\begin{verbatim}
-## [1] 1
-\end{verbatim}
+\CommentTok{# estimate a simple regression model }
+\NormalTok{mod_simple <-}\StringTok{ }\KeywordTok{lm}\NormalTok{(Y }\OperatorTok{~}\StringTok{ }\NormalTok{X)}
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{# compute E(X)}
-\NormalTok{EX <-}\StringTok{ }\KeywordTok{integrate}\NormalTok{(g,}
-                \DataTypeTok{lower =} \DecValTok{1}\NormalTok{,}
-                \DataTypeTok{upper =} \OtherTok{Inf}\NormalTok{)}\OperatorTok{$}\NormalTok{value}
-\NormalTok{EX}
-\end{Highlighting}
-\end{Shaded}
+\CommentTok{# predict using a quadratic model }
+\NormalTok{prediction <-}\StringTok{ }\KeywordTok{predict}\NormalTok{(}\KeywordTok{lm}\NormalTok{(Y }\OperatorTok{~}\StringTok{ }\NormalTok{X }\OperatorTok{+}\StringTok{  }\KeywordTok{I}\NormalTok{(X}\OperatorTok{^}\DecValTok{2}\NormalTok{)), }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{X =} \KeywordTok{sort}\NormalTok{(X)))}
 
-\begin{verbatim}
-## [1] 1.5
-\end{verbatim}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{# compute Var(X)}
-\NormalTok{VarX <-}\StringTok{ }\KeywordTok{integrate}\NormalTok{(h,}
-                  \DataTypeTok{lower =} \DecValTok{1}\NormalTok{,}
-                  \DataTypeTok{upper =} \OtherTok{Inf}
-\NormalTok{                  )}\OperatorTok{$}\NormalTok{value }\OperatorTok{-}\StringTok{ }\NormalTok{EX}\OperatorTok{^}\DecValTok{2} 
-\NormalTok{VarX}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-## [1] 0.75
-\end{verbatim}
-
-Although there is a wide variety of distributions, the ones most often
-encountered in econometrics are the normal, chi-squared, Student \(t\)
-and \(F\) distributions. Therefore we will discuss some core \texttt{R}
-functions that allow to do calculations involving densities,
-probabilities and quantiles of these distributions.
-
-Every probability distribution that \texttt{R} handles has four basic
-functions whose names consist of a prefix followed by a root name. As an
-example, take the normal distribution. The root name of all four
-functions associated with the normal distribution is \texttt{norm}. The
-four prefixes are
-
-\begin{itemize}
-\tightlist
-\item
-  \texttt{d} for ``density'' - probability function / probability
-  density function
-\item
-  \texttt{p} for ``probability'' - cumulative distribution function
-\item
-  \texttt{q} for ``quantile'' - quantile function (inverse cumulative
-  distribution function)
-\item
-  \texttt{r} for ``random'' - random number generator
-\end{itemize}
-
-Thus, for the normal distribution we have the \texttt{R} functions
-\texttt{dnorm()}, \texttt{pnorm()}, \texttt{qnorm()} and
-\texttt{rnorm()}.
-
-\subsection*{The Normal Distribution}\label{the-normal-distribution}
-\addcontentsline{toc}{subsection}{The Normal Distribution}
-
-The probably most important probability distribution considered here is
-the normal distribution. This is not least due to the special role of
-the standard normal distribution and the Central Limit Theorem which is
-to be treated shortly. Normal distributions are symmetric and
-bell-shaped. A normal distribution is characterized by its mean \(\mu\)
-and its standard deviation \(\sigma\), concisely expressed by
-\(N(\mu,\sigma^2)\). The normal distribution has the PDF
-
-\begin{align}
-f(x) = \frac{1}{\sqrt{2 \pi} \sigma} \exp{-(x - μ)^2/(2 σ^2)}.
-\end{align}
-
-For the standard normal distribution we have \(\mu=0\) and \(\sigma=1\).
-Standard normal variates are often denoted by \(Z\). Usually, the
-standard normal PDF is denoted by \(\phi\) and the standard normal CDF
-is denoted by \(\Phi\). Hence,
-\[ \phi(c) = \Phi'(c) \ \ , \ \ \Phi(c) = P(Z \leq c) \ \ , \ \ Z \sim N(0,1).\]
-In \texttt{R}, we can conveniently obtain density values of normal
-distributions using the function \texttt{dnorm()}. Let us draw a plot of
-the standard normal density function using \texttt{curve()} in
-conjunction with \texttt{dnorm()}.
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{# draw a plot of the N(0,1) PDF}
-\KeywordTok{curve}\NormalTok{(}\KeywordTok{dnorm}\NormalTok{(x),}
-      \DataTypeTok{xlim=}\KeywordTok{c}\NormalTok{(}\OperatorTok{-}\FloatTok{3.5}\NormalTok{, }\FloatTok{3.5}\NormalTok{),}
-      \DataTypeTok{ylab =} \StringTok{"Density"}\NormalTok{, }
-      \DataTypeTok{main =} \StringTok{"Standard Normal Density Function"}
-\NormalTok{      ) }
+\CommentTok{# plot the results}
+\KeywordTok{plot}\NormalTok{(Y }\OperatorTok{~}\StringTok{ }\NormalTok{X)}
+\KeywordTok{abline}\NormalTok{(mod_simple, }\DataTypeTok{col =} \StringTok{"red"}\NormalTok{)}
+\KeywordTok{lines}\NormalTok{(}\KeywordTok{sort}\NormalTok{(X), prediction)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-35-1} \end{center}
 
-We can obtain the density at different positions by passing a vector of
-quantiles to \texttt{dnorm()}.
+The plot shows what is meant by \(E(u_i|X_i) = 0\) and why it does not
+hold for the linear model:
+
+Using the quadratic model (represented by the black curve) we see that
+there are no systematic deviations of the observation from the predicted
+relation. It is credible that the assumption is not violated when such a
+model is employed. However, using a simple linear regression model we
+see that the assumption is probably violated as \(E(u_i|X_i)\) varies
+with the \(X_i\).
+
+\subsection*{Assumption 2: Independently and Identically Distributed
+Data}\label{assumption-2-independently-and-identically-distributed-data}
+\addcontentsline{toc}{subsection}{Assumption 2: Independently and
+Identically Distributed Data}
+
+Most sampling schemes used when collecting data from populations produce
+i.i.d.-samples. For example, we could use \texttt{R}'s random number
+generator to randomly select student IDs from a university's enrollment
+list and record age \(X\) and earnings \(Y\) of the corresponding
+students. This is a typical example of simple random sampling and
+ensures that all the \((X_i, Y_i)\) are drawn randomly from the same
+population.
+
+A prominent example where the i.i.d. assumption is not fulfilled is time
+series data where we have observations on the same unit over time. For
+example, take \(X\) as the number of workers in a production company
+over time. Due to business transformations, the company cuts job
+periodically by a specific share but there are also some
+non-deterministic influences that relate to economics, politics etc.
+Using \texttt{R} we can easily simulate such a process and plot it.
+
+We start the series with a total of 5000 workers and simulate the
+reduction of employment with an autoregressive process that exhibits a
+downward movement in the long-rong and has normally distributed
+errors:\footnote{See Chapter \ref{ittsraf} for more on autoregressive
+  processes and time series analysis in general.}
+
+\[ employment_t = -5 + 0.98 \cdot employment_{t-1} + u_t \]
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{# compute denstiy at x=-1.96, x=0 and x=1.96}
-\KeywordTok{dnorm}\NormalTok{(}\DataTypeTok{x =} \KeywordTok{c}\NormalTok{(}\OperatorTok{-}\FloatTok{1.96}\NormalTok{, }\DecValTok{0}\NormalTok{, }\FloatTok{1.96}\NormalTok{))}
+\CommentTok{# set random seed}
+\KeywordTok{set.seed}\NormalTok{(}\DecValTok{123}\NormalTok{)}
+
+\CommentTok{# generate a date vector}
+\NormalTok{Date <-}\StringTok{ }\KeywordTok{seq}\NormalTok{(}\KeywordTok{as.Date}\NormalTok{(}\StringTok{"1951/1/1"}\NormalTok{), }\KeywordTok{as.Date}\NormalTok{(}\StringTok{"2000/1/1"}\NormalTok{), }\StringTok{"years"}\NormalTok{)}
+
+\CommentTok{# initialize the employment vector}
+\NormalTok{X <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{5000}\NormalTok{, }\KeywordTok{rep}\NormalTok{(}\OtherTok{NA}\NormalTok{, }\KeywordTok{length}\NormalTok{(Date)}\OperatorTok{-}\DecValTok{1}\NormalTok{))}
+
+\CommentTok{# generate time series observations with random influences}
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{2}\OperatorTok{:}\KeywordTok{length}\NormalTok{(Date)) \{}
+\NormalTok{    X[i] <-}\StringTok{ }\OperatorTok{-}\DecValTok{50} \OperatorTok{+}\StringTok{ }\FloatTok{0.98} \OperatorTok{*}\StringTok{ }\NormalTok{X[i}\OperatorTok{-}\DecValTok{1}\NormalTok{] }\OperatorTok{+}\StringTok{ }\KeywordTok{rnorm}\NormalTok{(}\DataTypeTok{n =} \DecValTok{1}\NormalTok{, }\DataTypeTok{sd =} \DecValTok{200}\NormalTok{)}
+\NormalTok{\}}
+
+\CommentTok{#plot the results}
+\KeywordTok{plot}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ Date, }
+     \DataTypeTok{y =}\NormalTok{ X, }
+     \DataTypeTok{type =} \StringTok{"l"}\NormalTok{, }
+     \DataTypeTok{col =} \StringTok{"steelblue"}\NormalTok{, }
+     \DataTypeTok{ylab =} \StringTok{"Workers"}\NormalTok{, }
+     \DataTypeTok{xlab =} \StringTok{"Time"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
-\begin{verbatim}
-## [1] 0.05844094 0.39894228 0.05844094
-\end{verbatim}
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-36-1} \end{center}
 
-Similar to the PDF, we can plot the standard normal CDF using
-\texttt{curve()} and \texttt{pnorm()}.
+It is evident that the observations on the number of employees cannot be
+independent in this example: the level of today's employment is
+correlated with tomorrows employment level. Thus, the i.i.d. assumption
+is violated.
+
+\subsection*{Assumption 3: Large Outliers are
+Unlikely}\label{assumption-3-large-outliers-are-unlikely}
+\addcontentsline{toc}{subsection}{Assumption 3: Large Outliers are
+Unlikely}
+
+It is easy to come up with situations where extreme observations,
+i.e.~observations that deviate considerably from the usual range of the
+data, may occur. Such observations are called outliers. Technically
+speaking, assumption 3 requires that \(X\) and \(Y\) have a finite
+kurtosis.\footnote{See Chapter 4.4 of the book.}
+
+Common cases where we want to exclude or (if possible) correct such
+outliers is when they are apparently typos, conversion errors or
+measurement errors. Even if it seems like extreme observations have been
+recorded correctly, it is advisable to exclude them before estimating a
+model since OLS suffers from \emph{sensitivity to outliers}.
+
+What does this mean? One can show that extreme observations receive
+heavy weighting in the estimation of the unknown regression coefficients
+when using OLS. Therefore, outliers can lead to strongly distorted
+estimates of regression coefficients. To get a better impression of this
+issue, consider the following application where we have placed some
+sample data on \(X\) and \(Y\) which are highly correlated. The relation
+between \(X\) and \(Y\) seems to be explained pretty good by the plotted
+regression line: all of the blue dots lie close to the red line and we
+have \(R^2=0.92\).
+
+Now go ahead and add a further observation at, say, \((18,2)\). This
+observations clearly is an outlier. The result is quite striking: the
+estimated regression line differs greatly from the one we adjudged to
+fit the data well. The slope is heavily downward biased and \(R^2\)
+decreased to a mere \(29\%\)! Double-click inside the coordinate system
+to reset the app. Feel free to experiment. Choose different coordinates
+for the outlier or add additional ones.
+
+The following code roughly reproduces what is shown in figure 4.5 in the
+book. As done above we use sample data generated using \texttt{R}'s
+random number functions \texttt{rnorm()} and \texttt{runif()}. We
+estimate two simple regression models, one based on the original data
+set and another using a modified set where one observation is change to
+be an outlier and then plot the results. In order to understand the
+complete code you should be familiar with the function \texttt{sort()}
+which sorts the entries of a numeric vector in ascending order.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{# plot the standard normal CDF}
-\KeywordTok{curve}\NormalTok{(}\KeywordTok{pnorm}\NormalTok{(x), }
-      \DataTypeTok{xlim=}\KeywordTok{c}\NormalTok{(}\OperatorTok{-}\FloatTok{3.5}\NormalTok{, }\FloatTok{3.5}\NormalTok{), }
-      \DataTypeTok{ylab =} \StringTok{"Density"}\NormalTok{, }
-      \DataTypeTok{main =} \StringTok{"Standard Normal Cumulative Distribution Function"}
-\NormalTok{      )}
+\CommentTok{# set random seed}
+\KeywordTok{set.seed}\NormalTok{(}\DecValTok{123}\NormalTok{)}
+
+\CommentTok{# generate the data}
+\NormalTok{X <-}\StringTok{ }\KeywordTok{sort}\NormalTok{(}\KeywordTok{runif}\NormalTok{(}\DecValTok{10}\NormalTok{, }\DataTypeTok{min =} \DecValTok{30}\NormalTok{, }\DataTypeTok{max =} \DecValTok{70}\NormalTok{))}
+\NormalTok{Y <-}\StringTok{ }\KeywordTok{rnorm}\NormalTok{(}\DecValTok{10}\NormalTok{ , }\DataTypeTok{mean =} \DecValTok{200}\NormalTok{, }\DataTypeTok{sd =} \DecValTok{50}\NormalTok{)}
+\NormalTok{Y[}\DecValTok{9}\NormalTok{] <-}\StringTok{ }\DecValTok{2000}
+
+\CommentTok{# fit model with outlier}
+\NormalTok{fit <-}\StringTok{ }\KeywordTok{lm}\NormalTok{(Y }\OperatorTok{~}\StringTok{ }\NormalTok{X)}
+
+\CommentTok{# fit model without outlier}
+\NormalTok{fitWithoutOutlier <-}\StringTok{ }\KeywordTok{lm}\NormalTok{(Y[}\OperatorTok{-}\DecValTok{9}\NormalTok{] }\OperatorTok{~}\StringTok{ }\NormalTok{X[}\OperatorTok{-}\DecValTok{9}\NormalTok{])}
+
+\CommentTok{# plot the results}
+\KeywordTok{plot}\NormalTok{(Y }\OperatorTok{~}\StringTok{ }\NormalTok{X)}
+\KeywordTok{abline}\NormalTok{(fit)}
+\KeywordTok{abline}\NormalTok{(fitWithoutOutlier, }\DataTypeTok{col =} \StringTok{"red"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-37-1} \end{center}
 
-We can also use \texttt{R} to calculate the probability of events
-associated with a standard normal variate.
+\section{The Sampling Distribution of the OLS Estimator}\label{tsdotoe}
 
-Let us say we are interested in \(P(Z \leq 1,337)\). For some continuous
-random variable \(Z\) on \([-\infty,\infty]\) with density function
-\(g(x)\) we would have to determine \(G(x)\) which is the anti
-derivative of \(g(x)\) so that
+Because \(\hat{\beta}_0\) and \(\hat{\beta}_1\) are computed from a
+sample, the estimators themselves are random variables with a
+probability distribution --- the so-called sampling distribution of the
+estimators --- which describes the values they could take on over
+different samples. Although the sampling distribution of \(\hat\beta_0\)
+and \(\hat\beta_1\) can be complicated when the sample size is small and
+generally changes with the number of observations, \(n\), it is
+possible, provided the assumptions discussed in the book are valid, to
+make certain statements about it that hold for all \(n\). In particular
+\[ E(\hat{\beta}_0) = \beta_0 \ \ \text{and} \ \  E(\hat{\beta}_1) = \beta_1,\]
+that is, \(\hat\beta_0\) and \(\hat\beta_1\) are unbiased estimators of
+\(\beta_0\) and \(\beta_1\), the true parameters. If the sample is
+sufficiently large, by the central limit theorem the \emph{joint}
+sampling distribution of the estimators is well approximated by the
+bivariate normal distribution (2.1). This implies that the marginal
+distributions are also normal in large samples. Core facts on the
+large-sample distributions of \(\hat\beta_0\) and \(\hat\beta_1\) are
+presented in Key Concept 4.4.
 
-\[ P(Z \leq 1,337 ) = G(1,337) = \int_{-\infty}^{1,337} g(x) \mathrm{d}x.  \]
+\begin{keyconcepts}[Large Sample Distribution of $\hat\beta_0$ and $\hat\beta_1$]{4.4}
+If the least squares assumptions in Key Concept 4.3 hold, then in large samples $\hat\beta_0$ and $\hat\beta_1$ have a joint normal sampling distribution. The large sample normal distribution of $\hat\beta_1$ is $N(\beta_1, \sigma^2_{\hat\beta_1})$, where the variance of the distribution, $\sigma^2_{\hat\beta_1}$, is 
 
-If \(Z \sim N(0,1)\), we have \(g(x)=\phi(x)\). There is no analytic
-solution to the integral above and it is cumbersome to come up with an
-approximation. However, we may circumvent this using \texttt{R} in
-different ways. The first approach makes use of the function
-\texttt{integrate()} which allows to solve one-dimensional integration
-problems using a numerical method. For this, we first define the
-function we want to compute the integral of as a \texttt{R} function
-\texttt{f}. In our example, \texttt{f} needs to be the standard normal
-density function and hence takes a single argument \texttt{x}. Following
-the definition of \(\phi(x)\) we define \texttt{f} as
+\begin{equation}
+\sigma^2_{\hat\beta_1} = \frac{1}{n} \frac{Var \left[ \left(X_i - \mu_X \right) u_i  \right]}  {\left[  Var \left(X_i \right)  \right]^2}.
+\end{equation}
+
+The large sample normal distribution of $\hat\beta_0$ is $N(\beta_0, \sigma^2_{\hat\beta_0})$ with
+
+\begin{equation}
+\sigma^2_{\hat\beta_0} =  \frac{1}{n} \frac{Var \left( H_i u_i \right)}{ \left[  E \left(H_i^2  \right)  \right]^2 } \ , \ \text{where} \ \ H_i = 1 - \left[ \frac{\mu_X} {E \left( X_i^2\right)} \right] X_i.
+\end{equation}
+
+The interactive simulation below continuously generates random samples $(X_i,Y_i)$ of $200$ observations where $E(Y\vert X) = 100 + 3X$, estimates a simple regression model, stores the estimate of the slope $\beta_1$ and visualizes the distribution of the $\widehat{\beta}_1$s observed so far using a histogram. The idea here is that for a large number of $\widehat{\beta}_1$s, the histogram gives a good approximation of the sampling distribution of the estimator. By decreasing the time between two sampling iterations, it becomes clear that the shape of the histogram approaches the characteristic bell shape of a normal distribution centered at the true slope of $3$.\vspace{0.5cm}
+
+\begin{center}\textit{This interactive part of URFITE is only available in the HTML version.}\end{center}
+
+\end{keyconcepts}
+
+\subsection*{Simulation Study 1}\label{simulation-study-1}
+\addcontentsline{toc}{subsection}{Simulation Study 1}
+
+Whether the statements of Key Concept 4.4 really hold can also be
+verified using \texttt{R}. For this we first we build our own population
+of \(100000\) observations in total. To do this we need values for the
+independent variable \(X\), for the error term \(u\), and for the
+parameters \(\beta_0\) and \(\beta_1\). With these combined in a simple
+regression model, we compute the dependent variable \(Y\). In our
+example we generate the numbers \(X_i\), \(i = 1\), \ldots{} ,\(100000\)
+by drawing a random sample from a uniform distribution on the interval
+\([0,20]\). The realizations of the error terms \(u_i\) are drawn from a
+standard normal distribution with parameters \(\mu = 0\) and
+\(\sigma^2 = 100\) (note that \texttt{rnorm()} requires \(\sigma\) as
+input for the argument \texttt{sd}, see \texttt{?rnorm}). Furthermore we
+chose \(\beta_0 = -2\) and \(\beta_1 = 3.5\) so the true model is
+
+\[ Y_i = -2 + 3.5 \cdot X_i. \]
+
+Finally, we store the results in a data.frame.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{# define the standard normal PDF as a R function}
-\NormalTok{f <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(x) \{}
-  \DecValTok{1}\OperatorTok{/}\NormalTok{(}\KeywordTok{sqrt}\NormalTok{(}\DecValTok{2} \OperatorTok{*}\StringTok{ }\NormalTok{pi)) }\OperatorTok{*}\StringTok{ }\KeywordTok{exp}\NormalTok{(}\OperatorTok{-}\FloatTok{0.5} \OperatorTok{*}\StringTok{ }\NormalTok{x}\OperatorTok{^}\DecValTok{2}\NormalTok{)}
+\CommentTok{# simulate data}
+\NormalTok{N <-}\StringTok{ }\DecValTok{100000}
+\NormalTok{X <-}\StringTok{ }\KeywordTok{runif}\NormalTok{(N, }\DataTypeTok{min =} \DecValTok{0}\NormalTok{, }\DataTypeTok{max =} \DecValTok{20}\NormalTok{)}
+\NormalTok{u <-}\StringTok{ }\KeywordTok{rnorm}\NormalTok{(N, }\DataTypeTok{sd =} \DecValTok{10}\NormalTok{)}
+
+\CommentTok{# population regression}
+\NormalTok{Y <-}\StringTok{ }\OperatorTok{-}\DecValTok{2} \OperatorTok{+}\StringTok{ }\FloatTok{3.5} \OperatorTok{*}\StringTok{ }\NormalTok{X }\OperatorTok{+}\StringTok{ }\NormalTok{u}
+\NormalTok{population <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(X, Y)}
+\end{Highlighting}
+\end{Shaded}
+
+From now on we will consider the previously generated data as the true
+population (which of course would be \emph{unknown} in a real world
+application, otherwise there would be no reason to draw a random sample
+in the first place). The knowledge about the true population and the
+true relationship between \(Y\) and \(X\) can be used to verify the
+statements made in Key Concept 4.4.
+
+First, let us calculate the true variances \(\sigma^2_{\hat{\beta}_0}\)
+and \(\sigma^2_{\hat{\beta}_1}\) for a randomly drawn sample of size
+\(n = 100\).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# set sample size}
+\NormalTok{n <-}\StringTok{ }\DecValTok{100}
+
+\CommentTok{# compute the variance of beta_hat_0}
+\NormalTok{H_i <-}\StringTok{ }\DecValTok{1} \OperatorTok{-}\StringTok{ }\KeywordTok{mean}\NormalTok{(X) }\OperatorTok{/}\StringTok{ }\KeywordTok{mean}\NormalTok{(X}\OperatorTok{^}\DecValTok{2}\NormalTok{) }\OperatorTok{*}\StringTok{ }\NormalTok{X}
+\NormalTok{var_b0 <-}\StringTok{ }\KeywordTok{var}\NormalTok{(H_i }\OperatorTok{*}\StringTok{ }\NormalTok{u) }\OperatorTok{/}\StringTok{ }\NormalTok{(n }\OperatorTok{*}\StringTok{ }\KeywordTok{mean}\NormalTok{(H_i}\OperatorTok{^}\DecValTok{2}\NormalTok{)}\OperatorTok{^}\DecValTok{2}\NormalTok{ )}
+
+\CommentTok{# compute the variance of hat_beta_1}
+\NormalTok{var_b1 <-}\StringTok{ }\KeywordTok{var}\NormalTok{( ( X }\OperatorTok{-}\StringTok{ }\KeywordTok{mean}\NormalTok{(X) ) }\OperatorTok{*}\StringTok{ }\NormalTok{u ) }\OperatorTok{/}\StringTok{ }\NormalTok{(}\DecValTok{100} \OperatorTok{*}\StringTok{ }\KeywordTok{var}\NormalTok{(X)}\OperatorTok{^}\DecValTok{2}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# print variances to the console}
+\NormalTok{var_b0}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 4.045066
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{var_b1}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0.03018694
+\end{verbatim}
+
+Now let us assume that we do not know the true values of \(\beta_0\) and
+\(\beta_1\) and that it is not possible to observe the whole population.
+However, we can observe a random sample of \(n\) observations. Then, it
+would not be possible to compute the true parameters but we could obtain
+estimates of \(\beta_0\) and \(\beta_1\) from the sample data using OLS.
+However, we know that these estimates are outcomes of random variables
+themselves since the observations are randomly sampled from the
+population. Key Concept 4.4 describes their distributions for large
+\(n\). When drawing a single sample of size \(n\) it is not possible to
+make any statement about these distributions. Things change if we repeat
+the sampling scheme many times and compute the estimates for each
+sample: using this procedure we simulate outcomes of the respective
+distributions.
+
+To achieve this in R, we employ the following approach:
+
+\begin{itemize}
+\tightlist
+\item
+  We assign the number of repetitions, say \(10000\), to \texttt{reps}
+  and then initialize a matrix \texttt{fit} were the estimates obtained
+  in each sampling iteration shall be stored row-wise. Thus \texttt{fit}
+  has to be a matrix of dimensions \texttt{reps}\(\times2\).
+\item
+  In the next step we draw \texttt{reps} random samples of size
+  \texttt{n} from the population and obtain the OLS estimates for each
+  sample. The results are stored as row entries in the outcome matrix
+  \texttt{fit}. This is done using a \texttt{for()} loop.
+\item
+  At last, we estimate variances of both estimators using the sampled
+  outcomes and plot histograms of the latter. We also add a plot of the
+  density functions belonging to the distributions that follow from Key
+  Concept 4.4. The function \texttt{bquote()} is used to obtain math
+  expressions in the titles and labels of both plots. See
+  \texttt{?bquote}.
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# set repetitions and sample size}
+\NormalTok{n <-}\StringTok{ }\DecValTok{100}
+\NormalTok{reps <-}\StringTok{ }\DecValTok{10000}
+
+\CommentTok{# initialize the matrix of outcomes}
+\NormalTok{fit <-}\StringTok{ }\KeywordTok{matrix}\NormalTok{(}\DataTypeTok{ncol =} \DecValTok{2}\NormalTok{, }\DataTypeTok{nrow =}\NormalTok{ reps)}
+
+\CommentTok{# loop sampling and estimation of the coefficients}
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\NormalTok{reps)\{}
+\NormalTok{ sample <-}\StringTok{ }\NormalTok{population[}\KeywordTok{sample}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\NormalTok{N, n), ]}
+\NormalTok{ fit[i, ] <-}\StringTok{ }\KeywordTok{lm}\NormalTok{(Y }\OperatorTok{~}\StringTok{ }\NormalTok{X, }\DataTypeTok{data =}\NormalTok{ sample)}\OperatorTok{$}\NormalTok{coefficients}
+\NormalTok{\}}
+
+\CommentTok{# compute variance estimates using outcomes}
+\KeywordTok{var}\NormalTok{(fit[, }\DecValTok{1}\NormalTok{])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 4.057089
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{var}\NormalTok{(fit[, }\DecValTok{2}\NormalTok{])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0.03021784
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# divide plotting area as 1-by-2 array}
+\KeywordTok{par}\NormalTok{(}\DataTypeTok{mfrow =} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{))}
+
+\CommentTok{# plot histograms of beta_0 estimates}
+\KeywordTok{hist}\NormalTok{(fit[ ,}\DecValTok{1}\NormalTok{], }
+     \DataTypeTok{main =} \KeywordTok{bquote}\NormalTok{(The }\OperatorTok{~}\StringTok{ }\NormalTok{Distribution  }\OperatorTok{~}\StringTok{ }\NormalTok{of }\OperatorTok{~}\StringTok{ }\DecValTok{10000} \OperatorTok{~}\StringTok{ }\NormalTok{beta[}\DecValTok{0}\NormalTok{] }\OperatorTok{~}\StringTok{ }\NormalTok{Estimates), }
+     \DataTypeTok{xlab =} \KeywordTok{bquote}\NormalTok{(}\KeywordTok{hat}\NormalTok{(beta)[}\DecValTok{0}\NormalTok{]), }
+     \DataTypeTok{freq =}\NormalTok{ F)}
+
+\CommentTok{# add true distribution to plot}
+\KeywordTok{curve}\NormalTok{(}\KeywordTok{dnorm}\NormalTok{(x, }\OperatorTok{-}\DecValTok{2}\NormalTok{, }\KeywordTok{sqrt}\NormalTok{(var_b0)), }\DataTypeTok{add =}\NormalTok{ T, }\DataTypeTok{col =} \StringTok{"darkred"}\NormalTok{)}
+
+\CommentTok{# plot histograms of beta_hat_1 }
+\KeywordTok{hist}\NormalTok{(fit[ ,}\DecValTok{2}\NormalTok{], }
+     \DataTypeTok{main =} \KeywordTok{bquote}\NormalTok{(The }\OperatorTok{~}\StringTok{ }\NormalTok{Distribution  }\OperatorTok{~}\StringTok{ }\NormalTok{of }\OperatorTok{~}\StringTok{ }\DecValTok{10000} \OperatorTok{~}\StringTok{ }\NormalTok{beta[}\DecValTok{1}\NormalTok{] }\OperatorTok{~}\StringTok{ }\NormalTok{Estimates), }
+     \DataTypeTok{xlab =} \KeywordTok{bquote}\NormalTok{(}\KeywordTok{hat}\NormalTok{(beta)[}\DecValTok{1}\NormalTok{]), }
+     \DataTypeTok{freq =}\NormalTok{ F)}
+
+\CommentTok{# add true distribution to plot}
+\KeywordTok{curve}\NormalTok{(}\KeywordTok{dnorm}\NormalTok{(x, }\FloatTok{3.5}\NormalTok{, }\KeywordTok{sqrt}\NormalTok{(var_b1)), }\DataTypeTok{add =}\NormalTok{ T, }\DataTypeTok{col =} \StringTok{"darkred"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-44-1} \end{center}
+
+Our variance estimates support the statements made in Key Concept 4.4,
+coming close to the theoretical values. The histograms suggest that the
+distributions of the estimators can be well approximated by the
+respective theoretical normal distributions stated in Key Concept 4.4.
+
+\subsection*{Simulation Study 2}\label{simulation-study-2}
+\addcontentsline{toc}{subsection}{Simulation Study 2}
+
+A further result implied by Key Concept 4.4 is that both estimators are
+consistent, i.e., they converge in probability to the true parameters we
+are interested in. This is beacuase they are asymptotically unbiased and
+their variances converge to \(0\) as \(n\) increases. We can check this
+by repeating the simulation above for a sequence of increasing sample
+sizes. This means we no longer assign the sample size but a
+\emph{vector} of sample sizes: \texttt{n <- c(...)}. Let us look at the
+distributions of \(\beta_1\). The idea here is to add an additional call
+of \texttt{for()} to the code. This is done in order to loop over the
+vector of sample sizes \texttt{n}. For each of the sample sizes we carry
+out the same simulation as before but plot a density estimate for the
+outcomes of each iteration over \texttt{n}. Notice that we have to
+change \texttt{n} to \texttt{n[j]} in the inner loop to ensure that the
+\texttt{j}\(^{th}\) element of \texttt{n} is used. In the simulation, we
+use sample sizes of \(100, 250, 1000\) and \(3000\). Consequently we
+have a total of four distinct simulations using different sample sizes.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# set random seed for reproducibility}
+\KeywordTok{set.seed}\NormalTok{(}\DecValTok{1}\NormalTok{)}
+
+\CommentTok{# set repetitions and the vector of sample sizes}
+\NormalTok{reps <-}\StringTok{ }\DecValTok{1000}
+\NormalTok{n <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{100}\NormalTok{, }\DecValTok{250}\NormalTok{, }\DecValTok{1000}\NormalTok{, }\DecValTok{3000}\NormalTok{)}
+
+\CommentTok{# initialize the matrix of outcomes}
+\NormalTok{fit <-}\StringTok{ }\KeywordTok{matrix}\NormalTok{(}\DataTypeTok{ncol =} \DecValTok{2}\NormalTok{, }\DataTypeTok{nrow =}\NormalTok{ reps)}
+
+\CommentTok{# divide the plot panel in a 2-by-2 array}
+\KeywordTok{par}\NormalTok{(}\DataTypeTok{mfrow =} \KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{))}
+
+\CommentTok{# loop sampling and plotting}
+
+\CommentTok{# outer loop over n}
+\ControlFlowTok{for}\NormalTok{ (j }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\KeywordTok{length}\NormalTok{(n)) \{}
+  
+  \CommentTok{# inner loop: sampling and estimating of the coefficients}
+  \ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\NormalTok{reps)\{}
+\NormalTok{    sample <-}\StringTok{ }\NormalTok{population[}\KeywordTok{sample}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\NormalTok{N, n[j]), ]}
+\NormalTok{    fit[i, ] <-}\StringTok{ }\KeywordTok{lm}\NormalTok{(Y }\OperatorTok{~}\StringTok{ }\NormalTok{X, }\DataTypeTok{data =}\NormalTok{ sample)}\OperatorTok{$}\NormalTok{coefficients}
+\NormalTok{  \}}
+  
+  \CommentTok{# draw density estimates}
+  \KeywordTok{plot}\NormalTok{(}\KeywordTok{density}\NormalTok{(fit[ ,}\DecValTok{2}\NormalTok{]), }\DataTypeTok{xlim=}\KeywordTok{c}\NormalTok{(}\FloatTok{2.5}\NormalTok{, }\FloatTok{4.5}\NormalTok{), }\DataTypeTok{col =}\NormalTok{ j, }
+       \DataTypeTok{main =} \KeywordTok{paste}\NormalTok{(}\StringTok{"n="}\NormalTok{, n[j]), }\DataTypeTok{xlab =} \KeywordTok{bquote}\NormalTok{(}\KeywordTok{hat}\NormalTok{(beta)[}\DecValTok{1}\NormalTok{]))}
+  
 \NormalTok{\}}
 \end{Highlighting}
 \end{Shaded}
 
-Let us check if this function enables us to compute standard normal
-density values by passing it a vector of quantiles.
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-45-1} \end{center}
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{# define vector of quantiles}
-\NormalTok{quants <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\OperatorTok{-}\FloatTok{1.96}\NormalTok{, }\DecValTok{0}\NormalTok{, }\FloatTok{1.96}\NormalTok{)}
+We find that, as \(n\) increases, the distribution of \(\hat\beta_1\)
+concentrates around its mean, i.e.~its variance decreases. Put
+differently, the likelihood of observering estimates close to the true
+value of \(\beta_1 = 3.5\) grows as we increase the sample size. The
+same behavior can be observed if we analyze the distribution of
+\(\hat\beta_0\) instead.
 
-\CommentTok{# compute density values}
-\KeywordTok{f}\NormalTok{(quants)}
-\end{Highlighting}
-\end{Shaded}
+\subsection*{Simulation Study 3}\label{simulation-study-3}
+\addcontentsline{toc}{subsection}{Simulation Study 3}
 
-\begin{verbatim}
-## [1] 0.05844094 0.39894228 0.05844094
-\end{verbatim}
+Furthermore, (4.1) reveals that the variance of the OLS estimator for
+\(\beta_1\) decreases as the variance of the \(X_i\) increases. In other
+words, as we increase the amount of information provided by the
+regressor, that is, increasing \(Var(X)\), which is used to estimate
+\(\beta_1\), we become more confident that the estimate is close to the
+true value (i.e. \(Var(\hat\beta_1)\) decreases). We can visualize this
+by reproducing Figure 4.6 from the book. To do this, we sample
+observations \((X_i,Y_i)\), \(i=1,\dots,100\) from a bivariate normal
+distribution with
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{# compare to results produced by dnorm()}
-\KeywordTok{f}\NormalTok{(quants) }\OperatorTok{==}\StringTok{ }\KeywordTok{dnorm}\NormalTok{(quants)}
-\end{Highlighting}
-\end{Shaded}
+\[E(X)=E(Y)=5,\] \[Var(X)=Var(Y)=5\] and \[Cov(X,Y)=4.\]
 
-\begin{verbatim}
-## [1] TRUE TRUE TRUE
-\end{verbatim}
-
-Notice that the results produced by \texttt{f()} are indeed equivalent
-to those given by \texttt{dnorm()}.
-
-Next, we call \texttt{integrate()} on \texttt{f()} and specify the
-arguments \texttt{lower} and \texttt{upper}, the lower and upper limits
-of integration.
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{# integrate f()}
-\KeywordTok{integrate}\NormalTok{(f, }
-          \DataTypeTok{lower =} \OperatorTok{-}\OtherTok{Inf}\NormalTok{, }
-          \DataTypeTok{upper =} \FloatTok{1.337}
-\NormalTok{          )}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-## 0.9093887 with absolute error < 1.7e-07
-\end{verbatim}
-
-We find that the probability of observing \(Z \leq 1.337\) is about
-\(0.9094\%\).
-
-A second and much more convenient way is to use the function
-\texttt{pnorm()} which also allows calculus involving the standard
-normal cumulative distribution function.
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{# compute the probability using pnorm()}
-\KeywordTok{pnorm}\NormalTok{(}\FloatTok{1.337}\NormalTok{)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-## [1] 0.9093887
-\end{verbatim}
-
-The result matches the outcome of the approach using
-\texttt{integrate()}.
-
-Let us discuss some further examples:
-
-A commonly known result is that \(95\%\) probability mass of a standard
-normal lies in the interval \([-1.96, 1.96]\), that is in a distance of
-about \(2\) standard deviations to the mean. We can easily confirm this
-by calculating
-
-\[ P(-1.96 \leq Z \leq 1.96) = 1-2\times P(Z \leq -1.96) \] due to
-symmetry of the standard normal PDF. Thanks to \texttt{R}, we can
-abandon the table of the standard normal CDF again and instead solve
-this by using the function \texttt{pnorm()}.
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{# compute the probability}
-\DecValTok{1} \OperatorTok{-}\StringTok{ }\DecValTok{2} \OperatorTok{*}\StringTok{ }\NormalTok{(}\KeywordTok{pnorm}\NormalTok{(}\OperatorTok{-}\FloatTok{1.96}\NormalTok{)) }
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-## [1] 0.9500042
-\end{verbatim}
-
-Now consider a random variable \(Y\) with \(Y \sim N(5, 25)\). To make
-statements about the probability of observing outcomes of \(Y\) in some
-specific range is more convenient without when we standardize first as
-shown in Key Concept 2.4.
-
-\begin{keyconcepts}[Computing Probabilities Involving Normal Random Variables]{2.4}
-
-Suppose $Y$ is normally distributed with mean $\mu$ and variance $\sigma^2$: $$Y
-\sim N(\mu, \sigma^2)$$ Then $Y$ is standardized by subtracting its mean and
-dividing by its standard deviation: $$ Z = \frac{Y -\mu}{\sigma} $$ Let $c_1$
-and $c_2$ denote two numbers whereby $c_1 < c_2$ and further $d_1 = (c_1 - \mu)
-/ \sigma$ and $d_2 = (c_2 - \mu)/\sigma$. Then
-\begin{align*} 
-P(Y \leq c_2) =& \, P(Z \leq d_2) = \Phi(d_2) \\ 
-P(Y \geq c_1) =& \, P(Z \geq d_1) = 1 - \Phi(d_1) \\ 
-P(c_1 \leq Y \leq c_2) =& \, P(d_1 \leq Z \leq d_2) = \Phi(d_2) - \Phi(d_1). 
-\end{align*}
-\end{keyconcepts}
-
-\texttt{R} functions that handle the normal distribution can perform
-this standardization. If we are interested in \(P(3 \leq Y \leq 4)\) we
-can use \texttt{pnorm()} and adjust for a mean and/or a standard
-deviation that deviate from \(\mu=0\) and \(\sigma = 1\) by specifying
-the arguments \texttt{mean} and \texttt{sd} accordingly.
-\textbf{Attention}: the argument \texttt{sd} requires the standard
-deviation, not the variance!
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\KeywordTok{pnorm}\NormalTok{(}\DecValTok{4}\NormalTok{, }\DataTypeTok{mean =} \DecValTok{5}\NormalTok{, }\DataTypeTok{sd =} \DecValTok{5}\NormalTok{) }\OperatorTok{-}\StringTok{ }\KeywordTok{pnorm}\NormalTok{(}\DecValTok{3}\NormalTok{, }\DataTypeTok{mean =} \DecValTok{5}\NormalTok{, }\DataTypeTok{sd =} \DecValTok{5}\NormalTok{) }
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-## [1] 0.07616203
-\end{verbatim}
-
-An extension of the normal distribution in a univariate setting is the
-multivariate normal distribution. The PDF of two random normal variables
-\(X\) and \(Y\) is given by
+Formally, this is written down as
 
 \begin{align}
-\begin{split}
-g_{X,Y}(x,y) =& \, \frac{1}{2\pi\sigma_X\sigma_Y\sqrt{1-\rho_{XY}^2}} \\ 
-\cdot & \, \exp \left\{ \frac{1}{-2(1-\rho_{XY}^2)} \left[ \left( \frac{x-\mu_x}{\sigma_x} \right)^2 - 2\rho_{XY}\left( \frac{x-\mu_X}{\sigma_X} \right)\left( \frac{y-\mu_Y}{\sigma_Y} \right) + \left( \frac{y-\mu_Y}{\sigma_Y} \right)^2 \right]  \right\}.
-\end{split} \label{eq:bivnorm}
+  \begin{pmatrix}
+    X \\
+    Y \\
+  \end{pmatrix}
+  \overset{i.i.d.}{\sim} & \ \mathcal{N} 
+  \left[
+    \begin{pmatrix}
+      5 \\
+      5 \\
+    \end{pmatrix}, \ 
+    \begin{pmatrix}
+      5 & 4 \\
+      4 & 5 \\
+    \end{pmatrix}
+  \right]. \tag{4.3}
 \end{align}
 
-Equation \eqref{eq:bivnorm} contains the bivariate normal PDF. Admittedly,
-it is hard to gain insights from this complicated expression. Instead,
-let us consider the special case where \(X\) and \(Y\) are uncorrelated
-standard normal random variables with density functions \(f_X(x)\) and
-\(f_Y(y)\) and we assume that they have a joint normal distribution. We
-then have the parameters \(\sigma_X = \sigma_Y = 1\), \(\mu_X=\mu_Y=0\)
-(due to marginal standard normality) and \(\rho_{XY}=0\) (due to
-independence). The joint probability density function of \(X\) and \(Y\)
-then becomes
-
-\[ g_{X,Y}(x,y) = f_X(x) f_Y(y) = \frac{1}{2\pi} \cdot \exp \left\{ -\frac{1}{2} \left[x^2 + y^2 \right]  \right\}, \tag{2.2}  \]
-
-the PDF of the bivariate standard normal distribution. The next plot
-provides an interactive three-dimensional plot of (2.2). By moving the
-cursor over the plot you can see that the density is rotationally
-invariant.
-
-\subsection*{The Chi-Squared
-Distribution}\label{the-chi-squared-distribution}
-\addcontentsline{toc}{subsection}{The Chi-Squared Distribution}
-
-Another distribution relevant in econometric day-to-day work is the
-chi-squared distribution. It is often needed when testing special types
-of hypotheses frequently encountered when dealing with regression
-models.
-
-The sum of \(M\) squared independent standard normal distributed random
-variables follows a chi-squared distribution with \(M\) degrees of
-freedom.
-
-\[ Z_1^2 + \dots + Z_M^2 = \sum_{m=1}^M Z_m^2 \sim \chi^2_M \ \ \text{with} \ \ Z_m \overset{i.i.d.}{\sim} N(0,1) \label{eq:chisq}\]
-
-A \(\chi^2\) distributed random variable with \(M\) degrees of freedom
-has expectation \(M\), mode at \(M-2\) for \(n \geq 2\) and variance
-\(2 \cdot M\).
-
-For example, if we have
-
-\[ Z_1,Z_2,Z_3 \overset{i.i.d.}{\sim} N(0,1) \]
-
-it holds that
-
-\[ Z_1^2+Z_2^2+Z_3^3 \sim \chi^2_3. \tag{2.3} \] Using the code below,
-we can display the PDF and the CDF of a \(\chi^2_3\) random variable in
-a single plot. This is achieved by setting the argument
-\texttt{add = TRUE} in the second call of \texttt{curve()}. Further we
-adjust limits of both axes using \texttt{xlim} and \texttt{ylim} and
-choose different colors to make both functions better distinguishable.
-The plot is completed by adding a legend with help of the function
-\texttt{legend()}.
+To carry out the random sampling, we make use of the function
+\texttt{mvrnorm()} from the package \texttt{MASS} \citep{R-MASS} which
+allows to draw random samples from multivariate normal distributions,
+see \texttt{?mvtnorm}. Next, we use \texttt{subset()} to split the
+sample into two subsets such that the first set, \texttt{set1}, consists
+of observations that fulfill the condition
+\(\lvert X - \overline{X} \rvert > 1\) and the second set,
+\texttt{set2}, includes the remainder of the sample. We then plot both
+sets and use different colors to make the observations distinguishable.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{# plot the PDF}
-\KeywordTok{curve}\NormalTok{(}\KeywordTok{dchisq}\NormalTok{(x, }\DataTypeTok{df=}\DecValTok{3}\NormalTok{), }
-      \DataTypeTok{xlim =} \KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{10}\NormalTok{), }
-      \DataTypeTok{ylim =} \KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{), }
-      \DataTypeTok{col =} \StringTok{"blue"}\NormalTok{,}
-      \DataTypeTok{ylab =} \StringTok{""}\NormalTok{,}
-      \DataTypeTok{main =} \StringTok{"p.d.f. and c.d.f of Chi-Squared Distribution, M = 3"}
-\NormalTok{      )}
+\CommentTok{# load the MASS package}
+\KeywordTok{library}\NormalTok{(MASS)}
 
-\CommentTok{# add the CDF to the plot}
-\KeywordTok{curve}\NormalTok{(}\KeywordTok{pchisq}\NormalTok{(x, }\DataTypeTok{df =} \DecValTok{3}\NormalTok{), }
-      \DataTypeTok{xlim=}\KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{10}\NormalTok{), }
-      \DataTypeTok{add =} \OtherTok{TRUE}\NormalTok{, }
-      \DataTypeTok{col =} \StringTok{"red"}
-\NormalTok{      )}
+\CommentTok{# set random seed for reproducibility}
+\KeywordTok{set.seed}\NormalTok{(}\DecValTok{4}\NormalTok{)}
 
-\CommentTok{# add a legend to the plot}
-\KeywordTok{legend}\NormalTok{(}\StringTok{"topleft"}\NormalTok{, }
-       \KeywordTok{c}\NormalTok{(}\StringTok{"PDF"}\NormalTok{, }\StringTok{"CDF"}\NormalTok{), }
-       \DataTypeTok{col =} \KeywordTok{c}\NormalTok{(}\StringTok{"blue"}\NormalTok{, }\StringTok{"red"}\NormalTok{), }
-       \DataTypeTok{lty =} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{)}
-\NormalTok{       )}
+\CommentTok{# simulate bivarite normal data}
+\NormalTok{bvndata <-}\StringTok{ }\KeywordTok{mvrnorm}\NormalTok{(}\DecValTok{100}\NormalTok{, }
+                \DataTypeTok{mu =} \KeywordTok{c}\NormalTok{(}\DecValTok{5}\NormalTok{, }\DecValTok{5}\NormalTok{), }
+                \DataTypeTok{Sigma =} \KeywordTok{cbind}\NormalTok{(}\KeywordTok{c}\NormalTok{(}\DecValTok{5}\NormalTok{, }\DecValTok{4}\NormalTok{), }\KeywordTok{c}\NormalTok{(}\DecValTok{4}\NormalTok{, }\DecValTok{5}\NormalTok{))}
+\NormalTok{                ) }
+
+\CommentTok{# assign column names / convert to data.frame}
+\KeywordTok{colnames}\NormalTok{(bvndata) <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"X"}\NormalTok{, }\StringTok{"Y"}\NormalTok{)}
+\NormalTok{bvndata <-}\StringTok{ }\KeywordTok{as.data.frame}\NormalTok{(bvndata)}
+
+\CommentTok{# subset the data}
+\NormalTok{set1 <-}\StringTok{ }\KeywordTok{subset}\NormalTok{(bvndata, }\KeywordTok{abs}\NormalTok{(}\KeywordTok{mean}\NormalTok{(X) }\OperatorTok{-}\StringTok{ }\NormalTok{X) }\OperatorTok{>}\StringTok{ }\DecValTok{1}\NormalTok{)}
+\NormalTok{set2 <-}\StringTok{ }\KeywordTok{subset}\NormalTok{(bvndata, }\KeywordTok{abs}\NormalTok{(}\KeywordTok{mean}\NormalTok{(X) }\OperatorTok{-}\StringTok{ }\NormalTok{X) }\OperatorTok{<=}\StringTok{ }\DecValTok{1}\NormalTok{)}
+
+\CommentTok{# plot both data sets}
+\KeywordTok{plot}\NormalTok{(set1, }\DataTypeTok{xlab =} \StringTok{"X"}\NormalTok{, }\DataTypeTok{ylab =} \StringTok{"Y"}\NormalTok{, }\DataTypeTok{pch =} \DecValTok{19}\NormalTok{)}
+\KeywordTok{points}\NormalTok{(set2, }\DataTypeTok{col =} \StringTok{"steelblue"}\NormalTok{, }\DataTypeTok{pch =} \DecValTok{19}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-46-1} \end{center}
+
+It is clear that observations that are close to the sample average of
+the \(X_i\) have less variance than those that are farther away. Now, if
+we were to draw a line as accurately as possible through either of the
+two sets it is obvious that choosing the observations indicated by the
+black dots, i.e.~using the set of observations which has larger variance
+than the blue ones, would result in a more precise line. Now, let us use
+OLS to estimate slope and intercept for both sets of observations. We
+then plot the observations along with both regression lines.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# estimate both regression lines}
+\NormalTok{lm.set1 <-}\StringTok{ }\KeywordTok{lm}\NormalTok{(Y }\OperatorTok{~}\StringTok{ }\NormalTok{X, }\DataTypeTok{data =}\NormalTok{ set1)}
+\NormalTok{lm.set2 <-}\StringTok{ }\KeywordTok{lm}\NormalTok{(Y }\OperatorTok{~}\StringTok{ }\NormalTok{X, }\DataTypeTok{data =}\NormalTok{ set2)}
+
+\CommentTok{# plot observations}
+\KeywordTok{plot}\NormalTok{(set1, }\DataTypeTok{xlab =} \StringTok{"X"}\NormalTok{, }\DataTypeTok{ylab =} \StringTok{"Y"}\NormalTok{, }\DataTypeTok{pch =} \DecValTok{19}\NormalTok{)}
+\KeywordTok{points}\NormalTok{(set2, }\DataTypeTok{col =} \StringTok{"steelblue"}\NormalTok{, }\DataTypeTok{pch =} \DecValTok{19}\NormalTok{)}
+
+\CommentTok{# add both lines to the plot}
+\KeywordTok{abline}\NormalTok{(lm.set1, }\DataTypeTok{col =} \StringTok{"green"}\NormalTok{)}
+\KeywordTok{abline}\NormalTok{(lm.set2, }\DataTypeTok{col =} \StringTok{"red"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-47-1} \end{center}
 
-Since the outcomes of a \(\chi^2_M\) distributed random variable are
-always positive, the domain of the related PDF and CDF is
-\(\mathbb{R}_{\geq0}\).
-
-As expectation and variance depend (solely!) on the degrees of freedom,
-the distribution's shape changes drastically if we vary the number of
-squared standard normals that are summed up. This relation is often
-depicted by overlaying densities for different \(M\), see e.g.~the
-Wikipedia Article.
-
-Start by plotting the density of the \(\chi_1^2\) distribution on the
-interval \([0,15]\) with \texttt{curve()}. In the next step, we loop
-over degrees of freedom \(m=2,...,7\) and add a density curve for each
-\(m\) to the plot. We also adjust the line color for each iteration of
-the loop by setting \texttt{col = m}. At last, we add a legend that
-displays degrees of freedom and the associated colors.
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{# plot the density for m=1}
-\KeywordTok{curve}\NormalTok{(}\KeywordTok{dchisq}\NormalTok{(x, }\DataTypeTok{df =} \DecValTok{1}\NormalTok{), }
-      \DataTypeTok{xlim =} \KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{15}\NormalTok{), }
-      \DataTypeTok{xlab =} \StringTok{"x"}\NormalTok{, }
-      \DataTypeTok{ylab =} \StringTok{"Density"}\NormalTok{, }
-      \DataTypeTok{main =} \StringTok{"Chi-Square Distributed Random Variables"}
-\NormalTok{      )}
-
-\CommentTok{# add densities for m=2,...,7 to the plot using a 'for' loop }
-\ControlFlowTok{for}\NormalTok{ (m }\ControlFlowTok{in} \DecValTok{2}\OperatorTok{:}\DecValTok{7}\NormalTok{) \{}
-  \KeywordTok{curve}\NormalTok{(}\KeywordTok{dchisq}\NormalTok{(x, }\DataTypeTok{df =}\NormalTok{ m),}
-        \DataTypeTok{xlim =} \KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{15}\NormalTok{), }
-        \DataTypeTok{add =}\NormalTok{ T, }
-        \DataTypeTok{col =}\NormalTok{ m}
-\NormalTok{        )}
-\NormalTok{\}}
-
-\CommentTok{# add a legend}
-\KeywordTok{legend}\NormalTok{(}\StringTok{"topright"}\NormalTok{, }
-       \KeywordTok{as.character}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\DecValTok{7}\NormalTok{), }
-       \DataTypeTok{col =} \DecValTok{1}\OperatorTok{:}\DecValTok{7}\NormalTok{ , }
-       \DataTypeTok{lty =} \DecValTok{1}\NormalTok{, }
-       \DataTypeTok{title =} \StringTok{"D.f."}
-\NormalTok{       )}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-48-1} \end{center}
-
-It is evident that increasing the degrees of freedom shifts the
-distribution to the right (the mode becomes larger) and increases the
-dispersion (the distribution's variance grows).
-
-\subsection*{The Student t Distribution}\label{thetdist}
-\addcontentsline{toc}{subsection}{The Student t Distribution}
-
-Let \(Z\) be a standard normal variate, \(W\) a random variable that
-follows a \(\chi^2_M\) distribution with \(M\) degrees of freedom and
-further assume that \(Z\) and \(W\) are independently distributed. Then
-it holds that
-
-\[ \frac{Z}{\sqrt{W/M}} =:X \sim t_M \] and \(X\) follows a
-\emph{Student \(t\) distribution} (or simply \(t\) distribution) with
-\(M\) degrees of freedom.
-
-Similar to the \(\chi^2_M\) distribution, the shape of a \(t_M\)
-distribution depends on \(M\). \(t\) distributions are symmetric,
-bell-shaped and look very similar to a normal distribution, especially
-when \(M\) is large. This is not a coincidence: for a sufficient large
-\(M\), the \(t_M\) distribution can be approximated by the standard
-normal distribution. This approximation works reasonably well for
-\(M\geq 30\). As we will show later by means of a small simulation
-study, the \(t_{\infty}\) distribution \emph{is} the standard normal
-distribution.
-
-A \(t_M\) distributed random variable has an expectation if \(M>1\) and
-it has a variance if \(M>2\).
-
-\begin{align}
-  E(X) =& 0 \ , \ M>1 \\
-  \text{Var}(X) =& \frac{M}{M-2} \ , \ M>2
-\end{align}
-
-Let us graph some \(t\) distributions with different \(M\) and compare
-them to the standard normal distribution.
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{# plot the standard normal density}
-\KeywordTok{curve}\NormalTok{(}\KeywordTok{dnorm}\NormalTok{(x), }
-      \DataTypeTok{xlim =} \KeywordTok{c}\NormalTok{(}\OperatorTok{-}\DecValTok{4}\NormalTok{,}\DecValTok{4}\NormalTok{), }
-      \DataTypeTok{xlab =} \StringTok{"x"}\NormalTok{, }
-      \DataTypeTok{lty =} \DecValTok{2}\NormalTok{, }
-      \DataTypeTok{ylab =} \StringTok{"Density"}\NormalTok{, }
-      \DataTypeTok{main =} \StringTok{"Theoretical Densities of t Distributions"}
-\NormalTok{      )}
-
-\CommentTok{# plot the t density for m=2}
-\KeywordTok{curve}\NormalTok{(}\KeywordTok{dt}\NormalTok{(x, }\DataTypeTok{df =} \DecValTok{2}\NormalTok{), }
-      \DataTypeTok{xlim =} \KeywordTok{c}\NormalTok{(}\OperatorTok{-}\DecValTok{4}\NormalTok{, }\DecValTok{4}\NormalTok{), }
-      \DataTypeTok{col =} \DecValTok{2}\NormalTok{, }
-      \DataTypeTok{add =}\NormalTok{ T}
-\NormalTok{      )}
-
-\CommentTok{# plot the t density for m=4}
-\KeywordTok{curve}\NormalTok{(}\KeywordTok{dt}\NormalTok{(x, }\DataTypeTok{df =} \DecValTok{4}\NormalTok{), }
-      \DataTypeTok{xlim =} \KeywordTok{c}\NormalTok{(}\OperatorTok{-}\DecValTok{4}\NormalTok{, }\DecValTok{4}\NormalTok{), }
-      \DataTypeTok{col =} \DecValTok{3}\NormalTok{, }
-      \DataTypeTok{add =}\NormalTok{ T}
-\NormalTok{      )}
-
-\CommentTok{# plot the t density for m=25}
-\KeywordTok{curve}\NormalTok{(}\KeywordTok{dt}\NormalTok{(x, }\DataTypeTok{df =} \DecValTok{25}\NormalTok{), }
-      \DataTypeTok{xlim =} \KeywordTok{c}\NormalTok{(}\OperatorTok{-}\DecValTok{4}\NormalTok{, }\DecValTok{4}\NormalTok{), }
-      \DataTypeTok{col =} \DecValTok{4}\NormalTok{, }
-      \DataTypeTok{add =}\NormalTok{ T}
-\NormalTok{      )}
-
-\CommentTok{# add a legend}
-\KeywordTok{legend}\NormalTok{(}\StringTok{"topright"}\NormalTok{, }
-       \KeywordTok{c}\NormalTok{(}\StringTok{"N(0,1)"}\NormalTok{,}\StringTok{"M=2"}\NormalTok{,}\StringTok{"M=4"}\NormalTok{,}\StringTok{"M=25"}\NormalTok{), }
-       \DataTypeTok{col =} \DecValTok{1}\OperatorTok{:}\DecValTok{4}\NormalTok{, }
-       \DataTypeTok{lty =} \KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{)}
-\NormalTok{       )}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-49-1} \end{center}
-
-The plot indicates what has been claimed in the previous paragraph: as
-the degrees of freedom increase, the shape of the \(t\) distribution
-comes closer to that of a standard normal bell. Already for \(M=25\) we
-find little difference to the standard normal density. If \(M\) is
-small, we find the distribution to have slightly heavier tails than a
-standard normal, i.e.~it has a ``fatter'' bell shape.
-
-\subsection*{The F Distribution}\label{the-f-distribution}
-\addcontentsline{toc}{subsection}{The F Distribution}
-
-Another ratio of random variables important to econometricians is the
-ratio of two independently \(\chi^2\) distributed random variables that
-are divided by their degrees of freedom \(M\) and \(n\). The quantity
-
-\[ \frac{W/M}{V/n} \sim F_{M,n} \ \ \text{with} \ \ W \sim \chi^2_M \ \ , \ \ V \sim \chi^2_n \]
-follows an \(F\) distribution with numerator degrees of freedom \(M\)
-and denominator degrees of freedom \(n\), denoted \(F_{M,n}\). The
-distribution was first derived by George Snedecor but was named in honor
-of \href{https://en.wikipedia.org/wiki/Ronald_Fisher}{Sir Ronald
-Fisher}.
-
-By definition, the domain of both PDF and CDF of an \(F_{M,n}\)
-distributed random variable is \(\mathbb{R}_{\geq0}\).
-
-Say we have an \(F\) distributed random variable \(Y\) with numerator
-degrees of freedom \(3\) and denominator degrees of freedom \(14\) and
-are interested in \(P(Y \geq 2)\). This can be computed with help of the
-function \texttt{pf()}. By setting the argument \texttt{lower.tail} to
-\texttt{TRUE} we ensure that \texttt{R} computes \(1- P(Y \leq 2)\),
-i.e.~the probability mass in the tail right of \(2\).
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\KeywordTok{pf}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{13}\NormalTok{, }\DataTypeTok{lower.tail =}\NormalTok{ F)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-## [1] 0.1638271
-\end{verbatim}
-
-We can visualize this probability by drawing a line plot of the related
-density function and adding a color shading with \texttt{polygon()}.
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{# define coordinate vectors for vertices of the polygon}
-\NormalTok{x <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\KeywordTok{seq}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DecValTok{10}\NormalTok{, }\FloatTok{0.01}\NormalTok{), }\DecValTok{10}\NormalTok{)}
-\NormalTok{y <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\KeywordTok{df}\NormalTok{(}\KeywordTok{seq}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DecValTok{10}\NormalTok{, }\FloatTok{0.01}\NormalTok{), }\DecValTok{3}\NormalTok{, }\DecValTok{14}\NormalTok{), }\DecValTok{0}\NormalTok{)}
-
-\CommentTok{# draw density of F_\{3, 14\}}
-\KeywordTok{curve}\NormalTok{(}\KeywordTok{df}\NormalTok{(x ,}\DecValTok{3}\NormalTok{ ,}\DecValTok{14}\NormalTok{), }
-      \DataTypeTok{ylim =} \KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\FloatTok{0.8}\NormalTok{), }
-      \DataTypeTok{xlim =} \KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{10}\NormalTok{), }
-      \DataTypeTok{ylab =} \StringTok{"Density"}\NormalTok{,}
-      \DataTypeTok{main =} \StringTok{"Density Function"}
-\NormalTok{      )}
-
-\CommentTok{# draw the polygon}
-\KeywordTok{polygon}\NormalTok{(x, y, }\DataTypeTok{col=}\StringTok{"orange"}\NormalTok{)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-51-1} \end{center}
-
-The \(F\) distribution is related to many other distributions. An
-important special case encountered in econometrics arises if the
-denominator degrees of freedom are large such that the \(F_{M,n}\)
-distribution can be approximated by the \(F_{M,\infty}\) distribution
-which turns out to be simply the distribution of a \(\chi^2_M\) random
-variable divided by its degrees of freedom \(M\),
-
-\[ W/M \sim F_{M,\infty} \ \ , \ \ W \sim \chi^2_M. \]
-
- \# You may use this widget to play around with the functions presented
-above
-
-\section{Random Sampling and the Distribution of Sample
-Averages}\label{RSATDOSA}
-
-To clarify the basic idea of random sampling, let us jump back to the
-dice rolling example:
-
-Suppose we are rolling the dice \(n\) times. This means we are
-interested in the outcomes of \(n\) random processes
-\(Y_i, \ i=1,...,n\) which are characterized by the same distribution.
-Since these outcomes are selected randomly, they are \emph{random
-variables} themselves and their realizations will differ each time we
-draw a sample, i.e.~each time we roll the dice \(n\) times. Furthermore,
-each observation is randomly drawn from the same population, that is,
-the numbers from \(1\) to \(6\), and their individual distribution is
-the same. Hence \(Y_1,\dots,Y_n\) are identically distributed.
-
-Moreover, we know that the value of any of the \(Y_i\) does not provide
-any information on the remainder of the sample. In our example, rolling
-a six as the first observation in our sample does not alter the
-distributions of \(Y_2,\dots,Y_n\): all numbers are equally likely to
-occur. This means that all \(Y_i\) are also independently distributed.
-Thus \(Y_1,\dots,Y_n\) are independently and identically distributed
-(\emph{i.i.d.}). The dice example uses the most simple sampling scheme.
-That is why it is called \emph{simple random sampling}. This concept is
-condensed in Key Concept 2.5.
-
-\begin{keyconcepts}[Simple Random Sampling and i.i.d. Random Variables]{2.5}
-In simple random sampling, $n$ objects are drawn at random from a population. Each object is equally likely to end up in the sample. We denote the value of the random variable $Y$ for the $i^{th}$ randomly drawn object as $Y_i$.  Since all objects are equally likely to be drawn and the distribution of $Y_i$ is the same for all $i$, the $Y_i, \dots, Y_n$ are independently and identically distributed (i.i.d.). This means the distribution of $Y_i$ is the same for all $i=1,\dots,n$ and $Y_1$ is distributed independently of $Y_2, \dots, Y_n$ and $Y_2$ is distributed independently of $Y_1, Y_3, \dots, Y_n$ and so forth.
-\end{keyconcepts}
-
-What happens if we consider functions of the sample data? Consider the
-example of rolling a dice two times in a row once again. A sample now
-consists of two independent random draws from the set
-\(\{1,2,3,4,5,6\}\). In view of the aforementioned, it is apparent that
-any function of these two random variables is also random, e.g.~their
-sum. Convince yourself by executing the code below several times.
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\KeywordTok{sum}\NormalTok{(}\KeywordTok{sample}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\DecValTok{6}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DataTypeTok{replace =}\NormalTok{ T))}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-## [1] 6
-\end{verbatim}
-
-Clearly this sum, let us call it \(S\), is a random variable as it
-depends on randomly drawn summands. For this example, we can completely
-enumerate all outcomes and hence write down the theoretical probability
-distribution of our function of the sample data, \(S\):
-
-We face \(6^2=36\) possible pairs. Those pairs are
-
-\begin{align}
-  &(1,1)    (1,2)   (1,3)   (1,4)   (1,5)   (1,6) \\ 
-  &(2,1)    (2,2)   (2,3)   (2,4)   (2,5)   (2,6) \\ 
-  &(3,1)    (3,2)   (3,3)   (3,4)   (3,5)   (3,6) \\ 
-  &(4,1)    (4,2)   (4,3)   (4,4)   (4,5)   (4,6) \\ 
-  &(5,1)    (5,2)   (5,3)   (5,4)   (5,5)   (5,6) \\ 
-  &(6,1)    (6,2)   (6,3)   (6,4)   (6,5)   (6,6)
-\end{align}
-
-Thus, possible outcomes for \(S\) are
-
-\[ \left\{ 2,3,4,5,6,7,8,9,10,11,12 \right\} . \] Enumeration of
-outcomes yields
-
-\begin{align}
-  P(S) = 
-  \begin{cases} 
-    1/36, \ & S = 2 \\ 
-    2/36, \ & S = 3 \\
-    3/36, \ & S = 4 \\
-    4/36, \ & S = 5 \\
-    5/36, \ & S = 6 \\
-    6/36, \ & S = 7 \\
-    5/36, \ & S = 8 \\
-    4/36, \ & S = 9 \\
-    3/36, \ & S = 10 \\
-    2/36, \ & S = 11 \\
-    1/36, \ & S = 12
-  \end{cases}
-\end{align}
-
-We can also compute \(E(S)\) and \(\text{Var}(S)\) as stated in Key
-Concept 2.1 and Key Concept 2.2.
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{# Vector of outcomes}
-\NormalTok{S <-}\StringTok{ }\DecValTok{2}\OperatorTok{:}\DecValTok{12}
-
-\CommentTok{# Vector of probabilities}
-\NormalTok{PS <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\DecValTok{6}\NormalTok{, }\DecValTok{5}\OperatorTok{:}\DecValTok{1}\NormalTok{)}\OperatorTok{/}\DecValTok{36}
-
-\CommentTok{# Expectation of S}
-\NormalTok{ES <-}\StringTok{ }\NormalTok{S }\OperatorTok{%*%}\StringTok{ }\NormalTok{PS}
-\NormalTok{ES}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-##      [,1]
-## [1,]    7
-\end{verbatim}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{# Variance of S}
-\NormalTok{VarS <-}\StringTok{ }\NormalTok{(S }\OperatorTok{-}\StringTok{ }\KeywordTok{c}\NormalTok{(ES))}\OperatorTok{^}\DecValTok{2} \OperatorTok{%*%}\StringTok{ }\NormalTok{PS}
-\NormalTok{VarS}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-##          [,1]
-## [1,] 5.833333
-\end{verbatim}
-
-(The \%*\% operator is used to compute the scalar product of two
-vectors.)
-
-So the distribution of \(S\) is known. It is also evident that its
-distribution differs considerably from the marginal distribution,
-i.e.~the distribution of a single dice roll's outcome, \(D\) . Let us
-visualize this using bar plots.
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{# divide the plotting area in one row with two columns}
-\KeywordTok{par}\NormalTok{(}\DataTypeTok{mfrow =} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{))}
-
-\CommentTok{# plot the distribution of S}
-\KeywordTok{names}\NormalTok{(PS) <-}\StringTok{ }\DecValTok{2}\OperatorTok{:}\DecValTok{12}
-
-\KeywordTok{barplot}\NormalTok{(PS, }\DataTypeTok{ylim =} \KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\FloatTok{0.2}\NormalTok{), }
-        \DataTypeTok{xlab =} \StringTok{"S"}\NormalTok{, }
-        \DataTypeTok{ylab =} \StringTok{"Probability"}\NormalTok{, }
-        \DataTypeTok{col =} \StringTok{"steelblue"}\NormalTok{, }
-        \DataTypeTok{space =} \DecValTok{0}\NormalTok{, }
-        \DataTypeTok{main =} \StringTok{"Sum of Two Dice Rolls"}
-\NormalTok{        )}
-
-\CommentTok{# plot the distribution of D }
-\NormalTok{probability <-}\StringTok{ }\KeywordTok{rep}\NormalTok{(}\DecValTok{1}\OperatorTok{/}\DecValTok{6}\NormalTok{, }\DecValTok{6}\NormalTok{)}
-\KeywordTok{names}\NormalTok{(probability) <-}\StringTok{ }\DecValTok{1}\OperatorTok{:}\DecValTok{6}
-
-\KeywordTok{barplot}\NormalTok{(probability, }
-        \DataTypeTok{ylim =} \KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\FloatTok{0.2}\NormalTok{), }
-        \DataTypeTok{xlab =} \StringTok{"D"}\NormalTok{, }
-        \DataTypeTok{col =} \StringTok{"steelblue"}\NormalTok{, }
-        \DataTypeTok{space =} \DecValTok{0}\NormalTok{, }
-        \DataTypeTok{main =} \StringTok{"Outcome of a Single Dice Roll"}
-\NormalTok{        )}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-56-1} \end{center}
-
-Many econometric procedures deal with averages of sampled data. It is
-almost always assumed that observations are drawn randomly from a
-larger, unknown population. As demonstrated for the sample function
-\(S\), computing an average of a random sample also has the effect to
-make the average a random variable itself. This random variable in turn
-has a probability distribution which is called the sampling
-distribution. Knowledge about the sampling distribution of the average
-is therefore crucial for understanding the performance of econometric
-procedures.
-
-The \emph{sample average} of a sample of \(n\) observations
-\(Y_1, \dots, Y_n\) is
-
-\[ \overline{Y} = \frac{1}{n} \sum_{i=1}^n Y_i = \frac{1}{n} (Y_1 + Y_2 + \cdots + Y_n). \]
-\(\overline{Y}\) is also called the sample mean.
-
-\subsection*{Mean and Variance of the Sample
-Mean}\label{mean-and-variance-of-the-sample-mean}
-\addcontentsline{toc}{subsection}{Mean and Variance of the Sample Mean}
-
-Denote \(\mu_Y\) and \(\sigma_Y^2\) the mean and the variance of the
-\(Y_i\) and suppose that all observations \(Y_1,\dots,Y_n\) are i.i.d.
-such that in particular mean and variance are the same for all
-\(i=1,\dots,n\). Then we have that
-
-\[ E(\overline{Y}) = E\left(\frac{1}{n} \sum_{i=1}^n Y_i \right) = \frac{1}{n} E\left(\sum_{i=1}^n Y_i\right) = \frac{1}{n} \sum_{i=1}^n E\left(Y_i\right) = \frac{1}{n} \cdot n \cdot \mu_Y = \mu_Y    \]
-and
-
-\begin{align}
-  \text{Var}(\overline{Y}) =& \text{Var}\left(\frac{1}{n} \sum_{i=1}^n Y_i \right) \\
-  =& \frac{1}{n^2} \sum_{i=1}^n \text{Var}(Y_i) + \frac{1}{n^2} \sum_{i=1}^n \sum_{j=1, j\neq i}^n \text{cov}(Y_i,Y_j) \\
-  =& \frac{\sigma^2_Y}{n} \\
-  =& \sigma_{\overline{Y}}^2.
-\end{align}
-
-Note that the second summand vanishes since \(\text{cov}(Y_i,Y_j)=0\)
-for \(i\neq j\) due to independence of the observations.
-
-Consequently, the standard deviation of the sample mean is given by
-
-\[ \sigma_{\overline{Y}} = \frac{\sigma_Y}{\sqrt{n}}. \]
-
-It is worthwhile to mention that these results hold irrespective of the
-underlying distribution of the \(Y_i\).
-
-\subsubsection*{\texorpdfstring{The Sampling Distribution of
-\(\overline{Y}\) when \(Y\) Is Normally
-Distributed}{The Sampling Distribution of \textbackslash{}overline\{Y\} when Y Is Normally Distributed}}\label{the-sampling-distribution-of-overliney-when-y-is-normally-distributed}
-\addcontentsline{toc}{subsubsection}{The Sampling Distribution of
-\(\overline{Y}\) when \(Y\) Is Normally Distributed}
-
-If the \(Y_1,\dots,Y_n\) are i.i.d. draws from a normal distribution
-with mean \(\mu_Y\) and variance \(\sigma_Y^2\), the following holds for
-their sample average \(\overline{Y}\):
-
-\[ \overline{Y} \sim N(\mu_y, \sigma_Y^2/n) \tag{2.4} \]
-
-For example, if a sample \(Y_i\) with \(i=1,\dots,10\) is drawn from a
-standard normal distribution with mean \(\mu_Y = 0\) and variance
-\(\sigma_Y^2=1\) we have
-
-\[ \overline{Y} \sim N(0,0.1).\]
-
-We can use \texttt{R}'s random number generation facilities to verify
-this result. The basic idea is to simulate outcomes of the true
-distribution of \(\overline{Y}\) by repeatedly drawing random samples of
-10 observation from the \(N(0,1)\) distribution and computing their
-respective averages. If we do this for a large number of repetitions,
-the simulated data set of averages should quite accurately reflect the
-theoretical distribution of \(\overline{Y}\) if the theoretical result
-holds.
-
-The approach sketched above is an example of what is commonly known as
-\emph{Monte Carlo Simulation} or \emph{Monte Carlo Experiment}. To
-perform this simulation in \texttt{R}, we proceed as follows:
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Choose a sample size \texttt{n} and the number of samples to be drawn
-  \texttt{reps}.
-\item
-  Use the function \texttt{replicate()} in conjunction with
-  \texttt{rnorm()} to draw \texttt{n} observations from the standard
-  normal distribution \texttt{rep} times. \textbf{Note}: the outcome of
-  \texttt{replicate()} is a matrix with dimensions \texttt{n} \(\times\)
-  \texttt{rep}. It contains the drawn samples as \emph{columns}.
-\item
-  Compute sample means using \texttt{colMeans()}. This function computes
-  the mean of each column i.e.~of each sample and returns a vector.
-\end{enumerate}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{# Set sample size and number of samples}
-\NormalTok{n <-}\StringTok{ }\DecValTok{10}
-\NormalTok{reps <-}\StringTok{ }\DecValTok{10000}
-
-\CommentTok{# Perform random sampling}
-\NormalTok{samples <-}\StringTok{ }\KeywordTok{replicate}\NormalTok{(reps, }\KeywordTok{rnorm}\NormalTok{(n)) }\CommentTok{# 10 x 10000 sample matrix}
-
-\CommentTok{# Compute sample means}
-\NormalTok{sample.avgs <-}\StringTok{ }\KeywordTok{colMeans}\NormalTok{(samples)}
-\end{Highlighting}
-\end{Shaded}
-
-After performing these steps we end up with a vector of sample averages.
-You can check the vector property of \texttt{sample.avgs}:
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{# Check that sample.avgs is a vector}
-\KeywordTok{is.vector}\NormalTok{(sample.avgs) }
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-## [1] TRUE
-\end{verbatim}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{# print the first few entries to the console}
-\KeywordTok{head}\NormalTok{(sample.avgs)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-## [1] -0.12406767 -0.10649421 -0.01033423 -0.39905236 -0.41897968 -0.90883537
-\end{verbatim}
-
-A straightforward approach to examine the distribution of univariate
-numerical data is to plot it as a histogram and compare it to some known
-or assumed distribution. This comparison can be done with help of a
-suitable statistical test or by simply eyeballing some graphical
-representations of these distributions. For our simulated sample
-averages, we will do the latter by means of the functions
-\texttt{hist()} and \texttt{curve()}.
-
-By default, \texttt{hist()} will give us a frequency histogram i.e.~a
-bar chart where observations are grouped into ranges, also called bins.
-The ordinate reports the number of observations falling into each of the
-bins. Instead, we want it to report density estimates for comparison
-purposes. This is achieved by setting the argument
-\texttt{freq = FALSE}. The number of bins is adjusted by the argument
-\texttt{breaks}.
-
-Using \texttt{curve()}, we overlay the histogram with a red line which
-represents the theoretical density of a \(N(0, 0.1)\) distributed random
-variable. Remember to use the argument \texttt{add = TRUE} to add the
-curve to the current plot. Otherwise \texttt{R} will open a new graphic
-device and discard the previous plot!
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{# Plot the density histogram}
-\KeywordTok{hist}\NormalTok{(sample.avgs, }
-     \DataTypeTok{ylim =} \KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\FloatTok{1.4}\NormalTok{), }
-     \DataTypeTok{col =} \StringTok{"steelblue"}\NormalTok{ , }
-     \DataTypeTok{freq =}\NormalTok{ F, }
-     \DataTypeTok{breaks =} \DecValTok{20}
-\NormalTok{     )}
-
-\CommentTok{# overlay the theoretical distribution of sample averages on top of the histogram}
-\KeywordTok{curve}\NormalTok{(}\KeywordTok{dnorm}\NormalTok{(x, }\DataTypeTok{sd =} \DecValTok{1}\OperatorTok{/}\KeywordTok{sqrt}\NormalTok{(n)), }
-      \DataTypeTok{col =} \StringTok{"red"}\NormalTok{, }
-      \DataTypeTok{lwd =} \StringTok{"2"}\NormalTok{, }
-      \DataTypeTok{add =}\NormalTok{ T}
-\NormalTok{      )}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-59-1} \end{center}
-
-From inspection of the plot we can tell that the distribution of
-\(\overline{Y}\) is indeed very close to that of a \(N(0, 0.1)\)
-distributed random variable so that evidence obtained from the Monte
-Carlo Simulation supports the theoretical claim.
-
-Let us discuss another example where using simple random sampling in a
-simulation setup helps to verify a well known result. As discussed
-before, the \protect\hyperlink{chisquare}{Chi-squared} distribution with
-\(m\) degrees of freedom arises as the distribution of the sum of \(m\)
-independent squared standard normal distributed random variables.
-
-To visualize the claim stated in equation (2.3), we proceed similarly as
-in the example before:
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Choose the degrees of freedom \texttt{DF} and the number of samples to
-  be drawn \texttt{reps}.
-\item
-  Draw \texttt{reps} random samples of size \texttt{DF} from the
-  standard normal distribution using \texttt{replicate()}.
-\item
-  For each sample, by squaring the outcomes and summing them up column
-  wise. Store the results
-\end{enumerate}
-
-Again, we produce a density estimate for the distribution underlying our
-simulated data using a density histogram and overlay it with a line
-graph of the theoretical density function of the \(\chi^2_3\)
-distribution.
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{# Number of repititions}
-\NormalTok{reps <-}\StringTok{ }\DecValTok{10000}
-
-\CommentTok{# Set degrees of freedom of a chi-Square Distribution}
-\NormalTok{DF <-}\StringTok{ }\DecValTok{3} 
-
-\CommentTok{# Sample 10000 column vectors à 3 N(0,1) R.V.S}
-\NormalTok{Z <-}\StringTok{ }\KeywordTok{replicate}\NormalTok{(reps, }\KeywordTok{rnorm}\NormalTok{(DF)) }
-
-\CommentTok{# Column sums of squares}
-\NormalTok{X <-}\StringTok{ }\KeywordTok{colSums}\NormalTok{(Z}\OperatorTok{^}\DecValTok{2}\NormalTok{)}
-
-\CommentTok{# Histogram of column sums of squares}
-\KeywordTok{hist}\NormalTok{(X, }
-     \DataTypeTok{freq =}\NormalTok{ F, }
-     \DataTypeTok{col =} \StringTok{"steelblue"}\NormalTok{, }
-     \DataTypeTok{breaks =} \DecValTok{40}\NormalTok{, }
-     \DataTypeTok{ylab =} \StringTok{"Density"}\NormalTok{, }
-     \DataTypeTok{main =} \StringTok{""}
-\NormalTok{     )}
-
-\CommentTok{# Add theoretical density}
-\KeywordTok{curve}\NormalTok{(}\KeywordTok{dchisq}\NormalTok{(x, }\DataTypeTok{df =}\NormalTok{ DF), }
-      \DataTypeTok{type =} \StringTok{'l'}\NormalTok{, }
-      \DataTypeTok{lwd =} \DecValTok{2}\NormalTok{, }
-      \DataTypeTok{col =} \StringTok{"red"}\NormalTok{, }
-      \DataTypeTok{add =}\NormalTok{ T}
-\NormalTok{      )}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-60-1} \end{center}
-
-\subsection*{Large Sample Approximations to Sampling
-Distributions}\label{large-sample-approximations-to-sampling-distributions}
-\addcontentsline{toc}{subsection}{Large Sample Approximations to
-Sampling Distributions}
-
-Sampling distributions as considered in the last section play an
-important role in the development of econometric methods. In general,
-there are two different approaches in characterizing sampling
-distributions: an ``exact'' approach and an ``approximate'' approach.
-
-The exact approach aims to find a general formula for the sampling
-distribution that holds for any sample size \(n\). We call this the
-\emph{exact distribution} or \emph{finite sample distribution}. In the
-previous examples of dice rolling and normal variates, we have dealt
-with functions of random variables whose sample distributions are
-\emph{excactly known} in the sense that we can write them down as
-analytic expressions and do calculations. However, this is not always
-possible. For \(\overline{Y}\), result (2.4) tells us that normality of
-the \(Y_i\) implies normality of \(\overline{Y}\) (we demonstrated this
-for the special case of \(Y_i \overset{i.i.d.}{\sim} N(0,1)\) with
-\(n=10\) using a simulation study that involves simple random sampling).
-Unfortunately, the \emph{exact} distribution of \(\overline{Y}\) is
-generally unknown and often hard to derive (or even untraceable) if we
-drop the assumption that the \(Y_i\) have a normal distribution.
-
-Therefore, as can be guessed from its name, the ``approximate'' approach
-aims to find an approximation to the sampling distribution whereby it is
-required that the sample size \(n\) is large. A distribution that is
-used as a large-sample approximation to the sampling distribution is
-also called the \emph{asymptotic distribution}. This is due to the fact
-that the asymptotic distribution \emph{is} the sampling distribution for
-\(n \rightarrow \infty\) i.e.~the approximation becomes exact if the
-sample size goes to infinity. However, there are cases where the
-difference between the sampling distribution and the asymptotic
-distribution is negligible for moderate or even small samples sizes so
-that approximations using the asymptotic distribution are reasonably
-good.
-
-In this section we will discuss two well known results that are used to
-approximate sampling distributions and thus constitute key tools in
-econometric theory: the \emph{law of large numbers} and the
-\emph{central limit theorem}. The law of large numbers states that in
-large samples, \(\overline{Y}\) is close to \(\mu_Y\) with high
-probability. The central limit theorem says that the sampling
-distribution of the standardized sample average, that is,
-\((\overline{Y} - \mu_Y)/\sigma_{\overline{Y}}\) is asymptotically
-normally distributed. It is particularly interesting that both results
-do not depend on the distribution of \(Y\). In other words, being unable
-to describe the complicated sampling distribution of \(\overline{Y}\) if
-\(Y\) is not normal, approximations of the latter using the central
-limit theorem simplify the development and applicability of econometric
-procedures enormously. This is a key component underlying the theory of
-statistical inference for regression models. Both results are summarized
-in Key Concept 2.6 and Key Concept 2.7.
-
-\begin{keyconcepts}[Convergence in Probability\comma Consistency and the Law of Large Numbers]{2.6}
-The sample average $\overline{Y}$ converges in probability to $\mu_Y$: $\overline{Y}$ is \textit{consistent} for $\mu_Y$ if the probability that $\overline{Y}$ is in the range $(\mu_Y - \epsilon)$ to $(\mu_Y + \epsilon)$ becomes arbitrary close to $1$ as $n$ increases for any constant $\epsilon > 0$. We write this short as
-
-$$ \overline{Y} \xrightarrow[]{p} \mu_Y. $$
-
-Consider the independently and identically distributed random variables $Y_i, i=1,\dots,n$ with expectation $E(Y_i)=\mu_Y$ and variance $\text{Var}(Y_i)=\sigma^2_Y$. Under the condition that $\sigma^2_Y< \infty$, that is, large outliers are unlikely, the law of large numbers states
-
-$$ \overline{Y} \xrightarrow[]{p} \mu_Y. $$
-
-The following application simulates a large number of coin tosses (you may set the number of trials using the slider) with a fair coin and computes the fraction of heads observed for each additional toss. The result is a random path that, as stated by the law of large numbers, shows a tendency to approach the value of $0.5$ as $n$ grows.\newline
-\begin{center}
-\textit{This interactive application is only available in the HTML version.}
-\end{center}
-\end{keyconcepts}
-
-The core statement of the law of large numbers is that under quite
-general conditions, the probability of obtaining a sample average
-\(\overline{Y}\) that is close to \(\mu_Y\) is high if we have a large
-sample size.
-
-Consider the example of repeatedly tossing a coin where \(Y_i\) is the
-result of the \(i^{th}\) coin toss. \(Y_i\) is a Bernoulli distributed
-random variable with
-
-\[ P(Y_i) = \begin{cases} p, & Y_i = 1 \\ 1-p, & Y_i = 0 \end{cases} \]
-where \(p = 0.5\) as we assume a fair coin. It is straightforward to
-show that
-
-\[ \mu_Y = p = 0.5. \] Say \(p\) is the probability of observing head
-and denote \(R_n\) the proportion of heads in the first \(n\) tosses,
-
-\[ R_n = \frac{1}{n} \sum_{i=1}^n Y_i. \tag{2.5}\]
-
-According to the law of large numbers, the observed proportion of heads
-converges in probability to \(\mu_Y = 0.5\), the probability of tossing
-head in a \emph{single} coin toss,
-
-\[ R_n \xrightarrow[]{p} \mu_Y=0.5 \ \ \text{as} \ \ n \rightarrow \infty.  \]
-
-We can use \texttt{R} to compute and illustrate such paths by
-simulation. The procedure is as follows:
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Sample \texttt{N} observations from the Bernoulli distribution
-  e.g.~using \texttt{sample()}.
-\item
-  Calculate the proportion of heads \(R_n\) as in (2.5). A way to
-  achieve this is to call \texttt{cumsum()} on the vector of
-  observations \texttt{Y} to obtain its cumulative sum and then divide
-  by the respective number of observations.
-\end{enumerate}
-
-We continue by plotting the path and also add a dashed line for the
-benchmark probability \(R_n = p = 0.5\).
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{# set random seed}
-\KeywordTok{set.seed}\NormalTok{(}\DecValTok{1}\NormalTok{)}
-
-\CommentTok{# Set number of coin tosses and simulate}
-\NormalTok{N <-}\StringTok{ }\DecValTok{30000}
-\NormalTok{Y <-}\StringTok{ }\KeywordTok{sample}\NormalTok{(}\DecValTok{0}\OperatorTok{:}\DecValTok{1}\NormalTok{, N, }\DataTypeTok{replace =}\NormalTok{T)}
-
-\CommentTok{# Calculate R_n for 1:N}
-\NormalTok{S <-}\StringTok{ }\KeywordTok{cumsum}\NormalTok{(Y)}
-\NormalTok{R <-}\StringTok{ }\NormalTok{S}\OperatorTok{/}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\NormalTok{N)}
-
-\CommentTok{# Plot the path.}
-\KeywordTok{plot}\NormalTok{(R, }
-     \DataTypeTok{ylim =} \KeywordTok{c}\NormalTok{(}\FloatTok{0.3}\NormalTok{, }\FloatTok{0.7}\NormalTok{), }
-     \DataTypeTok{type =} \StringTok{"l"}\NormalTok{, }
-     \DataTypeTok{col =} \StringTok{"steelblue"}\NormalTok{, }
-     \DataTypeTok{lwd =} \DecValTok{2}\NormalTok{, }
-     \DataTypeTok{xlab =} \StringTok{"n"}\NormalTok{, }
-     \DataTypeTok{ylab =} \StringTok{"R_n"}\NormalTok{,}
-     \DataTypeTok{main =} \StringTok{"Converging Share of Heads in Repeated Coin Tossing"}
-\NormalTok{     )}
-
-\CommentTok{# Add a dashed line for R_n = 0.5}
-\KeywordTok{lines}\NormalTok{(}\KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, N), }
-      \KeywordTok{c}\NormalTok{(}\FloatTok{0.5}\NormalTok{, }\FloatTok{0.5}\NormalTok{), }
-      \DataTypeTok{col =} \StringTok{"darkred"}\NormalTok{, }
-      \DataTypeTok{lty =} \DecValTok{2}\NormalTok{, }
-      \DataTypeTok{lwd =} \DecValTok{1}
-\NormalTok{      )}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-63-1} \end{center}
-
-There are several things to be said about this plot.
-
-\begin{itemize}
-\item
-  The blue graph shows the observed proportion of heads when tossing a
-  coin \(n\) times.
-\item
-  Since the \(Y_i\) are random variables, \(R_n\) is a random variate,
-  too. The path depicted is only one of many possible realizations of
-  \(R_n\) as it is determined by the \(30000\) observations sampled from
-  the Bernoulli distribution. Thus, the code chunk above produces a
-  different path every time you execute it (try this below!).
-\item
-  If the number of coin tosses \(n\) is small, we observe the proportion
-  of heads to be anything but close to its theoretical value,
-  \(\mu_Y = 0.5\). However, as more and more observation are included in
-  the sample we find that the path stabilizes in neighborhood of
-  \(0.5\). This is the message to take away: the average of multiple
-  trials shows a clear tendency to converge to its expected value as the
-  sample size increases, just as claimed by the law of large numbers.
-\end{itemize}
-
-\begin{keyconcepts}[The Central Limit Theorem]{2.7}
-Suppose that $Y_1,\dots,Y_n$ are independently and identically distributed random variables with expectation $E(Y_i)=\mu_Y$ and variance $\text{Var}(Y_i)=\sigma^2_Y$ where $0<\sigma^2_Y<\infty$.<br>
-The central Limit Theorem (CLT) states that, if the sample size $n$ goes to infinity, the distribution of the standardized sample average 
-$$ \frac{\overline{Y} - \mu_Y}{\sigma_{\overline{Y}}} = \frac{\overline{Y} - \mu_Y}{\sigma_Y/\sqrt{n}} \ $$
-becomes arbitrarily well approximated by the standard normal distribution.
-
-The application below demonstrates the CLT for the sample average of normally distributed random variables with mean $5$ and variance $25^2$. You may check the following properties:\newline
-
-\begin{itemize}
-\item The distribution of the sample average is normal.
-\item As the sample size increases, the distribution of $\overline{Y}$ tightens around the true mean of $5$.
-\item The distribution of the standardized sample average is close to the standard normal distribution for large $n$.
-\end{itemize}
-\vspace{0.5cm}
-\begin{center}
-\textit{This interactive application is only available in the HTML version.}
-\end{center}
-
-\end{keyconcepts}
-
-According to the central limit theorem, the distribution of the sample
-mean \(\overline{Y}\) of the Bernoulli distributed random variables
-\(Y_i\), \(i=1,...,n\) is well approximated by the normal distribution
-with parameters \(\mu_Y=p=0.5\) and
-\(\sigma^2_{\overline{Y}} = p(1-p) = 0.25\) for large \(n\).
-Consequently, for the standardized sample mean we conclude that the
-ratio
-
-\[ \frac{\overline{Y} - 0.5}{0.5/\sqrt{n}} \tag{2.6}\] should be well
-approximated by the standard normal distribution \(N(0,1)\). We employ
-another simulation study to demonstrate this graphically. The idea is as
-follows.
-
-Draw a large number of random samples, \(10000\) say, of size \(n\) from
-the Bernoulli distribution and compute the sample averages. Standardize
-the averages as shown in (2.6). Next, visualize the distribution of the
-generated standardized sample averages by means of a density histogram
-and compare to the standard normal distribution. Repeat this for
-different sample sizes \(n\) to see how increasing the sample size \(n\)
-impacts the simulated distribution of the averages.
-
-In R, we realized this as follows:
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\item
-  We start by defining that the next four subsequently generated figures
-  shall be drawn in a \(2\times2\) array such that they can be easily
-  compared. This is done by calling \texttt{par(mfrow = c(2, 2))} before
-  the figures are generated.
-\item
-  We define the number of repetitions \texttt{reps} as \(10000\) and
-  create a vector of sample sizes named \texttt{sample.sizes}. We
-  consider samples of sizes \(2\), \(10\), \(50\) and \(100\).
-\item
-  Next, we combine two \texttt{for()} loops to simulate the data and
-  plot the distributions. The inner loop generates \(10000\) random
-  samples, each consisting of \texttt{n} observations that are drawn
-  from the Bernoulli distribution, and computes the standardized
-  averages. The outer loop executes the inner loop for the different
-  sample sizes \texttt{n} and produces a plot for each iteration.
-\end{enumerate}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{# Subdivide the plot panel into a 2-by-2 array}
-\KeywordTok{par}\NormalTok{(}\DataTypeTok{mfrow =} \KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{))}
-
-\CommentTok{# Set number of repetitions and the sample sizes}
-\NormalTok{reps <-}\StringTok{ }\DecValTok{10000}
-\NormalTok{sample.sizes <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DecValTok{10}\NormalTok{, }\DecValTok{50}\NormalTok{, }\DecValTok{100}\NormalTok{)}
-
-\CommentTok{# outer loop (loop over the sample sizes)}
-  \ControlFlowTok{for}\NormalTok{ (n }\ControlFlowTok{in}\NormalTok{ sample.sizes) \{}
-    
-\NormalTok{    samplemean <-}\StringTok{ }\KeywordTok{rep}\NormalTok{(}\DecValTok{0}\NormalTok{, reps) }\CommentTok{#initialize the vector of sample menas}
-\NormalTok{    stdsamplemean <-}\StringTok{ }\KeywordTok{rep}\NormalTok{(}\DecValTok{0}\NormalTok{, reps) }\CommentTok{#initialize the vector of standardized sample menas}
-
-\CommentTok{# inner loop (loop over repetitions)   }
-    \ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\NormalTok{reps) \{}
-\NormalTok{      x <-}\StringTok{ }\KeywordTok{rbinom}\NormalTok{(n, }\DecValTok{1}\NormalTok{, }\FloatTok{0.5}\NormalTok{)}
-\NormalTok{      samplemean[i] <-}\StringTok{ }\KeywordTok{mean}\NormalTok{(x)}
-\NormalTok{      stdsamplemean[i] <-}\StringTok{ }\KeywordTok{sqrt}\NormalTok{(n)}\OperatorTok{*}\NormalTok{(}\KeywordTok{mean}\NormalTok{(x) }\OperatorTok{-}\StringTok{ }\FloatTok{0.5}\NormalTok{)}\OperatorTok{/}\FloatTok{0.5}
-\NormalTok{    \}}
-    
-\CommentTok{# plot the histogram and overlay it with the N(0,1) density for every iteration    }
-    \KeywordTok{hist}\NormalTok{(stdsamplemean, }
-         \DataTypeTok{col =} \StringTok{"steelblue"}\NormalTok{, }
-         \DataTypeTok{breaks =} \DecValTok{40}\NormalTok{, }
-         \DataTypeTok{freq =} \OtherTok{FALSE}\NormalTok{, }
-         \DataTypeTok{xlim =} \KeywordTok{c}\NormalTok{(}\OperatorTok{-}\DecValTok{3}\NormalTok{, }\DecValTok{3}\NormalTok{), }
-         \DataTypeTok{ylim =} \KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\FloatTok{0.4}\NormalTok{), }
-         \DataTypeTok{xlab =} \KeywordTok{paste}\NormalTok{(}\StringTok{"n ="}\NormalTok{, n), }
-         \DataTypeTok{main =} \StringTok{""}
-\NormalTok{         )}
-    
-    \KeywordTok{curve}\NormalTok{(}\KeywordTok{dnorm}\NormalTok{(x), }
-          \DataTypeTok{lwd =} \DecValTok{2}\NormalTok{, }
-          \DataTypeTok{col =} \StringTok{"darkred"}\NormalTok{, }
-          \DataTypeTok{add =} \OtherTok{TRUE}
-\NormalTok{          )}
-\NormalTok{  \}  }
-\end{Highlighting}
-\end{Shaded}
-
-\begin{center}\includegraphics{URFITE_files/figure-latex/unnamed-chunk-66-1} \end{center}
-
-We see that the simulated sampling distribution of the standardized
-average tends to deviate strongly from the standard normal distribution
-if the sample size is small, e.g.~for \(n=5\) and \(n=10\). However as
-\(n\) grows, the histograms are approaching the bell shape of a standard
-normal and we can be confident that the approximation works quite well
-as seen for \(n=100\).
+Evidently, the green regression line does far better in describing data
+sampled from the bivariate normal distribution stated in (4.3) than the
+red line. This is a nice example for demonstrating why we are interested
+in a high variance of the regressor \(X\): more variance in the \(X_i\)
+means more information from which the precision of the estimation
+benefits.
 
 \section{Exercises}\label{exercises}
 
-\begin{center}\textit{This interactive part of URFITE is only available in the HTML version}\end{center}
+\begin{center}\textit{This interactive part of URFITE is only available in the HTML version.}\end{center}
 
 \bibliography{book.bib,packages.bib}
 

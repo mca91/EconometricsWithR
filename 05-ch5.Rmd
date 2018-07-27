@@ -1,6 +1,6 @@
 # Hypothesis Tests and Confidence Intervals in the Simple Linear Regression Model {#htaciitslrm}
 
-In this chapter, we continue our treatment of the simple linear regression model. The following subsections discuss how we may use our knowledge about the sampling distribution of the OLS estimator in order to make statements regarding its uncertainty.
+This chapter, continues our treatment of the simple linear regression model. The following subsections discuss how we may use our knowledge about the sampling distribution of the OLS estimator in order to make statements regarding its uncertainty.
 
 These subsections cover the following topics:
 
@@ -21,7 +21,7 @@ library(scales)
 
 ## Testing Two-Sided Hypotheses Concerning the Slope Coefficient
 
-Using the fact that $\hat{\beta}_1$ is approximately normally distributed in large samples (see [Key Concept 4.4](#tsdotoe)), testing hypotheses about the true value $\beta_1$ can be done with the same approach as discussed in Chapter \@ref(potsm).
+Using the fact that $\hat{\beta}_1$ is approximately normally distributed in large samples (see [Key Concept 4.4](#tsdotoe)), testing hypotheses about the true value $\beta_1$ can be done as in Chapter \@ref(potsm).
 
 ```{r, eval = my_output == "html", results='asis', echo=FALSE}
 cat('
@@ -66,10 +66,10 @@ Recall the definition of the $p$-value:
   \\begin{align*}
     p \\text{-value} =& \\, \\text{Pr}_{H_0} \\left[ \\left| \\frac{ \\hat{\\beta}_1 - \\beta_{1,0} }{ SE(\\hat{\\beta}_1) } \\right| > \\left|        \\frac{ \\hat{\\beta}_1^{act} - \\beta_{1,0} }{ SE(\\hat{\\beta}_1) } \\right| \\right] \\\\
     =& \\, \\text{Pr}_{H_0} (|t| > |t^{act}|) \\\\
-    =& \\, 2 \\cdot \\Phi(-|t^{act}|)
+    \\approx& \\, 2 \\cdot \\Phi(-|t^{act}|)
   \\end{align*}  
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The last equality holds due to the normal approximation for large samples.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The last transformation is due to the normal approximation for large samples.
 
 </div>
 ')
@@ -99,7 +99,7 @@ Recall the definition of the $p$-value:
     =& \\, 2 \\cdot \\Phi(-|t^{act}|)
   \\end{align*}  
 
-The last equality holds due to the normal approximation for large samples.
+The last transformation is due to the normal approximation for large samples.
 \\end{enumerate}
 \\end{keyconcepts}
 ')
@@ -110,9 +110,11 @@ Consider again the OLS regression stored in `r ttcode('linear_model')` from Chap
 
 \[ \widehat{TestScore} \ = \underset{(9.47)}{698.9} - \underset{(0.49)}{2.28} \times STR \ , \ R^2=0.051 \ , \ SER=18.6. \]
 
-For testing a hypothesis concerning the slope parameter (the coefficient on $STR$), we need $SE(\hat{\beta}_1)$, the standard error of the respective point estimator. As common in the literature, standard errors are presented in parentheses below the point estimates. 
+For testing a hypothesis concerning the slope parameter (the coefficient on $STR$), we need $SE(\hat{\beta}_1)$, the standard error of the respective point estimator. As is common in the literature, standard errors are presented in parentheses below the point estimates. 
 
-Key Concept 5.1 states that it is rather cumbersome to compute the standard error and thereby the $t$-statistic by hand. The question you should be asking yourself right now is: can we obtain these values with minimum effort using `r ttcode('R')`? Yes, we can. Let us first use `r ttcode('summary()')` to get a summary on the estimated coefficients in `r ttcode('linear_model')`. 
+Key Concept 5.1 reveals that it is rather cumbersome to compute the standard error and thereby the $t$-statistic by hand. The question you should be asking yourself right now is: can we obtain these values with minimum effort using `r ttcode('R')`? Yes, we can. Let us first use `r ttcode('summary()')` to get a summary on the estimated coefficients in `r ttcode('linear_model')`.
+
+**Note**: Throughout the book, robust standard errors are reported. We consider it instructive keep things simple at the beginning and thus start out with simple examples that do not allow for robust inference. Standard errors that are robust to heteroskedasticity are introduced in Chapter \@ref(hah) where we also demonstrate how they can be computed using `r ttcode('R')`. A discussion of heteroskedasticity-autocorrelation robust standard errors takes place in Chapter \@ref(eodce).
 
 ```{r, echo=6:7, warning=F, message=F}
 library(AER)
@@ -125,20 +127,17 @@ linear_model <- lm(score ~ STR, data = CASchools)          # estimate the model
 summary(linear_model)$coefficients
 ```
 
-Looking at the second column of the coefficients' summary, we discover values for $SE(\hat\beta_0)$ and $SE(\hat\beta_1)$.
-Also, in the third column `r ttcode('t value')`, we find $t$-statistics $t^{act}$ suitable for tests of the separate hypotheses $H_0: \beta_0=0$ and $H_0: \beta_1=0$. Furthermore, the output provides us with $p$-values corresponding to both tests against the two-sided alternatives $H_1:\beta_0\neq0$ respectively $H_1:\beta_1\neq0$ in the fourth column of the table.
+The second column of the coefficients' summary, reports $SE(\hat\beta_0)$ and $SE(\hat\beta_1)$. Also, in the third column `r ttcode('t value')`, we find $t$-statistics $t^{act}$ suitable for tests of the separate hypotheses $H_0: \beta_0=0$ and $H_0: \beta_1=0$. Furthermore, the output provides us with $p$-values corresponding to both tests against the two-sided alternatives $H_1:\beta_0\neq0$ respectively $H_1:\beta_1\neq0$ in the fourth column of the table.
 
 Let us have a closer look at the test of 
 
 $$H_0: \beta_1=0 \ \ \ vs. \ \ \ H_1: \beta_1 \neq 0.$$ 
 
-Using our revisited knowledge about $t$-statistics we find that
+We have $$ t^{act} = \frac{-2.279808 - 0}{0.4798255} \approx - 4.75. $$
 
-\[ t^{act} = \frac{-2.279808 - 0}{0.4798255} \approx - 4.75. \]
+What does this tell us about the significance of the estimated coefficient? We reject the null hypothesis at the $5\%$ level of significance since $|t^{act}| > 1.96$. That is, the observed test statistic falls into the rejection region as $p\text{-value} = 2.78\cdot 10^{-6} < 0.05$. We conclude that the coefficient is significantly different from zero. In other words, we reject the hypothesis that the class size *has no influence* on the students test scores at the $5\%$ level.
 
-What does this tell us about the significance of the estimated coefficient? We reject the null hypothesis at the $5\%$ level of significance since $|t^{act}| > 1.96$ that is the observed test statistic falls into the region of rejection. Or, alternatively as leading to the same result, we have $p\text{-value} = 2.78*10^{-6} < 0.05$. We conclude that the coefficient is significantly different from zero. With other words, our analysis provides evidence that the class size *has an influence* on the students test scores. $\beta_1$ is significantly different from $0$ at the level of $5\%$.
-
-Note that, although the difference is negligible in the present case as we will see later, `r ttcode('summary()')` does not perform the normal approximation but calculates $p$-values using the $t$-distribution instead. Generally, the degrees of freedom of the assumed $t$-distribution are determined in the following manner:
+Note that although the difference is negligible in the present case as we will see later, `r ttcode('summary()')` does not perform the normal approximation but calculates $p$-values using the $t$-distribution instead. Generally, the degrees of freedom of the assumed $t$-distribution are determined in the following manner:
 
 $$ \text{DF} = n - k - 1 $$
 
@@ -164,13 +163,14 @@ The result is very close to the value provided by `r ttcode('summary()')`. Howev
 2 * pnorm(-4.751327)
 ```
 
-The difference is indeed negligible. These findings tell us that, if $H_0: \beta_1 = 0$ is true and we were to repeat the whole process of gathering observations and estimating the model, chances of observing a $\hat\beta_1 \geq |-4.75|$ are roughly $1:359285$ --- so higher chances than winning the lottery next Saturday but still very unlikely! 
+The difference is indeed negligible. These findings tell us that, if $H_0: \beta_1 = 0$ is true and we were to repeat the whole process of gathering observations and estimating the model, observing a $\hat\beta_1 \geq |-2.28|$ is very unlikely! 
 
 Using `r ttcode('R')` we may visualize how such a statement is made when using the normal approximation. This reflects the principles depicted in figure 5.1 in the book. Do not let the following code chunk deter you: the code is somewhat longer than the usual examples and looks unappealing but there is **a lot** of repetition since color shadings and annotations are added on both tails of the normal distribution. We recommend to execute the code step by step in order to see how the graph is augmented with the annotations.
 
 <div class="unfolded">
 ```{r, fig.align='center'}
-# Plot the standard normal on the domain [-6,6]
+
+# Plot the standard normal on the support [-6,6]
 t <- seq(-6, 6, 0.01)
 
 plot(x = t, 
@@ -181,9 +181,9 @@ plot(x = t,
      yaxs = "i", 
      axes = F, 
      ylab = "", 
-     main = "Calculating the p-Value of a Two-Sided Test When t^act = -4.75", 
-     cex.lab = 0.7
-     )
+     main = expression("Calculating the p-value of a Two-sided Test when" ~ t^act ~ "=-0.47"), 
+     cex.lab = 0.7,
+     cex.main = 1)
 
 tact <- -4.75
 
@@ -194,15 +194,13 @@ axis(1, at = c(0, -1.96, 1.96, -tact, tact), cex.axis = 0.7)
 # critical region in left tail
 polygon(x = c(-6, seq(-6, -1.96, 0.01), -1.96),
         y = c(0, dnorm(seq(-6, -1.96, 0.01)), 0), 
-        col = 'orange'
-        )
+        col = 'orange')
 
 # critical region in right tail
 
 polygon(x = c(1.96, seq(1.96, 6, 0.01), 6),
         y = c(0, dnorm(seq(1.96, 6, 0.01)), 0), 
-        col = 'orange'
-        )
+        col = 'orange')
 
 # Add arrows and texts indicating critical regions and the p-value
 arrows(-3.5, 0.2, -2.5, 0.02, length = 0.1)
@@ -211,18 +209,23 @@ arrows(3.5, 0.2, 2.5, 0.02, length = 0.1)
 arrows(-5, 0.16, -4.75, 0, length = 0.1)
 arrows(5, 0.16, 4.75, 0, length = 0.1)
 
-text(-3.5, 0.22, labels = paste("0.025=", expression(alpha), "/2", sep = ""),
+text(-3.5, 0.22, 
+     labels = expression("0.025"~"="~over(alpha, 2)),
      cex = 0.7)
-text(3.5, 0.22, labels = paste("0.025=", expression(alpha), "/2", sep = ""),
+text(3.5, 0.22, 
+     labels = expression("0.025"~"="~over(alpha, 2)),
      cex = 0.7)
 
-text(-5, 0.18, labels = expression(paste("-|",t[act],"|")), cex = 0.7)
-text(5, 0.18, labels = expression(paste("|",t[act],"|")), cex = 0.7)
+text(-5, 0.18, 
+     labels = expression(paste("-|",t[act],"|")), 
+     cex = 0.7)
+text(5, 0.18, 
+     labels = expression(paste("|",t[act],"|")), 
+     cex = 0.7)
 
 # Add ticks indicating critical values at the 0.05-level, t^act and -t^act 
 rug(c(-1.96, 1.96), ticksize  = 0.145, lwd = 2, col = "darkred")
 rug(c(-tact, tact), ticksize  = -0.0451, lwd = 2, col = "darkgreen")
-
 ```
 </div>
 
@@ -230,7 +233,7 @@ The $p$-Value is the area under the curve to left of $-4.75$ plus the area under
 
 ## Confidence Intervals for Regression Coefficients {#cifrc}
 
-As we already know, estimates of the regression coefficients $\beta_0$ and $\beta_1$ are afflicted with sampling uncertainty, see Chapter \@ref(lrwor). Therefore, we will *never* estimate the exact true value of these parameters from sample data in an empirical application. However, we may construct confidence intervals for the intercept and the slope parameter.
+As we already know, estimates of the regression coefficients $\beta_0$ and $\beta_1$ are subject to sampling uncertainty, see Chapter \@ref(lrwor). Therefore, we will *never* exactly estimate the true value of these parameters from sample data in an empirical application. However, we may construct confidence intervals for the intercept and the slope parameter.
 
 A $95\%$ confidence interval for $\beta_i$ has two equivalent definitions:
 
@@ -247,7 +250,7 @@ cat('
 
 Imagine you could draw all possible random samples of given size. The interval that contains the true value $\\beta_i$ in $95\\%$ of all samples is given by the expression
 
-\\[ \\text{KI}_{0.95}^{\\beta_i} = \\left[ \\hat{\\beta}_i - 1.96 \\times SE(\\hat{\\beta}_i) \\, , \\, \\hat{\\beta}_i + 1.96 \\times SE(\\hat{\\beta}_i) \\right]. \\]
+\\[ \\text{CI}_{0.95}^{\\beta_i} = \\left[ \\hat{\\beta}_i - 1.96 \\times SE(\\hat{\\beta}_i) \\, , \\, \\hat{\\beta}_i + 1.96 \\times SE(\\hat{\\beta}_i) \\right]. \\]
 
 Equivalently, this interval can be seen as the set of null hypotheses for which a $5\\%$ two-sided hypothesis test does not reject.
 </div>
@@ -258,7 +261,7 @@ Equivalently, this interval can be seen as the set of null hypotheses for which 
 cat('\\begin{keyconcepts}[A Confidence Interval for $\\beta_i$]{5.3}
 Imagine you could draw all possible random samples of given size. The interval that contains the true value $\\beta_i$ in $95\\%$ of all samples is given by the expression
 
-\\[ \\text{KI}_{0.95}^{\\beta_i} = \\left[ \\hat{\\beta}_i - 1.96 \\times SE(\\hat{\\beta}_i) \\, , \\, \\hat{\\beta}_i + 1.96 \\times SE(\\hat{\\beta}_i) \\right]. \\]
+\\[ \\text{CI}_{0.95}^{\\beta_i} = \\left[ \\hat{\\beta}_i - 1.96 \\times SE(\\hat{\\beta}_i) \\, , \\, \\hat{\\beta}_i + 1.96 \\times SE(\\hat{\\beta}_i) \\right]. \\]
 
 Equivalently, this interval can be seen as the set of null hypotheses for which a $5\\%$ two-sided hypothesis test does not reject.
 \\end{keyconcepts}
@@ -267,9 +270,9 @@ Equivalently, this interval can be seen as the set of null hypotheses for which 
 
 ### Simulation Study: Confidence Intervals {-}
 
-To get a better understanding of confidence intervals we will conduct another simulation study. For now, assume that we are confronted with the following sample of $n=100$ observations on a single variable $Y$ where 
+To get a better understanding of confidence intervals we conduct another simulation study. For now, assume that we have the following sample of $n=100$ observations on a single variable $Y$ where 
 
-$$ Y_i \overset{i.i.d}{\sim} N(5,25) \ \ \forall \ i = 1, \dots, 100.$$
+$$ Y_i \overset{i.i.d}{\sim} N(5,25), \ i = 1, \dots, 100.$$
 <div class="unfolded">
 ```{r, fig.align='center'}
 # set random seed for reproducibility
@@ -278,13 +281,11 @@ set.seed(4)
 # generate and plot the sample data
 Y <- rnorm(n = 100, 
            mean = 5, 
-           sd =5
-           )
+           sd = 5)
 
 plot(Y, 
      pch = 19, 
-     col = "steelblue"
-     )
+     col = "steelblue")
 ```
 </div>
 
@@ -292,30 +293,24 @@ We assume that the data is generated by the model
 
 $$ Y_i = \mu + \epsilon_i $$
 
-where $\mu$ is an unknown constant and we know that $\epsilon_i \overset{i.i.d.}{\sim} N(0,25)$. In this model, the OLS estimator for $\mu$ is given by
-
-$$ \hat\mu = \overline{Y} = \frac{1}{n} \sum_{i=1}^n Y_i $$
-
-(can you verify this?) i.e. the sample average of the $Y_i$. It further holds that
+where $\mu$ is an unknown constant and we know that $\epsilon_i \overset{i.i.d.}{\sim} N(0,25)$. In this model, the OLS estimator for $\mu$ is given by $$ \hat\mu = \overline{Y} = \frac{1}{n} \sum_{i=1}^n Y_i, $$ i.e., the sample average of the $Y_i$. It further holds that
 
 $$ SE(\hat\mu) = \frac{\sigma_{\epsilon}}{\sqrt{n}} = \frac{5}{\sqrt{100}} $$
 
-(see Chapter [2](#SVSSDASE)) A large sample $95\%$ confidence interval for $\mu$ is then given by
+(see Chapter [2](#SVSSDASE)) A large-sample $95\%$ confidence interval for $\mu$ is then given by
 
 \begin{equation} 
-KI^{\mu}_{0.95} = \left[\hat\mu - 1.96 \times \frac{5}{\sqrt{100}} \ , \ \hat\mu + 1.96 \times \frac{5}{\sqrt{100}}  \right]. (\#eq:KI)
+CI^{\mu}_{0.95} = \left[\hat\mu - 1.96 \times \frac{5}{\sqrt{100}} \ , \ \hat\mu + 1.96 \times \frac{5}{\sqrt{100}}  \right]. (\#eq:KI)
 \end{equation}
 
 It is fairly easy to compute this interval in `r ttcode('R')` by hand. The following code chunk generates a named vector containing the interval bounds:
 
 ```{r}
-cbind(
-  CIlower = mean(Y) - 1.96 * 5/10, 
-  CIupper = mean(Y) + 1.96 * 5/10 
-)
+cbind(CIlower = mean(Y) - 1.96 * 5/10, CIupper = mean(Y) + 1.96 * 5/10)
 ```
 
-Knowing that $\mu = 5$ we see that our example covers the true value for the present sample. <br>
+Knowing that $\mu = 5$ we see that, for our example data, the confidence interval covers true value.
+
 As opposed to real world examples, we can use `r ttcode('R')` to get a better understanding of confidence intervals by repeatedly sampling data, estimating $\mu$ and computing the confidence interval for $\mu$ as in \@ref(eq:KI).
 
 The procedure is as follows:
@@ -346,12 +341,12 @@ CIs <- cbind(lower, upper)
 According to Key Concept 5.3 we expect that the fraction of the $10000$ simulated intervals saved in the matrix `r ttcode('CIs')` that contain the true value $\mu=5$ should be roughly $95\%$. We can easily check this using logical operators.
 
 ```{r}
-sum(CIs[, 1] <= 5 & 5 <= CIs[, 2])/10000
+mean(CIs[, 1] <= 5 & 5 <= CIs[, 2])
 ```
 
-The simulation shows that the fraction of intervals covering $\mu=5$, i.e. those intervals for which $H_0: \mu = 5$ cannot be rejected is close to the theoretical value of $95\%$. 
+The simulation shows that the fraction of intervals covering $\mu=5$, i.e., those intervals for which $H_0: \mu = 5$ cannot be rejected is close to the theoretical value of $95\%$. 
 
-Let us draw a plot of the first $100$ simulated confidence intervals and indicate those which *do not* cover the true value of $\mu$. We do this by adding horizontal lines representing the confidence intervals on top of each other.
+Let us draw a plot of the first $100$ simulated confidence intervals and indicate those which *do not* cover the true value of $\mu$. We do this via horizontal lines representing the confidence intervals on top of each other.
 
 <div class="unfolded">
 ```{r, fig.align='center', fig.height=5, fig.width=4}
@@ -365,7 +360,7 @@ plot(0,
      ylim = c(1, 100), 
      ylab = "Sample", 
      xlab = expression(mu), 
-     main = "Confidence Intervals: Correct H0")
+     main = "Confidence Intervals")
 
 # set up color vector
 colors <- rep(gray(0.6), 100)
@@ -384,9 +379,9 @@ for(j in 1:100) {
 ```
 </div>
 
-We find that for the first $100$ samples, the true null hypothesis is rejected in four cases so these intervals do not cover $\mu=5$. We have indicated the intervals which lead to a rejection of the true null hypothesis by red color.
+For the first $100$ samples, the true null hypothesis is rejected in four cases so these intervals do not cover $\mu=5$. We have indicated the intervals which lead to a rejection of the null red.
 
-Let us now turn back to the example of test scores and class sizes. The regression model from Chapter \@ref(lrwor) is stored in `r ttcode('linear_model')`. An easy way to get $95\%$ confidence intervals for $\beta_0$ and $\beta_1$, the coefficients on `r ttcode('(intercept)')` and `r ttcode('STR')`, is to use the function `r ttcode('confint()')`. We only have to provide a fitted model object as an to this function. The confidence level is set to $95\%$ by default but can be modified by setting the argument `r ttcode('level')`, see `r ttcode('?confint')`. 
+Let us now come back to the example of test scores and class sizes. The regression model from Chapter \@ref(lrwor) is stored in `r ttcode('linear_model')`. An easy way to get $95\%$ confidence intervals for $\beta_0$ and $\beta_1$, the coefficients on `r ttcode('(intercept)')` and `r ttcode('STR')`, is to use the function `r ttcode('confint()')`. We only have to provide a fitted model object as an input to this function. The confidence level is set to $95\%$ by default but can be modified by setting the argument `r ttcode('level')`, see `r ttcode('?confint')`. 
 
 ```{r}
 confint(linear_model)
@@ -394,7 +389,7 @@ confint(linear_model)
 
 Let us check if the calculation is done as we expect it to be. For $\beta_1$, the coefficient on `r ttcode('STR')`, according to the formula presented above the interval bounds are computed as
 
-\[  -2.279808 \pm 1.96 \times 0.4798255 \, \Rightarrow \, \text{KI}_{0.95}^{\beta_1} = \left[ -3.22, -1.34 \right]  \]
+\[  -2.279808 \pm 1.96 \times 0.4798255 \, \Rightarrow \, \text{CI}_{0.95}^{\beta_1} = \left[ -3.22, -1.34 \right]  \]
 
 so this actually leads to the same interval. Obviously, this interval *does not* contain the value zero which, as we have already seen in the previous section, leads to the rejection of the null hypothesis $\beta_{1,0} = 0$.
 
@@ -497,7 +492,7 @@ confint(dummy_model)
 
 We reject the hypothesis that there is no difference between group means at the $5\%$ significance level since $\beta_{1,0} = 0$ lies outside of $[3.54, 10.8]$, the $95\%$ confidence interval for the coefficient on $D$.
 
-## Heteroskedasticity and Homoskedasticity
+## Heteroskedasticity and Homoskedasticity {#hah}
 
 All inference made in the previous chapters relies on the assumption that the error variance does not vary as regressor values change. But this will not necessarily be the case in empirical applications.
 

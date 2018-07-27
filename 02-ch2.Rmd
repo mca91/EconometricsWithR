@@ -285,7 +285,7 @@ The standard deviation of $Y$ is $\\sigma_Y$, the square root of the variance. T
 \\end{keyconcepts}')
 ```
   
-The variance as defined in Key Concept 2.2, beeing a population quantity, *is not* implemented as a function in R. Instead we have the function `r ttcode("var()")` which computes the *sample variance* 
+The variance as defined in Key Concept 2.2, being a population quantity, *is not* implemented as a function in R. Instead we have the function `r ttcode("var()")` which computes the *sample variance* 
 
 $$ s^2_Y = \frac{1}{n-1} \sum_{i=1}^n (y_i - \overline{y})^2. $$
 
@@ -483,7 +483,7 @@ We can obtain the density at different positions by passing a vector to `r ttcod
 dnorm(x = c(-1.96, 0, 1.96))
 ```
 
-Similar to the PDF, we can plot the standard normal CDF using `r ttcode("curve()")` and `r ttcode("pnorm()")`.
+Similar to the PDF, we can plot the standard normal CDF using `r ttcode("curve()")`. We could use `r ttcode("dnorm()")` for this but it is much more convenient to rely on `r ttcode("pnorm()")`.
 
 <div class="unfolded"> 
 ```{r, echo = T, eval = T, message = F, warning = F, fig.align='center'}
@@ -497,34 +497,32 @@ curve(pnorm(x),
 
 We can also use `r ttcode("R")` to calculate the probability of events associated with a standard normal variate. 
 
-Let us say we are interested in $P(Z \leq 1,337)$. For some continuous random variable $Z$ on $[-\infty,\infty]$ with density function $g(x)$ we would have to determine $G(x)$ which is the anti derivative of $g(x)$ so that
+Let us say we are interested in $P(Z \leq 1.337)$. For some continuous random variable $Z$ on $[-\infty,\infty]$ with density $g(x)$ we would have to determine $G(x)$, the anti-derivative of $g(x)$ so that
 
-$$ P(Z \leq 1,337 ) = G(1,337) = \int_{-\infty}^{1,337} g(x) \mathrm{d}x.  $$
+$$ P(Z \leq 1.337 ) = G(1.337) = \int_{-\infty}^{1.337} g(x) \mathrm{d}x.  $$
 
-If $Z \sim N(0,1)$, we have $g(x)=\phi(x)$. There is no analytic solution to the integral above and it is cumbersome to come up with an approximation. However, we may circumvent this using `r ttcode("R")` in different ways.
-<br>
-The first approach makes use of the function `r ttcode("integrate()")` which allows to solve one-dimensional integration problems using a numerical method. For this, we first define the function we want to compute the integral of as a `r ttcode("R")` function `r ttcode("f")`. In our example, `r ttcode("f")` needs to be the standard normal density function and hence takes a single argument `r ttcode("x")`. Following the definition of $\phi(x)$ we define `r ttcode("f")` as
+If $Z \sim N(0,1)$, we have $g(x)=\phi(x)$. There is no analytic solution to the integral above. Fortunately, `r ttcode("R")` offers good approximations. The first approach makes use of the function `r ttcode("integrate()")` which allows to solve one-dimensional integration problems using a numerical method. For this, we first define the function we want to compute the integral of as an `r ttcode("R")` function `r ttcode("f")`. In our example, `r ttcode("f")` is the standard normal density function and hence takes a single argument `r ttcode("x")`. Following the definition of $\phi(x)$ we define `r ttcode("f")` as
 
 ```{r, echo = T, eval = T, message = F, warning = F} 
-# define the standard normal PDF as a R function
+# define the standard normal PDF as an R function
 f <- function(x) {
   1/(sqrt(2 * pi)) * exp(-0.5 * x^2)
 }
 ```
 
-Let us check if this function enables us to compute standard normal density values by passing it a vector of quantiles. 
+Let us check if this function computes standard normal densities by passing a vector.
 ```{r, echo = T, eval = T, message = F, warning = F}
-# define vector of quantiles
+# define a vector of reals
 quants <- c(-1.96, 0, 1.96)
 
-# compute density values
+# compute densities
 f(quants)
 
-# compare to results produced by dnorm()
+# compare to the results produced by 'dnorm()'
 f(quants) == dnorm(quants)
 ```
 
-Notice that the results produced by `r ttcode("f()")` are indeed equivalent to those given by `r ttcode("dnorm()")`.
+The results produced by `r ttcode("f()")` are indeed equivalent to those given by `r ttcode("dnorm()")`.
 
 Next, we call `r ttcode("integrate()")` on `r ttcode("f()")` and specify the arguments `r ttcode("lower")` and `r ttcode("upper")`, the lower and upper limits of integration.
 
@@ -538,7 +536,7 @@ integrate(f,
 
 We find that the probability of observing $Z \leq 1.337$ is about $0.9094\%$.
 
-A second and much more convenient way is to use the function `r ttcode("pnorm()")` which also allows calculus involving the standard normal cumulative distribution function.
+A second and much more convenient way is to use the function `r ttcode("pnorm()")`, the standard normal cumulative distribution function.
 
 ```{r, echo = T, eval = T, message = F, warning = F} 
 # compute the probability using pnorm()
@@ -549,18 +547,14 @@ The result matches the outcome of the approach using `r ttcode("integrate()")`.
 
 Let us discuss some further examples:
 
-A commonly known result is that $95\%$ probability mass of a standard normal lies
-in the interval $[-1.96, 1.96]$, that is in a distance of about $2$ standard deviations to the mean. We can easily confirm this by calculating
-
-$$ P(-1.96 \leq Z \leq 1.96) = 1-2\times P(Z \leq -1.96) $$ 
-due to symmetry of the standard normal PDF. Thanks to `r ttcode("R")`, we can abandon the table of the standard normal CDF again and instead solve this by using the function `r ttcode("pnorm()")`.
+A commonly known result is that $95\%$ probability mass of a standard normal lies in the interval $[-1.96, 1.96]$, that is, in a distance of about $2$ standard deviations to the mean. We can easily confirm this by calculating $$ P(-1.96 \leq Z \leq 1.96) = 1-2\times P(Z \leq -1.96) $$ due to symmetry of the standard normal PDF. Thanks to `r ttcode("R")`, we can abandon the table of the standard normal CDF found in many other textbooks and instead solve this fast by using `r ttcode("pnorm()")`.
 
 ```{r, echo = T, eval = T, message = F, warning = F} 
 # compute the probability
 1 - 2 * (pnorm(-1.96)) 
 ```
 
-Now consider a random variable $Y$ with $Y \sim N(5, 25)$. To make statements about the  probability of observing outcomes of $Y$ in some specific range is more convenient without when we standardize first as shown in Key Concept 2.4.
+To make statements about the  probability of observing outcomes of $Y$ in some specific range is more convenient when we standardize first as shown in Key Concept 2.4.
 
 ```{r, eval = my_output == "html", results='asis', echo=FALSE}
 cat('<div class = "keyconcept"> 
@@ -576,9 +570,9 @@ and $c_2$ denote two numbers whereby $c_1 < c_2$ and further $d_1 = (c_1 - \\mu)
 / \\sigma$ and $d_2 = (c_2 - \\mu)/\\sigma$. Then
 
 \\begin{align*} 
-P(Y \\leq c_2) =& \\, P(Z \\leq d_2) = \\Phi(d_2) \\\\ 
-P(Y \\geq c_1) =& \\, P(Z \\geq d_1) = 1 - \\Phi(d_1) \\\\ 
-P(c_1 \\leq Y \\leq c_2) =& \\, P(d_1 \\leq Z \\leq d_2) = \\Phi(d_2) - \\Phi(d_1) 
+P(Y \\leq c_2) =& \\, P(Z \\leq d_2) = \\Phi(d_2), \\\\ 
+P(Y \\geq c_1) =& \\, P(Z \\geq d_1) = 1 - \\Phi(d_1), \\\\ 
+P(c_1 \\leq Y \\leq c_2) =& \\, P(d_1 \\leq Z \\leq d_2) = \\Phi(d_2) - \\Phi(d_1). 
 \\end{align*}
 
 </p> 
@@ -594,33 +588,33 @@ dividing by its standard deviation: $$ Z = \\frac{Y -\\mu}{\\sigma} $$ Let $c_1$
 and $c_2$ denote two numbers whereby $c_1 < c_2$ and further $d_1 = (c_1 - \\mu)
 / \\sigma$ and $d_2 = (c_2 - \\mu)/\\sigma$. Then
 \\begin{align*} 
-P(Y \\leq c_2) =& \\, P(Z \\leq d_2) = \\Phi(d_2) \\\\ 
-P(Y \\geq c_1) =& \\, P(Z \\geq d_1) = 1 - \\Phi(d_1) \\\\ 
+P(Y \\leq c_2) =& \\, P(Z \\leq d_2) = \\Phi(d_2), \\\\ 
+P(Y \\geq c_1) =& \\, P(Z \\geq d_1) = 1 - \\Phi(d_1), \\\\ 
 P(c_1 \\leq Y \\leq c_2) =& \\, P(d_1 \\leq Z \\leq d_2) = \\Phi(d_2) - \\Phi(d_1). 
 \\end{align*}
 \\end{keyconcepts}')
 ```
 
-`r ttcode("R")` functions that handle the normal distribution can perform this standardization. If we are interested in $P(3 \leq Y \leq 4)$ we can  use `r ttcode("pnorm()")` and adjust for a mean and/or a standard deviation that deviate from $\mu=0$ and $\sigma = 1$ by specifying the arguments `r ttcode("mean")` and `r ttcode("sd")` accordingly. **Attention**: the argument `r ttcode("sd")` requires the standard deviation, not the variance! 
+Now consider a random variable $Y$ with $Y \sim N(5, 25)$. `r ttcode("R")` functions that handle the normal distribution can perform the standardization. If we are interested in $P(3 \leq Y \leq 4)$ we can use `r ttcode("pnorm()")` and adjust for a mean and/or a standard deviation that deviate from $\mu=0$ and $\sigma = 1$ by specifying the arguments `r ttcode("mean")` and `r ttcode("sd")` accordingly. **Attention**: the argument `r ttcode("sd")` requires the standard deviation, not the variance! 
 
 ```{r, echo = T, eval = T, message = F, warning = F} 
 pnorm(4, mean = 5, sd = 5) - pnorm(3, mean = 5, sd = 5) 
 ```
 
-An extension of the normal distribution in a univariate setting is the multivariate normal distribution. The PDF of two random normal variables $X$ and $Y$ is given by
+An extension of the normal distribution in a univariate setting is the multivariate normal distribution. The joint PDF of two random normal variables $X$ and $Y$ is given by
 
 \begin{align}
 \begin{split}
 g_{X,Y}(x,y) =& \, \frac{1}{2\pi\sigma_X\sigma_Y\sqrt{1-\rho_{XY}^2}} \\ 
-\cdot & \, \exp \left\{ \frac{1}{-2(1-\rho_{XY}^2)} \left[ \left( \frac{x-\mu_x}{\sigma_x} \right)^2 - 2\rho_{XY}\left( \frac{x-\mu_X}{\sigma_X} \right)\left( \frac{y-\mu_Y}{\sigma_Y} \right) + \left( \frac{y-\mu_Y}{\sigma_Y} \right)^2 \right]  \right\}.
+\cdot & \, \exp \left\{ \frac{1}{-2(1-\rho_{XY}^2)} \left[ \left( \frac{x-\mu_x}{\sigma_X} \right)^2 - 2\rho_{XY}\left( \frac{x-\mu_X}{\sigma_X} \right)\left( \frac{y-\mu_Y}{\sigma_Y} \right) + \left( \frac{y-\mu_Y}{\sigma_Y} \right)^2 \right]  \right\}.
 \end{split} (\#eq:bivnorm)
 \end{align}
 
-Equation \@ref(eq:bivnorm) contains the bivariate normal PDF. Admittedly, it is hard to gain insights from this complicated expression. Instead, let us consider the special case where $X$ and $Y$ are uncorrelated standard normal random variables with density functions $f_X(x)$ and $f_Y(y)$ and we assume that they have a joint normal distribution. We then have the parameters $\sigma_X = \sigma_Y = 1$, $\mu_X=\mu_Y=0$ (due to marginal standard normality) and $\rho_{XY}=0$ (due to independence). The joint probability density function of $X$ and $Y$ then becomes
+Equation \@ref(eq:bivnorm) contains the bivariate normal PDF. It is somewhat hard to gain insights from this complicated expression. Instead, let us consider the special case where $X$ and $Y$ are uncorrelated standard normal random variables with densities $f_X(x)$ and $f_Y(y)$ with joint normal distribution. We then have the parameters $\sigma_X = \sigma_Y = 1$, $\mu_X=\mu_Y=0$ (due to marginal standard normality) and $\rho_{XY}=0$ (due to independence). The joint density of $X$ and $Y$ then becomes
 
 $$ g_{X,Y}(x,y) = f_X(x) f_Y(y) = \frac{1}{2\pi} \cdot \exp \left\{ -\frac{1}{2} \left[x^2 + y^2 \right]  \right\}, \tag{2.2}  $$ 
 
-the PDF of the bivariate standard normal distribution. The next plot provides an interactive three-dimensional plot of (<a href="#mjx-eqn-2.2">2.2</a>). By moving the cursor over the plot you can see that the density is rotationally invariant. 
+the PDF of the bivariate standard normal distribution. The widget below provides an interactive three-dimensional plot of (<a href="#mjx-eqn-2.2">2.2</a>). By moving the cursor over the plot you can see that the density is rotationally invariant, i.e, the density at $(a, b)$ solely depends on the distance of $(a, b)$: geometrically, regions of equal density are edges of concentric circles in the $XY$-plane, centered at $(\mu_X = 0, \mu_Y = 0)$. 
 
 ```{r, echo=F}
 library("knitr")
@@ -636,22 +630,20 @@ plotly_iframe <- paste("<center><iframe scrolling='no' seamless='seamless' style
 
 ### The Chi-Squared Distribution {-}
 
-Another distribution relevant in econometric day-to-day work is the chi-squared distribution. It is often needed when testing special types of hypotheses frequently encountered when dealing with regression models. 
+The chi-squared distribution is another distribution relevant in econometrics. It is often needed when testing special types of hypotheses frequently encountered when dealing with regression models. 
 
-The sum of $M$ squared independent standard normal distributed random variables follows a chi-squared distribution with $M$ degrees of freedom.
+The sum of $M$ squared independent standard normal distributed random variables follows a chi-squared distribution with $M$ degrees of freedom:
 
 $$ Z_1^2 + \dots + Z_M^2 = \sum_{m=1}^M Z_m^2 \sim \chi^2_M \ \ \text{with} \ \ Z_m \overset{i.i.d.}{\sim} N(0,1) \label{eq:chisq}$$
 
-A $\chi^2$ distributed random variable with $M$ degrees of freedom has expectation $M$, mode at $M-2$ for $n \geq 2$ and variance $2 \cdot M$.
-
-For example, if we have
+A $\chi^2$ distributed random variable with $M$ degrees of freedom has expectation $M$, mode at $M-2$ for $M \geq 2$ and variance $2 \cdot M$. For example, for
 
 $$ Z_1,Z_2,Z_3 \overset{i.i.d.}{\sim} N(0,1) $$
 
 it holds that
 
 $$ Z_1^2+Z_2^2+Z_3^3 \sim \chi^2_3. \tag{2.3} $$
-Using the code below, we can display the PDF and the CDF of a $\chi^2_3$ random variable in a single plot. This is achieved by setting the argument `r ttcode("add = TRUE")` in the second call of `r ttcode("curve()")`. Further we adjust limits of both axes using `r ttcode("xlim")` and `r ttcode("ylim")` and choose different colors to make both functions better distinguishable. The plot is completed by adding a legend with help of the function `r ttcode("legend()")`.
+Using the code below, we can display the PDF and the CDF of a $\chi^2_3$ random variable in a single plot. This is achieved by setting the argument `r ttcode("add = TRUE")` in the second call of `r ttcode("curve()")`. Further we adjust limits of both axes using `r ttcode("xlim")` and `r ttcode("ylim")` and choose different colors to make both functions better distinguishable. The plot is completed by adding a legend with help of `r ttcode("legend()")`.
 
 <div class="unfolded"> 
 ```{r, echo = T, eval = T, message = F, warning = F, fig.align='center'} 
@@ -661,34 +653,31 @@ curve(dchisq(x, df=3),
       ylim = c(0, 1), 
       col = "blue",
       ylab = "",
-      main = "p.d.f. and c.d.f of Chi-Squared Distribution, M = 3"
-      )
+      main = "p.d.f. and c.d.f of Chi-Squared Distribution, M = 3")
 
 # add the CDF to the plot
 curve(pchisq(x, df = 3), 
-      xlim=c(0, 10), 
+      xlim = c(0, 10), 
       add = TRUE, 
-      col = "red"
-      )
+      col = "red")
 
 # add a legend to the plot
 legend("topleft", 
        c("PDF", "CDF"), 
        col = c("blue", "red"), 
-       lty = c(1, 1)
-       )
+       lty = c(1, 1))
 ```
 </div>
 
-Since the outcomes of a $\chi^2_M$ distributed random variable are always positive, the domain of the related PDF and CDF is $\mathbb{R}_{\geq0}$.
+Since the outcomes of a $\chi^2_M$ distributed random variable are always positive, the support of the related PDF and CDF is $\mathbb{R}_{\geq0}$.
 
-As expectation and variance depend (solely!) on the degrees of freedom, the distribution's shape changes drastically if we vary the number of squared standard normals that are summed up. This relation is often depicted by overlaying densities for different $M$, see e.g. the <a href="https://en.wikipedia.org/wiki/Chi-squared_distribution">Wikipedia Article</a>.  
+As expectation and variance depend (solely!) on the degrees of freedom, the distribution's shape changes drastically if we vary the number of squared standard normals that are summed up. This relation is often depicted by overlaying densities for different $M$, see the <a href="https://en.wikipedia.org/wiki/Chi-squared_distribution">Wikipedia Article</a>.  
 
-Start by plotting the density of the $\chi_1^2$ distribution on the interval $[0,15]$ with `r ttcode("curve()")`. In the next step, we loop over degrees of freedom $m=2,...,7$ and add a density curve for each $m$ to the plot. We also adjust the line color for each iteration of the loop by setting `r ttcode("col = m")`. At last, we add a legend that displays degrees of freedom and the associated colors.
+We reproduce this here by plotting the density of the $\chi_1^2$ distribution on the interval $[0,15]$ with `r ttcode("curve()")`. In the next step, we loop over degrees of freedom $M=2,...,7$ and add a density curve for each $M$ to the plot. We also adjust the line color for each iteration of the loop by setting `r ttcode("col = M")`. At last, we add a legend that displays degrees of freedom and the associated colors.
 
 <div class="unfolded"> 
 ```{r, echo = T, eval = T, message = F, warning = F, fig.align='center'} 
-# plot the density for m=1
+# plot the density for M=1
 curve(dchisq(x, df = 1), 
       xlim = c(0, 15), 
       xlab = "x", 
@@ -696,12 +685,12 @@ curve(dchisq(x, df = 1),
       main = "Chi-Square Distributed Random Variables"
       )
 
-# add densities for m=2,...,7 to the plot using a 'for' loop 
+# add densities for M=2,...,7 to the plot using a 'for()' loop 
 for (m in 2:7) {
-  curve(dchisq(x, df = m),
+  curve(dchisq(x, df = M),
         xlim = c(0, 15), 
         add = T, 
-        col = m
+        col = M
         )
 }
 
@@ -715,79 +704,75 @@ legend("topright",
 ```
 </div>
 
-It is evident that increasing the degrees of freedom shifts the distribution to the right (the mode becomes larger) and increases the dispersion (the distribution's variance grows).
+Increasing the degrees of freedom shifts the distribution to the right (the mode becomes larger) and increases the dispersion (the distribution's variance grows).
 
 ### The Student t Distribution {-#thetdist}
 
 <a name="tdist"></a>
 
-Let $Z$ be a standard normal variate, $W$ a random variable that follows a $\chi^2_M$ distribution with $M$ degrees of freedom and further assume that $Z$ and $W$ are independently distributed. Then it holds that
+Let $Z$ be a standard normal variate, $W$ a $\chi^2_M$ random variable and further assume that $Z$ and $W$ are independent. Then it holds that
 
 $$ \frac{Z}{\sqrt{W/M}} =:X \sim t_M $$
 and $X$ follows a *Student $t$ distribution* (or simply $t$ distribution) with $M$ degrees of freedom.
 
-Similar to the $\chi^2_M$ distribution, the shape of a $t_M$ distribution depends on $M$. $t$ distributions are symmetric, bell-shaped and look very similar to a normal distribution, especially when $M$ is large. This is not a coincidence: for a sufficient large $M$, the $t_M$ distribution can be approximated by the standard normal distribution. This approximation works reasonably well for $M\geq 30$. As we will show later by means of a small simulation study, the $t_{\infty}$ distribution *is* the standard normal distribution.
+Similar to the $\chi^2_M$ distribution, the shape of a $t_M$ distribution depends on $M$. $t$ distributions are symmetric, bell-shaped and look similar to a normal distribution, especially when $M$ is large. This is not a coincidence: for a sufficiently large $M$, the $t_M$ distribution can be approximated by the standard normal distribution. This approximation works reasonably well for $M\geq 30$. As we will illustrate later by means of a small simulation study, the $t_{\infty}$ distribution *is* the standard normal distribution.
 
-A $t_M$ distributed random variable has an expectation if $M>1$ and it has a variance if $M>2$.
+A $t_M$ distributed random variable $X$ has an expectation if $M>1$ and it has a variance if $M>2$.
 
 \begin{align}
-  E(X) =& 0 \ , \ M>1 \\
-  \text{Var}(X) =& \frac{M}{M-2} \ , \ M>2
+  E(X) =& 0, \ M>1 \\
+  \text{Var}(X) =& \frac{M}{M-2}, \ M>2
 \end{align}
 
-Let us graph some $t$ distributions with different $M$ and compare them to the standard normal distribution.
+Let us plot some $t$ distributions with different $M$ and compare them to the standard normal distribution.
 
 <div class="unfolded"> 
 ```{r, echo = T, eval = T, message = F, warning = F, fig.align='center'} 
 # plot the standard normal density
 curve(dnorm(x), 
-      xlim = c(-4,4), 
+      xlim = c(-4, 4), 
       xlab = "x", 
       lty = 2, 
       ylab = "Density", 
-      main = "Theoretical Densities of t Distributions"
-      )
+      main = "Densities of t Distributions")
 
-# plot the t density for m=2
+# plot the t density for M=2
 curve(dt(x, df = 2), 
       xlim = c(-4, 4), 
       col = 2, 
-      add = T
-      )
+      add = T)
 
-# plot the t density for m=4
+# plot the t density for M=4
 curve(dt(x, df = 4), 
       xlim = c(-4, 4), 
       col = 3, 
       add = T
       )
 
-# plot the t density for m=25
+# plot the t density for M=25
 curve(dt(x, df = 25), 
       xlim = c(-4, 4), 
       col = 4, 
-      add = T
-      )
+      add = T)
 
 # add a legend
 legend("topright", 
-       c("N(0,1)","M=2","M=4","M=25"), 
+       c("N(0,1)", "M=2", "M=4", "M=25"), 
        col = 1:4, 
-       lty = c(2, 1, 1, 1)
-       )
+       lty = c(2, 1, 1, 1))
 ```
 </div>
 
-The plot indicates what has been claimed in the previous paragraph: as the degrees of freedom increase, the shape of the $t$ distribution comes closer to that of a standard normal bell. Already for $M=25$ we find little difference to the standard normal density. If $M$ is small, we find the distribution to have slightly heavier tails than a standard normal, i.e. it has a "fatter" bell shape.
+The plot illustrates what has been said in the previous paragraph: as the degrees of freedom increase, the shape of the $t$ distribution comes closer to that of a standard normal bell curve. Already for $M=25$ we find little difference to the standard normal density. If $M$ is small, we find the distribution to have heavier tails than a standard normal, i.e., it has a "fatter" bell shape.
 
 ### The F Distribution {-}
 
-Another ratio of random variables important to econometricians is the ratio of two independently $\chi^2$ distributed random variables that are divided by their degrees of freedom $M$ and $n$. The quantity 
+Another ratio of random variables important to econometricians is the ratio of two independent $\chi^2$ distributed random variables that are divided by their degrees of freedom $M$ and $n$. The quantity 
 
 $$ \frac{W/M}{V/n} \sim F_{M,n} \ \ \text{with} \ \ W \sim \chi^2_M \ \ , \ \ V \sim \chi^2_n $$
 follows an $F$ distribution with numerator degrees of freedom $M$ and denominator degrees of freedom $n$, denoted $F_{M,n}$. The distribution was first derived by George Snedecor but was named in honor of [Sir Ronald Fisher](https://en.wikipedia.org/wiki/Ronald_Fisher).
 
-By definition, the domain of both PDF and CDF of an $F_{M,n}$ distributed random variable is $\mathbb{R}_{\geq0}$.
+By definition, the support of both PDF and CDF of an $F_{M,n}$ distributed random variable is $\mathbb{R}_{\geq0}$.
 
 Say we have an $F$ distributed random variable $Y$ with numerator degrees of freedom $3$ and denominator degrees of freedom $14$ and are interested in $P(Y \geq 2)$. This can be computed with help of the function `r ttcode("pf()")`. By setting the argument `r ttcode("lower.tail")` to `r ttcode("TRUE")` we ensure that `r ttcode("R")` computes $1- P(Y \leq 2)$, i.e. the probability mass in the tail right of $2$. 
 
@@ -795,7 +780,7 @@ Say we have an $F$ distributed random variable $Y$ with numerator degrees of fre
 pf(2, 3, 13, lower.tail = F)
 ```
 
-We can visualize this probability by drawing a line plot of the related density function and adding a color shading with `r ttcode("polygon()")`.
+We can visualize this probability by drawing a line plot of the related density and adding a color shading with `r ttcode("polygon()")`.
 
 <div class="unfolded"> 
 ```{r, echo = T, eval = T, message = F, warning = F, fig.align='center'}
@@ -808,37 +793,40 @@ curve(df(x ,3 ,14),
       ylim = c(0, 0.8), 
       xlim = c(0, 10), 
       ylab = "Density",
-      main = "Density Function"
-      )
+      main = "Density Function")
 
 # draw the polygon
-polygon(x, y, col="orange")
+polygon(x, y, col = "orange")
 ```
 </div>
 
 The $F$ distribution is related to many other distributions. An important special case encountered in econometrics arises if the denominator degrees of freedom are large such that the $F_{M,n}$ distribution can be approximated by the $F_{M,\infty}$ distribution which turns out to be simply the distribution of a $\chi^2_M$ random variable divided by its degrees of freedom $M$,
 
 $$ W/M \sim F_{M,\infty} \ \ , \ \ W \sim \chi^2_M. $$
+
+```{r, echo=FALSE, results='asis'}
+if (my_output=="html"){
+  cat('
 <!--html_preserve-->
-
 <div data-datacamp-exercise data-lang="r">
-
 <code data-type="sample-code">
 # You may use this widget to play around with the functions presented above
 </code>
-
 </div>
-
-<!--/html_preserve-->
+<!--/html_preserve-->')
+} else {
+  cat('\\begin{center}\\textit{This interactive application is only available in the HTML version.}\\end{center}')
+}  
+```
 
 ## Random Sampling and the Distribution of Sample Averages {#RSATDOSA}
 
 To clarify the basic idea of random sampling, let us jump back to the dice rolling example: 
 
-Suppose we are rolling the dice $n$ times. This means we are interested in the outcomes of $n$ random processes $Y_i, \ i=1,...,n$ which are characterized by the same distribution. Since these outcomes are selected randomly, they are *random variables* themselves and their realizations will differ each time we draw a sample, i.e. each time we roll the dice $n$ times. Furthermore, each observation is randomly drawn from the same population, that is, the numbers from $1$ to $6$, and their individual distribution is the same. Hence $Y_1,\dots,Y_n$ are identically distributed. 
+Suppose we are rolling the dice $n$ times. This means we are interested in the outcomes of random $Y_i, \ i=1,...,n$ which are characterized by the same distribution. Since these outcomes are selected randomly, they are *random variables* themselves and their realizations will differ each time we draw a sample, i.e., each time we roll the dice $n$ times. Furthermore, each observation is randomly drawn from the same population, that is, the numbers from $1$ to $6$, and their individual distribution is the same. Hence $Y_1,\dots,Y_n$ are identically distributed. 
 
-Moreover, we know that the value of any of the $Y_i$ does not provide any information on the remainder of the sample. In our example, rolling a six as the first observation in our sample does not alter the distributions of $Y_2,\dots,Y_n$: all numbers are equally likely to occur. This means that all $Y_i$ are also independently distributed. Thus $Y_1,\dots,Y_n$ are independently and identically distributed (*i.i.d.*). 
-The dice example uses the most simple sampling scheme. That is why it is called *simple random sampling*. This concept is condensed in Key Concept 2.5. 
+Moreover, we know that the value of any of the $Y_i$ does not provide any information on the remainder of the outcomes In our example, rolling a six as the first observation in our sample does not alter the distributions of $Y_2,\dots,Y_n$: all numbers are equally likely to occur. This means that all $Y_i$ are also independently distributed. Thus $Y_1,\dots,Y_n$ are independently and identically distributed (*i.i.d.*). 
+The dice example uses this most simple sampling scheme. That is why it is called *simple random sampling*. This concept is summarized in Key Concept 2.5. 
 
 ```{r, eval = my_output == "html", results='asis', echo=FALSE}
 cat('
@@ -857,24 +845,24 @@ In simple random sampling, $n$ objects are drawn at random from a population. Ea
 \\end{keyconcepts}')
 ```
 
-What happens if we consider functions of the sample data? Consider the example of rolling a dice two times in a row once again. A sample now consists of two independent random draws from the set $\{1,2,3,4,5,6\}$. In view of the aforementioned, it is apparent that any function of these two random variables is also random, e.g. their sum. Convince yourself by executing the code below several times.
+What happens if we consider functions of the sample data? Consider the example of rolling a dice two times in a row once again. A sample now consists of two independent random draws from the set $\{1,2,3,4,5,6\}$. In view of the afore, it is apparent that any function of these two random variables is also random, e.g. their sum. Convince yourself by executing the code below several times.
 
 ```{r, echo = T, eval = T, message = F, warning = F} 
 sum(sample(1:6, 2, replace = T))
 ```
 
-Clearly this sum, let us call it $S$, is a random variable as it depends on randomly drawn summands. For this example, we can completely enumerate all outcomes and hence write down the theoretical probability distribution of our function of the sample data, $S$:
+Clearly, this sum, let us call it $S$, is a random variable as it depends on randomly drawn summands. For this example, we can completely enumerate all outcomes and hence write down the theoretical probability distribution of our function of the sample data, $S$:
 
 We face $6^2=36$ possible pairs. Those pairs are 
 
-\begin{align}
+\begin{align*}
   &(1,1)	(1,2)	(1,3)	(1,4)	(1,5)	(1,6) \\ 
   &(2,1)	(2,2)	(2,3)	(2,4)	(2,5)	(2,6) \\ 
   &(3,1)	(3,2)	(3,3)	(3,4)	(3,5)	(3,6) \\ 
   &(4,1)	(4,2)	(4,3)	(4,4)	(4,5)	(4,6) \\ 
   &(5,1)	(5,2)	(5,3)	(5,4)	(5,5)	(5,6) \\ 
   &(6,1)	(6,2)	(6,3)	(6,4)	(6,5)	(6,6)
-\end{align}
+\end{align*}
 
 Thus, possible outcomes for $S$ are
 
@@ -916,25 +904,23 @@ VarS <- (S - c(ES))^2 %*% PS
 VarS
 ```
 
-(The <tt>%*%</tt> operator is used to compute the scalar product of two vectors.)
+The ` rttcode("%*%")` operator is used to compute the scalar product of two vectors.
 
 So the distribution of $S$ is known. It is also evident that its distribution differs considerably from the marginal distribution, i.e. the distribution of a single dice roll's outcome, $D$ . Let us visualize this using bar plots.
 
 <div class="unfolded"> 
 ```{r, echo = T, eval = T, message = F, warning = F, fig.align='center'} 
-# divide the plotting area in one row with two columns
+# divide the plotting area into one row with two columns
 par(mfrow = c(1, 2))
 
 # plot the distribution of S
-names(PS) <- 2:12
-
-barplot(PS, ylim = c(0, 0.2), 
+barplot(PS, 
+        ylim = c(0, 0.2), 
         xlab = "S", 
         ylab = "Probability", 
         col = "steelblue", 
         space = 0, 
-        main = "Sum of Two Dice Rolls"
-        )
+        main = "Sum of Two Dice Rolls")
 
 # plot the distribution of D 
 probability <- rep(1/6, 6)
@@ -945,13 +931,12 @@ barplot(probability,
         xlab = "D", 
         col = "steelblue", 
         space = 0, 
-        main = "Outcome of a Single Dice Roll"
-        )
+        main = "Outcome of a Single Dice Roll")
 ```
 </div> 
 
 
-Many econometric procedures deal with averages of sampled data. It is almost always assumed that observations are drawn randomly from a larger, unknown population. As demonstrated for the sample function $S$, computing an average of a random sample also has the effect to make the average a random variable itself. This random variable in turn has a probability distribution which is called the sampling distribution. Knowledge about the sampling distribution of the average is therefore crucial for understanding the performance of econometric procedures.
+Many econometric procedures deal with averages of sampled data. It is typically assumed that observations are drawn randomly from a larger, unknown population. As demonstrated for the sample function $S$, computing an average of a random sample has the effect that the average is a random variable itself. This random variable in turn has a probability distribution, called the sampling distribution. Knowledge about the sampling distribution of the average is therefore crucial for understanding the performance of econometric procedures.
 
 The *sample average* of a sample of $n$ observations $Y_1, \dots, Y_n$ is
 
@@ -960,23 +945,19 @@ $\overline{Y}$ is also called the sample mean.
 
 ### Mean and Variance of the Sample Mean {-}
 
-Denote $\mu_Y$ and $\sigma_Y^2$ the mean and the variance of the $Y_i$ and suppose that all observations $Y_1,\dots,Y_n$ are i.i.d. such that in particular mean and variance are the same for all $i=1,\dots,n$. Then we have that
+suppose that all observations $Y_1,\dots,Y_n$ are i.i.d. and denote $\mu_Y$ and $\sigma_Y^2$ the mean and the variance of the $Y_i$. Then we have that
 
 $$ E(\overline{Y}) = E\left(\frac{1}{n} \sum_{i=1}^n Y_i \right) = \frac{1}{n} E\left(\sum_{i=1}^n Y_i\right) = \frac{1}{n} \sum_{i=1}^n E\left(Y_i\right) = \frac{1}{n} \cdot n \cdot \mu_Y = \mu_Y    $$
 and
 
-\begin{align}
+\begin{align*}
   \text{Var}(\overline{Y}) =& \text{Var}\left(\frac{1}{n} \sum_{i=1}^n Y_i \right) \\
   =& \frac{1}{n^2} \sum_{i=1}^n \text{Var}(Y_i) + \frac{1}{n^2} \sum_{i=1}^n \sum_{j=1, j\neq i}^n \text{cov}(Y_i,Y_j) \\
   =& \frac{\sigma^2_Y}{n} \\
   =& \sigma_{\overline{Y}}^2.
-\end{align}
+\end{align*}
 
-Note that the second summand vanishes since $\text{cov}(Y_i,Y_j)=0$ for $i\neq j$ due to independence of the observations.
-
-Consequently, the standard deviation of the sample mean is given by
-
-$$ \sigma_{\overline{Y}} = \frac{\sigma_Y}{\sqrt{n}}. $$
+The second summand vanishes since $\text{cov}(Y_i,Y_j)=0$ for $i\neq j$ due to independence. Consequently, the standard deviation of the sample mean is given by $$\sigma_{\overline{Y}} = \frac{\sigma_Y}{\sqrt{n}}.$$
 
 It is worthwhile to mention that these results hold irrespective of the underlying distribution of the $Y_i$.
 
@@ -984,7 +965,7 @@ It is worthwhile to mention that these results hold irrespective of the underlyi
 
 If the $Y_1,\dots,Y_n$ are i.i.d. draws from a normal distribution with mean $\mu_Y$ and variance $\sigma_Y^2$, the following holds for their sample average $\overline{Y}$:
 
-$$ \overline{Y} \sim N(\mu_y, \sigma_Y^2/n) \tag{2.4} $$
+$$ \overline{Y} \sim N(\mu_Y, \sigma_Y^2/n) \tag{2.4} $$
 
 For example, if a sample $Y_i$ with $i=1,\dots,10$ is drawn from a standard normal distribution with mean $\mu_Y = 0$ and variance $\sigma_Y^2=1$ we have
 
@@ -994,37 +975,35 @@ We can use `r ttcode("R")`'s random number generation facilities to verify this 
 
 The approach sketched above is an example of what is commonly known as *Monte Carlo Simulation* or *Monte Carlo Experiment*. To perform this simulation in `r ttcode("R")`, we proceed as follows:
 
-1. Choose a sample size `r ttcode("n")` and the number of samples to be drawn `r ttcode("reps")`.
+1. Choose a sample size `r ttcode("n")` and the number of samples to be drawn, `r ttcode("reps")`.
 2. Use the function `r ttcode("replicate()")` in conjunction with `r ttcode("rnorm()")` to draw `r ttcode("n")` observations from the standard normal distribution `r ttcode("rep")` times. **Note**: the outcome of `r ttcode("replicate()")` is a matrix with dimensions `r ttcode("n")` $\times$ `r ttcode("rep")`. It contains the drawn samples as *columns*.
-3. Compute sample means using `r ttcode("colMeans()")`. This function computes the mean of each column i.e. of each sample and returns a vector.
+3. Compute sample means using `r ttcode("colMeans()")`. This function computes the mean of each column, i.e., of each sample and returns a vector.
 
 ```{r, echo = T, eval = T, message = F, warning = F} 
-# Set sample size and number of samples
+# set sample size and number of samples
 n <- 10
 reps <- 10000
 
-# Perform random sampling
+# perform random sampling
 samples <- replicate(reps, rnorm(n)) # 10 x 10000 sample matrix
 
-# Compute sample means
+# compute sample means
 sample.avgs <- colMeans(samples)
 ```
 
-After performing these steps we end up with a vector of sample averages. You can check the vector property of `r ttcode("sample.avgs")`:
+We then end up with a vector of sample averages. You can check the vector property of `r ttcode("sample.avgs")`:
 
 ```{r, echo = T, eval = T, message = F, warning = F} 
-# Check that sample.avgs is a vector
+# check that 'sample.avgs' is a vector
 is.vector(sample.avgs) 
 
 # print the first few entries to the console
 head(sample.avgs)
 ```
 
-A straightforward approach to examine the distribution of univariate numerical data is to plot it as a histogram and compare it to some known or assumed distribution. This comparison can be done with help of a suitable statistical test or by simply eyeballing some graphical representations of these distributions. For our simulated sample averages, we will do the latter by means of the functions `r ttcode("hist()")` and `r ttcode("curve()")`.
+A straightforward approach to examine the distribution of univariate numerical data is to plot it as a histogram and compare it to some known or assumed distribution. By default, `r ttcode("hist()")` will give us a frequency histogram, i.e., a bar chart where observations are grouped into ranges, also called bins. The ordinate reports the number of observations falling into each of the bins. Instead, we want it to report density estimates for comparison purposes. This is achieved by setting the argument `r ttcode("freq = FALSE")`. The number of bins is adjusted by the argument `r ttcode("breaks")`. 
 
-By default, `r ttcode("hist()")` will give us a frequency histogram i.e. a bar chart where observations are grouped into ranges, also called bins. The ordinate reports the number of observations falling into each of the bins. Instead, we want it to report density estimates for comparison purposes. This is achieved by setting the argument `r ttcode("freq = FALSE")`. The number of bins is adjusted by the argument `r ttcode("breaks")`. 
-
-Using `r ttcode("curve()")`, we overlay the histogram with a red line which represents the theoretical density of a $N(0, 0.1)$ distributed random variable. Remember to use the argument `r ttcode("add = TRUE")` to add the curve to the current plot. Otherwise `r ttcode("R")` will open a new graphic device and discard the previous plot!  
+Using `r ttcode("curve()")`, we overlay the histogram with a red line, the theoretical density of a $N(0, 0.1)$ random variable. Remember to use the argument `r ttcode("add = TRUE")` to add the curve to the current plot. Otherwise `r ttcode("R")` will open a new graphic device and discard the previous plot!^[*Hint:* `r ttcode("T")` and `r ttcode("F")` are alternatives for `r ttcode("TRUE")` and `r ttcode("FALSE")`.]  
 
 <div class="unfolded"> 
 ```{r, echo = T, eval = T, message = F, warning = F, fig.align='center'}
@@ -1033,74 +1012,68 @@ hist(sample.avgs,
      ylim = c(0, 1.4), 
      col = "steelblue" , 
      freq = F, 
-     breaks = 20
-     )
+     breaks = 20)
 
 # overlay the theoretical distribution of sample averages on top of the histogram
 curve(dnorm(x, sd = 1/sqrt(n)), 
       col = "red", 
       lwd = "2", 
-      add = T
-      )
+      add = T)
 ```
 </div>
 
-From inspection of the plot we can tell that the distribution of $\overline{Y}$ is indeed very close to that of a $N(0, 0.1)$ distributed random variable so that evidence obtained from the Monte Carlo Simulation supports the theoretical claim. 
+The sampling distribution of $\overline{Y}$ is indeed very close to that of a $N(0, 0.1)$ distribution so the Monte Carlo Simulation supports the theoretical claim. 
 
-Let us discuss another example where using simple random sampling in a simulation setup helps to verify a well known result. As discussed before, the [Chi-squared](#chisquare) distribution with $m$ degrees of freedom arises as the distribution of the sum of $m$ independent squared standard normal distributed random variables. 
+Let us discuss another example where using simple random sampling in a simulation setup helps to verify a well known result. As discussed before, the [Chi-squared](#chisquare) distribution with $M$ degrees of freedom arises as the distribution of the sum of $M$ independent squared standard normal distributed random variables. 
 
 To visualize the claim stated in equation (<a href="#mjx-eqn-2.3">2.3</a>), we proceed similarly as in the example before:
 
-1. Choose the degrees of freedom `DF` and the number of samples to be drawn `r ttcode("reps")`.
-2. Draw `r ttcode("reps")` random samples of size `DF` from the standard normal distribution using `r ttcode("replicate()")`. 
-3. For each sample, by squaring the outcomes and summing them up column wise. Store the results
+1. Choose the degrees of freedom, `r ttcode("DF")`, and the number of samples to be drawn `r ttcode("reps")`.
+2. Draw `r ttcode("reps")` random samples of size `r ttcode("DF")` from the standard normal distribution using `r ttcode("replicate()")`. 
+3. For each sample, square the outcomes and sum them up column-wise. Store the results.
 
 Again, we produce a density estimate for the distribution underlying our simulated data using a density histogram and overlay it with a line graph of the theoretical density function of the $\chi^2_3$ distribution.
 
 <div class="unfolded"> 
 ```{r, echo = T, eval = T, message = F, warning = F, fig.align='center'} 
-# Number of repititions
+# number of repititions
 reps <- 10000
 
-# Set degrees of freedom of a chi-Square Distribution
+# set degrees of freedom of a chi-Square Distribution
 DF <- 3 
 
-# Sample 10000 column vectors à 3 N(0,1) R.V.S
+# sample 10000 column vectors à 3 N(0,1) R.V.S
 Z <- replicate(reps, rnorm(DF)) 
 
-# Column sums of squares
+# column sums of squares
 X <- colSums(Z^2)
 
-# Histogram of column sums of squares
+# histogram of column sums of squares
 hist(X, 
      freq = F, 
      col = "steelblue", 
      breaks = 40, 
      ylab = "Density", 
-     main = ""
-     )
+     main = "")
 
-# Add theoretical density
+# add theoretical density
 curve(dchisq(x, df = DF), 
       type = 'l', 
       lwd = 2, 
       col = "red", 
-      add = T
-      )
+      add = T)
 ```
 </div>
 
 ### Large Sample Approximations to Sampling Distributions {-}
 
-Sampling distributions as considered in the last section play an important role in the development of econometric methods. In general, there are two different approaches in characterizing sampling distributions: an "exact" approach and an "approximate" approach.
+Sampling distributions as considered in the last section play an important role in the development of econometric methods. There are two main approaches in characterizing sampling distributions: an "exact" approach and an "approximate" approach.
 
-The exact approach aims to find a general formula for the sampling distribution that holds for any sample size $n$. We call this the *exact distribution* or *finite sample distribution*. In the previous examples of dice rolling and normal variates, we have dealt with functions of random variables whose sample distributions are *excactly known* in the sense that we can write them down as analytic expressions and do calculations. <br>
-However, this is not always possible. For $\overline{Y}$, result (<a href="#mjx-eqn-2.4">2.4</a>) tells us that normality of the $Y_i$ implies normality of $\overline{Y}$ (we demonstrated this for the special case of $Y_i \overset{i.i.d.}{\sim} N(0,1)$ with $n=10$ using a simulation study that involves simple random sampling). Unfortunately, the *exact* distribution of $\overline{Y}$ is generally unknown and often hard to derive (or even untraceable) if we drop the assumption that the $Y_i$ have a normal distribution. <br>  
+The exact approach aims to find a general formula for the sampling distribution that holds for any sample size $n$. We call this the *exact distribution* or *finite-sample distribution*. In the previous examples of dice rolling and normal variates, we have dealt with functions of random variables whose sample distributions are *excactly known* in the sense that we can write them down as analytic expressions. However, this is not always possible. For $\overline{Y}$, result (<a href="#mjx-eqn-2.4">2.4</a>) tells us that normality of the $Y_i$ implies normality of $\overline{Y}$ (we demonstrated this for the special case of $Y_i \overset{i.i.d.}{\sim} N(0,1)$ with $n=10$ using a simulation study that involves simple random sampling). Unfortunately, the *exact* distribution of $\overline{Y}$ is generally unknown and often hard to derive (or even untraceable) if we drop the assumption that the $Y_i$ have a normal distribution.  
 
-Therefore, as can be guessed from its name, the "approximate" approach aims to find an approximation to the sampling distribution whereby it is required that the sample size $n$ is large. A distribution that is used as a large-sample approximation to the sampling distribution is also called the *asymptotic distribution*. This is due to the fact that the asymptotic distribution *is* the sampling distribution for $n \rightarrow \infty$ i.e. the approximation becomes exact if the sample size goes to infinity. However, there are cases where the difference between the sampling distribution and the asymptotic distribution is negligible for moderate or even small samples sizes so that approximations using the asymptotic distribution are reasonably good.
+Therefore, as can be guessed from its name, the "approximate" approach aims to find an approximation to the sampling distribution where it is required that the sample size $n$ is large. A distribution that is used as a large-sample approximation to the sampling distribution is also called the *asymptotic distribution*. This is due to the fact that the asymptotic distribution *is* the sampling distribution for $n \rightarrow \infty$, i.e., the approximation becomes exact if the sample size goes to infinity. However, the difference between the sampling distribution and the asymptotic distribution is negligible for moderate or even small samples sizes so that approximations using the asymptotic distribution are useful.
 
-In this section we will discuss two well known results that are used to approximate sampling distributions and thus constitute key tools in econometric theory: the *law of large numbers* and the *central limit theorem*.<br>
-The law of large numbers states that in large samples, $\overline{Y}$ is close to $\mu_Y$ with high probability. The central limit theorem says that the sampling distribution of the standardized sample average, that is, $(\overline{Y} - \mu_Y)/\sigma_{\overline{Y}}$ is asymptotically normally distributed. It is particularly interesting that both results do not depend on the distribution of $Y$. In other words, being unable to describe the complicated sampling distribution of $\overline{Y}$ if $Y$ is not normal, approximations of the latter using the central limit theorem simplify the development and applicability of econometric procedures enormously. This is a key component underlying the theory of statistical inference for regression models. Both results are summarized in Key Concept 2.6 and Key Concept 2.7.
+In this section we will discuss two well known results that are used to approximate sampling distributions and thus constitute key tools in econometric theory: the *law of large numbers* and the *central limit theorem*. The law of large numbers states that in large samples, $\overline{Y}$ is close to $\mu_Y$ with high probability. The central limit theorem says that the sampling distribution of the standardized sample average, that is, $(\overline{Y} - \mu_Y)/\sigma_{\overline{Y}}$ is asymptotically normally distributed. It is particularly interesting that both results do not depend on the distribution of $Y$. In other words, being unable to describe the complicated sampling distribution of $\overline{Y}$ if $Y$ is not normal, approximations of the latter using the central limit theorem simplify the development and applicability of econometric procedures enormously. This is a key component underlying the theory of statistical inference for regression models. Both results are summarized in Key Concept 2.6 and Key Concept 2.7.
 
 ```{r, eval = my_output == "html", results='asis', echo=FALSE}
 cat('
@@ -1108,7 +1081,7 @@ cat('
 <h3 class = "right"> Key Concept 2.6 </h3> 
 <h3 class = "left"> Convergence in Probability, Consistency and the Law of Large Numbers </h3>
 <p>
-The sample average $\\overline{Y}$ converges in probability to $\\mu_Y$: $\\overline{Y}$ is *consistent* for $\\mu_Y$ if the probability that $\\overline{Y}$ is in the range $(\\mu_Y - \\epsilon)$ to $(\\mu_Y + \\epsilon)$ becomes arbitrary close to $1$ as $n$ increases for any constant $\\epsilon > 0$. We write this short as
+The sample average $\\overline{Y}$ converges in probability to $\\mu_Y$: $\\overline{Y}$ is *consistent* for $\\mu_Y$ if the probability that $\\overline{Y}$ is in the range $(\\mu_Y - \\epsilon)$ to $(\\mu_Y + \\epsilon)$ becomes arbitrary close to $1$ as $n$ increases for any constant $\\epsilon > 0$. We write this as
 
 $$ \\overline{Y} \\xrightarrow[]{p} \\mu_Y. $$
 
@@ -1124,7 +1097,7 @@ The following application simulates a large number of coin tosses (you may set t
 
 ```{r, eval = my_output == "latex", results='asis', echo=FALSE}
 cat('\\begin{keyconcepts}[Convergence in Probability\\comma Consistency and the Law of Large Numbers]{2.6}
-The sample average $\\overline{Y}$ converges in probability to $\\mu_Y$: $\\overline{Y}$ is \\textit{consistent} for $\\mu_Y$ if the probability that $\\overline{Y}$ is in the range $(\\mu_Y - \\epsilon)$ to $(\\mu_Y + \\epsilon)$ becomes arbitrary close to $1$ as $n$ increases for any constant $\\epsilon > 0$. We write this short as
+The sample average $\\overline{Y}$ converges in probability to $\\mu_Y$: $\\overline{Y}$ is \\textit{consistent} for $\\mu_Y$ if the probability that $\\overline{Y}$ is in the range $(\\mu_Y - \\epsilon)$ to $(\\mu_Y + \\epsilon)$ becomes arbitrary close to $1$ as $n$ increases for any constant $\\epsilon > 0$. We write this as
 
 $$ \\overline{Y} \\xrightarrow[]{p} \\mu_Y. $$
 
@@ -1141,33 +1114,30 @@ The following application simulates a large number of coin tosses (you may set t
 
 The core statement of the law of large numbers is that under quite general conditions, the probability of obtaining a sample average $\overline{Y}$ that is close to $\mu_Y$ is high if we have a large sample size.
 
-Consider the example of repeatedly tossing a coin where $Y_i$ is the result of the $i^{th}$ coin toss. $Y_i$ is a Bernoulli distributed random variable with
-
+Consider the example of repeatedly tossing a coin where $Y_i$ is the result of the $i^{th}$ coin toss. $Y_i$ is a Bernoulli distributed random variable with $p$ the probability of observing head
 $$ P(Y_i) = \begin{cases} p, & Y_i = 1 \\ 1-p, & Y_i = 0 \end{cases} $$
-where $p = 0.5$ as we assume a fair coin. It is straightforward to show that
+where $p = 0.5$ as we assume a fair coin.  It is straightforward to show that
 
 $$ \mu_Y = p = 0.5. $$
-Say $p$ is the probability of observing head and denote $R_n$ the proportion of heads in the first $n$ tosses,
+Let $R_n$ denote the proportion of heads in the first $n$ tosses,
 
 $$ R_n = \frac{1}{n} \sum_{i=1}^n Y_i. \tag{2.5}$$
 
-According to the law of large numbers, the observed proportion of heads converges in probability to $\mu_Y = 0.5$, the probability of tossing head in a *single* coin toss,
+According to the law of large numbers, the observed proportion of heads converges in probability to $\mu_Y = 0.5$, the probability of tossing head in a *single* coin toss, $$ R_n \xrightarrow[]{p} \mu_Y=0.5 \ \ \text{as} \ \ n \rightarrow \infty.$$ This result is the as the one illustrated by the interactive application in Key Concept 2.6. We now show how to replicate this using `r ttcode("R")`.
 
-$$ R_n \xrightarrow[]{p} \mu_Y=0.5 \ \ \text{as} \ \ n \rightarrow \infty.  $$
-
-We can use `r ttcode("R")` to compute and illustrate such paths by simulation. The procedure is as follows:
+The procedure is as follows:
 
 1. Sample `r ttcode("N")` observations from the Bernoulli distribution e.g. using `r ttcode("sample()")`.
 2. Calculate the proportion of heads $R_n$ as in (<a href="#mjx-eqn-2.5">2.5</a>). A way to achieve this is to call `r ttcode("cumsum()")` on the vector of observations `r ttcode("Y")` to obtain its cumulative sum and then divide by the respective number of observations.
 
-We continue by plotting the path and also add a dashed line for the benchmark probability $R_n = p = 0.5$.
+We continue by plotting the path and also add a dashed line for the benchmark probability $p = 0.5$.
 ```{r, eval = T, message = F, warning = F, fig.align='center'} 
 # set random seed
 set.seed(1)
 
-# Set number of coin tosses and simulate
+# set number of coin tosses and simulate
 N <- 30000
-Y <- sample(0:1, N, replace =T)
+Y <- sample(0:1, N, replace = T)
 
 # Calculate R_n for 1:N
 S <- cumsum(Y)
@@ -1181,16 +1151,14 @@ plot(R,
      lwd = 2, 
      xlab = "n", 
      ylab = "R_n",
-     main = "Converging Share of Heads in Repeated Coin Tossing"
-     )
+     main = "Converging Share of Heads in Repeated Coin Tossing")
 
 # Add a dashed line for R_n = 0.5
 lines(c(0, N), 
       c(0.5, 0.5), 
       col = "darkred", 
       lty = 2, 
-      lwd = 1
-      )
+      lwd = 1)
 ```
 
 There are several things to be said about this plot.
@@ -1199,7 +1167,7 @@ There are several things to be said about this plot.
 
 - Since the $Y_i$ are random variables, $R_n$ is a random variate, too. The path depicted is only one of many possible realizations of $R_n$ as it is determined by the $30000$ observations sampled from the Bernoulli distribution. Thus, the code chunk above produces a different path every time you execute it (try this below!).  
 
-- If the number of coin tosses $n$ is small, we observe the proportion of heads to be anything but close to its theoretical value, $\mu_Y = 0.5$. However, as more and more observation are included in the sample we find that the path stabilizes in neighborhood of $0.5$.<br> This is the message to take away: the average of multiple trials shows a clear tendency to converge to its expected value as the sample size increases, just as claimed by the law of large numbers. 
+- If the number of coin tosses $n$ is small, the proportion of heads may be anything but close to its theoretical value, $\mu_Y = 0.5$. However, as more and more observation are included in the sample we find that the path stabilizes in the neighborhood of $0.5$. The average of multiple trials shows a clear tendency to converge to its expected value as the sample size increases, just as claimed by the law of large numbers. 
 
 ```{r, eval = my_output == "html", results='asis', echo=FALSE}
 cat('
@@ -1208,7 +1176,7 @@ cat('
 <h3 class = "left"> The Central Limit Theorem </h3>
 <p>
 Suppose that $Y_1,\\dots,Y_n$ are independently and identically distributed random variables with expectation $E(Y_i)=\\mu_Y$ and variance $\\text{Var}(Y_i)=\\sigma^2_Y$ where $0<\\sigma^2_Y<\\infty$.<br>
-The central Limit Theorem (CLT) states that, if the sample size $n$ goes to infinity, the distribution of the standardized sample average 
+The Central Limit Theorem (CLT) states that, if the sample size $n$ goes to infinity, the distribution of the standardized sample average 
 $$ \\frac{\\overline{Y} - \\mu_Y}{\\sigma_{\\overline{Y}}} = \\frac{\\overline{Y} - \\mu_Y}{\\sigma_Y/\\sqrt{n}} \\ $$
 becomes arbitrarily well approximated by the standard normal distribution.
 
@@ -1225,8 +1193,7 @@ The application below demonstrates the CLT for the sample average of normally di
 
 ```{r, eval = my_output == "latex", results='asis', echo=FALSE}
 cat('\\begin{keyconcepts}[The Central Limit Theorem]{2.7}
-Suppose that $Y_1,\\dots,Y_n$ are independently and identically distributed random variables with expectation $E(Y_i)=\\mu_Y$ and variance $\\text{Var}(Y_i)=\\sigma^2_Y$ where $0<\\sigma^2_Y<\\infty$.<br>
-The central Limit Theorem (CLT) states that, if the sample size $n$ goes to infinity, the distribution of the standardized sample average 
+Suppose that $Y_1,\\dots,Y_n$ are independently and identically distributed random variables with expectation $E(Y_i)=\\mu_Y$ and variance $\\text{Var}(Y_i)=\\sigma^2_Y$ where $0<\\sigma^2_Y<\\infty$. The Central Limit Theorem (CLT) states that, if the sample size $n$ goes to infinity, the distribution of the standardized sample average 
 $$ \\frac{\\overline{Y} - \\mu_Y}{\\sigma_{\\overline{Y}}} = \\frac{\\overline{Y} - \\mu_Y}{\\sigma_Y/\\sqrt{n}} \\ $$
 becomes arbitrarily well approximated by the standard normal distribution.
 
@@ -1246,14 +1213,11 @@ The application below demonstrates the CLT for the sample average of normally di
 ')
 ```
 
-According to the central limit theorem, the distribution of the sample mean $\overline{Y}$ of the Bernoulli distributed random variables $Y_i$, $i=1,...,n$ is well approximated by the normal distribution with parameters $\mu_Y=p=0.5$ and $\sigma^2_{\overline{Y}} = p(1-p) = 0.25$ for large $n$. Consequently,  for the standardized sample mean we conclude that the ratio
+According to the CLT, the distribution of the sample mean $\overline{Y}$ of the Bernoulli distributed random variables $Y_i$, $i=1,...,n$, is well approximated by the normal distribution with parameters $\mu_Y=p=0.5$ and $\sigma^2_{Y} = p(1-p) = 0.25$ for large $n$. Consequently,  for the standardized sample mean we conclude that $$ \frac{\overline{Y} - 0.5}{0.5/\sqrt{n}} \tag{2.6}$$ should be well approximated by the standard normal distribution $N(0,1)$. We employ another simulation study to demonstrate this graphically. The idea is as follows.
 
-$$ \frac{\overline{Y} - 0.5}{0.5/\sqrt{n}} \tag{2.6}$$
-should be well approximated by the standard normal distribution $N(0,1)$. We employ another simulation study to demonstrate this graphically. The idea is as follows.
+Draw a large number of random samples, $10000$ say, of size $n$ from the Bernoulli distribution and compute the sample averages. Standardize the averages as shown in (<a href="#mjx-eqn-2.6">2.6</a>). Next, visualize the distribution of the generated standardized sample averages by means of a histogram and compare to the standard normal distribution. Repeat this for different sample sizes $n$ to see how increasing the sample size $n$ impacts the simulated distribution of the averages.
 
-Draw a large number of random samples, $10000$ say, of size $n$ from the Bernoulli distribution and compute the sample averages. Standardize the averages as shown in (<a href="#mjx-eqn-2.6">2.6</a>). Next, visualize the distribution of the generated standardized sample averages by means of a density histogram and compare to the standard normal distribution. Repeat this for different sample sizes $n$ to see how increasing the sample size $n$ impacts the simulated distribution of the averages.
-
-In R, we realized this as follows:
+In `r ttcode("R")`, realize this as follows:
 
 1. We start by defining that the next four subsequently generated figures shall be drawn in a $2\times2$ array such that they can be easily compared. This is done by calling `r ttcode("par(mfrow = c(2, 2))")` before the figures are generated.
 
@@ -1262,10 +1226,10 @@ In R, we realized this as follows:
 3. Next, we combine two `r ttcode("for()")` loops to simulate the data and plot the distributions. The inner loop generates $10000$ random samples, each consisting of `r ttcode("n")` observations that are drawn from the Bernoulli distribution, and computes the standardized averages. The outer loop executes the inner loop for the different sample sizes `r ttcode("n")` and produces a plot for each iteration.
 
 ```{r, echo = T, eval = T, message = F, warning = F, cache=T, fig.align='center'} 
-# Subdivide the plot panel into a 2-by-2 array
+# subdivide the plot panel into a 2-by-2 array
 par(mfrow = c(2, 2))
 
-# Set number of repetitions and the sample sizes
+# set the number of repetitions and the sample sizes
 reps <- 10000
 sample.sizes <- c(2, 10, 50, 100)
 
@@ -1290,18 +1254,16 @@ sample.sizes <- c(2, 10, 50, 100)
          xlim = c(-3, 3), 
          ylim = c(0, 0.4), 
          xlab = paste("n =", n), 
-         main = ""
-         )
+         main = "")
     
     curve(dnorm(x), 
           lwd = 2, 
           col = "darkred", 
-          add = TRUE
-          )
+          add = TRUE)
   }  
 ```
 
-We see that the simulated sampling distribution of the standardized average tends to deviate strongly from the standard normal distribution if the sample size is small, e.g. for $n=5$ and $n=10$. However as $n$ grows, the histograms are approaching the bell shape of a standard normal and we can be confident that the approximation works quite well as seen for $n=100$.
+We see that the simulated sampling distribution of the standardized average tends to deviate strongly from the standard normal distribution if the sample size is small, e.g. for $n=5$ and $n=10$. However as $n$ grows, the histograms approach the standard normal distribution. The approximation works quite well, see $n=100$.
 
 ```{r, echo=FALSE, results='asis'}
 if (my_output=="html"){
@@ -1369,7 +1331,7 @@ Suppose you are the lottery fairy in a weekly lottery, where $6$ out of $49$ uni
 
 </div>')
 } else {
-  cat('\\begin{center}\\textit{This interactive part of URFITE is only available in the HTML version}\\end{center}')
+  cat('\\begin{center}\\textit{This interactive part of URFITE is only available in the HTML version.}\\end{center}')
 }
 ```
 
