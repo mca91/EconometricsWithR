@@ -598,7 +598,7 @@ For this artificial data it is clear that the conditional error variances differ
 
 ### A Real-World Example for Heteroskedasticity {-}
 
-Think about the economic value of education: if there were no expected economic value-added to receiving university education, you probably would not be reading this script right now. A starting point to empiricaly verify such a relation is to have data on working individuals. More precisely, we need data on wages and education of workers in order to estimate a model like
+Think about the economic value of education: if there were no expected economic value-added to receiving university education, you probably would not be reading this script right now. A starting point to empirically verify such a relation is to have data on working individuals. More precisely, we need data on wages and education of workers in order to estimate a model like
 
 $$ wage_i = \beta_0 + \beta_1 \cdot education_i + u_i. $$
 
@@ -630,27 +630,29 @@ abline(labor_model,
        lwd = 2)
 ```
 
-From inspecting the plot we can tell that the mean of the distribution of earnings increases with the level of education. This is also suggested by formal analysis: the estimated regression model stored in `r ttcode('labor_mod')` shows that there is a positive relation between years of education and earnings.
+The plot reveals that the mean of the distribution of earnings increases with the level of education. This is also supported by a formal analysis: the estimated regression model stored in `r ttcode('labor_mod')` shows that there is a positive relation between years of education and earnings.
 
 ```{r}
+# print the contents of labor_model to the console
 labor_model
 ```
 
 The estimated regression equation states that, on average, an additional year of education increases a worker's hourly earnings by about $\$ 1.47$. Once more we use `r ttcode('confint()')` to obtain a $95\%$ confidence interval for both regression coefficients.
 
 ```{r}
+# compute a 95% confidence interval for the coefficients in the model
 confint(labor_model)
 ```
 
 Since the interval is $[1.33, 1.60]$ we can reject the hypothesis that the coefficient on `r ttcode('education')` is zero at the $5\%$ level.
 
-Furthermore, the plot indicates that there is heteroskedasticity: if we assume the regression line to be a reasonably good representation of the conditional mean function $E(earnings_i\vert education_i)$, the dispersion of hourly earnings around that function clearly increases with the level of education, i.e. the variance of the distribution of earnings increases. In other words: the variance of the residuals (the errors made in explaining earnings by education) increases with education so that the regression errors are heteroskedastic.
+Furthermore, the plot indicates that there is heteroskedasticity: if we assume the regression line to be a reasonably good representation of the conditional mean function $E(earnings_i\vert education_i)$, the dispersion of hourly earnings around that function clearly increases with the level of education, i.e., the variance of the distribution of earnings increases. In other words: the variance of the errors (the errors made in explaining earnings by education) increases with education so that the regression errors are heteroskedastic.
 
-This example makes a case that the assumption of homoskedasticity is doubtful in economic applications. Should we care about heteroskedasticity? In short, yes we shoud. As explained in the next section, heteroskedasticity can have serious negative consequences in hypothesis testing, if we ignore it. 
+This example makes a case that the assumption of homoskedasticity is doubtful in economic applications. Should we care about heteroskedasticity? Yes, we should. As explained in the next section, heteroskedasticity can have serious negative consequences in hypothesis testing, if we ignore it. 
 
 ### Should We Care About Heteroskedasticity? {-}
 
-To answer the question whether we should worry about heteroskedasticity being present, let us see how the variance of $\hat\beta_1$ is computed under the assumption of homoskedasticity. In this case we have
+To answer the question whether we should worry about heteroskedasticity being present, consider the variance of $\hat\beta_1$ under the assumption of homoskedasticity. In this case we have
 
 $$ \sigma^2_{\hat\beta_1} = \frac{\sigma^2_u}{n \cdot \sigma^2_X} \tag{5.5} $$
 
@@ -662,7 +664,7 @@ Thus `r ttcode('summary()')` estimates the *homoskedasticity-only* standard erro
 
 \[ \sqrt{ \overset{\sim}{\sigma}^2_{\hat\beta_1} } = \sqrt{ \frac{SER^2}{\sum_{i=1}^n(X_i - \overline{X})^2} }. \]
 
-This is in fact an estimator for the standard deviation of the estimator $\hat{\beta}_1$ that is *inconsistent* for the true value $\sigma^2_{\hat\beta_1}$ when there is heteroskedasticity. The implication is that $t$-statistics computed in the manner of Key Concept 5.1 do not have a standard normal distribution, even in large samples. This issue may invalidate inference drawn when using the previously treated tools for hypothesis testing: we should be cautious when making statements about the significance of regression coefficients on the basis of $t$-statistics as computed by `r ttcode('summary()')` or confidence intervals produced by `r ttcode('confint()')` if it is doubtful for the assumption of homoskedasticity to hold! 
+This is in fact an estimator for the standard deviation of the estimator $\hat{\beta}_1$ that is *inconsistent* for the true value $\sigma^2_{\hat\beta_1}$ when there is heteroskedasticity. The implication is that $t$-statistics computed in the manner of Key Concept 5.1 do not follow a standard normal distribution, even in large samples. This issue may invalidate inference when using the previously treated tools for hypothesis testing: we should be cautious when making statements about the significance of regression coefficients on the basis of $t$-statistics as computed by `r ttcode('summary()')` or confidence intervals produced by `r ttcode('confint()')` if it is doubtful for the assumption of homoskedasticity to hold! 
 
 We will now use `r ttcode('R')` to compute the homoskedasticity-only standard error for $\hat{\beta}_1$ in the test score regression model `r ttcode('linear_model')` by hand and see that it matches the value produced by `r ttcode('summary()')`.
 
@@ -693,8 +695,9 @@ Consistent estimation of $\sigma_{\hat{\beta}_1}$ under heteroskedasticity is gr
 
 \[ SE(\hat{\beta}_1) = \sqrt{ \frac{ \frac{1}{n-2} \sum_{i=1}^n (X_i - \overline{X})^2 \hat{u}_i^2 }{ \left[ \frac{1}{n} \sum_{i=1}^n (X_i - \overline{X})^2  \right]^2} } \tag{5.6} \]
 
-Standard error estimates computed this way are also referred to as [Eicker-Huber-White standard errors](https://en.wikipedia.org/wiki/Heteroscedasticity-consistent_standard_errors), the most frequently cited paper on this is @white1980.  
-It can be quite cumbersome to do this calculation by hand. Luckily, there are `r ttcode('R')` function for that purpose. A convenient one named `r ttcode('vcovHC()')` is part of the package `r ttcode("sandwich")`.^[The package `r ttcode('sandwich')` is a dependency of the package `r ttcode('AER')` meaning that it is attached automatically if you load `r ttcode('AER')`]. This function can compute a variety of standard errors. The one brought forward in (<a href="#mjx-eqn-5.6">5.6</a>) is computed when the argument `r ttcode('type')` is set to `r ttcode('"HC0"')`. Most of the examples presented in the book rely on a slightly different formula which is computed by *STATA* by default. To get `r ttcode('vcovHC()')` to use this formula, we have to set `r ttcode('type = HC1')`.
+Standard error estimates computed this way are also referred to as [Eicker-Huber-White standard errors](https://en.wikipedia.org/wiki/Heteroscedasticity-consistent_standard_errors), the most frequently cited paper on this is @white1980.
+
+It can be quite cumbersome to do this calculation by hand. Luckily, there are `r ttcode('R')` function for that purpose. A convenient one named `r ttcode('vcovHC()')` is part of the package `r ttcode("sandwich")`.^[The package `r ttcode('sandwich')` is a dependency of the package `r ttcode('AER')`, meaning that it is attached automatically if you load `r ttcode('AER')`.] This function can compute a variety of standard errors. The one brought forward in (<a href="#mjx-eqn-5.6">5.6</a>) is computed when the argument `r ttcode('type')` is set to `r ttcode('"HC0"')`. Most of the examples presented in the book rely on a slightly different formula which is the default in the statistics package *STATA*. To get `r ttcode('vcovHC()')` to use this formula, we have to set `r ttcode('type = HC1')`.
 
 Let us now compute robust standard error estimates for the coefficients in `r ttcode('linear_model')`.
 
@@ -704,10 +707,10 @@ vcov <- vcovHC(linear_model, type = "HC1")
 vcov
 ```
 
-The output of `r ttcode('vcovHC()')` is the variance-covariance matrix of coefficient estimates. We are interested in the square root of the diagonal elements of this matrix since these values are the standard error estimates we seek.
+The output of `r ttcode('vcovHC()')` is the variance-covariance matrix of coefficient estimates. We are interested in the square root of the diagonal elements of this matrix, i.e. the standard error estimates.
 
 ```{block2, vcovmatrix, type='rmdknit'}
-When we have k > 1 regressors, writing down the equations for a regression model becomes very messy. A more convinient way to denote and estimate so-called multiple regression models is by using matrix algebra. This is why functions like <tt>vcovHC()</tt> produce matrices. In the simple linear regression model, the variances and covariances of the coefficient estimators can be gathered in the variance-covariance matrix
+When we have k > 1 regressors, writing down the equations for a regression model becomes very messy. A more convinient way to denote and estimate so-called multiple regression models (see Chapter \@ref(rmwmr)) is by using matrix algebra. This is why functions like <tt>vcovHC()</tt> produce matrices. In the simple linear regression model, the variances and covariances of the estimators can be gathered in the symmetric variance-covariance matrix
 
 \begin{equation}
 \text{Var}
@@ -718,10 +721,10 @@ When we have k > 1 regressors, writing down the equations for a regression model
 \begin{pmatrix}
   \text{Var}(\hat\beta_0) & \text{Cov}(\hat\beta_0,\hat\beta_1) \\
 \text{Cov}(\hat\beta_0,\hat\beta_1) & \text{Var}(\hat\beta_1)
-\end{pmatrix}
+\end{pmatrix},
 \end{equation}
 
-which is a symmetric matrix. So <tt>vcovHC()</tt> gives us $\widehat{\text{Var}}(\hat\beta_0)$, $\widehat{\text{Var}}(\hat\beta_1)$ and $\widehat{\text{Cov}}(\hat\beta_0,\hat\beta_1)$ but most of the time we are interested in the diagonal elements of the estimated matrix.
+so <tt>vcovHC()</tt> gives us $\widehat{\text{Var}}(\hat\beta_0)$, $\widehat{\text{Var}}(\hat\beta_1)$ and $\widehat{\text{Cov}}(\hat\beta_0,\hat\beta_1)$, but most of the time we are interested in the diagonal elements of the estimated matrix.
 
 ```
 
@@ -738,15 +741,13 @@ Now assume we want to generate a coefficient summary as provided by `r  ttcode('
 coeftest(linear_model, vcov. = vcov)
 ```
 
-We see that values reported in the column `r  ttcode('Std. Error')` are equal to the ones received using `r  ttcode('sqrt(diag(vcov))')`.
+We see that the values reported in the column `r  ttcode('Std. Error')` are equal those from `r  ttcode('sqrt(diag(vcov))')`.
 
-How severe are the implications of using homoskedasticity-only standard errors in the presence of heteroskedasticity? The answer is: it depends. As mentioned above we may face the risk of drawing wrong conclusions when conducting significance tests. <br> Let us illustrate this by generating another example of a heteroskedastic data set and use it to estimate a simple regression model. We take
+How severe are the implications of using homoskedasticity-only standard errors in the presence of heteroskedasticity? The answer is: it depends. As mentioned above we face the risk of drawing wrong conclusions when conducting significance tests. <br> Let us illustrate this by generating another example of a heteroskedastic data set and using it to estimate a simple regression model. We take
 
 $$ Y_i = \beta_1 \cdot X_i + u_i \ \ , \ \ u_i \overset{i.i.d.}{\sim} N(0,0.36 \cdot X_i^2)  $$ 
 
-with $\beta_1=1$ as the data generating process. Clearly the assumption of homoskedasticity is violated here since the variance of the errors is a nonlinear, increasing function of $X_i$ but the errors have zero mean and are i.i.d. such that the assumptions made in Key Concept 4.3 are not violated. As before, the true conditional mean function we are interested in estimating is
-
-$$ E(Y_i\vert X_i) = \beta_1 X_i. $$
+with $\beta_1=1$ as the data generating process. Clearly, the assumption of homoskedasticity is violated here since the variance of the errors is a nonlinear, increasing function of $X_i$ but the errors have zero mean and are i.i.d. such that the assumptions made in Key Concept 4.3 are not violated. As before, we are interested in estimating $\beta_1$.
 
 ```{r, echo=-1}
 set.seed(905)
@@ -764,11 +765,10 @@ We plot the data and add the regression line.
 <div class="unfolded">
 ```{r, fig.align='center'}
 # plot the data
-plot(X, Y, 
+plot(x = X, y = Y, 
      pch = 19, 
      col = "steelblue", 
-     cex = 0.8
-     )
+     cex = 0.8)
 
 # add the regression line to the plot
 abline(reg, 
@@ -777,14 +777,14 @@ abline(reg,
 ```
 </div>
 
-The plot shows that the data are heteroskedastic as the variance of $Y$ grows with $X$. We continue by conducting a significance test of the (true) null hypothesis $H_0: \beta_1 = 1$ twice, once using the homoskedasticity-only standard error formula and once with the robust version (<a href="#mjx-eqn-5.6">5.6</a>). An easy way to do this in `r  ttcode('R')` is the function `r  ttcode('linearHypothesis()')` from the package `r  ttcode('car')`, see `?linearHypothesis`. It allows to test linear hypotheses about parameters in linear models in a similar way as done with a $t$-statistic and offers various robust covariance matrix estimators. We test by comparing the tests' $p$-values to the significance level of $5\%$.   
+The plot shows that the data are heteroskedastic as the variance of $Y$ grows with $X$. We next conduct a significance test of the (true) null hypothesis $H_0: \beta_1 = 1$ twice, once using the homoskedasticity-only standard error formula and once with the robust version (<a href="#mjx-eqn-5.6">5.6</a>). An easy way to do this in `r  ttcode('R')` is the function `r  ttcode('linearHypothesis()')` from the package `r  ttcode('car')`, see `?linearHypothesis`. It allows to test linear hypotheses about parameters in linear models in a similar way as done with a $t$-statistic and offers various robust covariance matrix estimators. We test by comparing the tests' $p$-values to the significance level of $5\%$.   
 
 ```{block2, linearhypothesis, type='rmdknit'}
-<tt>linearHypothesis()</tt> computes a test statistic that follows an $F$-distribution under the null hypothesis. We will not loose too much words on the theory behind it at this time. In general, the idea of the $F$-test is to compare the fit of different models. When testing a hypothesis about a *single* coefficient using an $F$-test, one can show that the test statistic is simply the square of the corresponding $t$-statistic:
+<tt>linearHypothesis()</tt> computes a test statistic that follows an $F$-distribution under the null hypothesis. We will not loose too much words on the underlying theory. In general, the idea of the $F$-test is to compare the fit of different models. When testing a hypothesis about a *single* coefficient using an $F$-test, one can show that the test statistic is simply the square of the corresponding $t$-statistic:
 
-$$ F = t^2 = \frac{\hat\beta_i - \beta_{i,0}}{SE(\hat\beta_i)} \sim F_{1,n-k-1}  $$
+$$F = t^2 = \left(\frac{\hat\beta_i - \beta_{i,0}}{SE(\hat\beta_i)}\right)^2 \sim F_{1,n-k-1}$$
 
-In <tt>linearHypothesis()</tt>, the hypothesis must be provided as a *string*. The function returns an object of class <tt>anova</tt> which contains further information on the test that can be accessed using the <tt>$</tt> operator.
+In <tt>linearHypothesis()</tt>, there are different ways to specify the hypothesis to be tested, e.g., using a vector of the type <tt>character</tt> (as done in the next code chunk), see <tt>?linearHypothesis</tt> for alternatives. The function returns an object of class <tt>anova</tt> which contains further information on the test that can be accessed using the <tt>$</tt> operator.
 ```
 
 
@@ -796,10 +796,10 @@ linearHypothesis(reg, hypothesis.matrix = "X = 1")$'Pr(>F)'[2] < 0.05
 linearHypothesis(reg, hypothesis.matrix = "X = 1", white.adjust = "hc1")$'Pr(>F)'[2] < 0.05
 ```
 
-This is a good example of what can go wrong if we ignore heteroskedasticity: for the data set at hand the default method rejects the null hypothesis $\beta_1 = 1$ although it is true. When using the robust standard error formula the test does not reject the null. Of course we could argue that this is just a coincidence and both tests are equally well in maintaining the type I error rate of $5\%$. This can be further investigated by computing *Monte Carlo* estimates of the rejection frequencies of both tests on the basis of a large number of random samples. We proceed as follows:
+This is a good example of what can go wrong if we ignore heteroskedasticity: for the data set at hand the default method rejects the null hypothesis $\beta_1 = 1$ although it is true. When using the robust standard error formula the test does not reject the null. Of course, we could this might just be a coincidence and both tests do equally well in maintaining the type I error rate of $5\%$. This can be further investigated by computing *Monte Carlo* estimates of the rejection frequencies of both tests on the basis of a large number of random samples. We proceed as follows:
 
 - initialize vectors `r  ttcode('t')` and `r  ttcode('t.rob')`.
-- Using a `r  ttcode('for()')` loop, we generate $10000$ heteroskedastic random samples of size $1000$, estimate the regression model and check whether the tests falsly reject the null at the level of $5\%$ using comparison operators. The results are stored in the respective vectors `r  ttcode('t')` and `r  ttcode('t.rob')`.
+- Using a `r  ttcode('for()')` loop, we generate $10000$ heteroskedastic random samples of size $1000$, estimate the regression model and check whether the tests falsely reject the null at the level of $5\%$ using comparison operators. The results are stored in the respective vectors `r  ttcode('t')` and `r  ttcode('t.rob')`.
 - After the simulation, we compute the fraction of false rejections for both tests.
 
 ```{r, cache=T, echo=-1}
@@ -828,14 +828,14 @@ for (i in 1:10000) {
 }
 
 # compute the fraction of false rejections
-round(cbind(t = sum(t), t.rob = sum(t.rob)) / 10000, 3)
+round(cbind(t = mean(t), t.rob = mean(t.rob)), 3)
 ```
 
-These results show that we face an increased risk of falsely rejecting the null using the homoskedasticity-only standard error for the testing problem at hand: with the common standard error estimator, $`r round(sum(t)/length(t)*100,3)`\%$ of all tests reject the null hypothesis falsely. In contrast, with the robust test statistic we are closer to the nominal level of $5\%$.
+These results reveal the increased risk of falsely rejecting the null using the homoskedasticity-only standard error for the testing problem at hand: with the common standard error estimator, $`r round(sum(t)/length(t)*100,3)`\%$ of all tests falsely reject the null hypothesis. In contrast, with the robust test statistic we are closer to the nominal level of $5\%$.
  
 ## The Gauss-Markov Theorem
 
-When estimating regression models, we know that the results of the estimation procedure are outcomes of a random process. However, when using unbiased estimators, at least on average, we estimate the true parameter. When comparing different unbiased estimators, it is therefore interesting to know which one has the highest precision: being aware that the likelihood of estimating the *exact* value of the parameter of interest is $0$ in an empirical application, we want to make sure that the likelihood of obtaining an estimate very close to the true value is as high as possible. This means we want to use the estimator with the lowest variance of all unbiased estimators. The Gauss-Markov theorem states that, in the class of conditionally unbiased linear estimators, the OLS estimator has this property under certain conditions.
+When estimating regression models, we know that the results of the estimation procedure are random. However, when using unbiased estimators, at least on average, we estimate the true parameter. When comparing different unbiased estimators, it is therefore interesting to know which one has the highest precision: being aware that the likelihood of estimating the *exact* value of the parameter of interest is $0$ in an empirical application, we want to make sure that the likelihood of obtaining an estimate very close to the true value is as high as possible. This means we want to use the estimator with the lowest variance of all unbiased estimators, provided we care about unbiasedness. The Gauss-Markov theorem states that, in the class of conditionally unbiased linear estimators, the OLS estimator has this property under certain conditions.
 
 ```{r, eval = my_output == "html", results='asis', echo=FALSE}
 cat('
@@ -850,7 +850,7 @@ Let us have a closer look at what this means:
 
 - We already know that $\\overset{\\sim}{\\beta}_1$ has a sampling distribution: $\\overset{\\sim}{\\beta}_1$ is a linear function of the $Y_i$ which are random variables. If now \\[ E(\\overset{\\sim}{\\beta}_1 | X_1, \\dots, X_n) = \\beta_1, \\] $\\overset{\\sim}{\\beta}_1$ is a linear unbiased estimator of $\\beta_1$, conditionally on the $X_1, \\dots, X_n$.
 
-- We may ask if $\\overset{\\sim}{\\beta}_1$ is also the *best* estimator in this class, i.e. the most efficient one of all linear conditionally unbiased estimators where "most efficient" means smallest variance. The weights $a_i$ play an important role here and it turns out that OLS uses just the right weights to have the BLUE property. 
+- We may ask if $\\overset{\\sim}{\\beta}_1$ is also the *best* estimator in this class, i.e., the most efficient one of all linear conditionally unbiased estimators where "most efficient" means smallest variance. The weights $a_i$ play an important role here and it turns out that OLS uses just the right weights to have the BLUE property. 
 </div>
 ')
 ```
@@ -866,7 +866,7 @@ Let us have a closer look at what this means:\\newline
 
 \\item We already know that $\\overset{\\sim}{\\beta}_1$ has a sampling distribution: $\\overset{\\sim}{\\beta}_1$ is a linear function of the $Y_i$ which are random variables. If now \\[ E(\\overset{\\sim}{\\beta}_1 | X_1, \\dots, X_n) = \\beta_1, \\] $\\overset{\\sim}{\\beta}_1$ is a linear unbiased estimator of $\\beta_1$, conditionally on the $X_1, \\dots, X_n$.
 
-\\item We may ask if $\\overset{\\sim}{\\beta}_1$ is also the \\textit{best} estimator in this class, i.e. the most efficient one of all linear conditionally unbiased estimators where "most efficient" means smallest variance. The weights $a_i$ play an important role here and it turns out that OLS uses just the right weights to have the BLUE property. 
+\\item We may ask if $\\overset{\\sim}{\\beta}_1$ is also the \\textit{best} estimator in this class, i.e., the most efficient one of all linear conditionally unbiased estimators where most efficient means smallest variance. The weights $a_i$ play an important role here and it turns out that OLS uses just the right weights to have the BLUE property. 
 \\end{itemize}
 \\end{keyconcepts}
 ')
@@ -874,33 +874,32 @@ Let us have a closer look at what this means:\\newline
 
 ### Simulation Study: BLUE Estimator {-}
 
-Consider the case of a regression of $Y_i,\dots,Y_n$ only on a constant. Here, the $Y_i$ are assumed to be a random sample from a population with mean $\mu$ and variance $\sigma^2$. We know that the OLS estimator in this model is simply the sample mean: 
+Consider the case of a regression of $Y_i,\dots,Y_n$ only on a constant. Here, the $Y_i$ are assumed to be a random sample from a population with mean $\mu$ and variance $\sigma^2$. The OLS estimator in this model is simply the sample mean, see Chapter \@ref(potsm).
 
 \begin{equation}
-\hat{\beta}_1 = \overline{\beta}_1 = \sum_{i=1}^n \underbrace{\frac{1}{n}}_{=a_i} Y_i (\#eq:bluemean)
+\hat{\beta}_1 = \sum_{i=1}^n \underbrace{\frac{1}{n}}_{=a_i} Y_i (\#eq:bluemean)
 \end{equation}
 
 Clearly, each observation is weighted by 
 
 $$a_i = \frac{1}{n}.$$
 
-and we also know that $\text{Var}(\hat{\beta}_1)=\text{Var}(\hat\beta_1)=\frac{\sigma^2}{n}$.
+and we also know that $\text{Var}(\hat{\beta}_1)=\frac{\sigma^2}{n}$.
 
-We will now use `r  ttcode('R')` to conduct a simulation study that demonstrates what happens to the variance of \@ref(eq:bluemean) if different weights \[ w_i = \frac{1 \pm \epsilon}{n} \] are assigned to either half of the sample $Y_1, \dots, Y_n$ instead of using $\frac{1}{n}$, the weights implied by OLS.  
+We now use `r  ttcode('R')` to conduct a simulation study that demonstrates what happens to the variance of \@ref(eq:bluemean) if different weights \[ w_i = \frac{1 \pm \epsilon}{n} \] are assigned to either half of the sample $Y_1, \dots, Y_n$ instead of using $\frac{1}{n}$, the OLS weights.  
 
 <div class="unfolded">
 ```{r, fig.align='center', cache=T}
-# Set sample size and number of repititions
+# set sample size and number of repetitions
 n <- 100      
 reps <- 1e5
 
-# Choose epsilon and create a vector of weights as defined above
+# choose epsilon and create a vector of weights as defined above
 epsilon <- 0.8
-w <- c(rep((1+epsilon)/n, n/2), 
-       rep((1-epsilon)/n, n/2) 
-      )
+w <- c(rep((1 + epsilon) / n, n / 2), 
+       rep((1 - epsilon) / n, n / 2) )
 
-# Draw a random sample y_1,...,y_n from the standard normal distribution, 
+# draw a random sample y_1,...,y_n from the standard normal distribution, 
 # use both estimators 1e5 times and store the result in the vectors 'ols' and 
 # 'weightedestimator'
 
@@ -913,29 +912,27 @@ for (i in 1:reps) {
   weightedestimator[i] <- crossprod(w, y)
 }
 
-# Plot kernel density estimates of the estimators' distributions 
+# plot kernel density estimates of the estimators' distributions: 
 
 # OLS
 plot(density(ols), 
      col = "purple", 
      lwd = 3, 
      main = "Density of OLS and Weighted Estimator",
-     xlab = "Estimates"
-     )
+     xlab = "Estimates")
 
-# Weighted
+# weighted
 lines(density(weightedestimator), 
       col = "steelblue", 
-      lwd = 3
-      ) 
+      lwd = 3) 
 
-# Add a dashed line at 0 and add a legend to the plot
+# add a dashed line at 0 and add a legend to the plot
 abline(v = 0, lty = 2)
+
 legend('topright', 
        c("OLS", "Weighted"), 
        col = c("purple", "steelblue"), 
-       lwd = 3
-       )
+       lwd = 3)
 ```
 </div>
 
@@ -944,7 +941,7 @@ What conclusion can we draw from the result?
 - Both estimators seem to be unbiased: the means of their estimated distributions are zero.
 - The estimator using weights that deviate from those implied by OLS is less efficient than the OLS estimator: there is higher dispersion when weights are $w_i = \frac{1 \pm 0.8}{100}$ instead of $w_i=\frac{1}{100}$ as required by the OLS solution. 
 
-Hence, our simulation results confirm what is stated by the Gauss-Markov Theorem.
+Hence, the simulation results support the Gauss-Markov Theorem.
 
 ## Using the t-Statistic in Regression When the Sample Size Is Small
 
@@ -952,29 +949,28 @@ The three OLS assumptions discussed in Chapter \@ref(lrwor) (see Key Concept 4.3
 
 Recall the [definition](#thetdist) of a $t$-distributed variable
 
-$$ \frac{Z}{\sqrt{W/m}} \sim t_m$$ 
+$$ \frac{Z}{\sqrt{W/M}} \sim t_M$$ 
 
-where $Z$ is a standard normal random variable, $W$ is $\chi^2$ distributed with $m$ degrees of freedom and $Z$ and $W$ are independent. See section 5.6 in the book for a more detailed discussion of the small sample distribution of $t$-statistics in regression.
+where $Z$ is a standard normal random variable, $W$ is $\chi^2$ distributed with $M$ degrees of freedom and $Z$ and $W$ are independent. See section 5.6 in the book for a more detailed discussion of the small sample distribution of $t$-statistics in regression methods.
 
-Let us simulate the distribution of regression $t$-statistics based on a large number of small random samples when the sample size is small, say $n=20$, and compare their simulated distributions to their theoretical distribution which should be $t_{18}$, the $t$-distribution with $18$ degrees of freedom (recall that $\text{DF}=n-k-1$). 
+Let us simulate the distribution of regression $t$-statistics based on a large number of small random samples, say $n=20$, and compare the simulated distributions to the theoretical distributions which should be $t_{18}$, the $t$-distribution with $18$ degrees of freedom (recall that $\text{DF}=n-k-1$). 
 
+<div class="unfolded"> 
 ```{r, fig.align="center", cache=T}
-# initialize vectors
+# initialize two vectors
 beta_0 <- c()
 beta_1 <- c()
 
 # loop sampling / estimation / t statistics
 for (i in 1:10000) {
-
   X <- runif(20, 0, 20)
   Y <- rnorm(n = 20, mean = X)
   reg <- summary(lm(Y ~ X))
   beta_0[i] <- (reg$coefficients[1, 1] - 0)/(reg$coefficients[1, 2])
   beta_1[i] <- (reg$coefficients[2, 1] - 1)/(reg$coefficients[2, 2])
-
 }
 
-# plot the distributions and compare with t_18 density function:
+# plot the distributions and compare with t_18 density:
 
 # divide plotting area
 par(mfrow = c(1, 2))
@@ -983,16 +979,14 @@ par(mfrow = c(1, 2))
 plot(density(beta_0), 
      lwd = 2 , 
      main = expression(widehat(beta)[0]), 
-     xlim = c(-4, 4)
-    )
+     xlim = c(-4, 4))
 
 # add the t_18 density to the plot
 curve(dt(x, df = 18), 
       add = T, 
       col = "red", 
       lwd = 2, 
-      lty = 2
-      )
+      lty = 2)
 
 # plot the simulated density of beta_1
 plot(density(beta_1), 
@@ -1005,9 +999,9 @@ curve(dt(x, df = 18),
       add = T, 
       col = "red", 
       lwd = 2, 
-      lty = 2
-      ) 
+      lty = 2) 
 ```
+</div>
 
 The outcomes are consistent with our expectations: the empirical distributions of both estimators seem to track the theoretical $t_{18}$ distribution quite closely.
 

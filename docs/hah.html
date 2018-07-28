@@ -25,7 +25,7 @@
 <meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber and Martin Schmelzer">
 
 
-<meta name="date" content="2018-07-26">
+<meta name="date" content="2018-07-27">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -185,7 +185,7 @@ This book is in <b>Open Review</b>. We want your feedback to make the book bette
 </div>
 <div id="hah" class="section level2">
 <h2><span class="header-section-number">2.4</span> Heteroskedasticity and Homoskedasticity</h2>
-<p>All inference made in the previous chapters relies on the assumption that the error variance does not vary as regressor values change. But this will not necessarily be the case in empirical applications.</p>
+<p>All inference made in the previous chapters relies on the assumption that the error variance does not vary as regressor values change. But this will often not be the case in empirical applications.</p>
 <div class="keyconcept">
 <h3 class="right">
 Key Concept 5.4
@@ -236,28 +236,28 @@ mod &lt;-<span class="st"> </span><span class="kw">lm</span>(y <span class="op">
      <span class="dt">cex =</span> <span class="fl">0.5</span>, 
      <span class="dt">pch =</span> <span class="dv">19</span>, 
      <span class="dt">xlim =</span> <span class="kw">c</span>(<span class="dv">8</span>, <span class="dv">27</span>), 
-     <span class="dt">ylim =</span> <span class="kw">c</span>(<span class="dv">600</span>, <span class="dv">710</span>)
-     )
+     <span class="dt">ylim =</span> <span class="kw">c</span>(<span class="dv">600</span>, <span class="dv">710</span>))
 
 <span class="co"># Add the regression line to the plot</span>
 <span class="kw">abline</span>(mod, <span class="dt">col =</span> <span class="st">&quot;darkred&quot;</span>)
 
 <span class="co"># Add boxplots to the plot</span>
-<span class="kw">boxplot</span>(y <span class="op">~</span><span class="st"> </span>x, 
+<span class="kw">boxplot</span>(<span class="dt">formula =</span> y <span class="op">~</span><span class="st"> </span>x, 
         <span class="dt">add =</span> <span class="ot">TRUE</span>, 
         <span class="dt">at =</span> <span class="kw">c</span>(<span class="dv">10</span>, <span class="dv">15</span>, <span class="dv">20</span>, <span class="dv">25</span>), 
         <span class="dt">col =</span> <span class="kw">alpha</span>(<span class="st">&quot;gray&quot;</span>, <span class="fl">0.4</span>), 
         <span class="dt">border =</span> <span class="st">&quot;black&quot;</span>
         )</code></pre></div>
-<p><img src="URFITE_files/figure-html/unnamed-chunk-39-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="URFITE_files/figure-html/unnamed-chunk-38-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
-<p>For this artificial data it is clear to see that we face unequal conditional error variances. Specifically, we observe that the variance in test scores (and therefore the variance of the errors committed) <em>increases</em> with the student teacher ratio.</p>
+<p>We have used the <tt>formula</tt> argument <tt>y ~ x</tt> in <tt>boxplot()</tt> to specify that we want to split up the vector <tt>y</tt> into groups according to <tt>x</tt>. <tt>boxplot(y ~ x)</tt> generates a boxplot for each of the groups in <tt>y</tt> defined by <tt>x</tt>.</p>
+<p>For this artificial data it is clear that the conditional error variances differ. Specifically, we observe that the variance in test scores (and therefore the variance of the errors committed) <em>increases</em> with the student teacher ratio.</p>
 <div id="a-real-world-example-for-heteroskedasticity" class="section level3 unnumbered">
 <h3>A Real-World Example for Heteroskedasticity</h3>
-<p>Think about the economic value of education: if there were no expected economic value-added to receiving education at university, you probably would not be reading this script right now. A starting point to empirical verification of such a relation is to have data on graduates. More precisely, we need data on wages and education of graduates in order to estimate a model like</p>
+<p>Think about the economic value of education: if there were no expected economic value-added to receiving university education, you probably would not be reading this script right now. A starting point to empiricaly verify such a relation is to have data on working individuals. More precisely, we need data on wages and education of workers in order to estimate a model like</p>
 <p><span class="math display">\[ wage_i = \beta_0 + \beta_1 \cdot education_i + u_i. \]</span></p>
-<p>What can be presumed about this relation? It is likely that, on average, higher educated workers earn more than workers with less education, so we expect to estimate an upward sloping regression line. <br> Also it seems plausible that earnings of better educated workers have a higher dispersion then those of low-skilled workers: solid education is not a guarantee for a high salary so even highly quialified workers take on low-income jobs. However, they are more likely to meet the requirements for the well-paid jobs than workers with less education for whom opportunities at the labor market are much more limited.</p>
-<p>To verify this empirically we may use real data on hourly earnings and the number of years of education of employees. Such data can be found in <tt>CPSSWEducation</tt>. This data set is part of the package <tt>AER</tt> and stems from the Current Population Survey (CPS) which is conducted periodically by the <a href="http://www.bls.gov/">Bureau of Labor Statistics</a> in the United States.</p>
+<p>What can be presumed about this relation? It is likely that, on average, higher educated workers earn more than workers with less education, so we expect to estimate an upward sloping regression line. Also, it seems plausible that earnings of better educated workers have a higher dispersion then those of low-skilled workers: solid education is not a guarantee for a high salary so even highly qualified workers take on low-income jobs. However, they are more likely to meet the requirements for the well-paid jobs than workers with less education for whom opportunities in the labor market are much more limited.</p>
+<p>To verify this empirically we may use real data on hourly earnings and the number of years of education of employees. Such data can be found in <tt>CPSSWEducation</tt>. This data set is part of the package <tt>AER</tt> and comes from the Current Population Survey (CPS) which is conducted periodically by the <a href="http://www.bls.gov/">Bureau of Labor Statistics</a> in the United States.</p>
 <p>The subsequent code chunks demonstrate how to import the data into <tt>R</tt> and how to produce a plot in the fashion of Figure 5.3 in the book.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># load package and attach data</span>
 <span class="kw">library</span>(AER)
@@ -279,16 +279,15 @@ labor_model &lt;-<span class="st"> </span><span class="kw">lm</span>(earnings <s
 <span class="co"># plot observations and add the regression line</span>
 <span class="kw">plot</span>(education, 
      earnings, 
-     <span class="dt">ylim =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">150</span>)
-     )
+     <span class="dt">ylim =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">150</span>))
 
 <span class="kw">abline</span>(labor_model, 
        <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>, 
-       <span class="dt">lwd =</span> <span class="dv">2</span>
-       )</code></pre></div>
-<p><img src="URFITE_files/figure-html/unnamed-chunk-40-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>From inspecting the plot we can tell that the mean of the distribution of earnings increases with the level of education. This is also suggested by formal analysis: the estimated regression model stored in <tt>labor_mod</tt> shows that there is a positive relation between years of education and earnings.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">labor_model</code></pre></div>
+       <span class="dt">lwd =</span> <span class="dv">2</span>)</code></pre></div>
+<p><img src="URFITE_files/figure-html/unnamed-chunk-39-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>The plot reveals that the mean of the distribution of earnings increases with the level of education. This is also supported by a formal analysis: the estimated regression model stored in <tt>labor_mod</tt> shows that there is a positive relation between years of education and earnings.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># print the contents of labor_model to the console</span>
+labor_model</code></pre></div>
 <pre><code>## 
 ## Call:
 ## lm(formula = earnings ~ education)
@@ -297,23 +296,24 @@ labor_model &lt;-<span class="st"> </span><span class="kw">lm</span>(earnings <s
 ## (Intercept)    education  
 ##      -3.134        1.467</code></pre>
 <p>The estimated regression equation states that, on average, an additional year of education increases a worker’s hourly earnings by about <span class="math inline">\(\$ 1.47\)</span>. Once more we use <tt>confint()</tt> to obtain a <span class="math inline">\(95\%\)</span> confidence interval for both regression coefficients.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">confint</span>(labor_model)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># compute a 95% confidence interval for the coefficients in the model</span>
+<span class="kw">confint</span>(labor_model)</code></pre></div>
 <pre><code>##                 2.5 %    97.5 %
 ## (Intercept) -5.015248 -1.253495
 ## education    1.330098  1.603753</code></pre>
 <p>Since the interval is <span class="math inline">\([1.33, 1.60]\)</span> we can reject the hypothesis that the coefficient on <tt>education</tt> is zero at the <span class="math inline">\(5\%\)</span> level.</p>
-<p>Furthermore, the plot indicates that there is heteroskedasticity: if we assume the regression line to be a reasonably good representation of the conditional mean function <span class="math inline">\(E(earnings_i\vert education_i)\)</span>, the dispersion of hourly earnings around that function clearly increases with the level of education, i.e. the variance of the distribution of earnings increases. In other words: the variance of the residuals (the errors made in explaining earnings by education) increases with education so that the regression errors are heteroskedastic.</p>
-<p>This example makes a case that the assumption of homoskedasticity is doubtful in economic applications. Should we care about heteroskedasticity? In short, yes we shoud. As explained in the next section, heteroskedasticity can have serious negative consequences in hypothesis testing, if we ignore it.</p>
+<p>Furthermore, the plot indicates that there is heteroskedasticity: if we assume the regression line to be a reasonably good representation of the conditional mean function <span class="math inline">\(E(earnings_i\vert education_i)\)</span>, the dispersion of hourly earnings around that function clearly increases with the level of education, i.e., the variance of the distribution of earnings increases. In other words: the variance of the errors (the errors made in explaining earnings by education) increases with education so that the regression errors are heteroskedastic.</p>
+<p>This example makes a case that the assumption of homoskedasticity is doubtful in economic applications. Should we care about heteroskedasticity? Yes, we should. As explained in the next section, heteroskedasticity can have serious negative consequences in hypothesis testing, if we ignore it.</p>
 </div>
 <div id="should-we-care-about-heteroskedasticity" class="section level3 unnumbered">
 <h3>Should We Care About Heteroskedasticity?</h3>
-<p>To answer the question whether we should worry about heteroskedasticity being present, let us see how the variance of <span class="math inline">\(\hat\beta_1\)</span> is computed under the assumption of homoskedasticity. In this case we have</p>
+<p>To answer the question whether we should worry about heteroskedasticity being present, consider the variance of <span class="math inline">\(\hat\beta_1\)</span> under the assumption of homoskedasticity. In this case we have</p>
 <p><span class="math display">\[ \sigma^2_{\hat\beta_1} = \frac{\sigma^2_u}{n \cdot \sigma^2_X} \tag{5.5} \]</span></p>
 <p>which is a simplified version of the general equation (<a href="#mjx-eqn-4.1">4.1</a>) presented in Key Concept 4.4. See Appendix 5.1 of the book for details on the derivation. <tt>summary()</tt> estimates (<a href="#mjx-eqn-5.5">5.5</a>) by</p>
 <p><span class="math display">\[ \overset{\sim}{\sigma}^2_{\hat\beta_1} = \frac{SER^2}{\sum_{i=1}^n (X_i - \overline{X})^2} \ \ \text{where} \ \ SER=\frac{1}{n-2} \sum_{i=1}^n \hat u_i^2. \]</span></p>
 <p>Thus <tt>summary()</tt> estimates the <em>homoskedasticity-only</em> standard error</p>
 <p><span class="math display">\[ \sqrt{ \overset{\sim}{\sigma}^2_{\hat\beta_1} } = \sqrt{ \frac{SER^2}{\sum_{i=1}^n(X_i - \overline{X})^2} }. \]</span></p>
-<p>This is in fact an estimator for the standard deviation of the estimator <span class="math inline">\(\hat{\beta}_1\)</span> that is <em>inconsistent</em> for the true value <span class="math inline">\(\sigma^2_{\hat\beta_1}\)</span> when there is heteroskedasticity. The implication is that <span class="math inline">\(t\)</span>-statistics computed in the manner of Key Concept 5.1 do not have a standard normal distribution, even in large samples. This issue may invalidate inference drawn when using the previously treated tools for hypothesis testing: we should be cautious when making statements about the significance of regression coefficients on the basis of <span class="math inline">\(t\)</span>-statistics as computed by <tt>summary()</tt> or confidence intervals produced by <tt>confint()</tt> if it is doubtful for the assumption of homoskedasticity to hold!</p>
+<p>This is in fact an estimator for the standard deviation of the estimator <span class="math inline">\(\hat{\beta}_1\)</span> that is <em>inconsistent</em> for the true value <span class="math inline">\(\sigma^2_{\hat\beta_1}\)</span> when there is heteroskedasticity. The implication is that <span class="math inline">\(t\)</span>-statistics computed in the manner of Key Concept 5.1 do not follow a standard normal distribution, even in large samples. This issue may invalidate inference when using the previously treated tools for hypothesis testing: we should be cautious when making statements about the significance of regression coefficients on the basis of <span class="math inline">\(t\)</span>-statistics as computed by <tt>summary()</tt> or confidence intervals produced by <tt>confint()</tt> if it is doubtful for the assumption of homoskedasticity to hold!</p>
 <p>We will now use <tt>R</tt> to compute the homoskedasticity-only standard error for <span class="math inline">\(\hat{\beta}_1\)</span> in the test score regression model <tt>linear_model</tt> by hand and see that it matches the value produced by <tt>summary()</tt>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Store model summary in &#39;model&#39;</span>
 model &lt;-<span class="st"> </span><span class="kw">summary</span>(linear_model)
@@ -338,8 +338,8 @@ SE.beta_<span class="fl">1.</span>hat</code></pre></div>
 <h3>Computation of Heteroskedasticity-Robust Standard Errors</h3>
 <p>Consistent estimation of <span class="math inline">\(\sigma_{\hat{\beta}_1}\)</span> under heteroskedasticity is granted when the following <em>robust</em> estimator is used.</p>
 <p><span class="math display">\[ SE(\hat{\beta}_1) = \sqrt{ \frac{ \frac{1}{n-2} \sum_{i=1}^n (X_i - \overline{X})^2 \hat{u}_i^2 }{ \left[ \frac{1}{n} \sum_{i=1}^n (X_i - \overline{X})^2  \right]^2} } \tag{5.6} \]</span></p>
-<p>Standard error estimates computed this way are also referred to as <a href="https://en.wikipedia.org/wiki/Heteroscedasticity-consistent_standard_errors">Eicker-Huber-White standard errors</a>, the most frequently cited paper on this is <span class="citation">White (<a href="#ref-white1980">1980</a>)</span>.<br />
-It can be quite cumbersome to do this calculation by hand. Luckily, there are <tt>R</tt> function for that purpose. A convenient one named <tt>vcovHC()</tt> is part of the package <tt>sandwich</tt>.<a href="#fn3" class="footnoteRef" id="fnref3"><sup>3</sup></a>. This function can compute a variety of standard errors. The one brought forward in (<a href="#mjx-eqn-5.6">5.6</a>) is computed when the argument <tt>type</tt> is set to <tt>“HC0”</tt>. Most of the examples presented in the book rely on a slightly different formula which is computed by <em>STATA</em> by default. To get <tt>vcovHC()</tt> to use this formula, we have to set <tt>type = HC1</tt>.</p>
+<p>Standard error estimates computed this way are also referred to as <a href="https://en.wikipedia.org/wiki/Heteroscedasticity-consistent_standard_errors">Eicker-Huber-White standard errors</a>, the most frequently cited paper on this is <span class="citation">White (<a href="#ref-white1980">1980</a>)</span>.</p>
+<p>It can be quite cumbersome to do this calculation by hand. Luckily, there are <tt>R</tt> function for that purpose. A convenient one named <tt>vcovHC()</tt> is part of the package <tt>sandwich</tt>.<a href="#fn3" class="footnoteRef" id="fnref3"><sup>3</sup></a> This function can compute a variety of standard errors. The one brought forward in (<a href="#mjx-eqn-5.6">5.6</a>) is computed when the argument <tt>type</tt> is set to <tt>“HC0”</tt>. Most of the examples presented in the book rely on a slightly different formula which is the default in the statistics package <em>STATA</em>. To get <tt>vcovHC()</tt> to use this formula, we have to set <tt>type = HC1</tt>.</p>
 <p>Let us now compute robust standard error estimates for the coefficients in <tt>linear_model</tt>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># compute heteroskedasticity-robust standard errors</span>
 vcov &lt;-<span class="st"> </span><span class="kw">vcovHC</span>(linear_model, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>)
@@ -347,10 +347,10 @@ vcov</code></pre></div>
 <pre><code>##             (Intercept)        STR
 ## (Intercept)  107.419993 -5.3639114
 ## STR           -5.363911  0.2698692</code></pre>
-<p>The output of <tt>vcovHC()</tt> is the variance-covariance matrix of coefficient estimates. We are interested in the square root of the diagonal elements of this matrix since these values are the standard error estimates we seek.</p>
+<p>The output of <tt>vcovHC()</tt> is the variance-covariance matrix of coefficient estimates. We are interested in the square root of the diagonal elements of this matrix, i.e. the standard error estimates.</p>
 
 <div class="rmdknit">
-<p>When we have k &gt; 1 regressors, writing down the equations for a regression model becomes very messy. A more convinient way to denote and estimate so-called multiple regression models is by using matrix algebra. This is why functions like <tt>vcovHC()</tt> produce matrices. In the simple linear regression model, the variances and covariances of the coefficient estimators can be gathered in the variance-covariance matrix</p>
+<p>When we have k &gt; 1 regressors, writing down the equations for a regression model becomes very messy. A more convinient way to denote and estimate so-called multiple regression models (see Chapter <a href="#rmwmr"><strong>??</strong></a>) is by using matrix algebra. This is why functions like <tt>vcovHC()</tt> produce matrices. In the simple linear regression model, the variances and covariances of the estimators can be gathered in the symmetric variance-covariance matrix</p>
 <span class="math display">\[\begin{equation}
 \text{Var}
   \begin{pmatrix}
@@ -360,9 +360,9 @@ vcov</code></pre></div>
 \begin{pmatrix}
   \text{Var}(\hat\beta_0) &amp; \text{Cov}(\hat\beta_0,\hat\beta_1) \\
 \text{Cov}(\hat\beta_0,\hat\beta_1) &amp; \text{Var}(\hat\beta_1)
-\end{pmatrix}
+\end{pmatrix},
 \end{equation}\]</span>
-<p>which is a symmetric matrix. So <tt>vcovHC()</tt> gives us <span class="math inline">\(\widehat{\text{Var}}(\hat\beta_0)\)</span>, <span class="math inline">\(\widehat{\text{Var}}(\hat\beta_1)\)</span> and <span class="math inline">\(\widehat{\text{Cov}}(\hat\beta_0,\hat\beta_1)\)</span> but most of the time we are interested in the diagonal elements of the estimated matrix.</p>
+<p>so <tt>vcovHC()</tt> gives us <span class="math inline">\(\widehat{\text{Var}}(\hat\beta_0)\)</span>, <span class="math inline">\(\widehat{\text{Var}}(\hat\beta_1)\)</span> and <span class="math inline">\(\widehat{\text{Cov}}(\hat\beta_0,\hat\beta_1)\)</span>, but most of the time we are interested in the diagonal elements of the estimated matrix.</p>
 </div>
 
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># compute the square root of the diagonal elements in vcov</span>
@@ -381,11 +381,10 @@ robust_se</code></pre></div>
 ## STR          -2.27981    0.51949 -4.3886 1.447e-05 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
-<p>We see that values reported in the column <tt>Std. Error</tt> are equal to the ones received using <tt>sqrt(diag(vcov))</tt>.</p>
-<p>How severe are the implications of using homoskedasticity-only standard errors in the presence of heteroskedasticity? The answer is: it depends. As mentioned above we may face the risk of drawing wrong conclusions when conducting significance tests. <br> Let us illustrate this by generating another example of a heteroskedastic data set and use it to estimate a simple regression model. We take</p>
+<p>We see that the values reported in the column <tt>Std. Error</tt> are equal those from <tt>sqrt(diag(vcov))</tt>.</p>
+<p>How severe are the implications of using homoskedasticity-only standard errors in the presence of heteroskedasticity? The answer is: it depends. As mentioned above we face the risk of drawing wrong conclusions when conducting significance tests. <br> Let us illustrate this by generating another example of a heteroskedastic data set and using it to estimate a simple regression model. We take</p>
 <p><span class="math display">\[ Y_i = \beta_1 \cdot X_i + u_i \ \ , \ \ u_i \overset{i.i.d.}{\sim} N(0,0.36 \cdot X_i^2)  \]</span></p>
-<p>with <span class="math inline">\(\beta_1=1\)</span> as the data generating process. Clearly the assumption of homoskedasticity is violated here since the variance of the errors is a nonlinear, increasing function of <span class="math inline">\(X_i\)</span> but the errors have zero mean and are i.i.d. such that the assumptions made in Key Concept 4.3 are not violated. As before, the true conditional mean function we are interested in estimating is</p>
-<p><span class="math display">\[ E(Y_i\vert X_i) = \beta_1 X_i. \]</span></p>
+<p>with <span class="math inline">\(\beta_1=1\)</span> as the data generating process. Clearly, the assumption of homoskedasticity is violated here since the variance of the errors is a nonlinear, increasing function of <span class="math inline">\(X_i\)</span> but the errors have zero mean and are i.i.d. such that the assumptions made in Key Concept 4.3 are not violated. As before, we are interested in estimating <span class="math inline">\(\beta_1\)</span>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># generate heteroskedastic data </span>
 X &lt;-<span class="st"> </span><span class="dv">1</span><span class="op">:</span><span class="dv">500</span>
 Y &lt;-<span class="st"> </span><span class="kw">rnorm</span>(<span class="dt">n =</span> <span class="dv">500</span>, <span class="dt">mean =</span> X, <span class="dt">sd =</span> <span class="fl">0.6</span><span class="op">*</span>X)
@@ -395,24 +394,23 @@ reg &lt;-<span class="st"> </span><span class="kw">lm</span>(Y <span class="op">
 <p>We plot the data and add the regression line.</p>
 <div class="unfolded">
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># plot the data</span>
-<span class="kw">plot</span>(X, Y, 
+<span class="kw">plot</span>(<span class="dt">x =</span> X, <span class="dt">y =</span> Y, 
      <span class="dt">pch =</span> <span class="dv">19</span>, 
      <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>, 
-     <span class="dt">cex =</span> <span class="fl">0.8</span>
-     )
+     <span class="dt">cex =</span> <span class="fl">0.8</span>)
 
 <span class="co"># add the regression line to the plot</span>
 <span class="kw">abline</span>(reg, 
        <span class="dt">col =</span> <span class="st">&quot;darkred&quot;</span>, 
        <span class="dt">lwd =</span> <span class="fl">1.5</span>)</code></pre></div>
-<p><img src="URFITE_files/figure-html/unnamed-chunk-48-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="URFITE_files/figure-html/unnamed-chunk-47-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
-<p>The plot shows that the data are heteroskedastic as the variance of <span class="math inline">\(Y\)</span> grows with <span class="math inline">\(X\)</span>. We continue by conducting a significance test of the (true) null hypothesis <span class="math inline">\(H_0: \beta_1 = 1\)</span> twice, once using the homoskedasticity-only standard error formula and once with the robust version (<a href="#mjx-eqn-5.6">5.6</a>). An easy way to do this in <tt>R</tt> is the function <tt>linearHypothesis()</tt> from the package <tt>car</tt>, see <code>?linearHypothesis</code>. It allows to test linear hypotheses about parameters in linear models in a similar way as done with a <span class="math inline">\(t\)</span>-statistic and offers various robust covariance matrix estimators. We test by comparing the tests’ <span class="math inline">\(p\)</span>-values to the significance level of <span class="math inline">\(5\%\)</span>.</p>
+<p>The plot shows that the data are heteroskedastic as the variance of <span class="math inline">\(Y\)</span> grows with <span class="math inline">\(X\)</span>. We next conduct a significance test of the (true) null hypothesis <span class="math inline">\(H_0: \beta_1 = 1\)</span> twice, once using the homoskedasticity-only standard error formula and once with the robust version (<a href="#mjx-eqn-5.6">5.6</a>). An easy way to do this in <tt>R</tt> is the function <tt>linearHypothesis()</tt> from the package <tt>car</tt>, see <code>?linearHypothesis</code>. It allows to test linear hypotheses about parameters in linear models in a similar way as done with a <span class="math inline">\(t\)</span>-statistic and offers various robust covariance matrix estimators. We test by comparing the tests’ <span class="math inline">\(p\)</span>-values to the significance level of <span class="math inline">\(5\%\)</span>.</p>
 
 <div class="rmdknit">
-<p><tt>linearHypothesis()</tt> computes a test statistic that follows an <span class="math inline">\(F\)</span>-distribution under the null hypothesis. We will not loose too much words on the theory behind it at this time. In general, the idea of the <span class="math inline">\(F\)</span>-test is to compare the fit of different models. When testing a hypothesis about a <em>single</em> coefficient using an <span class="math inline">\(F\)</span>-test, one can show that the test statistic is simply the square of the corresponding <span class="math inline">\(t\)</span>-statistic:</p>
-<p><span class="math display">\[ F = t^2 = \frac{\hat\beta_i - \beta_{i,0}}{SE(\hat\beta_i)} \sim F_{1,n-k-1}  \]</span></p>
-In <tt>linearHypothesis()</tt>, the hypothesis must be provided as a <em>string</em>. The function returns an object of class <tt>anova</tt> which contains further information on the test that can be accessed using the <tt>$</tt> operator.
+<p><tt>linearHypothesis()</tt> computes a test statistic that follows an <span class="math inline">\(F\)</span>-distribution under the null hypothesis. We will not loose too much words on the underlying theory. In general, the idea of the <span class="math inline">\(F\)</span>-test is to compare the fit of different models. When testing a hypothesis about a <em>single</em> coefficient using an <span class="math inline">\(F\)</span>-test, one can show that the test statistic is simply the square of the corresponding <span class="math inline">\(t\)</span>-statistic:</p>
+<p><span class="math display">\[F = t^2 = \left(\frac{\hat\beta_i - \beta_{i,0}}{SE(\hat\beta_i)}\right)^2 \sim F_{1,n-k-1}\]</span></p>
+In <tt>linearHypothesis()</tt>, there are different ways to specify the hypothesis to be tested, e.g., using a vector of the type <tt>character</tt> (as done in the next code chunk), see <tt>?linearHypothesis</tt> The function returns an object of class <tt>anova</tt> which contains further information on the test that can be accessed using the <tt>$</tt> operator.
 </div>
 
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># test hypthesis using the default standard error formula</span>
@@ -465,7 +463,7 @@ t.rob &lt;-<span class="st"> </span><span class="kw">c</span>()
 <div class="footnotes">
 <hr />
 <ol start="3">
-<li id="fn3"><p>The package <tt>sandwich</tt> is a dependency of the package <tt>AER</tt> meaning that it is attached automatically if you load <tt>AER</tt><a href="hah.html#fnref3">↩</a></p></li>
+<li id="fn3"><p>The package <tt>sandwich</tt> is a dependency of the package <tt>AER</tt>, meaning that it is attached automatically if you load <tt>AER</tt>.<a href="hah.html#fnref3">↩</a></p></li>
 </ol>
 </div>
             </section>
@@ -494,7 +492,7 @@ gitbook.start({
 "size": 1
 },
 "edit": null,
-"download": ["URFITE.pdf", "URFITE.epub"],
+"download": ["URFITE.pdf"],
 "toc": {
 "collapse": "subsection",
 "scroll_highlight": true
