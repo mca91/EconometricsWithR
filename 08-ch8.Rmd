@@ -1,6 +1,6 @@
 # Nonlinear Regression Functions {#nrf}
 
-Until now we assumed the regression function to be linear, i.e. we have treated the slope parameter of the regression function as a constant. This implies that the effect on $Y$ of a one unit change in $X$ does not depend on the level of $X$. If, however, the effect of a change in $X$ on $Y$ does depend on the value of $X$, we have to model the relationship using a nonlinear regression function.
+Until now we assumed the regression function to be linear, i.e., we have treated the slope parameter of the regression function as a constant. This implies that the effect on $Y$ of a one unit change in $X$ does not depend on the level of $X$. If, however, the effect of a change in $X$ on $Y$ does depend on the value of $X$, we should use a nonlinear regression function.
 
 Just like for the previous chapter, the packages <tt>AER</tt> [@R-AER] and <tt>stargazer</tt> [@R-stargazer] are required for reproduction of the code presented in this chapter. Check whether the code chunk below executes without any error messages.
 
@@ -11,10 +11,10 @@ library(stargazer)
 
 ## A General Strategy for Modelling Nonlinear Regression Functions 
 
-Let us have a look at an example where in fact using a nonlinear regression function is better suited for the estimation of the population relationship between the regressor, $X$, and the regressand, $Y$: the relationship between the income of schooling districts and their test scores.
+Let us have a look at an example where using a nonlinear regression function is better suited for estimating the population relationship between the regressor, $X$, and the regressand, $Y$: the relationship between the income of schooling districts and their test scores.
 
 ```{r dataset, results='hide', echo=TRUE, message=FALSE}
-# Prepare the data
+# prepare the data
 library(AER)                                                     
 data(CASchools)
 CASchools$size <- CASchools$students/CASchools$teachers
@@ -27,14 +27,14 @@ We start our analysis by computing the correlation between both variables.
 cor(CASchools$income, CASchools$score)
 ```
 
-The correlation coefficient is about $0.71$. This means that income and test scores are positively related: children whose parents have an above average income tend to achieve above average test scores. Can we use the correlation coefficient to assess whether a linear regression fuction models the data adequately? To answer this question we visualize the data and add a linear regression line to the plot.
+Here, income and test scores are positively related: school districts with above average income tend to achieve above average test scores. Does a linear regression fuction model the data adequately? Let us plot the data and add a linear regression line.
 
 <div class="unfolded">
 ```{r fig.align = 'center'}
-# fit linear model
+# fit a simple linear model
 linear_model<- lm(score ~ income, data = CASchools)
 
-# plot observations
+# plot the observations
 plot(CASchools$income, CASchools$score,
      col = "steelblue",
      pch = 20,
@@ -43,18 +43,18 @@ plot(CASchools$income, CASchools$score,
      cex.main = 0.9,
      main = "Test Score vs. District Income and a Linear OLS Regression Function")
 
-# Add the regression line to the plot
-abline(linear_model, col = "red", lwd = 2)
+# add the regression line to the plot
+abline(linear_model, 
+       col = "red", 
+       lwd = 2)
 ```
 </div>
 
 As pointed out in the book, the linear regression line seems to overestimate the true relationship when income is very high or very low and underestimates it for the middle income group.    
 
-Fortunately, usage of the OLS estimator is not restricted to linear functions of the regressors. Thus we can for example model test scores as a function of income and the square of income. The corresponding regression model is
+Fortunately, OLS does not only handle linear functions of the regressors. We can for example model test scores as a function of income and the square of income. The corresponding regression model is
 
-$$TestScore_i = \beta_0 + \beta_1 income_i + \beta_2 income_i^2 + u_i.$$
-
-This is called a *quadratic regression model*. Note, that $income^2$ is treated as an additional explanatory variable. Hence, the quadratic model is a special case of a multivariate regression model. When fitting the model with <tt>lm()</tt> we have to use the <tt>^</tt> operator in conjunction with the function <tt>I()</tt> to add the quadratic term as an additional regressor to the argument <tt>formula</tt>. 
+$$TestScore_i = \beta_0 + \beta_1 \times income_i + \beta_2 \times income_i^2 + u_i,$$ called a *quadratic regression model*. That is, $income^2$ is treated as an additional explanatory variable. Hence, the quadratic model is a special case of a multivariate regression model. When fitting the model with `r ttcode("lm()")` we have to use the `r ttcode("^")` operator in conjunction with the function `r ttcode("I()")` to add the quadratic term as an additional regressor to the argument `r ttcode("formula")`. This is because the regression formula we pass to `r ttcode("formula")` is converted to an object of the class `r ttcode("formula")`. For objects of this class, the operators `r ttcode("+")`, `r ttcode("-")`, `r ttcode("*")` and `r ttcode("^")` have a nonarithmetic interpretation. `r ttcode("I()")` ensures that they are used as arithmetical operators, see `r ttcode("?I")`,
 
 ```{r}
 # fit the quadratic Model
@@ -68,17 +68,17 @@ The output tells us that the estimated regression function is
 
 $$\widehat{TestScore}_i = \underset{(2.90)}{607.3} + \underset{(0.27)}{3.85} \times income_i - \underset{(0.0048)}{0.0423} \times income_i^2.$$
 
-Notice that this estimate of the model allows us to test the hypothesis that the relationship between test scores and district income is linear against the alternative hypothesis that it is quadratic. This corresponds to testing
+This model allows us to test the hypothesis that the relationship between test scores and district income is linear against the alternative that it is quadratic. This corresponds to testing
 
 $$H_0: \beta_2 = 0 \ \ \text{vs.} \ \  H_1: \beta_2\neq0,$$
 
-since $\beta_2=0$ corresponds to a simple linear equation and $\beta_2\neq0$ implies a quadratic relationship. We find that $t=(\hat\beta_2 - 0)/SE(\hat\beta_2) = -0.0423/0.0048 = -8.81$ so the null is rejected at any common level of significance and we conclude that the relationship is nonlinear. This is consistent with the impression gained from the plotted data.
+since $\beta_2=0$ corresponds to a simple linear equation and $\beta_2\neq0$ implies a quadratic relationship. We find that $t=(\hat\beta_2 - 0)/SE(\hat\beta_2) = -0.0423/0.0048 = -8.81$ so the null is rejected at any common level of significance and we conclude that the relationship is nonlinear. This is consistent with the impression gained from the plot.
 
-We now draw the same scatter plot as for the linear model and add the regression line for the quadratic model. Because <tt>abline()</tt> can only draw straight lines, it cannot be used for this task. A function which can be used to draw lines without being restricted to straight lines is <tt>lines()</tt>, see `?lines`. The most basic call of <tt>lines()</tt> is <tt>lines(x_values, y_values)</tt> where <tt>x_values</tt> and <tt>y_values</tt> are vectors of the same length that provide coordinates of the points to be *sequentially* connected by a line. This makes it necessary to sort the coordinate pairs according to the X-values. Otherwise you will not get the desired result! In this example we use the function <tt>order()</tt> to sort the fitted values of <tt>score</tt> according to the observations of <tt>income</tt>.
+We now draw the same scatter plot as for the linear model and add the regression line for the quadratic model. Because `r ttcode("abline()")` can only draw straight lines, it cannot be used here. `r ttcode("lines()")` is a function which allows to draw nonstraight lines, see `?lines`. The most basic call of `r ttcode("lines()")` is `r ttcode("lines(x_values, y_values)")` where `r ttcode("x_values")` and `r ttcode("y_values")` are vectors of the same length that provide coordinates of the points to be *sequentially* connected by a line. This makes it necessary to sort the coordinate pairs according to the X-values. Here we use the function `r ttcode("order()")` to sort the fitted values of `r ttcode("score")` according to the observations of `r ttcode("income")`.
 
 <div class="unfolded">
 ```{r, fig.align="center"}
-# draw scatterplot of observations for income and TestScore
+# draw a scatterplot of the observations for income and test score
 plot(CASchools$income, CASchools$score,
      col  = "steelblue",
      pch = 20,
@@ -86,7 +86,7 @@ plot(CASchools$income, CASchools$score,
      ylab = "Test Score",
      main = "Estimated Linear and Quadratic Regression Functions")
 
-# add linear function to the plot
+# add a linear function to the plot
 abline(linear_model, col = "black", lwd = 2)
 
 # add quatratic function to the plot
@@ -105,40 +105,79 @@ We see that the quadratic function does fit the data much better than the linear
 
 ### Polynomials {-}
 
-The approach used to obtain a quadratic model can be generalized to polynomial models of arbitrary degree $r$. 
-$$Y_i = \beta_0 + \beta_1 X_i + \beta_2 X_i^2 + \ldots + \beta_r X_i^r + u_i$$
+The approach used to obtain a quadratic model can be generalized to polynomial models of arbitrary degree $r$,
+$$Y_i = \beta_0 + \beta_1 X_i + \beta_2 X_i^2 + \cdots + \beta_r X_i^r + u_i.$$
 
-A cubic model ($r=3$) for instance can be estimated in the same way as the quadratic model; we just have to add <tt>I(income^3)</tt> to the <tt>formula</tt> argument in our call of <tt>lm()</tt>.
+A cubic model for instance can be estimated in the same way as the quadratic model; we just have to use a polynomial of degree $r=3$ in  <tt>income</tt>. This conveniently done using the function `r ttcode("poly()")`.
 
 ```{r cubic}
-cubic_model <- lm(score ~ income + I(income^2) + I(income^3), data = CASchools)
+# estimate a cubic model
+cubic_model <- lm(score ~ poly(income, degree = 3, raw = TRUE), data = CASchools)
 ```
 
-In practice the question will arise which polynomial order should be chosen. First note that, similarly as for $r=2$, we can test the null hypothesis that the true relation is linear against the alternative hypothesis that the relationship is a polynomial of degree $r$:
+`r ttcode("poly()")` generates orthogonal polynomials which are orthogonal to the constant by default. Here, we set `r ttcode("raw = TRUE")` such that raw polynomials are evaluated, see `?poly`.
+
+In practice the question will arise which polynomial order should be chosen. First, similarly as for $r=2$, we can test the null hypothesis that the true relation is linear against the alternative hypothesis that the relationship is a polynomial of degree $r$:
 
 $$ H_0: \beta_2=0, \ \beta_3=0,\dots,\beta_r=0 \ \ \ \text{vs.} \ \ \ H_1: \text{at least one} \ \beta_j\neq0, \ j=2,\dots,r $$
 
-This is a joint null hypothesis with $r-1$ restrictions so it can be tested using the $F$-test presented in Chapter \@ref(htaciimr). Remember that the function <tt>linearHypothesis()</tt> can be used to conduct such tests. If, for example, we would like to test the null hypothesis of a linear model against the alternative of a polynomial of a maximal degree $r=3$, we could simply do the following:
+This is a joint null hypothesis with $r-1$ restrictions so it can be tested using the $F$-test presented in Chapter \@ref(htaciimr). <tt>linearHypothesis()</tt> can be used to conduct such tests. For example, we may test the null of a linear model against the alternative of a polynomial of a maximal degree $r=3$ as follows.
 
 ```{r, warning=F, message=F}
 # test the hypothesis of a linear model against quadratic or polynomial
 # alternatives
-linearHypothesis(cubic_model, 
-                 c("I(income^2)=0", "I(income^3)=0"),
-                 white.adj = "hc1"
-)
+
+# set up hypothesis matrix
+R <- rbind(c(0, 0, 1, 0),
+            c(0, 0, 0, 1))
+
+# do the test
+linearHypothesis(cubic_model,
+                 hypothesis.matrix = R,
+                 white.adj = "hc1")
 ```
 
-The $p$-value for this test is very small so that we reject the null hypothesis. However, this does not tell us *which* $r$ to choose. In practice, one approach to determine the degree of the polynomial is to use *sequential testing*:
+We provide a hypothesis matrix as the argument `r ttcode("hypothesis.matrix")`. This is useful when the coefficients have long names, as is the case here due to using `r ttcode("poly()")`, or when the restrictions include multiple coefficients. How the hypothesis matrix $\mathbf{R}$ is interpreted by `r ttcode("linearHypothesis()")` is best seen using matrix algebra: 
+
+For the two linear constrains above, we have
+\begin{align*}
+  \mathbf{R}\boldsymbol{\beta} =& \mathbf{s} \\
+  \begin{pmatrix}
+    0 & 0 & 1 & 0 \\
+    0 & 0 & 0 & 1
+  \end{pmatrix}
+  \begin{pmatrix}
+    \beta_0 \\
+    \beta_1 \\
+    \beta_2 \\
+    \beta_3 \\
+  \end{pmatrix} =&
+  \begin{pmatrix}
+   0 \\
+   0
+  \end{pmatrix} \\
+  \begin{pmatrix}
+    \beta_2 \\
+    \beta_3
+  \end{pmatrix}= &
+  \begin{pmatrix}
+    0 \\
+    0
+  \end{pmatrix}.
+\end{align*}
+`r ttcode("linearHypothesis()")` uses the zero vector for $\mathbf{s}$ by default, see `?linearHypothesis`.
+
+
+The $p$-value for is very small so that we reject the null hypothesis. However, this does not tell us *which* $r$ to choose. In practice, one approach to determine the degree of the polynomial is to use *sequential testing*:
 
 1. Estimate a polynomial model for some maximum value $r$.
-2. Use a $t$-test to test whether $\beta_r = 0$. *Rejection* of the null means that $X^r$ belongs in the regression equation.
+2. Use a $t$-test to test $\beta_r = 0$. *Rejection* of the null means that $X^r$ belongs in the regression equation.
 3. *Acceptance* of the null in step 2 means that $X^r$ can be eliminated from the model. Continue by repeating step 1 with order $r-1$ and test whether $\beta_{r-1}=0$. If the test rejects, use a polynomial model of order $r-1$.
 4. If the tests from step 3 rejects, continue with the procedure until the coefficient on the highest power is statistically significant.
 
 There is no unambiguous guideline how to choose $r$ in step one. However, as pointed out in @stock2015, economic data is often smooth such that it is appropriate to choose small orders like $2$, $3$, or $4$.
 
-We will now demonstrate how to apply <it>sequential testing</it> by the example of the cubic model. 
+We will demonstrate how to apply sequential testing by the example of the cubic model. 
 
 ```{r}
 summary(cubic_model)
@@ -148,31 +187,27 @@ The estimated cubic model stored in <tt>cubic_model</tt> is
 
 $$ \widehat{TestScore}_i = \underset{(5.83)}{600.1} + \underset{(0.86)}{5.02} \times income -\underset{(0.03)}{0.96} \times income^2 - \underset{(0.00047)}{0.00069} \times income^3. $$
 
-From the output we can tell that the $t$-statistic on $income^3$ is $1.42$ so the null that the relationship is quadratic cannot be rejected, even at the $10\%$ level. This is contrary to the result presented book which reports robust standard errors throughout so we will also use robust variance-covariance estimation to reproduce these results.
+The $t$-statistic on $income^3$ is $1.42$ so the null that the relationship is quadratic cannot be rejected, even at the $10\%$ level. This is contrary to the result presented book which reports robust standard errors throughout so we will also use robust variance-covariance estimation to reproduce these results.
 
 ```{r}
-# load the lmtest package for coeftest()
-library(lmtest)
-
 # test the hypothesis using robust standard errors
 coeftest(cubic_model, vcov. = vcovHC(cubic_model, type = "HC1"))
 ```
 
-Notice that the reported standard errors have changed. Furthermore, the coefficient for `income^3` is now significant at the $5\%$ level. This means we reject the hypothesis that the regression function is quadratic against the alternative that it is cubic. Furthermore, we can also test if the coefficients for <tt>income^2</tt> and <tt>income^3</tt> are jointly significant using a robust version of the $F$-test. 
+The reported standard errors have changed. Furthermore, the coefficient for `income^3` is now significant at the $5\%$ level. This means we reject the hypothesis that the regression function is quadratic against the alternative that it is cubic. Furthermore, we can also test if the coefficients for <tt>income^2</tt> and <tt>income^3</tt> are jointly significant using a robust version of the $F$-test. 
 
 ```{r f-test}
-# robust F-test for 
+# perform robust F-test 
 linearHypothesis(cubic_model, 
-                 vcov. = vcovHC(cubic_model, type = "HC1"),
-                 c("I(income^2)=0", "I(income^3)=0")
-                 )
+                 hypothesis.matrix = R,
+                 vcov. = vcovHC(cubic_model, type = "HC1"))
 ```
 
 With a $p$-value of $9.043e^{-16}$, i.e. much less than $0.05$, the null hypothesis of linearity is rejected in favor of the alternative that the relationship is quadratic *or* cubic. 
 
 #### Interpretation of Coefficients in Nonlinear Regression Models {-}
 
-The coefficients in polynomial regression models do not have a simple interpretation. Why is that? Think of a quadratic model: it is not helpful to think of the coefficient on $X$ as the expected change in $Y$ associated with a change in $X$ holding the other regressors constant because one other regressor is $X^2$ which changes as $X$ is varied. This is also the case for other deviations from linearity, for example in models where regressors and/or the dependent variable are log-transformed. A way to approach this is to calculate the estimated effect on $Y$ associated with a change in $X$ for one or more values of $X$. This idea is summarized in Key Concept 8.1.
+The coefficients in polynomial regression do not have a simple interpretation. Why? Think of a quadratic model: it is not helpful to think of the coefficient on $X$ as the expected change in $Y$ associated with a change in $X$ holding the other regressors constant because $X^2$ changes as $X$ varies. This is also the case for other deviations from linearity, for example in models where regressors and/or the dependent variable are log-transformed. A way to approach this is to calculate the estimated effect on $Y$ associated with a change in $X$ for one or more values of $X$. This idea is summarized in Key Concept 8.1.
 
 ```{r, eval = my_output == "html", results='asis', echo=FALSE}
 cat('
@@ -186,7 +221,7 @@ $$ Y_i = f(X_{1i}, X_{2i}, \\dots, X_{ki}) + u_i \\ , \\ i=1,\\dots,n,$$
 
 where $f(X_{1i}, X_{2i}, \\dots, X_{ki})$ is the population regression function and $u_i$ is the error term.
 
-Denote $\\Delta Y$ the expected change in $Y$ associated with $\\Delta X_1$, the change in $X_1$ while holding $X_2, \\cdots , X_k$ constant. That is, the expected change in $Y$ is the difference
+Denote by $\\Delta Y$ the expected change in $Y$ associated with $\\Delta X_1$, the change in $X_1$ while holding $X_2, \\cdots , X_k$ constant. That is, the expected change in $Y$ is the difference
 
 $$\\Delta Y = f(X_1 + \\Delta X_1, X_2, \\cdots, X_k) - f(X_1, X_2, \\cdots, X_k).$$
 
@@ -206,7 +241,7 @@ $$ Y_i = f(X_{1i}, X_{2i}, \\dots, X_{ki}) + u_i \\ , \\ i=1,\\dots,n,$$
 
 where $f(X_{1i}, X_{2i}, \\dots, X_{ki})$ is the population regression function and $u_i$ is the error term.
 
-Denote $\\Delta Y$ the expected change in $Y$ associated with $\\Delta X_1$, the change in $X_1$ while holding $X_2, \\cdots , X_k$ constant. That is, the expected change in $Y$ is the difference
+Denote by $\\Delta Y$ the expected change in $Y$ associated with $\\Delta X_1$, the change in $X_1$ while holding $X_2, \\cdots , X_k$ constant. That is, the expected change in $Y$ is the difference
 
 $$\\Delta Y = f(X_1 + \\Delta X_1, X_2, \\cdots, X_k) - f(X_1, X_2, \\cdots, X_k).$$
 
@@ -223,9 +258,9 @@ $$\widehat{TestScore} = 607.3 + 3.85 \times income - 0.0423 \times income^2\ ?$$
 
 Because the regression function is quadratic, this effect depends on the initial district income. We therefore consider two cases: 
 
-1. An increase in district income form $10$ to $11$ (i.e. from $\$10000$ per capita to $\$11000$)
+1. An increase in district income form $10$ to $11$ (i.e. from $\$10000$ per capita to $\$11000$).
 
-2. An increase in district income from $40$ to $41$ (that is from $\$40000$ to $\$41000$). 
+2. An increase in district income from $40$ to $41$ (that is from $\$40000$ to $\$41000$).
 
 In order to obtain the $\Delta \widehat{Y}$ associated with a change in income form $10$ to $11$, we use the following formula: 
 
@@ -236,7 +271,7 @@ To compute $\widehat{Y}$ using <tt>R</tt> we may use <tt>predict()</tt>.
 # compute and assign the quadratic model
 quadriatic_model <- lm(score ~ income + I(income^2), data = CASchools)
 
-# set up data to predict
+# set up data for prediction
 new_data <- data.frame(income = c(10, 11))
 
 # do the prediction
@@ -249,7 +284,7 @@ diff(Y_hat)
 Analogously we can compute the effect of a change in district income from $40$ to $41$:
 
 ```{r}
-# set up data to predict
+# set up data for prediction
 new_data <- data.frame(income = c(40, 41))
 
 # do the prediction
@@ -259,29 +294,26 @@ Y_hat <- predict(quadriatic_model, newdata = new_data)
 diff(Y_hat)
 ```
 
-So for the quadratic model, the expected change in $TestScore$ induced by an increase in $income$ from $10$ to $11$ is about $2.96$ points but an increase in $income$ from $40$ to $41$ increases the predicted score by only $0.42$. Hence the slope of the estimated quadratic regression function is *steeper* at low levels of income than at higher levels. 
+So for the quadratic model, the expected change in $TestScore$ induced by an increase in $income$ from $10$ to $11$ is about $2.96$ points but an increase in $income$ from $40$ to $41$ increases the predicted score by only $0.42$. Hence, the slope of the estimated quadratic regression function is *steeper* at low levels of income than at higher levels. 
 
 ### Logarithms {-}
 
 Another way to specify a nonlinear regression function is to use the natural logarithm of $Y$ and/or $X$.
-Logarithms convert changes in variables into percentage changes which is convenient as many relationships are naturally expressed in terms of percentages. 
+Logarithms convert changes in variables into percentage changes. This is convenient as many relationships are naturally expressed in terms of percentages. 
 
 There are three different cases in which logarithms might be used. 
 
-1. $X$ could be transformed by taking its logarithm but $Y$ is not.
+1. Transform $X$ with its logarithm, but not $Y$.
 
-2. We could transform $Y$ to its logarithm but leave $X$ at level. 
+2. Analogously we could transform $Y$ to its logarithm but leave $X$ at level. 
 
-3. A third case is that both $Y$ and $X$ are transformed to their logarithms. 
+3. Both $Y$ and $X$ are transformed to their logarithms. 
 
 The interpretation of the regression coefficients is different in each case.  
 
 #### Case I: $X$ is in Logarithm, $Y$ is not. {-}
 
-The regression model then is 
-
-$$Y_i = \beta_0 + \beta_1 \times \ln(X_i) + u_i \text{, } i=1,...,n. $$
-Similar as for polynomial regression we do not have to create a new variable by computing $\ln(X)$. We can simply adjust the 
+The regression model then is  $$Y_i = \beta_0 + \beta_1 \times \ln(X_i) + u_i \text{, } i=1,...,n. $$ Similar as for polynomial regression we do not have to create a new variable before using `r ttcode("lm()")`. We can simply adjust the 
 <tt>formula</tt> argument of <tt>lm()</tt> to tell <tt>R</tt> that the log-transformation of a variable should be used.    
 
 ```{r}
@@ -290,11 +322,10 @@ LinearLog_model <- lm(score ~ log(income), data = CASchools)
 
 # compute robust summary
 coeftest(LinearLog_model, 
-         vcov = vcovHC(LinearLog_model, type = "HC1")
-         )
+         vcov = vcovHC(LinearLog_model, type = "HC1"))
 ```
 
-According to the output the estimated regression function is:
+Hence, the estimated regression function is
 
 $$\widehat{TestScore} = 557.8 + 36.42 \times \ln(income).$$
 
@@ -302,14 +333,14 @@ Let us draw a plot of this function.
 
 <div class="unfolded">
 ```{r, fig.align="center"}
-# draw scatterplot
+# draw a scatterplot
 plot(score ~ income, 
      col = "steelblue",
      pch = 20,
      data = CASchools,
      main = "Linear-Log Regression Line")
 
-# add Linear-Log regression line
+# add the linear-log regression line
 order_id  <- order(CASchools$income)
 
 lines(CASchools$income[order_id],
@@ -319,126 +350,116 @@ lines(CASchools$income[order_id],
 ```
 </div>
 
-We can interpret $\hat{\beta}_1$ as follows: a $1\%$ increase in income is associated with an increase in test scores of $0.01 \times 36.42 = 0.36$ points. In order to get the estimated effect of <it>a one unit </it> change in income (that is a change in the original units, thousands of dollars) on test scores, the method presented in Key Concept 8.1 can be used.
+We can interpret $\hat{\beta}_1$ as follows: a $1\%$ increase in income is associated with an increase in test scores of $0.01 \times 36.42 = 0.36$ points. In order to get the estimated effect of <it>a one unit </it> change in income (that is, a change in the original units, thousands of dollars) on test scores, the method presented in Key Concept 8.1 can be used.
 
 
 ```{r}
 # set up new data
 new_data <- data.frame(income = c(10, 11, 40, 41))
 
-# predict outcomes 
+# predict the outcomes 
 Y_hat <- predict(LinearLog_model, newdata = new_data)
 
-# compute expected difference
-changes <- matrix(Y_hat, nrow = 2, byrow = TRUE)
-changes[, 2] - changes[, 1]
+# compute the expected difference
+Y_hat_matrix <- matrix(Y_hat, nrow = 2, byrow = TRUE)
+Y_hat_matrix[, 2] - Y_hat_matrix[, 1]
 ```
+
+By setting `r ttcode("nrow = 2")` and `r ttcode("byrow = TRUE")` in `r ttcode("matrix()")` we ensure that `r ttcode("Y_hat_matrix")` is a $2\times2$ matrix filled row-wise with the entries of `r ttcode("Y_hat")`. 
 
 The estimated model states that for an income increase from $\$10000$ to $\$11000$, test scores increase by an expected amount of $3.47$ points. When income increases from $\$40000$ to $\$41000$, the expected increase in test scores is only about $0.90$ points.
 
 #### Case II: $Y$ is in Logarithm, $X$ is not {-}
 
-If you want to learn about the absolute impact of an explanatory variable on the dependent variable, it is not recommended to log-transform the latter. There are, however, cases where we want to learn about $\ln(Y)$ instead of $Y$. 
+There are cases where it is useful to regress $\ln(Y)$. 
 
 The corresponding regression model then is 
 
-$$ \ln(Y_i) = \beta_0 + \beta_1 \times X_i + u_i \ \ , \ \ i=1,...,n. $$
+$$ \ln(Y_i) = \beta_0 + \beta_1 \times X_i + u_i , \ \ i=1,...,n. $$
 
 ```{r}
 # estimate a log-linear model 
 LogLinear_model <- lm(log(score) ~ income, data = CASchools)
 
-# compute a robust summary
+# obtain a robust coefficient summary
 coeftest(LogLinear_model, 
-         vcov = vcovHC(LogLinear_model, type = "HC1")
-         )
+         vcov = vcovHC(LogLinear_model, type = "HC1"))
 ```
 
-The estimated regression function is 
-$$\widehat{\ln(TestScore)} = 6.439 + 0.00284 \times income.$$
-Since we are interested in $\ln(Y)$ rather than $Y$, we *do not* re-transform the dependent variable.   
+The estimated regression function is $$\widehat{\ln(TestScore)} = 6.439 + 0.00284 \times income.$$ An increase in district income by $\$1000$ is exptected to increase test scores by $100\times 0.00284 \% = 0.284\%$. 
+
+```{r}
+# set up new data
+new_data <- data.frame(income = c(10, 11, 40, 41))
+
+# predict the outcomes 
+Y_hat <- predict(LogLinear_model, newdata = new_data)
+
+# compute the expected difference
+Y_hat_matrix <- matrix(exp(Y_hat), nrow = 2, byrow = TRUE)
+Y_hat_matrix[, 2] - Y_hat_matrix[, 1]
+```
+
+We use `r ttcode("exp()")` to transform the fitted values back to the original scale in order to compute expected changes in test scores. The log-linear model states that an income increase from $\$10000$ to $\$11000$ increases test scores by an expected amount of $1.83$ points. When district income increases from $\$40000$ to $\$41000$, the expected increase in test scores is only about $2.00$ points.
+
+#### Case III: $X$ and $Y$ are in Logarithms {-}
+
+The log-log regression model is $$\ln(Y_i) = \beta_0 + \beta_1 \times \ln(X_i) + u_i, \ \ i=1,...,n.$$
+
+```{r log log}
+# estimate the log-log model
+LogLog_model <- lm(log(score) ~ log(income), data = CASchools)
+
+# print robust coefficient summary to the console
+coeftest(LogLog_model, 
+         vcov = vcovHC(LogLog_model, type = "HC1"))
+```
+
+The estimated regression function hence is $$\widehat{\ln(TestScore)} = 6.336 + 0.0554 \times \ln(income).$$ In a log-log model, a $1\%$ change in $X$ is associated with an estimated $\hat\beta_1 \%$ change in $Y$. 
+
+We now reproduce Figure 8.5 of the book and compute expected changes in test scores due to changes in district income considered in cases I and II.
 
 <div class="unfolded">
 ```{r, fig.align="center"}
-# scatterplot
+# generate a scatterplot
 plot(log(score) ~ income, 
      col = "steelblue", 
      pch = 20, 
      data = CASchools,
-     main = "Log-Linear Regression Function"
-     )
+     main = "Log-Linear Regression Function")
 
-# add the Log-Linear regression line
+# add the log-linear regression line
 order_id  <- order(CASchools$income)
 
 lines(CASchools$income[order_id], 
       fitted(LogLinear_model)[order_id], 
       col = "red", 
       lwd = 2)
-```
-</div>
 
-Note that the $Y$-Axis is now log-transformed.
-
-In a log-linear model, a one-unit change in $X$ is associated with an estimated $100 \times \hat\beta_1 \%$ change in $Y$. This time we leave the $X$ values unchanged. 
-
-```{r}
-# do the predictions
-Y_hat <- predict(LogLinear_model, newdata = new_data)
-
-# compute difference in changes
-changes <- matrix(Y_hat, nrow = 2, byrow = TRUE)
-changes[, 2] - changes[, 1]
-```
-
-
-#### Case III: $X$ and $Y$ are in Logarithms {-}
-
-The log-log regression model is
-
-$$\ln(Y_i) = \beta_0 + \beta_1 \times \ln(X_i) + u_i \ \ , \ \ i=1,...,n. $$
-
-```{r log log}
-# Estimate the Log-Log model
-LogLog_model <- lm(log(score) ~ log(income), data = CASchools)
-
-# print robust summary to the console
-coeftest(LogLog_model, 
-         vcov = vcovHC(LogLog_model, type = "HC1")
-         )
-```
-
-The estimated regression function hence is 
-$$\widehat{\ln(TestScore)} = 6.336 + 0.0554 \times \ln(income).$$
-
-
-<div class="unfolded">
-```{r, fig.align="center"}
-# scatterplot
-plot(log(score) ~ income, 
-     data = CASchools,
-     col = "steelblue", 
-     pch = 20,
-     main = "Log-Log Regression Function")
-
-# plot the estimate log-log regression line
+# add the log-log regression line
 lines(sort(CASchools$income), 
       fitted(LogLog_model)[order(CASchools$income)], 
-      col = "red", 
+      col = "green", 
       lwd = 2)
+
+# add a legend
+legend("bottomright",
+       legend = c("log-linear model", "log-log model"),
+       lwd = 2,
+       col = c("red", "green"))
 ```
 </div>
-
-In a log-log model, a $1\%$ change in $X$ is associated with an estimated $\hat\beta_1 \%$ change in $Y$. 
 
 ```{r}
 # predict Y
 Y_hat <- predict(LogLog_model, newdata = new_data)
 
 # compute changes
-changes <- matrix(Y_hat, nrow = 2, byrow = TRUE)
-changes[ ,2] - changes[ ,1]
+Y_hat_matrix <- matrix(exp(Y_hat), nrow = 2, byrow = TRUE)
+Y_hat_matrix[, 2] - Y_hat_matrix[, 1]
 ```
+
+As for the log-linear model, we transform the fitted values using `r ttcode("exp()")`. The log-log model states that an income increase from $\$10000$ to $\$11000$ increases test scores by an expected amount of $3.40$ points while for a increase in district income from $\$40000$ to $\$41000$, the expected increase in test scores is $0.95$ points.
 
 Key Concept 8.2 summarizes the three logarithmic regression models.
 
@@ -511,33 +532,35 @@ coeftest(polyLog_model,
          vcov = vcovHC(polyLog_model, type = "HC1"))
 ```
 
-Which of the models presented here is the most suitable one? Comparing by $\overline{R^2}$ we find that, leaving out the log-linear model, all models have a similar fit. In the class of polynomial models, the cubic specification has the highest $\overline{R^2}$ whereas the linear-log specification is the best of the log-models. 
+Comparing by $\bar{R}^2$ we find that, leaving out the log-linear model, all models have a similar adjusted fit. In the class of polynomial models, the cubic specification has the highest $\bar{R}^2$ whereas the linear-log specification is the best of the log-models. 
 
 ```{r}
 # compute the adj. R^2 for the nonlinear models
-R2 <-rbind("quadratic" = summary(quadratic_model)$adj.r.squared,
-           "cubic" = summary(cubic_model)$adj.r.squared,
-           "LinearLog" = summary(LinearLog_model)$adj.r.squared,
-           "LogLinear" = summary(LogLinear_model)$adj.r.squared,
-           "LogLog" = summary(LogLog_model)$adj.r.squared,
-           "polyLog" = summary(polyLog_model)$adj.r.squared
-)
-colnames(R2) <- "R^2"
-R2
+adj_R2 <-rbind("quadratic" = summary(quadratic_model)$adj.r.squared,
+               "cubic" = summary(cubic_model)$adj.r.squared,
+               "LinearLog" = summary(LinearLog_model)$adj.r.squared,
+               "LogLinear" = summary(LogLinear_model)$adj.r.squared,
+               "LogLog" = summary(LogLog_model)$adj.r.squared,
+               "polyLog" = summary(polyLog_model)$adj.r.squared)
+
+# assign column names
+colnames(adj_R2) <- "adj_R2"
+
+adj_R2
 ```
 
-Let us now compare the cubic model and the linear-log model graphically by plotting the corresponding estimated regression functions.
+Let us now compare the cubic and the linear-log model by plotting the corresponding estimated regression functions.
 
 <div class="unfolded">
 ```{r, fig.align='center'}
-# scatter plot
+# generate a scatterplot
 plot(score ~ income, 
      data = CASchools,
      col = "steelblue", 
      pch = 20,
      main = "Linear-Log and Cubic Regression Functions")
 
-# add Linear-Log regression line
+# add the linear-log regression line
 order_id  <- order(CASchools$income)
 
 lines(CASchools$income[order_id],
@@ -545,19 +568,19 @@ lines(CASchools$income[order_id],
       col = "darkgreen", 
       lwd = 2)
 
-# add cubic regression line
+# add the cubic regression line
 lines(x = CASchools$income[order_id], 
       y = fitted(cubic_model)[order_id],
-      col="darkred", 
-      lwd=2) 
+      col = "darkred", 
+      lwd = 2) 
 ```
 </div>
 
-We see that both regression lines look nearly identical. Altogether The linear-log model is preferable since it has a slightly higher $\overline{R^2}$ and is more parsimonious in terms of regressors: it does not include higher-degree polynomials.
+Both regression lines look nearly identical. Altogether the linear-log model may be preferable since it is more parsimonious in terms of regressors: it does not include higher-degree polynomials.
 
 ## Interactions Between Independent Variables
 
-There are research questions where it is interesting to learn how the effect on $Y$ of a change in an independent variable depends on the value of another independent variable. For example, we may ask if districts with many English learners benefit differentially from a decrease in class sizes than those with few English learning students. To assess this using a multiple regression model, we need to include an interaction term. We will consider three cases:
+There are research questions where it is interesting to learn how the effect on $Y$ of a change in an independent variable depends on the value of another independent variable. For example, we may ask if districts with many English learners benefit differentially from a decrease in class sizes to those with few English learning students. To assess this using a multiple regression model, we include an interaction term. We consider three cases:
 
 1. Interactions between two binary variables.
 
@@ -565,7 +588,7 @@ There are research questions where it is interesting to learn how the effect on 
 
 3. Interactions between two continuous variables.
 
-The following subsections discuss these cases briefly and demonstrate how to perform such regressions using <tt>R</tt>.
+The following subsections discuss these cases briefly and demonstrate how to perform such regressions in <tt>R</tt>.
 
 #### Interactions Between Two Binary Variables {-}
 
@@ -575,21 +598,19 @@ $$ Y_i = \beta_0 + \beta_1 \times D_{1i} + \beta_2 \times D_{2i} + u_i. $$
 
 Now assume that
 
-\begin{align}
+\begin{align*}
   Y_i=& \, \ln(Earnings_i),\\
-  \\
   D_{1i} =& \,
    \begin{cases}
       1 & \text{if $i^{th}$ person has a college degree,} \\
       0 & \text{else},
     \end{cases} \\
-    \\
   D_{2i} =& \, 
     \begin{cases}
       1 & \text{if $i^{th}$ person is female} \\
       0 & \text{if $i^{th}$ person is male}.
-    \end{cases}\\
-\end{align}
+    \end{cases}
+\end{align*}
 
 We know that $\beta_1$ measures the average difference in $\ln(Earnings)$ between individuals with and without a college degree and $\beta_2$ is the gender differential in $\ln(Earnings)$, ceteris paribus. This model *does not* allow us to determine if there is a gender specific effect of having a college degree and, if so, *how strong* this effect is. It is easy to come up with a model specification that allows to investigate this:
 
@@ -618,7 +639,7 @@ The coefficients can be expressed either as expected values or as the difference
 ')
 ```
 
-Following Key Concepts 8.3 we have
+Following Key Concept 8.3 we have
 
 \begin{align*}
   E(Y_i\vert D_{1i}=0, D_{2i} = d_2) =& \, \beta_0 + \beta_1 \times 0 + \beta_2 \times d_2 + \beta_3 \times (0 \times d_2) \\
@@ -629,15 +650,15 @@ If $D_{1i}$ switches from $0$ to $1$ we obtain
 
 \begin{align*}
   E(Y_i\vert D_{1i}=1, D_{2i} = d_2) =& \, \beta_0 + \beta_1 \times 1 + \beta_2 \times d_2 + \beta_3 \times (1 \times d_2) \\
-  =& \, \beta_0 + \beta_1 + \beta_2 \times d_2 + \beta_3 d_2.
+  =& \, \beta_0 + \beta_1 + \beta_2 \times d_2 + \beta_3 \times d_2.
 \end{align*}
 
 Hence, the overall effect is
 
-$$ E(Y_i\vert D_{1i}=1, D_{2i} = d_2) - E(Y_i\vert D_{1i}=0, D_{2i} = d_2) = \beta_1 + \beta_3 d_2 $$
+$$ E(Y_i\vert D_{1i}=1, D_{2i} = d_2) - E(Y_i\vert D_{1i}=0, D_{2i} = d_2) = \beta_1 + \beta_3 \times d_2 $$
 so the effect is a difference of expected values.
 
-##### Application to the Student-Teacher Ratio and the Percentage of English Learners {-}
+#### Application to the Student-Teacher Ratio and the Percentage of English Learners {-}
 
 Now let
 
@@ -650,7 +671,7 @@ Now let
   \\
   HiEL =& \,
     \begin{cases}
-      1, & \text{if $PctEL \geq 10\%$} \\
+      1, & \text{if $PctEL \geq 10$} \\
       0, & \text{else}.
     \end{cases}
 \end{align*}
@@ -658,47 +679,61 @@ Now let
 We may use <tt>R</tt> to construct the variables above as follows.
 
 ```{r}
-# Add HiSTR to CASchools
+# append HiSTR to CASchools
 CASchools$HiSTR <- as.numeric(CASchools$size >= 20)
 
-# Add HiEL to CASchools
+# append HiEL to CASchools
 CASchools$HiEL <- as.numeric(CASchools$english >= 10)
 ```
 
 We proceed by estimating the model
 
-$$ TestScore_i = \beta_0 + \beta_1 \times HiSTR + \beta_2 \times HiEL + \beta_3 \times (HiSTR \times HiEL) + u_i $$
+\begin{align}
+TestScore = \beta_0 + \beta_1 \times HiSTR + \beta_2 \times HiEL + \beta_3 \times (HiSTR \times HiEL) + u_i. (\#eq:im)
+\end{align}
 
-using <tt>lm()</tt>. There are several ways to add an interaction term to the <tt>formula</tt> argument when using <tt>lm()</tt> but the most intuitive way is to use the product of both variables <tt>HiEL * HiSTR</tt>.
+There are several ways to add the interaction term to the <tt>formula</tt> argument when using <tt>lm()</tt> but the most intuitive way is to use <tt>HiEL * HiSTR</tt>.^[Appending <tt>HiEL * HiSTR</tt> to the formula will add <tt>HiEL</tt>, <tt>HiSTR</tt> *and* their interaction as regressors while <tt>HiEL:HiSTR</tt> only adds the interaction term.]
 
 ```{r}
-# estimate the model with binary interaction term
-bi_model <- lm(score ~ HiSTR + HiEL + HiSTR * HiEL, data = CASchools)
+# estimate the model with a binary interaction term
+bi_model <- lm(score ~ HiSTR * HiEL, data = CASchools)
 
-# print robust summary of coefficients
+# print a robust summary of the coefficients
 coeftest(bi_model, vcov. = vcovHC(bi_model, type = "HC1"))
 ```
 
-The estimated regression model is
-
-$$ \widehat{TestScore} = \underset{(1.39)}{664.1} - \underset{(1.93)}{1.9} \times HiSTR - \underset{(2.33)}{18.3} \times HiEL - \underset{(3.12)}{3.3} \times (HiSTR \times HiEL) $$ 
-
-and it predicts that the effect of moving from a school district with a low student-teacher ratio to a district with a high student-teacher ratio, depending on high or low percentage of english learners is $-1.9-3.3\times HiEL$. So for districts with a low share of english learners ($HiEL = 0$), the estimated effect is a decrease of $1.9$ points in test scores while for districts with a big fraction of english learner ($HiEL = 1$), the predicted decrease in test scores amounts to $1.9 + 3.3 = 5.2$ points, on average.
+The estimated regression model is $$\widehat{TestScore} = \underset{(1.39)}{664.1} - \underset{(1.93)}{1.9} \times HiSTR - \underset{(2.33)}{18.3} \times HiEL - \underset{(3.12)}{3.3} \times (HiSTR \times HiEL)$$ and it predicts that the effect of moving from a school district with a low student-teacher ratio to a district with a high student-teacher ratio, depending on high or low percentage of english learners is $-1.9-3.3\times HiEL$. So for districts with a low share of english learners ($HiEL = 0$), the estimated effect is a decrease of $1.9$ points in test scores while for districts with a large fraction of English learnes ($HiEL = 1$), the predicted decrease in test scores amounts to $1.9 + 3.3 = 5.2$ points.
 
 We can also use the model to estimate the mean test score for each possible combination of the included binary variables.
 
 ```{r}
 # estimate means for all combinations of HiSTR and HiEL
-predict(bi_model, newdata = data.frame("HiSTR"=0, "HiEL"=0))
-predict(bi_model, newdata = data.frame("HiSTR"=0, "HiEL"=1))
-predict(bi_model, newdata = data.frame("HiSTR"=1, "HiEL"=0))
-predict(bi_model, newdata = data.frame("HiSTR"=1, "HiEL"=1))
+
+# 1.
+predict(bi_model, newdata = data.frame("HiSTR" = 0, "HiEL" = 0))
+
+# 2.
+predict(bi_model, newdata = data.frame("HiSTR" = 0, "HiEL" = 1))
+
+# 3.
+predict(bi_model, newdata = data.frame("HiSTR" = 1, "HiEL" = 0))
+
+# 4.
+predict(bi_model, newdata = data.frame("HiSTR" = 1, "HiEL" = 1))
 ```
+
+We now verify that these predictions are differences in the coefficient estimates presented in equation \@ref(eq:im):
+
+\begin{align*}
+\widehat{TestScore} = \hat\beta_0 = 664.1 \quad &\Leftrightarrow \quad HiSTR = 0, \, HIEL = 0\\
+\widehat{TestScore} = \hat\beta_0 + \hat\beta_2 = 664.1 - 18.3 = 645.8 \quad &\Leftrightarrow \quad HiSTR = 0, \, HIEL = 1\\
+\widehat{TestScore} = \hat\beta_0 + \hat\beta_1 = 664.1 - 1.9 = 662.2 \quad &\Leftrightarrow \quad HiSTR = 1, \, HIEL = 0\\
+\widehat{TestScore} = \hat\beta_0 + \hat\beta_1 + \hat\beta_2 + \hat\beta_3  = 664.1 - 1.9 - 18.3 - 3.3 = 640.6 \quad &\Leftrightarrow \quad HiSTR = 1, \, HIEL = 1
+\end{align*}
 
 #### Interactions Between a Continuous and a Binary Variable {-}
 
-Now assume that $X_i$ is the years of working experience of person $i$, which is a continuous variable. We than have
-
+Now let $X_i$ denote the years of working experience of person $i$, which is a continuous variable. We have
 \begin{align*}
   Y_i =& \, \ln(Earnings_i), \\
   \\
@@ -711,13 +746,13 @@ Now assume that $X_i$ is the years of working experience of person $i$, which is
     \end{cases}
 \end{align*}
 
-The base model thus is
+The baseline model thus is
 
 $$ Y_i = \beta_0 + \beta_1 X_i + \beta_2 D_i + u_i, $$
 
-a simple multiple regression model that allows us to estimate the average benefit of having a college degree holding working experience constant as well as the average effect on earnings of a change in working experience holding college degree constant. 
+a multiple regression model that allows us to estimate the average benefit of having a college degree holding working experience constant as well as the average effect on earnings of a change in working experience holding college degree constant. 
 
-By adding the interaction term $X_i \times D_i$ we allow the effect of an additional year of work experience to differ for person with and without college degree,
+By adding the interaction term $X_i \times D_i$ we allow the effect of an additional year of work experience to differ between individuals with and without college degree,
 
 $$ Y_i = \beta_0 + \beta_1 X_i + \beta_2 D_i + \beta_3  (X_i \times D_i) + u_i. $$
 
@@ -725,9 +760,9 @@ Here, $\beta_3$ is the expected difference in the effect of an additional year o
 
 $$ Y_i = \beta_0 + \beta_1 X_i + \beta_2 (X_i \times D_i) + u_i. $$
 
-This model states that the expected impact of an additional year of work experience on earnings differs for for college graduates and non-graduates but that graduating on its own does not does not increase earnings. 
+This model states that the expected impact of an additional year of work experience on earnings differs for for college graduates and non-graduates but that graduating on its own does not increase earnings. 
 
-All three population regression functions can be visualized by straight lines. Key Concept 8.4 summarizes the differences.
+All three regression functions can be visualized by straight lines. Key Concept 8.4 summarizes the differences.
 
 ```{r, eval = my_output == "html", results='asis', echo=FALSE}
 cat('
@@ -778,72 +813,63 @@ X <- runif(200,0, 15)
 D <- sample(0:1, 200, replace = T)
 Y <- 450 +  150 * X + 500 * D + 50 * (X * D) + rnorm(200, sd = 300)
 
-# divide plotting area
+# divide plotting area accordingly
 m <- rbind(c(1, 2), c(3, 0))
 layout(m)
 
-# Estimate models and plot regression lines
+# estimate the models and plot the regression lines
 
-# 1.(base model)
+# 1. (baseline model)
 plot(X, log(Y),
      pch = 20,
      col = "steelblue",
-     main = "Different Intercepts, Same Slope"
-)
+     main = "Different Intercepts, Same Slope")
+
 mod1_coef <- lm(log(Y) ~ X + D)$coefficients
 
 abline(coef = c(mod1_coef[1], mod1_coef[2]), 
        col = "red",
-       lwd = 1.5
-       )
+       lwd = 1.5)
 
 abline(coef = c(mod1_coef[1] + mod1_coef[3], mod1_coef[2]), 
        col = "green",
-       lwd = 1.5
-       )
-              
+       lwd = 1.5)
        
-# 2. (base model + interaction term)
+# 2. (baseline model + interaction term)
 plot(X, log(Y),
      pch = 20,
      col = "steelblue",
-     main = "Different Intercepts, Different Slopes"
-)
+     main = "Different Intercepts, Different Slopes")
 
 mod2_coef <- lm(log(Y) ~ X + D + X:D)$coefficients
 
 abline(coef = c(mod2_coef[1], mod2_coef[2]), 
        col = "red",
-       lwd = 1.5
-)
+       lwd = 1.5)
 
 abline(coef = c(mod2_coef[1] + mod2_coef[3], mod2_coef[2] + mod2_coef[4]), 
        col = "green",
-       lwd = 1.5
-)
+       lwd = 1.5)
 
 # 3. (omission of D as regressor + interaction term)
 plot(X, log(Y),
      pch = 20,
      col = "steelblue",
-     main = "Same Intercept, Different Slopes"
-)
+     main = "Same Intercept, Different Slopes")
 
 mod3_coef <- lm(log(Y) ~ X + X:D)$coefficients
 
 abline(coef = c(mod3_coef[1], mod3_coef[2]), 
        col = "red",
-       lwd = 1.5
-)
+       lwd = 1.5)
 
 abline(coef = c(mod3_coef[1], mod3_coef[2] + mod3_coef[3]), 
        col = "green",
-       lwd = 1.5
-)
+       lwd = 1.5)
 ```
 </div>
 
-##### Application to the Student-Teacher Ratio and the Percentage of English Learners {-}
+#### Application to the Student-Teacher Ratio and the Percentage of English Learners {-}
 
 Using a model specification like the second one discussed in Key Concept 8.3 (different slope, different intercept) we may answer the question whether the effect on test scores of decreasing the student-teacher ratio depends on whether there are many or few English learners. We estimate the regression model
 
@@ -857,22 +883,16 @@ bci_model <- lm(score ~ size + HiEL + size * HiEL, data = CASchools)
 coeftest(bci_model, vcov. = vcovHC(bci_model, type = "HC1"))
 ```
 
-The estimated regression model is
-
-$$ \widehat{TestScore} = \underset{(11.87)}{682.2} - \underset{(0.59)}{0.97} \times size + \underset{(19.51)}{5.6} \times HiEL - \underset{(0.97)}{1.28} \times (size \times HiEL). $$
-
-We find that the estimated regression line for districts with a low fraction of English learners ($HiEL_i=0$) is 
-
-$$ \widehat{TestScore} = 682.2 - 0.97\times size_i. $$
+The estimated regression model is $$ \widehat{TestScore} = \underset{(11.87)}{682.2} - \underset{(0.59)}{0.97} \times size + \underset{(19.51)}{5.6} \times HiEL - \underset{(0.97)}{1.28} \times (size \times HiEL). $$ The estimated regression line for districts with a low fraction of English learners ($HiEL_i=0$) is $$ \widehat{TestScore} = 682.2 - 0.97\times size_i. $$
 
 For districts with a high fraction of English learners we have
 
-\begin{align} 
+\begin{align*} 
   \widehat{TestScore} =& \, 682.2 + 5.6 - 0.97\times size_i - 1.28 \times size_i \\
    =& \, 687.8 - 2.25 \times size_i.
-\end{align}
+\end{align*}
 
-The predicted increase in test scores following a reduction of the student-teacher ratio by $1$ unit is about $0.97$ points in districts where the fraction of English learners is low but $2.25$ in districts with a high share of English learners. From the coefficient on the interaction term $size \times HiEL$ we see that the difference between both effects is $1.28$.
+The predicted increase in test scores following a reduction of the student-teacher ratio by $1$ unit is about $0.97$ points in districts where the fraction of English learners is low but $2.25$ in districts with a high share of English learners. From the coefficient on the interaction term $size \times HiEL$ we see that the difference between both effects is $1.28$ points.
 
 The next code chunk draws both lines belonging to the model. In order to make observations with $HiEL = 0$ distinguishable from those with $HiEL = 1$, we use different colors.
 
@@ -883,48 +903,45 @@ id <- CASchools$english >= 10
 
 # plot observations with HiEL = 0 as red dots
 plot(CASchools$size[!id], CASchools$score[!id],
+     xlim = c(0, 27),
+     ylim = c(600, 720),
      pch = 20,
      col = "red",
      main = "",
      xlab = "Class Size",
-     ylab = "Test Score"
-     )
+     ylab = "Test Score")
 
 # plot observations with HiEL = 1 as green dots
 points(CASchools$size[id], CASchools$score[id],
      pch = 20,
-     col = "green"
-     )
+     col = "green")
 
 # read out estimated coefficients of bci_model
 coefs <- bci_model$coefficients
 
-# Draw the estimated regression line for HiEL = 0
+# draw the estimated regression line for HiEL = 0
 abline(coef = c(coefs[1], coefs[2]),
        col = "red",
-       lwd = 1.5
-       )
+       lwd = 1.5)
 
-# Draw the estimated regression line for HiEL = 1
+# draw the estimated regression line for HiEL = 1
 abline(coef = c(coefs[1] + coefs[3], coefs[2] + coefs[4]),
        col = "green", 
-       lwd = 1.5 
-       )
+       lwd = 1.5 )
 
-# Add a legend to the plot
+# add a legend to the plot
 legend("topright", 
        pch = c(20, 20), 
        col = c("red", "green"), 
-       legend = c("HiEL = 0", "HiEL = 1")
-       )
+       legend = c("HiEL = 0", "HiEL = 1"))
 ```
 </div>
 
 #### Interactions Between Two Continuous Variables {-}
 
-If we have a regression model with $Y$ being the log earnings and two continuous regressors $X_1$, the years of work experience, and $X_2$, the years of schooling, a simple multiple regression model cannot be used to estimate the effect on wages of an additional year of work experience depending on a given level of schooling. This effect can be assessed by including the interaction term $(X_{1i} \times X_{2i})$ in the model:
+Consider a regression model with $Y$ the log earnings and two continuous regressors $X_1$, the years of work experience, and $X_2$, the years of schooling. We want to estimate the effect on wages of an additional year of work experience depending on a given level of schooling. This effect can be assessed by including the interaction term $(X_{1i} \times X_{2i})$ in the model:
 
-$$ Y_i = \beta_0 + \beta_1 X_{1i} + \beta_2 X_{2i} + \beta_3 \times (X_{1i} \times X_{2i}) + u_i $$
+$$ \Delta Y_i = \beta_0 + \beta_1 \times X_{1i} + \beta_2 \times X_{2i} + \beta_3 \times (X_{1i} \times X_{2i}) + u_i $$
 
 Following Key Concept 8.1 we find that the effect on $Y$ of a change on $X_1$ given $X_2$ is 
 $$ \frac{\Delta Y}{\Delta X_1} = \beta_1 + \beta_3 X_2. $$
@@ -960,11 +977,9 @@ interaction term as a regressor to the model $$ Y_i = \\beta_0 + \\beta_1 X_1 + 
 ')
 ```
 
+#### Application to the Student-Teacher Ratio and the Percentage of English Learners
 
-
-##### Application to the Student-Teacher Ratio and the Percentage of English Learners
-
-We will now examine the interaction between student-teacher ratio and the percentage of english learners which both are continuous variables. 
+We now examine the interaction between the continuous variables student-teacher ratio and the percentage of English learners. 
 
 ```{r}
 # estimate regression model including the interaction between 'PctEL' and 'size'
@@ -982,7 +997,7 @@ For the interpretation, let us consider the quartiles of $PctEL$.
 summary(CASchools$english)
 ```
 
-According to \@ref(eq:generalinteraction), if $PctEL$ is at its median value of $8.78$, the slope of the regression function relating test scores and the student teacher ratio is predicted to be $-1.12 + 0.0012 \times 8.78 = -1.11$. This means that increasing the student-teacher ratio by one unit is expected to deteriorate test scores by $1.11$ points. For the $75\%$ quantile, the estimated change on $TestScore$ of a one-unit increase in $STR$ is estimated by $-1.12 + 0.0012 \times 23.0 = -1.09$ so the slope is somewhat lower. The interpretation is that for a school district with a share of $23\%$ English learners, a reduction of the student-teacher ratio by one unit is expected to increase the test scores by only $1.09$ points.
+According to \@ref(eq:generalinteraction), if $PctEL$ is at its median value of $8.78$, the slope of the regression function relating test scores and the student teacher ratio is predicted to be $-1.12 + 0.0012 \times 8.78 = -1.11$. This means that increasing the student-teacher ratio by one unit is expected to deteriorate test scores by $1.11$ points. For the $75\%$ quantile, the estimated change on $TestScore$ of a one-unit increase in $STR$ is estimated by $-1.12 + 0.0012 \times 23.0 = -1.09$ so the slope is somewhat lower. The interpretation is that for a school district with a share of $23\%$ English learners, a reduction of the student-teacher ratio by one unit is expected to increase test scores by only $1.09$ points.
 
 Note, however, that the output produced by <tt>summary()</tt> indicates that the difference of the effect for the median and the $75\%$ quantile is not statistically significant. The $p$-value for the test $H_0: \beta_3 = 0$ cannot be rejected at the $5\%$ level of significance. 
 
