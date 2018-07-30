@@ -1524,3 +1524,498 @@ We are now able to answer the three question posed at the beginning of this sect
 2. When controlling for the students' economic background we find evidence of non-linearities in the relationship between student-teacher ratio and test scores.
 
 3. The linear specification (2) predicts that a reduction of the student-teacher ratio by two students per teacher leads to an improvement in test scores of about $-0.73 \times (-2) = 1.46$ points. Since the model is linear, this effect is independent of the class size. Assume that the student-teacher ratio is $20$. For example, model (5) predicts that the reduction increases test scores by $$64.33*18+18^2*(-3.42)+18^3*(0.059) - (64.33*20+20^2*(-3.42)+20^3*(0.059)) \approx 3.3$$ points. If the ratio is $22$, a reduction to $20$ leads to a predicted improvement in test scores of $$64.33*20+20^2*(-3.42)+20^3*(0.059) - (64.33*22+22^2*(-3.42)+22^3*(0.059)) \approx 2.4$$ points. This suggests that the effect is stronger in smaller classes.
+
+
+
+## Exercises
+
+```{r, echo=FALSE, results='asis'}
+if (my_output=="html"){
+  cat('
+<div  class = "DCexercise">
+
+#### 1. Correlation and (Non)linearity I {-}
+ 
+Consider the following simple linear regression model
+
+$$medv_i = \\beta_0 + \\beta_1\\times lstat_i + u_i.$$
+
+with <tt>medv</tt> (median house value) and <tt>lstat</tt> (percent of households with low socioeconomic status) being variables from the already known <tt>Boston</tt> data set.
+
+The package <tt>MASS</tt> has been loaded. The model object from the above regression is available as <tt>mod</tt> in your working environment.
+
+**Instructions:**
+
+  + Compute the correlation between <tt>medv</tt> and <tt>lstat</tt>.
+  
+  + Plot <tt>medv</tt> against <tt>lstat</tt> and add the regression line from the model object <tt>mod</tt>. What do you notice?
+        
+<!--html_preserve-->
+
+<div data-datacamp-exercise data-lang="r">
+        
+  <code data-type="pre-exercise-code">
+  library(MASS)
+  mod <- lm(medv ~ lstat, data = Boston)
+  </code>
+  
+  <code data-type="sample-code">
+  # Compute the correlation between medv and lstat
+  
+  
+  # Plot medv against lstat and draw the regression line
+  
+  
+  
+  </code>
+  
+  <code data-type="solution">
+  # Compute the correlation between medv and lstat
+  cor(Boston$medv, Boston$lstat)
+  
+  # Plot medv against lstat and draw the regression line
+  plot(medv ~ lstat, data = Boston)
+  abline(mod, col = "red")
+  
+  </code>
+  
+  <code data-type="sct">
+  ex() %>% check_function("cor") %>% check_result() %>% check_equal()
+  test_or(ex() %>% check_function("plot") %>% {
+        check_arg(., "formula") %>% check_equal()
+        check_arg(., "data") %>% check_equal()
+      },
+  ex() %>% override_solution("plot(Boston$medv, Boston$lstat)") %>% check_function("plot") %>% {
+        check_arg(., "x") %>% check_equal()
+        check_arg(., "y") %>% check_equal()
+      },
+  ex() %>% override_solution("plot(Boston$medv ~ Boston$lstat)") %>% check_function("plot") %>%
+        check_arg("formula") %>% check_equal()
+      )
+  #ex() %>% check_function("abline") %>% check_arg("reg") %>% check_equal()
+  success_msg("Although the correlation coefficient suggests that medv and lstat are negatively linearly   dependent, the relationship between them is clearly nonlinear. Hence a simple linear regression specification is inappropriate here.")
+  
+  </code>
+  
+</div>
+        
+<!--/html_preserve-->
+        
+**Hints:**
+        
+  + You can use <tt>cor()</tt> to compute the correlation between variables.
+      
+  + As usual you can use <tt>plot()</tt> and <tt>abline()</tt> to visualize regression results.
+      
+</div>')
+} else {
+  cat('\\begin{center}\\textit{This interactive part of URFITE is only available in the HTML version.}\\end{center}')
+}
+```
+
+```{r, echo=FALSE, results='asis'}
+if (my_output=="html") {
+  cat('
+<div  class = "DCexercise">
+
+#### 2. Correlation and (Non)linearity II {-}
+
+In the previous exercise we saw that the correlation coefficient is not able to properly capture the functional form of a regression model in so far as it suggested a linear form, whereas the true functional form seems to be a nonlinear (e.g. exponential) one.
+Therefore consider as an alternative the following nonlinear model specification
+
+$$medv_i = \\beta_0 + \\beta_1\\times\\log(lstat_i) + u_i.$$
+
+The package <tt>MASS</tt> has been loaded.
+      
+**Instructions:**
+        
+  + Conduct the regression from above and assign the results to <tt>log_mod</tt>.
+      
+  + Visualize your results by drawing a scatterplot and adding the corresponding regression line. In comparison to the previous exercise what do you notice now? 
+
+
+<!--html_preserve-->
+
+<div data-datacamp-exercise data-lang="r">
+  
+  <code data-type="pre-exercise-code">
+  library(MASS)
+  </code>
+  
+  <code data-type="sample-code">
+  # Conduct the regression and assign it to mod_log
+  
+  
+  # Draw a scatterplot and add the corresponding regression line
+  
+  
+  
+  </code>
+  
+  <code data-type="solution">
+  # Conduct the regression and assign it to mod_log
+  mod_log <- lm(medv ~ log(lstat), data = Boston)
+  
+  # Draw a scatterplot and add the corresponding regression line
+  plot(medv ~ log(lstat), data = Boston)
+  abline(mod_log, col = "red")
+  
+  </code>
+  
+  <code data-type="sct">
+  ex() %>% check_object("mod_log") %>% check_equal()
+  test_or(ex() %>% check_function("plot") %>% {
+        check_arg(., "formula") %>% check_equal()
+        check_arg(., "data") %>% check_equal()
+      },
+  ex() %>% override_solution("plot(Boston$medv, log(Boston$lstat))") %>% check_function("plot") %>% {
+        check_arg(., "x") %>% check_equal()
+        check_arg(., "y") %>% check_equal()
+      },
+  ex() %>% override_solution("plot(Boston$medv ~ log(Boston$lstat))") %>% check_function("plot") %>%
+        check_arg("formula") %>% check_equal()
+      )
+  #ex() %>% check_function("abline") %>% check_arg("reg") %>% check_equal()
+  success_msg("Although the relationship is not perfectly linear yet, using a log transformation considerably improves our model fit and seems to be a reasonable model specification.")
+  </code>
+  
+</div>
+
+<!--/html_preserve-->
+
+**Hints:**
+  
+  + Use <tt>lm()</tt> to conduct a regression.
+
+  + As usual you can use <tt>plot()</tt> and <tt>abline()</tt> to visualize regression results.
+  
+</div>')
+}
+```
+
+```{r, echo=FALSE, results='asis'}
+if (my_output=="html") {
+  cat('
+<div  class = "DCexercise">
+
+#### 3. Optimal Polynomial Order - Sequential Testing {-}
+
+From the previous exercise recall the following model
+
+$$medv_i = \\beta_0 + \\beta_1\\times\\log(lstat_i) + u_i.$$
+
+We already saw that this model specification seems to be a reasonable choice. However we cannot be entirely sure, if a higher polynomial order may be more suited to describe the data. Therefore please do the following:
+
+The packages <tt>AER</tt> and <tt>MASS</tt> have been loaded.
+      
+**Instructions:**
+        
+  + Determine the optimal order of the polylog model by the sequential testing approach. Assume a maximum polynomial order of $r=4$. You are more or less free to choose a way to solve this as long as you use a <tt>for()</tt> loop. We recommend the following approach:
+    1. Estimate a model, say <tt>mod</tt>, which starts with the highest polynomial order.
+    2. Save the p-value (with robust standard errors) for the relevant parameter and compare it with the significance level $\\alpha$.
+    3. If you cannot reject the null, repeat steps 1 and 2 for the next lowest polynomial order, otherwise stop the loop and print out the polynomial order.
+
+  + Extract the $R^2$ of the selected model and assign it to the variable <tt>R2</tt>.
+
+
+<!--html_preserve-->
+
+<div data-datacamp-exercise data-lang="r">
+  
+  <code data-type="pre-exercise-code">
+  library(AER)
+  library(MASS)
+  </code>
+  
+  <code data-type="sample-code">
+  # Find the optimal polynomial order of the polylog model.
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  # Extract the R^2 from the selected model and assign it to R2.
+  
+  
+  </code>
+   
+  <code data-type="solution">
+  # Find the optimal polynomial order of the polylog model.
+  for(i in 4:1){
+  mod  <- lm(medv ~ poly(log(lstat), i, raw = T), data = Boston)
+  pval <- coeftest(mod, vcov = vcovHC)[(i+1), 4]
+  if(pval < 0.05){
+    print(i)
+    break
+    }
+  }
+  
+  # Extract the R^2 from the selected model and assign it to R2.
+  R2 <- summary(mod)$r.squared
+  
+  </code>
+  
+  <code data-type="sct">
+  ex() %>% check_for()
+  ex() %>% check_object("R2") %>% check_equal()
+  success_msg("Correct! Using the sequential testing approach we get an optimal order of $r=2$.")
+  </code>
+  
+</div>
+
+<!--/html_preserve-->
+
+**Hints:**
+
+  + The index for the <tt>for()</tt> loop should start at 4 and end at 1.
+
+  + You can use <tt>poly()</tt> inside of <tt>lm()</tt> as a generic way of incorporating higher orders of a certain variable in the model. Besides the variable, you have to specify the degree of the polynomial via the argument <tt>degree</tt> and set <tt>raw = TRUE</tt>.
+
+  + As usual, you can use <tt>coeftest()</tt> to obtain p-values (with robust standard errors). Use the structure of the resulting object to extract the relevant p-value.
+
+  + Use an <tt>if()</tt> statement to check whether the condition for no rejection is fulfilled and stop the <tt>for()</tt> loop with the help of <tt>break</tt> otherwise.
+
+  + To obtain the $R^2$, you can use <tt>summary()</tt> and extract it via <tt>$r.squared</tt>.
+  
+</div>') 
+}
+
+```
+
+```{r, echo=FALSE, results='asis'}
+if (my_output=="html") {
+  cat('
+<div  class = "DCexercise">
+
+#### 3. Expected Effect {-}
+
+      
+**Instructions:**
+        
+
+<!--html_preserve-->
+
+<div data-datacamp-exercise data-lang="r">
+  
+  <code data-type="pre-exercise-code">
+  library(MASS)
+  </code>
+  
+  <code data-type="sample-code">
+  
+  </code>
+   
+  <code data-type="solution">
+  
+  </code>
+  
+  <code data-type="sct">
+  
+  </code>
+  
+</div>
+
+<!--/html_preserve-->
+
+**Hints:**
+
+  
+</div>') 
+}
+
+```
+
+```{r, echo=FALSE, results='asis'}
+if (my_output=="html") {
+  cat('
+<div  class = "DCexercise">
+
+#### 5. Interactions between Binary Variables {-}
+
+Consider the model
+
+$$medv_i=\\beta_0+\\beta_1\\times chas_i+\\beta_2\\times HighIndus_i+\\beta_3(chas_i\\times HighIndus_i)+u_i$$
+
+\\begin{align}
+HighIndus_i =  \\begin{cases}
+      1 & \\text{if $indus\\geq 10\\%$} \\\
+      0 & \\text{else}.
+    \\end{cases}
+\\end{align}
+
+The package <tt>MASS</tt> has been loaded.
+      
+**Instructions:**
+        
+  + Add the binary variable <tt>HighIndus</tt> to the dataset <tt>Boston</tt>.
+
+  + Conduct the regression from above and assign it to <tt>mod_bb</tt>. How can you interpret
+
+
+<!--html_preserve-->
+
+<div data-datacamp-exercise data-lang="r">
+  
+  <code data-type="pre-exercise-code">
+  library(MASS)
+  </code>
+  
+  <code data-type="sample-code">
+  # Create the binary variable HighIndus and add it to the dataset.
+  
+  
+  # Conduct the regression and assign it to mod_bb.
+  
+  
+  </code>
+   
+  <code data-type="solution">
+  # Create the binary variable HighIndus and add it to the dataset.
+  Boston$HighIndus <- as.numeric(Boston$indus >= 10)
+  
+  # Conduct the regression and assign it to mod_bb.
+  mod_bb <- lm(medv ~ chas*HighIndus, data = Boston)
+  
+  </code>
+  
+  <code data-type="sct">
+  
+  </code>
+  
+</div>
+
+<!--/html_preserve-->
+
+**Hints:**
+
+  + Use a logical operator ...
+
+  + Inside of <tt>lm()</tt> you have to two possibilities
+  
+</div>') 
+}
+
+```
+
+```{r, echo=FALSE, results='asis'}
+if (my_output=="html") {
+  cat('
+<div  class = "DCexercise">
+
+#### 6. Interactions between Binary and Continuous Variables {-}
+
+Now consider the following model
+
+$$medv_i=\\beta_0+\\beta_1\\times chas_i+\\beta_2\\times rm_i+\\beta_3(chas_i\\times rm_i)+u_i$$
+
+with 
+
+The package <tt>MASS</tt> has been loaded.
+      
+**Instructions:**
+        
+  + Conduct the regression from above and assign it to <tt>mod_bc</tt>.
+
+
+<!--html_preserve-->
+
+<div data-datacamp-exercise data-lang="r">
+  
+  <code data-type="pre-exercise-code">
+  library(MASS)
+  </code>
+  
+  <code data-type="sample-code">
+  # Conduct the regression and assign it to mod_bc.
+  
+  
+  #
+  
+  
+  </code>
+   
+  <code data-type="solution">
+  # Conduct the regression and assign it to mod_bc.
+  mod_bc <- lm(medv ~ chas*rm, data = Boston)
+  
+  #
+  
+  
+  </code>
+  
+  <code data-type="sct">
+  
+  </code>
+  
+</div>
+
+<!--/html_preserve-->
+
+**Hints:**
+
+  
+</div>') 
+}
+
+```
+
+```{r, echo=FALSE, results='asis'}
+if (my_output=="html") {
+  cat('
+<div  class = "DCexercise">
+
+#### 7. Interactions between Continuous Variables {-}
+
+
+The package <tt>MASS</tt> has been loaded.
+      
+**Instructions:**
+        
+  + Conduct the regression from above and assign it to <tt>mod_cc</tt>.
+
+
+<!--html_preserve-->
+
+<div data-datacamp-exercise data-lang="r">
+  
+  <code data-type="pre-exercise-code">
+  library(MASS)
+  </code>
+  
+  <code data-type="sample-code">
+  # Conduct the regression and assign it to mod_cc.
+  
+  
+  #
+  
+  
+  </code>
+   
+  <code data-type="solution">
+  # Conduct the regression and assign it to mod_cc.
+  mod_bc <- lm(medv ~ , data = Boston)
+  
+  #
+  
+  
+  </code>
+  
+  <code data-type="sct">
+  
+  </code>
+  
+</div>
+
+<!--/html_preserve-->
+
+**Hints:**
+
+  
+</div>') 
+}
+
+```
