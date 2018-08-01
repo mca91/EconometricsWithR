@@ -1536,9 +1536,9 @@ if (my_output=="html"){
 
 #### 1. Correlation and (Non)linearity I {-}
  
-Consider the following simple linear regression model
+Consider the following estimated simple linear regression model
 
-$$medv_i = \\beta_0 + \\beta_1\\times lstat_i + u_i.$$
+$$\\widehat{medv_i} = 34.554 - 0.95\\times lstat_i + u_i.$$
 
 with <tt>medv</tt> (median house value) and <tt>lstat</tt> (percent of households with low socioeconomic status) being variables from the already known <tt>Boston</tt> data set.
 
@@ -1620,8 +1620,9 @@ if (my_output=="html") {
 
 #### 2. Correlation and (Non)linearity II {-}
 
-In the previous exercise we saw that the correlation coefficient is not able to properly capture the functional form of a regression model in that it suggested a linear form, whereas the true functional form seems to be nonlinear (e.g. exponential).
-Therefore consider as an alternative the following nonlinear model specification
+In the previous exercise we saw that the correlation coefficient is not able to properly capture the functional form of a regression model in that it suggested by construction a linear form, whereas the true functional form seems to be nonlinear (e.g. exponential).
+
+As an alternative consider the following nonlinear model specification
 
 $$medv_i = \\beta_0 + \\beta_1\\times\\log(lstat_i) + u_i.$$
 
@@ -1629,10 +1630,9 @@ The package <tt>MASS</tt> has been loaded.
       
 **Instructions:**
         
-  + Conduct the regression from above and assign the results to <tt>log_mod</tt>.
+  + Conduct the regression from above and assign it to <tt>log_mod</tt>.
       
   + Visualize your results by drawing a scatterplot and adding the corresponding regression line. In comparison to the previous exercise what do you notice now? 
-
 
 <!--html_preserve-->
 
@@ -1676,7 +1676,7 @@ The package <tt>MASS</tt> has been loaded.
         check_arg("formula") %>% check_equal()
       )
   ex() %>% check_function("abline") #%>% check_arg("reg") %>% check_equal()
-  success_msg("Although the relationship is not perfectly linear yet, using a log transformation considerably improves our model fit and seems to be a reasonable model specification.")
+  success_msg("Although the relationship is not perfectly linear, using a log transformation considerably improves our model fit and seems to be a reasonable model specification.")
   </code>
   
 </div>
@@ -1710,9 +1710,9 @@ The packages <tt>AER</tt> and <tt>MASS</tt> have been loaded.
       
 **Instructions:**
         
-  + Determine the optimal order of the polylog model by the sequential testing approach. Assume a maximum polynomial order of $r=4$. You are more or less free to choose a way to solve this as long as you use a <tt>for()</tt> loop. We recommend the following approach:
+  + Determine the optimal order of the polylog model by the sequential testing approach. Assume a maximum polynomial order of $r=4$ and a significance level of $\\alpha=0.05$. You are more or less free to solve this exercise as long as you use a <tt>for()</tt> loop. We recommend the following approach:
     1. Estimate a model, say <tt>mod</tt>, which starts with the highest polynomial order.
-    2. Save the p-value (with robust standard errors) for the relevant parameter and compare it with the significance level $\\alpha$.
+    2. Save the p-value (with robust standard errors) of the relevant parameter and compare it with the significance level $\\alpha$.
     3. If you cannot reject the null, repeat steps 1 and 2 for the next lowest polynomial order, otherwise stop the loop and print out the polynomial order.
 
   + Extract the $R^2$ of the selected model and assign it to the variable <tt>R2</tt>.
@@ -1762,7 +1762,7 @@ The packages <tt>AER</tt> and <tt>MASS</tt> have been loaded.
   <code data-type="sct">
   ex() %>% check_for()
   ex() %>% check_object("R2") %>% check_equal()
-  success_msg("Correct! Using the sequential testing approach we get an optimal order of $r=2$.")
+  success_msg("Correct! Using the sequential testing approach we get an optimal order of r=2.")
   </code>
   
 </div>
@@ -1775,7 +1775,7 @@ The packages <tt>AER</tt> and <tt>MASS</tt> have been loaded.
 
   + You can use <tt>poly()</tt> inside of <tt>lm()</tt> as a generic way of incorporating higher orders of a certain variable in the model. Besides the variable, you have to specify the degree of the polynomial via the argument <tt>degree</tt> and set <tt>raw = TRUE</tt>.
 
-  + As usual, you can use <tt>coeftest()</tt> to obtain p-values (with robust standard errors). Use the structure of the resulting object to extract the relevant p-value.
+  + You can use <tt>coeftest()</tt> together with the argument <tt>vcov</tt> to obtain p-values (with robust standard errors). Use the structure of the resulting object to extract the relevant p-value.
 
   + Use an <tt>if()</tt> statement to check whether the condition for no rejection is fulfilled and stop the <tt>for()</tt> loop with the help of <tt>break</tt> otherwise.
 
@@ -1836,25 +1836,31 @@ if (my_output=="html") {
 
 #### 5. Interactions between Binary Variables {-}
 
-Consider the model
+Consider the following regression model
 
-$$medv_i=\\beta_0+\\beta_1\\times chas_i+\\beta_2\\times HighIndus_i+\\beta_3(chas_i\\times HighIndus_i)+u_i$$
+$$medv_i=\\beta_0+\\beta_1\\times chas_i+\\beta_2\\times old_i+\\beta_3(chas_i\\times old_i)+u_i$$
+
+where $chas_i$ and $old_i$ are dummy variables. The first one takes the value $1$, if the Charles River (a short river in the proximity of Boston) passes through suburb $i$ and $0$ otherwise. The latter accounts for a high proportion of old buildings and is constructed as follows
 
 \\begin{align}
-HighIndus_i =  \\begin{cases}
-      1 & \\text{if $indus\\geq 10\\%$} \\\
-      0 & \\text{else}.
+old_i = & \\,
+    \\begin{cases}
+      1 & \\text{if $age_i\\geq 95$}\\\
+      0 & \\text{else},
     \\end{cases}
 \\end{align}
+
+with $age_i$ being the proportion of owner-occupied units built prior to 1940 in suburb $i$.
 
 The package <tt>MASS</tt> has been loaded.
       
 **Instructions:**
         
-  + Add the binary variable <tt>HighIndus</tt> to the dataset <tt>Boston</tt>.
+  + Add the binary variable <tt>old</tt> to the dataset <tt>Boston</tt>.
 
-  + Conduct the regression from above and assign it to <tt>mod_bb</tt>. How can you interpret
+  + Conduct the regression from above and assign it to <tt>mod_bb</tt>.
 
+  + Obtain a coefficient summary of the model. How can you interpret the coefficient $\\hat{\\beta}_3$?
 
 <!--html_preserve-->
 
@@ -1865,25 +1871,71 @@ The package <tt>MASS</tt> has been loaded.
   </code>
   
   <code data-type="sample-code">
-  # Create the binary variable HighIndus and add it to the dataset.
+  # Create the binary variable old and add it to the dataset.
   
   
   # Conduct the regression and assign it to mod_bb.
+  
+  
+  # Print the summary to the console
   
   
   </code>
    
   <code data-type="solution">
-  # Create the binary variable HighIndus and add it to the dataset.
-  Boston$HighIndus <- as.numeric(Boston$indus >= 10)
+  # Create the binary variable old and add it to the dataset.
+  Boston$old <- as.numeric(Boston$age >= 95)
   
   # Conduct the regression and assign it to mod_bb.
-  mod_bb <- lm(medv ~ chas*HighIndus, data = Boston)
+  mod_bb <- lm(medv ~ chas*old, data = Boston)
+  
+  # Print the summary to the console
+  summary(mod_bb)
   
   </code>
   
   <code data-type="sct">
-  
+  ex() %>% check_object("Boston", undefined_msg = "Make sure to not remove `Boston`!") %>%
+  check_column("old", col_missing_msg = "Have you added the column `old` to `Boston`?") %>%
+  check_equal(incorrect_msg = "Have you correctly calculated the column `old` based on `age`?")
+  test_or({
+    test_object("mod_bb")
+  },{
+    f <- ex() %>% override_solution("lm(medv ~ old*chas, data = Boston)") %>% check_function("lm")
+    f %>% check_arg("formula") %>% check_equal()
+  },{
+    f <- ex() %>% override_solution("lm(Boston$medv ~ Boston$chas*Boston$old)") %>% check_function("lm")
+    f %>% check_arg("formula") %>% check_equal()
+  },{
+    f <- ex() %>% override_solution("lm(Boston$medv ~ Boston$old*Boston$chas)") %>% check_function("lm")
+    f %>% check_arg("formula") %>% check_equal()
+  },{
+    f <- ex() %>% override_solution("attach(Boston);lm(medv ~ chas*old)") %>% check_function("lm")
+    f %>% check_arg("formula") %>% check_equal()
+  },{
+    f <- ex() %>% override_solution("attach(Boston);lm(medv ~ old*chas)") %>% check_function("lm")
+    f %>% check_arg("formula") %>% check_equal()
+  },{
+    f <- ex() %>% override_solution("lm(medv ~ chas + old + chas:old, data = Boston)") %>% check_function("lm")
+    f %>% check_arg("formula") %>% check_equal()
+  },{
+    f <- ex() %>% override_solution("lm(medv ~ old + chas + old:chas, data = Boston)") %>% check_function("lm")
+    f %>% check_arg("formula") %>% check_equal()
+  },{
+    f <- ex() %>% override_solution("lm(Boston$medv ~ Boston$chas + Boston$old + Boston$chas:Boston$old)") %>% check_function("lm")
+    f %>% check_arg("formula") %>% check_equal()
+  },{
+    f <- ex() %>% override_solution("lm(Boston$medv ~ Boston$old + Boston$chas + Boston$old:Boston$chas)") %>% check_function("lm")
+    f %>% check_arg("formula") %>% check_equal()
+  },{
+    f <- ex() %>% override_solution("attach(Boston);lm(medv ~ chas + old + chas:old)") %>% check_function("lm")
+    f %>% check_arg("formula") %>% check_equal()
+  },{
+    f <- ex() %>% override_solution("attach(Boston);lm(medv ~ old + chas + old:chas)") %>% check_function("lm")
+    f %>% check_arg("formula") %>% check_equal()
+  })
+  ex() %>% check_function("summary") %>% check_arg("object") %>% check_equal(eval = F)
+  success_msg("")
   </code>
   
 </div>
@@ -1892,9 +1944,13 @@ The package <tt>MASS</tt> has been loaded.
 
 **Hints:**
 
-  + Use a logical operator ...
+  + Use the logical operator <tt>>=</tt> to create a Boolean vector which then can be transformed to a numeric one via <tt>as.numeric()</tt>.
 
-  + Inside of <tt>lm()</tt> you have to two possibilities
+  + Inside of <tt>lm()</tt> there are two possibilities to incorporate interaction terms:
+      1. <tt>Var1*Var2</tt> to add <tt>Var1</tt>, <tt>Var2</tt> and the corresponding interaction term at once.  
+      2. <tt>Var1:Var2</tt> to manually add the interaction term (which of course requires to add the remaining terms manually as well)
+
+  + Use <tt>summary()</tt> to get a comprehensive overview of your model estimation.
   
 </div>') 
 }
