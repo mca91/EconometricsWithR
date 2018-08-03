@@ -289,8 +289,7 @@ Imagine we did not have this information and instead conjectured that the green 
   Red_t = \beta_0 + \beta_1 Green_{t-1} + u_t.
 \end{align*}\]</span>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># estimate spurious AR model</span>
-<span class="kw">summary</span>(<span class="kw">dynlm</span>(RWs[, <span class="dv">2</span>] <span class="op">~</span><span class="st"> </span><span class="kw">L</span>(RWs[, <span class="dv">3</span>]))
-  )<span class="op">$</span>coefficients</code></pre></div>
+<span class="kw">summary</span>(<span class="kw">dynlm</span>(RWs[, <span class="dv">2</span>] <span class="op">~</span><span class="st"> </span><span class="kw">L</span>(RWs[, <span class="dv">3</span>])))<span class="op">$</span>coefficients</code></pre></div>
 <pre><code>##              Estimate Std. Error   t value     Pr(&gt;|t|)
 ## (Intercept) -3.459488  0.3635104 -9.516889 1.354156e-15
 ## L(RWs[, 3])  1.047195  0.1450874  7.217687 1.135828e-10</code></pre>
@@ -456,7 +455,7 @@ ADFDT &lt;-<span class="st"> </span><span class="kw">numeric</span>(N)
 <span class="kw">round</span>(<span class="kw">quantile</span>(ADFDT, <span class="kw">c</span>(<span class="fl">0.1</span>,<span class="fl">0.05</span>,<span class="fl">0.01</span>)),<span class="dv">2</span>)</code></pre></div>
 <pre><code>##   10%    5%    1% 
 ## -3.11 -3.43 -3.97</code></pre>
-<p>The estimated quantiles are close to the large sample critical values of the ADF test statistic reported in Table 14.4 of the book.</p>
+<p>The estimated quantiles are close to the large-sample critical values of the ADF test statistic reported in Table 14.4 of the book.</p>
 <table>
 <caption><span id="tab:DFcrits">Table 2.2: </span> Large Sample Critical Values of ADF Test</caption>
 <thead>
@@ -482,7 +481,7 @@ ADFDT &lt;-<span class="st"> </span><span class="kw">numeric</span>(N)
 </tr>
 </tbody>
 </table>
-<p>The results show that using standard normal critical values might be fatal: the 5% critical value of the standard normal distribution is <span class="math inline">\(-1.64\)</span> but for the Dickey-Fuller distributions the estimated critical values are <span class="math inline">\(-2.87\)</span> (drift) and <span class="math inline">\(-3.43\)</span> (drift and linear time trend). This implies that a true null hypothesis (the series has a stochastic trend) would be rejected far to often if the inappropriate normal critical values were used.</p>
+<p>The results show that using standard normal critical values is erroneous: the 5% critical value of the standard normal distribution is <span class="math inline">\(-1.64\)</span>. For the Dickey-Fuller distributions the estimated critical values are <span class="math inline">\(-2.87\)</span> (drift) and <span class="math inline">\(-3.43\)</span> (drift and linear time trend). This implies that a true null (the series has a stochastic trend) would be rejected far too often if inappropriate normal critical values were used.</p>
 <p>We may use the simulated test statistics for a graphical comparison of the standard normal density and (estimates of) both Dickey-Fuller densities.</p>
 <div class="unfolded">
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># plot standard normal density</span>
@@ -505,8 +504,7 @@ ADFDT &lt;-<span class="st"> </span><span class="kw">numeric</span>(N)
        <span class="kw">c</span>(<span class="st">&quot;N(0,1)&quot;</span>, <span class="st">&quot;Drift&quot;</span>, <span class="st">&quot;Drift+Trend&quot;</span>),
        <span class="dt">col =</span> <span class="kw">c</span>(<span class="st">&quot;darkred&quot;</span>, <span class="st">&quot;darkgreen&quot;</span>, <span class="st">&quot;blue&quot;</span>),
        <span class="dt">lty =</span> <span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">1</span>),
-       <span class="dt">lwd =</span> <span class="dv">2</span>
-       )</code></pre></div>
+       <span class="dt">lwd =</span> <span class="dv">2</span>)</code></pre></div>
 <p><img src="URFITE_files/figure-html/unnamed-chunk-84-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <p>The deviations from the standard normal distribution are significant: both Dickey-Fuller distributions are skewed to the left and have a heavier left tail than the standard normal distribution.</p>
@@ -523,8 +521,7 @@ LogGDP &lt;-<span class="st"> </span><span class="kw">ts</span>(<span class="kw"
 <span class="co"># estimate the model</span>
 <span class="kw">coeftest</span>(
   <span class="kw">dynlm</span>(<span class="kw">diff</span>(LogGDP) <span class="op">~</span><span class="st"> </span><span class="kw">trend</span>(LogGDP, <span class="dt">scale =</span> F) <span class="op">+</span><span class="st"> </span><span class="kw">L</span>(LogGDP) 
-                     <span class="op">+</span><span class="st"> </span><span class="kw">diff</span>(<span class="kw">L</span>(LogGDP)) <span class="op">+</span><span class="st"> </span><span class="kw">diff</span>(<span class="kw">L</span>(LogGDP), <span class="dv">2</span>))
-  )</code></pre></div>
+                     <span class="op">+</span><span class="st"> </span><span class="kw">diff</span>(<span class="kw">L</span>(LogGDP)) <span class="op">+</span><span class="st"> </span><span class="kw">diff</span>(<span class="kw">L</span>(LogGDP), <span class="dv">2</span>)))</code></pre></div>
 <pre><code>## 
 ## t test of coefficients:
 ## 
@@ -538,10 +535,54 @@ LogGDP &lt;-<span class="st"> </span><span class="kw">ts</span>(<span class="kw"
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 The estimation yields
 <span class="math display">\[\begin{align*}
-  \Delta\log(GDP_t) =&amp; \, \underset{(0.118)}{0.28} + \underset{(0.0001)}{0.0002} t -\underset{(0.014)}{0.033} \log(GDP_{t-1}) \\
-  + &amp; \, \underset{(0.113)}{0.083} \Delta \log(GDP_{t-1}) + \underset{(0.071)}{0.188} \Delta \log(GDP_{t-2}) + u_t,
+  \Delta\log(GDP_t) =&amp; \underset{(0.118)}{0.28} + \underset{(0.0001)}{0.0002} t -\underset{(0.014)}{0.033} \log(GDP_{t-1}) \\
+   &amp; + \underset{(0.113)}{0.083} \Delta \log(GDP_{t-1}) + \underset{(0.071)}{0.188} \Delta \log(GDP_{t-2}) + u_t,
 \end{align*}\]</span>
-<p>so the ADF test statistic is <span class="math inline">\(t=-0.033/0.014 = - 2.35\)</span>. The corresponding <span class="math inline">\(5\%\)</span> critical value from table <a href="nit.html#tab:DFcrits">2.2</a> is <span class="math inline">\(-3.41\)</span> so we cannot reject the null hypothesis that <span class="math inline">\(\log(GDP)\)</span> has a stochastic trend in favor of the alternative that it is stationary around a deterministic linear time trend.</p>
+<p>so the ADF test statistic is <span class="math inline">\(t=-0.033/0.014 = - 2.35\)</span>. The corresponding <span class="math inline">\(5\%\)</span> critical value from Table <a href="nit.html#tab:DFcrits">2.2</a> is <span class="math inline">\(-3.41\)</span> so we cannot reject the null hypothesis that <span class="math inline">\(\log(GDP)\)</span> has a stochastic trend in favor of the alternative that it is stationary around a deterministic linear time trend.</p>
+<p>The ADF test can be done conveniently using <tt>ur.df()</tt> from the package <tt>urca</tt>.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># test for unit root in GDP using &#39;ur.df()&#39; from the package &#39;urca&#39;</span>
+<span class="kw">summary</span>(<span class="kw">ur.df</span>(LogGDP, 
+              <span class="dt">type =</span> <span class="st">&quot;trend&quot;</span>, 
+              <span class="dt">lags =</span> <span class="dv">2</span>, 
+              <span class="dt">selectlags =</span> <span class="st">&quot;Fixed&quot;</span>))</code></pre></div>
+<pre><code>## 
+## ############################################### 
+## # Augmented Dickey-Fuller Test Unit Root Test # 
+## ############################################### 
+## 
+## Test regression trend 
+## 
+## 
+## Call:
+## lm(formula = z.diff ~ z.lag.1 + 1 + tt + z.diff.lag)
+## 
+## Residuals:
+##       Min        1Q    Median        3Q       Max 
+## -0.025580 -0.004109  0.000321  0.004869  0.032781 
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  0.2790086  0.1180427   2.364 0.019076 *  
+## z.lag.1     -0.0333245  0.0144144  -2.312 0.021822 *  
+## tt           0.0002382  0.0001109   2.148 0.032970 *  
+## z.diff.lag1  0.2708136  0.0697696   3.882 0.000142 ***
+## z.diff.lag2  0.1876338  0.0705557   2.659 0.008476 ** 
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.007704 on 196 degrees of freedom
+## Multiple R-squared:  0.1783, Adjusted R-squared:  0.1616 
+## F-statistic: 10.63 on 4 and 196 DF,  p-value: 8.076e-08
+## 
+## 
+## Value of test-statistic is: -2.3119 11.2558 4.267 
+## 
+## Critical values for test statistics: 
+##       1pct  5pct 10pct
+## tau3 -3.99 -3.43 -3.13
+## phi2  6.22  4.75  4.07
+## phi3  8.43  6.49  5.47</code></pre>
+<p>The frist test statistic at the bottom of the output is the one we are interested in. The number of test statistics reported depends on the test regression. For `r ttcode(‘type = “trend”’), the second statistics corresponds to the test that there is no unit root and no time trend while the third one corresponds to a test of the hypothesis that there is a unit root, no time trend and no drift term.</p>
 </div>
 </div>
 <h3>References</h3>

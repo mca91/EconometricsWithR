@@ -5,6 +5,7 @@ library(dynlm)
 library(stargazer)
 library(scales)
 library(readxl)
+library(urca)
 ```
 
 ```{r, child="_setup.Rmd"}
@@ -27,6 +28,7 @@ The following packages and their dependencies are needed for reproduction of the
 + `r ttcode("stargazer")` [@R-stargazer]
 + `r ttcode("scales")` [@R-scales]
 + `r ttcode("quantmod")` [@R-quantmod]
++ `r ttcode("urca")` [@R-urca]
 
 Please verify that the following code chunk runs on your machine without any errors.
 
@@ -38,6 +40,7 @@ library(readxl)
 library(stargazer)
 library(scales)
 library(quantmod)
+library(urca)
 ```
 
 ## Using Regression Models for Forecasting
@@ -433,7 +436,7 @@ forecast(armod, newdata = new)
 Using `forecast()`produces the same point forecast of about 2.0, along with $80\%$ and $95\%$ forecast intervals, see section \@ref{apatadlm}. We conclude that our AR(1) model forecasts GDP growth to be $2\%$ in 2013:Q1.
 
 How accurate is this forecast? The forecast error is quite large: $GDPGR_{2013:Q1} \approx 1.1\%$ while our forecast is $2\%$.
-Second, by calling `summary(armod)` shows that the model explains only little of the variation in the growth rate of GDP and the $SER$ is about $3.16$. Leaving aside forecast uncertainty due to estimation of the model coefficients $\beta_0$ and $\beta_1$, the $RMSFE$ must be at least $3.16\%$, the estimate of the standard devation of the errors. We conclude that this forecast is pretty inaccurate.
+Second, by calling `summary(armod)` shows that the model explains only little of the variation in the growth rate of GDP and the $SER$ is about $3.16$. Leaving aside forecast uncertainty due to estimation of the model coefficients $\beta_0$ and $\beta_1$, the $RMSFE$ must be at least $3.16\%$, the estimate of the standard deviation of the errors. We conclude that this forecast is pretty inaccurate.
 
 ```{r}
 # compute the forecast error
@@ -625,7 +628,7 @@ stargazer(SR_AR1, SR_AR2, SR_AR4,
   ) 
 ```
 
-The results are consistent with the hypothesis of efficient financial markets: there are no statistically significant coefficients in any of the estimated models and the hypotheses that all coefficiens are zero cannot be rejected. $\bar{R}^2$ is almost zero in all models and even negative for the AR($4$) model. This suggests that none of the models are useful for forecasting stock returns.
+The results are consistent with the hypothesis of efficient financial markets: there are no statistically significant coefficients in any of the estimated models and the hypotheses that all coefficients are zero cannot be rejected. $\bar{R}^2$ is almost zero in all models and even negative for the AR($4$) model. This suggests that none of the models are useful for forecasting stock returns.
 
 ## Additional Predictors and The ADL Model {#apatadlm}
 
@@ -1231,8 +1234,7 @@ Imagine we did not have this information and instead conjectured that the green 
     
 ```{r}
 # estimate spurious AR model
-summary(dynlm(RWs[, 2] ~ L(RWs[, 3]))
-  )$coefficients
+summary(dynlm(RWs[, 2] ~ L(RWs[, 3])))$coefficients
 ```
 
 The result is obviously spurious: the coefficient on $Green_{t-1}$ is estimated to be about $1$ and the $p$-value of $1.14 \cdot 10^{-10}$ of the corresponding $t$-test indicates that the coefficient is highly significant while its true value is in fact zero.
@@ -1289,7 +1291,7 @@ A formal test for a stochastic trend has been proposed by @dickey1979 which thus
 \begin{align*}
   H_0: \beta_1 = 1 \ \ \ \text{vs.} \ \ \ H_1: \lvert\beta_1\rvert < 1.
 \end{align*}
-The null hypothesis is that the AR($1$) moden has a unit root and the alternative hypothesis is that it is stationary. One often rewrites the AR($1$) model by subtracting $Y_{t-1}$ on both sides:
+The null hypothesis is that the AR($1$) model has a unit root and the alternative hypothesis is that it is stationary. One often rewrites the AR($1$) model by subtracting $Y_{t-1}$ on both sides:
 \begin{align*}
   Y_t = \beta_0 + \beta_1 Y_{t-1} + u_t \ \ \Leftrightarrow \ \ \Delta Y_t = \beta_0 + \delta Y_{t-1} + u_i
 \end{align*}
@@ -1504,7 +1506,7 @@ summary(ur.df(LogGDP,
               selectlags = "Fixed"))
 ```
 
-The frist test statistic at the bottom of the output is the one we are interested in. The number of test statistics reported depends on the test regression. For `r ttcode('type = "trend"'), the second statistics corresponds to the test that there is no unit root and no time trend while the third one corresponds to a test of the hypothesis that there is a unit root, no time trend and no drift term.
+The first test statistic at the bottom of the output is the one we are interested in. The number of test statistics reported depends on the test regression. For `r ttcode('type = "trend"')`, the second statistics corresponds to the test that there is no unit root and no time trend while the third one corresponds to a test of the hypothesis that there is a unit root, no time trend and no drift term.
 
 ## Nonstationarity II: Breaks {#niib}
 
@@ -1696,6 +1698,11 @@ Similarly as for the $QLR$-test we use a `for()` loop for estimation of all 40 m
 # end of sample dates
 EndOfSample <- seq(2002.75, 2012.5, 0.25)
 
+# initialize matrix forecasts
+forecasts <- matrix(nrow = 1, 
+                    ncol = length(EndOfSample))
+
+# initialize vector SER
 SER  <- numeric(length(EndOfSample))
 
 # estimation loop over end of sample dates
@@ -1710,16 +1717,16 @@ for(i in 1:length(EndOfSample)) {
   SER[i] <- summary(m)$sigma
   
   # sample data for one-period ahead forecast
-  t <- window(ADLdata, EndOfSample[i]-0.25, EndOfSample[i])
+  s <- window(ADLdata, EndOfSample[i] - 0.25, EndOfSample[i])
   
   # compute forecast
-  forecasts[i] <- coef(m) %*% c(1, t[1, 1], t[2, 1], t[1, 2], t[2, 2]) 
+  forecasts[i] <- coef(m) %*% c(1, s[1, 1], s[2, 1], s[1, 2], s[2, 2]) 
 }
 ```
 
 ```{r}
 # compute psuedo-out-of-sample forecast errors
-POOSFCE <- window(GDPGrowth_ts, c(2003, 1), c(2012, 4)) - forecasts
+POOSFCE <- c(window(GDPGrowth_ts, c(2003, 1), c(2012, 4))) - forecasts
 ```
 
 We next translate the pseudo-out-of-sample forecasts into an object of class `r ttcode("ts")` and plot the real GDP growth rate against the forecasted series.
@@ -1727,7 +1734,7 @@ We next translate the pseudo-out-of-sample forecasts into an object of class `r 
 <div class="unfolded">
 ```{r, fig.align='center'}
 # series of pseudo-out-of-sample forecasts
-PSOSSFc <- ts(forecasts, 
+PSOSSFc <- ts(c(forecasts), 
               start = 2003, 
               end = 2012.75, 
               frequency = 4)
