@@ -1856,7 +1856,7 @@ The package <tt>MASS</tt> has been loaded.
       
 **Instructions:**
         
-  + Add the binary variable <tt>old</tt> to the dataset <tt>Boston</tt>.
+  + Append the binary variable <tt>old</tt> to the dataset <tt>Boston</tt>.
 
   + Conduct the regression from above and assign it to <tt>mod_bb</tt>.
 
@@ -1871,7 +1871,7 @@ The package <tt>MASS</tt> has been loaded.
   </code>
   
   <code data-type="sample-code">
-  # Create the binary variable old and add it to the dataset.
+  # Create the binary variable old and append it to the dataset.
   
   
   # Conduct the regression and assign it to mod_bb.
@@ -1883,7 +1883,7 @@ The package <tt>MASS</tt> has been loaded.
   </code>
    
   <code data-type="solution">
-  # Create the binary variable old and add it to the dataset.
+  # Create the binary variable old and append it to the dataset.
   Boston$old <- as.numeric(Boston$age >= 95)
   
   # Conduct the regression and assign it to mod_bb.
@@ -1964,18 +1964,21 @@ if (my_output=="html") {
 
 #### 6. Interactions between Binary and Continuous Variables {-}
 
-Now consider the following model
+Now consider the regression model
 
-$$medv_i=\\beta_0+\\beta_1\\times chas_i+\\beta_2\\times rm_i+\\beta_3(chas_i\\times rm_i)+u_i$$
+$$medv_i=\\beta_0+\\beta_1\\times indus_i+\\beta_2\\times old_i+\\beta_3(indus_i\\times old_i)+u_i$$
 
-with 
+with $old_i$ defined as in the previous exercise and $indus_i$ being the proportion of non-retail business acres per town.
 
-The package <tt>MASS</tt> has been loaded.
+<tt>old</tt> is already available as a variable in the dataset. The package <tt>MASS</tt> has been loaded.
       
 **Instructions:**
         
   + Conduct the regression from above and assign it to <tt>mod_bc</tt>.
 
+  + Extract the estimated coefficients of the model and assign them to <tt>params</tt>.
+
+  + Plot <tt>medv</tt> against <tt>indus</tt> and add ...
 
 <!--html_preserve-->
 
@@ -1983,23 +1986,34 @@ The package <tt>MASS</tt> has been loaded.
   
   <code data-type="pre-exercise-code">
   library(MASS)
+  Boston$old <- as.numeric(Boston$age >= 95)
   </code>
   
   <code data-type="sample-code">
   # Conduct the regression and assign it to mod_bc.
   
   
-  #
+  # Extract the estimated model coefficients and assign them to params.
+  
+  
+  # Plot medv against indus and add ...
+  
+  
   
   
   </code>
    
   <code data-type="solution">
   # Conduct the regression and assign it to mod_bc.
-  mod_bc <- lm(medv ~ chas*rm, data = Boston)
+  mod_bc <- lm(medv ~ indus*old, data = Boston)
   
-  #
+  # Extract the estimated model coefficients and assign them to params.
+  params <- coef(mod_bc)
   
+  # Plot medv against indus and add ...
+  plot(medv ~ indus, data = Boston)
+  abline(a = params[1], b = params[2], col = "red")
+  abline(a = params[1] + params[3], b = params[2] + params[4], col = "darkblue")
   
   </code>
   
@@ -2013,6 +2027,9 @@ The package <tt>MASS</tt> has been loaded.
 
 **Hints:**
 
+  + You can use the structure of <tt>mod_bc</tt> or the function <tt>coef()</tt> to extract the estimated coefficients.
+
+  + Besides passing a <tt>lm()</tt>-object to <tt>abline()</tt>, one can also specify intercept and slope with the argument <tt>coef</tt>.
   
 </div>') 
 }
