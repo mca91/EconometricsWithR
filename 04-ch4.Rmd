@@ -382,7 +382,7 @@ $R^2$ lies between $0$ and $1$. It is easy to see that a perfect fit, i.e., no e
 
 ### The Standard Error of the Regression {-}
 
-The *Standard Error of the Regression* ($SER$) is an estimator of the standard deviation of the residuals $\hat{u}_i$. As such it measures the magnitude of a typical deviation from the regression line, i.e. the magnitude of a typical residual.
+The *Standard Error of the Regression* ($SER$) is an estimator of the standard deviation of the residuals $\hat{u}_i$. As such it measures the magnitude of a typical deviation from the regression line, i.e., the magnitude of a typical residual.
 
 $$ SER = s_{\hat{u}} = \sqrt{s_{\hat{u}}^2} \ \ \ \text{where} \ \ \ s_{\hat{u} }^2 = \frac{1}{n-2} \sum_{i = 1}^n \hat{u}^2_i = \frac{SSR}{n - 2} $$
 
@@ -486,13 +486,13 @@ X <- runif(50, min = -5, max = 5)
 u <- rnorm(50, sd = 5)  
 
 # the true relation  
-Y <- X^2 + 2*X + u                
+Y <- X^2 + 2 * X + u                
 
 # estimate a simple regression model 
 mod_simple <- lm(Y ~ X)
 
 # predict using a quadratic model 
-prediction <- predict(lm(Y ~ X +  I(X^2)), data.frame(X = sort(X)))
+prediction <- predict(lm(Y ~ X + I(X^2)), data.frame(X = sort(X)))
 
 # plot the results
 plot(Y ~ X)
@@ -527,7 +527,9 @@ X <- c(5000, rep(NA, length(Date)-1))
 
 # generate time series observations with random influences
 for (i in 2:length(Date)) {
+  
     X[i] <- -50 + 0.98 * X[i-1] + rnorm(n = 1, sd = 200)
+    
 }
 
 #plot the results
@@ -544,7 +546,7 @@ It is evident that the observations on the number of employees cannot be indepen
 
 ### Assumption 3: Large Outliers are Unlikely {-}
 
-It is easy to come up with situations where extreme observations, i.e. observations that deviate considerably from the usual range of the data, may occur. Such observations are called outliers. Technically speaking, assumption 3 requires that $X$ and $Y$ have a finite kurtosis.^[See Chapter 4.4 of the book.]
+It is easy to come up with situations where extreme observations, i.e., observations that deviate considerably from the usual range of the data, may occur. Such observations are called outliers. Technically speaking, assumption 3 requires that $X$ and $Y$ have a finite kurtosis.^[See Chapter 4.4 of the book.]
 
 Common cases where we want to exclude or (if possible) correct such outliers is when they are apparently typos, conversion errors or measurement errors. Even if it seems like extreme observations have been recorded correctly, it is advisable to exclude them before estimating a model since OLS suffers from *sensitivity to outliers*.
 
@@ -694,8 +696,10 @@ fit <- matrix(ncol = 2, nrow = reps)
 
 # loop sampling and estimation of the coefficients
 for (i in 1:reps){
+  
  sample <- population[sample(1:N, n), ]
  fit[i, ] <- lm(Y ~ X, data = sample)$coefficients
+ 
 }
 
 # compute variance estimates using outcomes
@@ -709,24 +713,32 @@ var(fit[, 2])
 par(mfrow = c(1, 2))
 
 # plot histograms of beta_0 estimates
-hist(fit[ ,1],
+hist(fit[, 1],
      cex.main = 1,
      main = bquote(The ~ Distribution  ~ of ~ 10000 ~ beta[0] ~ Estimates), 
      xlab = bquote(hat(beta)[0]), 
      freq = F)
 
 # add true distribution to plot
-curve(dnorm(x, -2, sqrt(var_b0)), add = T, col = "darkred")
+curve(dnorm(x, 
+            -2, 
+            sqrt(var_b0)), 
+      add = T, 
+      col = "darkred")
 
 # plot histograms of beta_hat_1 
-hist(fit[ ,2],
+hist(fit[, 2],
     cex.main = 1,
      main = bquote(The ~ Distribution  ~ of ~ 10000 ~ beta[1] ~ Estimates), 
      xlab = bquote(hat(beta)[1]), 
      freq = F)
 
 # add true distribution to plot
-curve(dnorm(x, 3.5, sqrt(var_b1)), add = T, col = "darkred")
+curve(dnorm(x, 
+            3.5, 
+            sqrt(var_b1)), 
+      add = T, 
+      col = "darkred")
 ```
 </div>
 
@@ -759,19 +771,23 @@ for (j in 1:length(n)) {
   
   # inner loop: sampling and estimating of the coefficients
   for (i in 1:reps){
+    
     sample <- population[sample(1:N, n[j]), ]
     fit[i, ] <- lm(Y ~ X, data = sample)$coefficients
+    
   }
   
   # draw density estimates
-  plot(density(fit[ ,2]), xlim=c(2.5, 4.5), col = j, 
-       main = paste("n=", n[j]), xlab = bquote(hat(beta)[1]))
+  plot(density(fit[ ,2]), xlim=c(2.5, 4.5), 
+       col = j, 
+       main = paste("n=", n[j]), 
+       xlab = bquote(hat(beta)[1]))
   
 }
 ```
 </div>
 
-We find that, as $n$ increases, the distribution of $\hat\beta_1$ concentrates around its mean, i.e. its variance decreases. Put differently, the likelihood of observing estimates close to the true value of $\beta_1 = 3.5$ grows as we increase the sample size. The same behavior can be observed if we analyze the distribution of $\hat\beta_0$ instead. 
+We find that, as $n$ increases, the distribution of $\hat\beta_1$ concentrates around its mean, i.e., its variance decreases. Put differently, the likelihood of observing estimates close to the true value of $\beta_1 = 3.5$ grows as we increase the sample size. The same behavior can be observed if we analyze the distribution of $\hat\beta_0$ instead. 
 
 ### Simulation Study 3 {-}
 
@@ -827,12 +843,18 @@ set1 <- subset(bvndata, abs(mean(X) - X) > 1)
 set2 <- subset(bvndata, abs(mean(X) - X) <= 1)
 
 # plot both data sets
-plot(set1, xlab = "X", ylab = "Y", pch = 19)
-points(set2, col = "steelblue", pch = 19)
+plot(set1, 
+     xlab = "X", 
+     ylab = "Y", 
+     pch = 19)
+
+points(set2, 
+       col = "steelblue", 
+       pch = 19)
 ```
 </div>
 
-It is clear that observations that are close to the sample average of the $X_i$ have less variance than those that are farther away. Now, if we were to draw a line as accurately as possible through either of the two sets it is intuitive that choosing the observations indicated by the black dots, i.e. using the set of observations which has larger variance than the blue ones, would result in a more precise line. Now, let us use OLS to estimate slope and intercept for both sets of observations. We then plot the observations along with both regression lines.
+It is clear that observations that are close to the sample average of the $X_i$ have less variance than those that are farther away. Now, if we were to draw a line as accurately as possible through either of the two sets it is intuitive that choosing the observations indicated by the black dots, i.e., using the set of observations which has larger variance than the blue ones, would result in a more precise line. Now, let us use OLS to estimate slope and intercept for both sets of observations. We then plot the observations along with both regression lines.
 
 <div class="unfolded"> 
 ```{r, fig.align='center'}
@@ -1303,7 +1325,7 @@ Note that excluding the intercept from a regression model might be a dodgy pract
 
 **Instructions:**
 
-+ Use the help function on <tt>lm</tt> (<tt>?lm</tt>) to find out how to specify the <tt>formula</tt> argument for a regression of <tt>ts</tt> solely on <tt>cs</tt>, i.e. a regression without intercept.
++ Use the help function on <tt>lm</tt> (<tt>?lm</tt>) to find out how to specify the <tt>formula</tt> argument for a regression of <tt>ts</tt> solely on <tt>cs</tt>, i.e., a regression without intercept.
 + Estimate the regression model without intercept and store the result in <tt>mod_ni</tt>.
 
 The vectors <tt>cs</tt>, <tt>ts</tt> and the model object <tt>mod</tt> from previous exercises are available in the working environment.

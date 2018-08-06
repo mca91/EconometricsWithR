@@ -25,7 +25,7 @@
 <meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber and Martin Schmelzer">
 
 
-<meta name="date" content="2018-08-02">
+<meta name="date" content="2018-08-05">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -431,8 +431,10 @@ fit &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="dt
 
 <span class="co"># loop sampling and estimation of the coefficients</span>
 <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>reps){
+  
  sample &lt;-<span class="st"> </span>population[<span class="kw">sample</span>(<span class="dv">1</span><span class="op">:</span>N, n), ]
  fit[i, ] &lt;-<span class="st"> </span><span class="kw">lm</span>(Y <span class="op">~</span><span class="st"> </span>X, <span class="dt">data =</span> sample)<span class="op">$</span>coefficients
+ 
 }
 
 <span class="co"># compute variance estimates using outcomes</span>
@@ -445,24 +447,32 @@ fit &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="dt
 <span class="kw">par</span>(<span class="dt">mfrow =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))
 
 <span class="co"># plot histograms of beta_0 estimates</span>
-<span class="kw">hist</span>(fit[ ,<span class="dv">1</span>],
+<span class="kw">hist</span>(fit[, <span class="dv">1</span>],
      <span class="dt">cex.main =</span> <span class="dv">1</span>,
      <span class="dt">main =</span> <span class="kw">bquote</span>(The <span class="op">~</span><span class="st"> </span>Distribution  <span class="op">~</span><span class="st"> </span>of <span class="op">~</span><span class="st"> </span><span class="dv">10000</span> <span class="op">~</span><span class="st"> </span>beta[<span class="dv">0</span>] <span class="op">~</span><span class="st"> </span>Estimates), 
      <span class="dt">xlab =</span> <span class="kw">bquote</span>(<span class="kw">hat</span>(beta)[<span class="dv">0</span>]), 
      <span class="dt">freq =</span> F)
 
 <span class="co"># add true distribution to plot</span>
-<span class="kw">curve</span>(<span class="kw">dnorm</span>(x, <span class="op">-</span><span class="dv">2</span>, <span class="kw">sqrt</span>(var_b0)), <span class="dt">add =</span> T, <span class="dt">col =</span> <span class="st">&quot;darkred&quot;</span>)
+<span class="kw">curve</span>(<span class="kw">dnorm</span>(x, 
+            <span class="op">-</span><span class="dv">2</span>, 
+            <span class="kw">sqrt</span>(var_b0)), 
+      <span class="dt">add =</span> T, 
+      <span class="dt">col =</span> <span class="st">&quot;darkred&quot;</span>)
 
 <span class="co"># plot histograms of beta_hat_1 </span>
-<span class="kw">hist</span>(fit[ ,<span class="dv">2</span>],
+<span class="kw">hist</span>(fit[, <span class="dv">2</span>],
     <span class="dt">cex.main =</span> <span class="dv">1</span>,
      <span class="dt">main =</span> <span class="kw">bquote</span>(The <span class="op">~</span><span class="st"> </span>Distribution  <span class="op">~</span><span class="st"> </span>of <span class="op">~</span><span class="st"> </span><span class="dv">10000</span> <span class="op">~</span><span class="st"> </span>beta[<span class="dv">1</span>] <span class="op">~</span><span class="st"> </span>Estimates), 
      <span class="dt">xlab =</span> <span class="kw">bquote</span>(<span class="kw">hat</span>(beta)[<span class="dv">1</span>]), 
      <span class="dt">freq =</span> F)
 
 <span class="co"># add true distribution to plot</span>
-<span class="kw">curve</span>(<span class="kw">dnorm</span>(x, <span class="fl">3.5</span>, <span class="kw">sqrt</span>(var_b1)), <span class="dt">add =</span> T, <span class="dt">col =</span> <span class="st">&quot;darkred&quot;</span>)</code></pre></div>
+<span class="kw">curve</span>(<span class="kw">dnorm</span>(x, 
+            <span class="fl">3.5</span>, 
+            <span class="kw">sqrt</span>(var_b1)), 
+      <span class="dt">add =</span> T, 
+      <span class="dt">col =</span> <span class="st">&quot;darkred&quot;</span>)</code></pre></div>
 <p><img src="URFITE_files/figure-html/unnamed-chunk-170-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <p>Our variance estimates support the statements made in Key Concept 4.4, coming close to the theoretical values. The histograms suggest that the distributions of the estimators can be well approximated by the respective theoretical normal distributions stated in Key Concept 4.4.</p>
@@ -491,18 +501,22 @@ fit &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="dt
   
   <span class="co"># inner loop: sampling and estimating of the coefficients</span>
   <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>reps){
+    
     sample &lt;-<span class="st"> </span>population[<span class="kw">sample</span>(<span class="dv">1</span><span class="op">:</span>N, n[j]), ]
     fit[i, ] &lt;-<span class="st"> </span><span class="kw">lm</span>(Y <span class="op">~</span><span class="st"> </span>X, <span class="dt">data =</span> sample)<span class="op">$</span>coefficients
+    
   }
   
   <span class="co"># draw density estimates</span>
-  <span class="kw">plot</span>(<span class="kw">density</span>(fit[ ,<span class="dv">2</span>]), <span class="dt">xlim=</span><span class="kw">c</span>(<span class="fl">2.5</span>, <span class="fl">4.5</span>), <span class="dt">col =</span> j, 
-       <span class="dt">main =</span> <span class="kw">paste</span>(<span class="st">&quot;n=&quot;</span>, n[j]), <span class="dt">xlab =</span> <span class="kw">bquote</span>(<span class="kw">hat</span>(beta)[<span class="dv">1</span>]))
+  <span class="kw">plot</span>(<span class="kw">density</span>(fit[ ,<span class="dv">2</span>]), <span class="dt">xlim=</span><span class="kw">c</span>(<span class="fl">2.5</span>, <span class="fl">4.5</span>), 
+       <span class="dt">col =</span> j, 
+       <span class="dt">main =</span> <span class="kw">paste</span>(<span class="st">&quot;n=&quot;</span>, n[j]), 
+       <span class="dt">xlab =</span> <span class="kw">bquote</span>(<span class="kw">hat</span>(beta)[<span class="dv">1</span>]))
   
 }</code></pre></div>
 <p><img src="URFITE_files/figure-html/unnamed-chunk-171-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
-<p>We find that, as <span class="math inline">\(n\)</span> increases, the distribution of <span class="math inline">\(\hat\beta_1\)</span> concentrates around its mean, i.e. its variance decreases. Put differently, the likelihood of observing estimates close to the true value of <span class="math inline">\(\beta_1 = 3.5\)</span> grows as we increase the sample size. The same behavior can be observed if we analyze the distribution of <span class="math inline">\(\hat\beta_0\)</span> instead.</p>
+<p>We find that, as <span class="math inline">\(n\)</span> increases, the distribution of <span class="math inline">\(\hat\beta_1\)</span> concentrates around its mean, i.e., its variance decreases. Put differently, the likelihood of observing estimates close to the true value of <span class="math inline">\(\beta_1 = 3.5\)</span> grows as we increase the sample size. The same behavior can be observed if we analyze the distribution of <span class="math inline">\(\hat\beta_0\)</span> instead.</p>
 </div>
 <div id="simulation-study-3" class="section level3 unnumbered">
 <h3>Simulation Study 3</h3>
@@ -548,11 +562,17 @@ set1 &lt;-<span class="st"> </span><span class="kw">subset</span>(bvndata, <span
 set2 &lt;-<span class="st"> </span><span class="kw">subset</span>(bvndata, <span class="kw">abs</span>(<span class="kw">mean</span>(X) <span class="op">-</span><span class="st"> </span>X) <span class="op">&lt;=</span><span class="st"> </span><span class="dv">1</span>)
 
 <span class="co"># plot both data sets</span>
-<span class="kw">plot</span>(set1, <span class="dt">xlab =</span> <span class="st">&quot;X&quot;</span>, <span class="dt">ylab =</span> <span class="st">&quot;Y&quot;</span>, <span class="dt">pch =</span> <span class="dv">19</span>)
-<span class="kw">points</span>(set2, <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>, <span class="dt">pch =</span> <span class="dv">19</span>)</code></pre></div>
+<span class="kw">plot</span>(set1, 
+     <span class="dt">xlab =</span> <span class="st">&quot;X&quot;</span>, 
+     <span class="dt">ylab =</span> <span class="st">&quot;Y&quot;</span>, 
+     <span class="dt">pch =</span> <span class="dv">19</span>)
+
+<span class="kw">points</span>(set2, 
+       <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>, 
+       <span class="dt">pch =</span> <span class="dv">19</span>)</code></pre></div>
 <p><img src="URFITE_files/figure-html/unnamed-chunk-172-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
-<p>It is clear that observations that are close to the sample average of the <span class="math inline">\(X_i\)</span> have less variance than those that are farther away. Now, if we were to draw a line as accurately as possible through either of the two sets it is intuitive that choosing the observations indicated by the black dots, i.e. using the set of observations which has larger variance than the blue ones, would result in a more precise line. Now, let us use OLS to estimate slope and intercept for both sets of observations. We then plot the observations along with both regression lines.</p>
+<p>It is clear that observations that are close to the sample average of the <span class="math inline">\(X_i\)</span> have less variance than those that are farther away. Now, if we were to draw a line as accurately as possible through either of the two sets it is intuitive that choosing the observations indicated by the black dots, i.e., using the set of observations which has larger variance than the blue ones, would result in a more precise line. Now, let us use OLS to estimate slope and intercept for both sets of observations. We then plot the observations along with both regression lines.</p>
 <div class="unfolded">
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># estimate both regression lines</span>
 lm.set1 &lt;-<span class="st"> </span><span class="kw">lm</span>(Y <span class="op">~</span><span class="st"> </span>X, <span class="dt">data =</span> set1)
