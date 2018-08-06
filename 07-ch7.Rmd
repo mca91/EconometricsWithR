@@ -70,9 +70,8 @@ You may check that these quantities are computed as in the simple regression mod
 For example, using the definition of the $p$-value for a two-sided test as given in Key Concept 7.1, we can confirm the $p$-value for a test of the hypothesis that the coefficient $\beta_1$, the coefficient on `r ttcode("size")`, to be approximately zero.
 
 ```{r, warning=F, message=F}
-2 * (1 - pt(
-            abs(
-              coeftest(model, vcov. = vcovHC(model, type = "HC1"))[2, 3]),
+# compute two-sided p-value
+2 * (1 - pt(abs(coeftest(model, vcov. = vcovHC(model, type = "HC1"))[2, 3]),
             df = model$df.residual))
 ```
 
@@ -123,17 +122,13 @@ A disadvantage of `r ttcode("confint()")` is that is does not use robust standar
 rob_se <- diag(vcovHC(model, type = "HC1"))^0.5
 
 # compute robust 95% confidence intervals
-rbind(
-  "lower" = coef(model) - qnorm(0.975) * rob_se,
-  "upper" = coef(model) + qnorm(0.975) * rob_se
-)
+rbind("lower" = coef(model) - qnorm(0.975) * rob_se,
+      "upper" = coef(model) + qnorm(0.975) * rob_se)
 
 # compute robust 90% confidence intervals
 
-rbind(
-  "lower" = coef(model) - qnorm(0.95) * rob_se,
-  "upper" = coef(model) + qnorm(0.95) * rob_se
-)
+rbind("lower" = coef(model) - qnorm(0.95) * rob_se,
+      "upper" = coef(model) + qnorm(0.95) * rob_se)
 ```
 
 Knowing how to use `r ttcode("R")` to make inference about the coefficients in multiple regression models, you can now answer the following question: 
@@ -280,7 +275,7 @@ As the robust standard errors are slightly larger than those valid under homoske
 
 ## Model Specification for Multiple Regression
 
-Choosing a regression specification, i.e. selecting, the variables to be included in a regression model, is a difficult task. However, there are some guidelines on how to proceed. The goal is clear: obtaining an unbiased and precise estimate of the causal effect of interest. As a starting point, think about omitted variables, that is, to avoid possible bias by using suitable control variables. Omitted variables bias in the context of multiple regression is explained in Key Concept 7.3. A second step could be to compare different specifications by measures of fit. However, as we shall see one should not rely solely on $\bar{R}^2$.
+Choosing a regression specification, i.e., selecting the variables to be included in a regression model, is a difficult task. However, there are some guidelines on how to proceed. The goal is clear: obtaining an unbiased and precise estimate of the causal effect of interest. As a starting point, think about omitted variables, that is, to avoid possible bias by using suitable control variables. Omitted variables bias in the context of multiple regression is explained in Key Concept 7.3. A second step could be to compare different specifications by measures of fit. However, as we shall see one should not rely solely on $\bar{R}^2$.
 
 ```{r, eval = my_output == "html", results='asis', echo=FALSE}
 cat('
@@ -501,21 +496,18 @@ spec4 <- lm(score ~ size + english + calworks, data = CASchools)
 spec5 <- lm(score ~ size + english + lunch + calworks, data = CASchools)
 
 # gather robust standard errors in a list
-rob_se <- list(
-  sqrt(diag(vcovHC(spec1, type = "HC1"))),
-  sqrt(diag(vcovHC(spec2, type = "HC1"))),
-  sqrt(diag(vcovHC(spec3, type = "HC1"))),
-  sqrt(diag(vcovHC(spec4, type = "HC1"))),
-  sqrt(diag(vcovHC(spec5, type = "HC1")))
-)
+rob_se <- list(sqrt(diag(vcovHC(spec1, type = "HC1"))),
+               sqrt(diag(vcovHC(spec2, type = "HC1"))),
+               sqrt(diag(vcovHC(spec3, type = "HC1"))),
+               sqrt(diag(vcovHC(spec4, type = "HC1"))),
+               sqrt(diag(vcovHC(spec5, type = "HC1"))))
 
 # generate a LaTeX table using stargazer
 stargazer(spec1, spec2, spec3, spec4, spec5,
           se = rob_se,
           digits = 3,
           header = F,
-          column.labels = c("(I)", "(II)", "(III)", "(IV)", "(V)")
-          )
+          column.labels = c("(I)", "(II)", "(III)", "(IV)", "(V)"))
 ```
 
 <!--html_preserve-->
@@ -586,7 +578,7 @@ stargazer(spec1, spec2, spec3, spec4, spec5,
           )
 ```
 
-Table \@ref(tab:rotsostracv) states that $scores$ is the dependent variable and that we consider five models. We see that the columns of Table \@ref(tab:rotsostracv) contain most of the information provided by `r ttcode("coeftest()")` and `r ttcode("summary()")` for the regression models under consideration: the coefficients estimates equipped with significance codes (the asterisks) and standard errors in parentheses below. Although there are no $t$-statistics, it is straightforward for the reader to compute them simply by dividing a coefficient estimate by the corresponding standard error. The bottom of the table reports summary statistics for each model and a legend. For an in-depth discussion of the tabular presentation of regression results, see Chapter 7.6 of the book.
+Table \@ref(tab:rotsostracv) states that $score$ is the dependent variable and that we consider five models. We see that the columns of Table \@ref(tab:rotsostracv) contain most of the information provided by `r ttcode("coeftest()")` and `r ttcode("summary()")` for the regression models under consideration: the coefficients estimates equipped with significance codes (the asterisks) and standard errors in parentheses below. Although there are no $t$-statistics, it is straightforward for the reader to compute them simply by dividing a coefficient estimate by the corresponding standard error. The bottom of the table reports summary statistics for each model and a legend. For an in-depth discussion of the tabular presentation of regression results, see Chapter 7.6 of the book.
 
 What can we conclude from the model comparison? 
 

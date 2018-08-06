@@ -108,7 +108,7 @@ Next, we plot the data and the regression line to reproduce Figure 11.1 of the b
 ```{r}
 # plot the data
 plot(x = HMDA$pirat, 
-     HMDA$deny,
+     y = HMDA$deny,
      main = "Scatterplot Mortgage Application Denial and the Payment-to-Income Ratio",
      xlab = "P/I ratio",
      ylab = "Deny",
@@ -243,8 +243,8 @@ We now estimate a simple Probit model of the probability of a mortgage denial.
 ```{r}
 # estimate the simple probit model
 denyprobit <- glm(deny ~ pirat, 
-                family = binomial(link = "probit"), 
-                data = HMDA)
+                  family = binomial(link = "probit"), 
+                  data = HMDA)
 
 coeftest(denyprobit, vcov. = vcovHC(denyprobit, type = "HC1"))
 ```
@@ -263,7 +263,7 @@ The following code chunk reproduces Figure 11.2 of the book.
 ```{r, fig.align='center'}
 # plot data
 plot(x = HMDA$pirat, 
-     HMDA$deny,
+     y = HMDA$deny,
      main = "Probit Model of the Probability of Denial, Given P/I Ratio",
      xlab = "P/I ratio",
      ylab = "Deny",
@@ -305,8 +305,8 @@ We continue by using an augmented Probit model to estimate the effect of race on
 
 ```{r}
 denyprobit2 <- glm(deny ~ pirat + black, 
-                family = binomial(link = "probit"), 
-                data = HMDA)
+                   family = binomial(link = "probit"), 
+                   data = HMDA)
 
 coeftest(denyprobit2, vcov. = vcovHC(denyprobit2, type = "HC1"))
 ```
@@ -326,8 +326,7 @@ How big is the estimated difference in denial probabilities between two hypothet
 predictions <- predict(denyprobit2, 
                        newdata = data.frame("black" = c("no", "yes"), 
                                             "pirat" = c(0.3, 0.3)),
-                       type = "response"
-                       )
+                       type = "response")
 
 # 2. compute difference in probabilities
 diff(predictions)
@@ -379,8 +378,8 @@ It is fairly easy to estimate a Logit regression model using `r ttcode("R")`.
 
 ```{r}
 denylogit <- glm(deny ~ pirat, 
-                family = binomial(link = "logit"), 
-                data = HMDA)
+                 family = binomial(link = "logit"), 
+                 data = HMDA)
 
 coeftest(denylogit, vcov. = vcovHC(denylogit, type = "HC1"))
 ```
@@ -391,7 +390,7 @@ The subsequent code chunk reproduces Figure 11.3 of the book.
 ```{r, fig.align='center'}
 # plot data
 plot(x = HMDA$pirat, 
-     HMDA$deny,
+     y = HMDA$deny,
      main = "Probit and Logit Models Model of the Probability of Denial, Given P/I Ratio",
      xlab = "P/I ratio",
      ylab = "Deny",
@@ -429,8 +428,8 @@ Following the book we extend the simple Logit model of mortgage denial with the 
 ```{r}
 # estimate a Logit regression with multiple regressors
 denylogit2 <- glm(deny ~ pirat + black, 
-                family = binomial(link = "logit"), 
-                data = HMDA)
+                  family = binomial(link = "logit"), 
+                  data = HMDA)
 
 coeftest(denylogit2, vcov. = vcovHC(denylogit2, type = "HC1"))
 ```
@@ -639,13 +638,12 @@ probit_HMDA_4 <- glm(deny ~ black * (pirat + hirat) + lvrat + chist + mhist + ph
 Just as in previous chapters, we store heteroskedasticity-robust standard errors of the coefficient estimators in a `r ttcode("list")` which is then used as the argument `r ttcode("se")` in `r ttcode("stargazer()")`.
 
 ```{r, eval=FALSE}
-rob_se <- list(
-  sqrt(diag(vcovHC(lpm_HMDA, type = "HC1"))),
-  sqrt(diag(vcovHC(logit_HMDA, type = "HC1"))),
-  sqrt(diag(vcovHC(probit_HMDA_1, type = "HC1"))),
-  sqrt(diag(vcovHC(probit_HMDA_2, type = "HC1"))),
-  sqrt(diag(vcovHC(probit_HMDA_3, type = "HC1"))),
-  sqrt(diag(vcovHC(probit_HMDA_4, type = "HC1"))))
+rob_se <- list(sqrt(diag(vcovHC(lpm_HMDA, type = "HC1"))),
+               sqrt(diag(vcovHC(logit_HMDA, type = "HC1"))),
+               sqrt(diag(vcovHC(probit_HMDA_1, type = "HC1"))),
+               sqrt(diag(vcovHC(probit_HMDA_2, type = "HC1"))),
+               sqrt(diag(vcovHC(probit_HMDA_3, type = "HC1"))),
+               sqrt(diag(vcovHC(probit_HMDA_4, type = "HC1"))))
 
 stargazer(lpm_HMDA, logit_HMDA, probit_HMDA_1, 
           probit_HMDA_2, probit_HMDA_3, probit_HMDA_4,  
@@ -675,7 +673,8 @@ stargazer(lpm_HMDA, logit_HMDA, probit_HMDA_1, probit_HMDA_2, probit_HMDA_3, pro
           digits = 3,
           type = "html", 
           se = rob_se,
-          header = FALSE,
+          header = FALSE,          
+          dep.var.caption = "Dependent Variable: Mortgage Application Denial",
           model.numbers = FALSE,
           column.labels = c("(1)", "(2)", "(3)", "(4)", "(5)", "(6)")
           )

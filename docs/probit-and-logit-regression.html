@@ -25,7 +25,7 @@
 <meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber and Martin Schmelzer">
 
 
-<meta name="date" content="2018-08-02">
+<meta name="date" content="2018-08-05">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -401,8 +401,8 @@ Probit Model, Predicted Probabilities and Estimated Effects
 <p>We now estimate a simple Probit model of the probability of a mortgage denial.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># estimate the simple probit model</span>
 denyprobit &lt;-<span class="st"> </span><span class="kw">glm</span>(deny <span class="op">~</span><span class="st"> </span>pirat, 
-                <span class="dt">family =</span> <span class="kw">binomial</span>(<span class="dt">link =</span> <span class="st">&quot;probit&quot;</span>), 
-                <span class="dt">data =</span> HMDA)
+                  <span class="dt">family =</span> <span class="kw">binomial</span>(<span class="dt">link =</span> <span class="st">&quot;probit&quot;</span>), 
+                  <span class="dt">data =</span> HMDA)
 
 <span class="kw">coeftest</span>(denyprobit, <span class="dt">vcov. =</span> <span class="kw">vcovHC</span>(denyprobit, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>))</code></pre></div>
 <pre><code>## 
@@ -422,7 +422,7 @@ denyprobit &lt;-<span class="st"> </span><span class="kw">glm</span>(deny <span 
 <div class="unfolded">
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># plot data</span>
 <span class="kw">plot</span>(<span class="dt">x =</span> HMDA<span class="op">$</span>pirat, 
-     HMDA<span class="op">$</span>deny,
+     <span class="dt">y =</span> HMDA<span class="op">$</span>deny,
      <span class="dt">main =</span> <span class="st">&quot;Probit Model of the Probability of Denial, Given P/I Ratio&quot;</span>,
      <span class="dt">xlab =</span> <span class="st">&quot;P/I ratio&quot;</span>,
      <span class="dt">ylab =</span> <span class="st">&quot;Deny&quot;</span>,
@@ -457,8 +457,8 @@ predictions &lt;-<span class="st"> </span><span class="kw">predict</span>(denypr
 <p>We find that an increase in the payment-to-income ratio from <span class="math inline">\(0.3\)</span> to <span class="math inline">\(0.4\)</span> is predicted to increase the probability of denial by approximately <span class="math inline">\(6.2\%\)</span>.</p>
 <p>We continue by using an augmented Probit model to estimate the effect of race on the probability of a mortgage application denial.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">denyprobit2 &lt;-<span class="st"> </span><span class="kw">glm</span>(deny <span class="op">~</span><span class="st"> </span>pirat <span class="op">+</span><span class="st"> </span>black, 
-                <span class="dt">family =</span> <span class="kw">binomial</span>(<span class="dt">link =</span> <span class="st">&quot;probit&quot;</span>), 
-                <span class="dt">data =</span> HMDA)
+                   <span class="dt">family =</span> <span class="kw">binomial</span>(<span class="dt">link =</span> <span class="st">&quot;probit&quot;</span>), 
+                   <span class="dt">data =</span> HMDA)
 
 <span class="kw">coeftest</span>(denyprobit2, <span class="dt">vcov. =</span> <span class="kw">vcovHC</span>(denyprobit2, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>))</code></pre></div>
 <pre><code>## 
@@ -480,8 +480,7 @@ predictions &lt;-<span class="st"> </span><span class="kw">predict</span>(denypr
 predictions &lt;-<span class="st"> </span><span class="kw">predict</span>(denyprobit2, 
                        <span class="dt">newdata =</span> <span class="kw">data.frame</span>(<span class="st">&quot;black&quot;</span> =<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;no&quot;</span>, <span class="st">&quot;yes&quot;</span>), 
                                             <span class="st">&quot;pirat&quot;</span> =<span class="st"> </span><span class="kw">c</span>(<span class="fl">0.3</span>, <span class="fl">0.3</span>)),
-                       <span class="dt">type =</span> <span class="st">&quot;response&quot;</span>
-                       )
+                       <span class="dt">type =</span> <span class="st">&quot;response&quot;</span>)
 
 <span class="co"># 2. compute difference in probabilities</span>
 <span class="kw">diff</span>(predictions)</code></pre></div>
@@ -509,8 +508,8 @@ Logit Regression
 <p>As for Probit regression, there is no simple interpretation of the model coefficients and it is best to consider predicted probabilities or differences in predicted probabilities. Here again, <span class="math inline">\(t\)</span>-statistics and confidence intervals based on large sample normal approximations can be computed as usual.</p>
 <p>It is fairly easy to estimate a Logit regression model using <tt>R</tt>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">denylogit &lt;-<span class="st"> </span><span class="kw">glm</span>(deny <span class="op">~</span><span class="st"> </span>pirat, 
-                <span class="dt">family =</span> <span class="kw">binomial</span>(<span class="dt">link =</span> <span class="st">&quot;logit&quot;</span>), 
-                <span class="dt">data =</span> HMDA)
+                 <span class="dt">family =</span> <span class="kw">binomial</span>(<span class="dt">link =</span> <span class="st">&quot;logit&quot;</span>), 
+                 <span class="dt">data =</span> HMDA)
 
 <span class="kw">coeftest</span>(denylogit, <span class="dt">vcov. =</span> <span class="kw">vcovHC</span>(denylogit, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>))</code></pre></div>
 <pre><code>## 
@@ -525,7 +524,7 @@ Logit Regression
 <div class="unfolded">
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># plot data</span>
 <span class="kw">plot</span>(<span class="dt">x =</span> HMDA<span class="op">$</span>pirat, 
-     HMDA<span class="op">$</span>deny,
+     <span class="dt">y =</span> HMDA<span class="op">$</span>deny,
      <span class="dt">main =</span> <span class="st">&quot;Probit and Logit Models Model of the Probability of Denial, Given P/I Ratio&quot;</span>,
      <span class="dt">xlab =</span> <span class="st">&quot;P/I ratio&quot;</span>,
      <span class="dt">ylab =</span> <span class="st">&quot;Deny&quot;</span>,
@@ -559,8 +558,8 @@ y_logit &lt;-<span class="st"> </span><span class="kw">predict</span>(denylogit,
 <p>Following the book we extend the simple Logit model of mortgage denial with the additional regressor <span class="math inline">\(black\)</span>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># estimate a Logit regression with multiple regressors</span>
 denylogit2 &lt;-<span class="st"> </span><span class="kw">glm</span>(deny <span class="op">~</span><span class="st"> </span>pirat <span class="op">+</span><span class="st"> </span>black, 
-                <span class="dt">family =</span> <span class="kw">binomial</span>(<span class="dt">link =</span> <span class="st">&quot;logit&quot;</span>), 
-                <span class="dt">data =</span> HMDA)
+                  <span class="dt">family =</span> <span class="kw">binomial</span>(<span class="dt">link =</span> <span class="st">&quot;logit&quot;</span>), 
+                  <span class="dt">data =</span> HMDA)
 
 <span class="kw">coeftest</span>(denylogit2, <span class="dt">vcov. =</span> <span class="kw">vcovHC</span>(denylogit2, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>))</code></pre></div>
 <pre><code>## 

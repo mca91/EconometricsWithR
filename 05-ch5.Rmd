@@ -306,7 +306,7 @@ CI^{\mu}_{0.95} = \left[\hat\mu - 1.96 \times \frac{5}{\sqrt{100}} \ , \ \hat\mu
 It is fairly easy to compute this interval in `r ttcode('R')` by hand. The following code chunk generates a named vector containing the interval bounds:
 
 ```{r}
-cbind(CIlower = mean(Y) - 1.96 * 5/10, CIupper = mean(Y) + 1.96 * 5/10)
+cbind(CIlower = mean(Y) - 1.96 * 5 / 10, CIupper = mean(Y) + 1.96 * 5 / 10)
 ```
 
 Knowing that $\mu = 5$ we see that, for our example data, the confidence interval covers true value.
@@ -329,9 +329,11 @@ upper <- numeric(10000)
 
 # loop sampling / estimation / CI
 for(i in 1:10000) {
-  Y <- rnorm(100, mean = 5, sd =5)
-  lower[i] <- mean(Y) - 1.96 * 5/10
-  upper[i] <- mean(Y) + 1.96 * 5/10
+  
+  Y <- rnorm(100, mean = 5, sd = 5)
+  lower[i] <- mean(Y) - 1.96 * 5 / 10
+  upper[i] <- mean(Y) + 1.96 * 5 / 10
+  
 }
 
 # join vectors of interval bounds in a matrix
@@ -371,10 +373,12 @@ abline(v = 5, lty = 2)
 
 # add horizontal bars representing the CIs
 for(j in 1:100) {
+  
   lines(c(CIs[j, 1], CIs[j, 2]), 
         c(j, j), 
         col = colors[j], 
         lwd = 2)
+  
 }
 ```
 </div>
@@ -394,10 +398,8 @@ Let us check if the calculation is done as we expect it to be for $\beta_1$, the
 # compute 95% confidence interval for coefficients in 'linear_model' by hand
 lm_summ <- summary(linear_model)
 
-c(
-  "lower" = lm_summ$coef[2,1] - qt(0.975, df = lm_summ$df[2]) * lm_summ$coef[2,2],
-  "upper" = lm_summ$coef[2,1] + qt(0.975, df = lm_summ$df[2]) * lm_summ$coef[2,2]
-)
+c("lower" = lm_summ$coef[2,1] - qt(0.975, df = lm_summ$df[2]) * lm_summ$coef[2, 2],
+  "upper" = lm_summ$coef[2,1] + qt(0.975, df = lm_summ$df[2]) * lm_summ$coef[2, 2])
 ```
 
 The upper and the lower bounds coincide. We have used the $0.975$-quantile of the $t_{418}$ distribution to get the exact result reported by `r ttcode("confint")`.  Obviously, this interval *does not* contain the value zero which, as we have already seen in the previous section, leads to the rejection of the null hypothesis $\beta_{1,0} = 0$.
@@ -449,8 +451,7 @@ dummy_model <- lm(score ~ D, data = CASchools)
 plot(CASchools$D, CASchools$score, 
      pch = 20, cex = 0.5 , col = "Steelblue",
      xlab = expression(D[i]), ylab = "Test Score",
-     main = "Dummy Regression"
-     )
+     main = "Dummy Regression")
 #
 points(CASchools$D, predict(dummy_model), col = "red", pch = 20)
 ```
@@ -462,7 +463,7 @@ Therefore, the interpretation of the coefficients in this regression model is as
 
 - $E(Y_i | D_i = 0) = \beta_0$, so $\beta_0$ is the expected test score in districts where $D_i=0$ where $STR$ is below $20$.
 
-- $E(Y_i | D_i = 1) = \beta_0 + \beta_1$ or, using the result above, $\beta_1 = E(Y_i | D_i = 1) - E(Y_i | D_i = 0)$. Thus, $\beta_1$ is *the difference in group specific expectations*, i.e. the difference in expected test score between districts with $STR < 20$ and those with $STR \geq 20$. 
+- $E(Y_i | D_i = 1) = \beta_0 + \beta_1$ or, using the result above, $\beta_1 = E(Y_i | D_i = 1) - E(Y_i | D_i = 0)$. Thus, $\beta_1$ is *the difference in group specific expectations*, i.e., the difference in expected test score between districts with $STR < 20$ and those with $STR \geq 20$. 
 
 We will now use `r ttcode('R')` to estimate the dummy regression model as defined by the equations (<a href="#mjx-eqn-5.2">5.2</a>) and (<a href="#mjx-eqn-5.3">5.3</a>) .
 
@@ -488,8 +489,7 @@ Group specific predictions can be added to the plot by execution of the followin
 points(x = CASchools$D, 
        y = predict(dummy_model), 
        col = "red", 
-       pch = 20
-       )
+       pch = 20)
 ```
 
 Here we use the function `r ttcode('predict()')` to obtain estimates of the group specific means. The red dots represent these sample group averages. Accordingly, $\hat{\beta}_1 = 7.17$ can be seen as the difference in group averages.
@@ -711,7 +711,7 @@ vcov <- vcovHC(linear_model, type = "HC1")
 vcov
 ```
 
-The output of `r ttcode('vcovHC()')` is the variance-covariance matrix of coefficient estimates. We are interested in the square root of the diagonal elements of this matrix, i.e. the standard error estimates.
+The output of `r ttcode('vcovHC()')` is the variance-covariance matrix of coefficient estimates. We are interested in the square root of the diagonal elements of this matrix, i.e., the standard error estimates.
 
 ```{block2, vcovmatrix, type='rmdknit'}
 When we have k > 1 regressors, writing down the equations for a regression model becomes very messy. A more convinient way to denote and estimate so-called multiple regression models (see Chapter \@ref(rmwmr)) is by using matrix algebra. This is why functions like <tt>vcovHC()</tt> produce matrices. In the simple linear regression model, the variances and covariances of the estimators can be gathered in the symmetric variance-covariance matrix
@@ -758,7 +758,7 @@ set.seed(905)
 
 # generate heteroskedastic data 
 X <- 1:500
-Y <- rnorm(n = 500, mean = X, sd = 0.6*X)
+Y <- rnorm(n = 500, mean = X, sd = 0.6 * X)
 
 # estimate a simple regression model
 reg <- lm(Y ~ X)
@@ -911,9 +911,11 @@ ols <- rep(NA, reps)
 weightedestimator <- rep(NA, reps)
 
 for (i in 1:reps) {
+  
   y <- rnorm(n)
   ols[i] <- mean(y)
   weightedestimator[i] <- crossprod(w, y)
+  
 }
 
 # plot kernel density estimates of the estimators' distributions: 
@@ -967,11 +969,13 @@ beta_1 <- c()
 
 # loop sampling / estimation / t statistics
 for (i in 1:10000) {
+  
   X <- runif(20, 0, 20)
   Y <- rnorm(n = 20, mean = X)
   reg <- summary(lm(Y ~ X))
   beta_0[i] <- (reg$coefficients[1, 1] - 0)/(reg$coefficients[1, 2])
   beta_1[i] <- (reg$coefficients[2, 1] - 1)/(reg$coefficients[2, 2])
+  
 }
 
 # plot the distributions and compare with t_18 density:
@@ -1348,7 +1352,7 @@ A <tt>data.frame</tt> <tt>DF</tt> with 100 observations on <tt>Y</tt> and the bi
 
 + Compute the group-specific sample means of the observations in <tt>Y</tt>. Save the mean of observations in <tt>Y</tt> where <tt>dummy == 1</tt> to <tt>mu_Y_D1</tt> and assign the mean of those observations with <tt>D == 0</tt> to <tt>mu_Y_D0</tt>. 
 
-+ Use <tt>lm()</tt> to regress <tt>Y</tt> on <tt>D</tt> i.e. estimate the coefficients in the model $$\\widehat{Y}_i = \\beta_0 + \\beta_1 \\times D_i + u_i.$$
++ Use <tt>lm()</tt> to regress <tt>Y</tt> on <tt>D</tt>, i.e., estimate the coefficients in the model $$\\widehat{Y}_i = \\beta_0 + \\beta_1 \\times D_i + u_i.$$
 
 Check that the estimates of the coefficients $\\beta_0$ and $\\beta_1$ reflect specific sample means. Can you tell which?
 
@@ -1844,7 +1848,7 @@ The function <tt>DGP_OLS()</tt> and the estimated variance <tt>est_var_OLS</tt> 
 
 **Instructions**
 
-+ Write a function <tt>DGP_WLS()</tt> that generates $100$ samples using the DGP introduced in Exercise 13 and returns the WLS estimate of $\\beta_1$. Treat $\\sigma_i$ as known, i.e. set $w_i=\\frac{1}{X_i}$.
++ Write a function <tt>DGP_WLS()</tt> that generates $100$ samples using the DGP introduced in Exercise 13 and returns the WLS estimate of $\\beta_1$. Treat $\\sigma_i$ as known, i.e., set $w_i=\\frac{1}{X_i}$.
 
 + Repeat exercise 14 using <tt>DGP_WLS()</tt>. Store the estimated variance in <tt>est_var_GLS</tt>.
 

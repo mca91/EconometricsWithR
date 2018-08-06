@@ -25,7 +25,7 @@
 <meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber and Martin Schmelzer">
 
 
-<meta name="date" content="2018-08-02">
+<meta name="date" content="2018-08-05">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -459,7 +459,7 @@ STAR[<span class="dv">1</span>, <span class="op">!</span><span class="kw">is.na<
 ## 1122 female      afam 1979 Q3 regular   580   564   free suburban bachelor
 ##      ladder3 experience3 tethnicity3 system3 schoolid3
 ## 1122  level1          30        cauc      22        54</code></pre>
-<p><tt>is.na(STAR[1, ])</tt> returns a logical vector with <tt>TRUE</tt> at positions that correspond to <tt><NA></tt> entries for the first observation. The <tt>!</tt> operator is used to invert the result such that we obtain only non-<tt><NA></tt> entries for the first observations.</p>
+<p><code>is.na(STAR[1, ])</code> returns a logical vector with <tt>TRUE</tt> at positions that correspond to <tt><NA></tt> entries for the first observation. The <tt>!</tt> operator is used to invert the result such that we obtain only non-<tt><NA></tt> entries for the first observations.</p>
 <p>In general it is not necessary to remove rows with missing data because <tt>lm()</tt> does so by default. Missing data may imply a small sample size and thus may lead to imprecise estimation and wrong inference This is, however, not an issue for the study at hand since, as we will see below, sample sizes lie beyond 5000 observations for each regression conducted.</p>
 </div>
 <div id="analysis-of-the-star-data" class="section level3 unnumbered">
@@ -518,12 +518,10 @@ fm3 &lt;-<span class="st"> </span><span class="kw">lm</span>(<span class="kw">I<
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <p>We gather the results and present them in a table using <tt>stargazer()</tt>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># compute robust standard errors for each model and gather them in a list</span>
-rob_se_<span class="dv">1</span> &lt;-<span class="st"> </span><span class="kw">list</span>(
-  <span class="kw">sqrt</span>(<span class="kw">diag</span>(<span class="kw">vcovHC</span>(fmk, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>))),
-  <span class="kw">sqrt</span>(<span class="kw">diag</span>(<span class="kw">vcovHC</span>(fm1, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>))),
-  <span class="kw">sqrt</span>(<span class="kw">diag</span>(<span class="kw">vcovHC</span>(fm2, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>))),
-  <span class="kw">sqrt</span>(<span class="kw">diag</span>(<span class="kw">vcovHC</span>(fm2, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>)))
-)</code></pre></div>
+rob_se_<span class="dv">1</span> &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="kw">sqrt</span>(<span class="kw">diag</span>(<span class="kw">vcovHC</span>(fmk, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>))),
+                 <span class="kw">sqrt</span>(<span class="kw">diag</span>(<span class="kw">vcovHC</span>(fm1, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>))),
+                 <span class="kw">sqrt</span>(<span class="kw">diag</span>(<span class="kw">vcovHC</span>(fm2, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>))),
+                 <span class="kw">sqrt</span>(<span class="kw">diag</span>(<span class="kw">vcovHC</span>(fm2, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>))))</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(stargazer)
 
 <span class="kw">stargazer</span>(fmk,fm1,fm2,fm3,
@@ -534,7 +532,7 @@ rob_se_<span class="dv">1</span> &lt;-<span class="st"> </span><span class="kw">
   <span class="dt">omit.table.layout =</span> <span class="st">&quot;n&quot;</span>,
   <span class="dt">digits =</span> <span class="dv">3</span>, 
   <span class="dt">column.labels =</span> <span class="kw">c</span>(<span class="st">&quot;K&quot;</span>, <span class="st">&quot;1&quot;</span>, <span class="st">&quot;2&quot;</span>, <span class="st">&quot;3&quot;</span>),
-  <span class="dt">dep.var.caption  =</span> <span class="st">&quot;Grade&quot;</span>,
+  <span class="dt">dep.var.caption  =</span> <span class="st">&quot;Dependent Variable: Grade&quot;</span>,
   <span class="dt">dep.var.labels.include =</span> <span class="ot">FALSE</span>,
   <span class="dt">se =</span> rob_se_<span class="dv">1</span>)</code></pre></div>
 
@@ -618,21 +616,17 @@ Y_i =&amp; \beta_0 + \beta_1 SmallClass_i + \beta_2 RegAide_i + \beta_3 experien
 
 <span class="co"># generate subset with kindergarten data</span>
 STARK &lt;-<span class="st"> </span>STAR <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">      </span><span class="kw">transmute</span>(
-                gender,
+<span class="st">      </span><span class="kw">transmute</span>(gender,
                 ethnicity,
                 stark,
                 readk,
                 mathk,
                 lunchk,
                 experiencek,
-                schoolidk
-                ) <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">      </span><span class="kw">mutate</span>(
-             <span class="dt">black =</span> <span class="kw">ifelse</span>(ethnicity <span class="op">==</span><span class="st"> &quot;afam&quot;</span>, <span class="dv">1</span>, <span class="dv">0</span>),
+                schoolidk) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">      </span><span class="kw">mutate</span>(<span class="dt">black =</span> <span class="kw">ifelse</span>(ethnicity <span class="op">==</span><span class="st"> &quot;afam&quot;</span>, <span class="dv">1</span>, <span class="dv">0</span>),
              <span class="dt">race =</span> <span class="kw">ifelse</span>(ethnicity <span class="op">==</span><span class="st"> &quot;afam&quot;</span> <span class="op">|</span><span class="st"> </span>ethnicity <span class="op">==</span><span class="st"> &quot;cauc&quot;</span>, <span class="dv">1</span>, <span class="dv">0</span>),
-             <span class="dt">boy =</span> <span class="kw">ifelse</span>(gender <span class="op">==</span><span class="st"> &quot;male&quot;</span>, <span class="dv">1</span>, <span class="dv">0</span>)
-             )</code></pre></div>
+             <span class="dt">boy =</span> <span class="kw">ifelse</span>(gender <span class="op">==</span><span class="st"> &quot;male&quot;</span>, <span class="dv">1</span>, <span class="dv">0</span>))</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># estimate the models </span>
 gradeK1 &lt;-<span class="st"> </span><span class="kw">lm</span>(<span class="kw">I</span>(mathk <span class="op">+</span><span class="st"> </span>readk) <span class="op">~</span><span class="st"> </span>stark <span class="op">+</span><span class="st"> </span>experiencek, 
               <span class="dt">data =</span> STARK)
@@ -673,11 +667,10 @@ gradeK3 &lt;-<span class="st"> </span><span class="kw">lm</span>(<span class="kw
 ## black             -25.4305130  3.4986918  -7.2685776 4.125252e-13</code></pre>
 <p>We now use <tt>stargazer()</tt> to gather all relevant information in a structured table.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># compute robust standard errors for each model and gather them in a list</span>
-rob_se_<span class="dv">2</span> &lt;-<span class="st"> </span><span class="kw">list</span>(
-  <span class="kw">sqrt</span>(<span class="kw">diag</span>(<span class="kw">vcovHC</span>(fmk, <span class="dt">type =</span> <span class="st">&quot;HC0&quot;</span>))),
-  <span class="kw">sqrt</span>(<span class="kw">diag</span>(<span class="kw">vcovHC</span>(gradeK1, <span class="dt">type =</span> <span class="st">&quot;HC0&quot;</span>))),
-  <span class="kw">sqrt</span>(<span class="kw">diag</span>(<span class="kw">vcovHC</span>(gradeK2, <span class="dt">type =</span> <span class="st">&quot;HC0&quot;</span>))),
-  <span class="kw">sqrt</span>(<span class="kw">diag</span>(<span class="kw">vcovHC</span>(gradeK3, <span class="dt">type =</span> <span class="st">&quot;HC0&quot;</span>))))</code></pre></div>
+rob_se_<span class="dv">2</span> &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="kw">sqrt</span>(<span class="kw">diag</span>(<span class="kw">vcovHC</span>(fmk, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>))),
+                 <span class="kw">sqrt</span>(<span class="kw">diag</span>(<span class="kw">vcovHC</span>(gradeK1, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>))),
+                 <span class="kw">sqrt</span>(<span class="kw">diag</span>(<span class="kw">vcovHC</span>(gradeK2, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>))),
+                 <span class="kw">sqrt</span>(<span class="kw">diag</span>(<span class="kw">vcovHC</span>(gradeK3, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>))))</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">stargazer</span>(fmk, fm1, fm2, fm3,
   <span class="dt">title =</span> <span class="st">&quot;Project STAR - Differences Estimates with </span>
 <span class="st">  Additional Regressors for Kindergarten&quot;</span>,
@@ -697,28 +690,28 @@ rob_se_<span class="dv">2</span> &lt;-<span class="st"> </span><span class="kw">
 <tr><td></td><td colspan="4" style="border-bottom: 1px solid black"></td></tr>
 <tr><td style="text-align:left"></td><td>(1)</td><td>(2)</td><td>(3)</td><td>(4)</td></tr>
 <tr><td colspan="5" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left">starksmall</td><td>13.899<sup>***</sup></td><td>14.006<sup>***</sup></td><td>15.933<sup>***</sup></td><td>15.890<sup>***</sup></td></tr>
-<tr><td style="text-align:left"></td><td>(2.453)</td><td>(2.446)</td><td>(2.225)</td><td>(2.139)</td></tr>
+<tr><td style="text-align:left"></td><td>(2.454)</td><td>(2.447)</td><td>(2.241)</td><td>(2.155)</td></tr>
 <tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
 <tr><td style="text-align:left">starkregular+aide</td><td>0.314</td><td>-0.601</td><td>1.215</td><td>1.787</td></tr>
-<tr><td style="text-align:left"></td><td>(2.270)</td><td>(2.254)</td><td>(2.021)</td><td>(1.947)</td></tr>
+<tr><td style="text-align:left"></td><td>(2.271)</td><td>(2.254)</td><td>(2.035)</td><td>(1.961)</td></tr>
 <tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
 <tr><td style="text-align:left">experiencek</td><td></td><td>1.469<sup>***</sup></td><td>0.743<sup>***</sup></td><td>0.663<sup>***</sup></td></tr>
-<tr><td style="text-align:left"></td><td></td><td>(0.169)</td><td>(0.169)</td><td>(0.165)</td></tr>
+<tr><td style="text-align:left"></td><td></td><td>(0.169)</td><td>(0.170)</td><td>(0.166)</td></tr>
 <tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
 <tr><td style="text-align:left">boy</td><td></td><td></td><td></td><td>-12.091<sup>***</sup></td></tr>
-<tr><td style="text-align:left"></td><td></td><td></td><td></td><td>(1.660)</td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td>(1.673)</td></tr>
 <tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
 <tr><td style="text-align:left">lunchkfree</td><td></td><td></td><td></td><td>-34.703<sup>***</sup></td></tr>
-<tr><td style="text-align:left"></td><td></td><td></td><td></td><td>(1.972)</td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td>(1.987)</td></tr>
 <tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
 <tr><td style="text-align:left">black</td><td></td><td></td><td></td><td>-25.431<sup>***</sup></td></tr>
-<tr><td style="text-align:left"></td><td></td><td></td><td></td><td>(3.472)</td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td>(3.499)</td></tr>
 <tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
 <tr><td style="text-align:left">race</td><td></td><td></td><td></td><td>8.501</td></tr>
-<tr><td style="text-align:left"></td><td></td><td></td><td></td><td>(12.426)</td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td>(12.520)</td></tr>
 <tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
 <tr><td style="text-align:left">Constant</td><td>918.043<sup>***</sup></td><td>904.721<sup>***</sup></td><td>925.675<sup>***</sup></td><td>937.683<sup>***</sup></td></tr>
-<tr><td style="text-align:left"></td><td>(1.633)</td><td>(2.222)</td><td>(7.598)</td><td>(14.265)</td></tr>
+<tr><td style="text-align:left"></td><td>(1.633)</td><td>(2.222)</td><td>(7.653)</td><td>(14.373)</td></tr>
 <tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
 <tr><td colspan="5" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left">School indicators?</td><td>no</td><td>no</td><td>yes</td><td>yes</td></tr>
 <tr><td style="text-align:left">Observations</td><td>5,786</td><td>5,766</td><td>5,766</td><td>5,748</td></tr>

@@ -25,7 +25,7 @@
 <meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber and Martin Schmelzer">
 
 
-<meta name="date" content="2018-08-02">
+<meta name="date" content="2018-08-05">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -409,7 +409,7 @@ Y &lt;-<span class="st"> </span><span class="kw">rnorm</span>(<span class="dt">n
 CI^{\mu}_{0.95} = \left[\hat\mu - 1.96 \times \frac{5}{\sqrt{100}} \ , \ \hat\mu + 1.96 \times \frac{5}{\sqrt{100}}  \right]. \tag{5.1}
 \end{equation}\]</span>
 <p>It is fairly easy to compute this interval in <tt>R</tt> by hand. The following code chunk generates a named vector containing the interval bounds:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">cbind</span>(<span class="dt">CIlower =</span> <span class="kw">mean</span>(Y) <span class="op">-</span><span class="st"> </span><span class="fl">1.96</span> <span class="op">*</span><span class="st"> </span><span class="dv">5</span><span class="op">/</span><span class="dv">10</span>, <span class="dt">CIupper =</span> <span class="kw">mean</span>(Y) <span class="op">+</span><span class="st"> </span><span class="fl">1.96</span> <span class="op">*</span><span class="st"> </span><span class="dv">5</span><span class="op">/</span><span class="dv">10</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">cbind</span>(<span class="dt">CIlower =</span> <span class="kw">mean</span>(Y) <span class="op">-</span><span class="st"> </span><span class="fl">1.96</span> <span class="op">*</span><span class="st"> </span><span class="dv">5</span> <span class="op">/</span><span class="st"> </span><span class="dv">10</span>, <span class="dt">CIupper =</span> <span class="kw">mean</span>(Y) <span class="op">+</span><span class="st"> </span><span class="fl">1.96</span> <span class="op">*</span><span class="st"> </span><span class="dv">5</span> <span class="op">/</span><span class="st"> </span><span class="dv">10</span>)</code></pre></div>
 <pre><code>##       CIlower  CIupper
 ## [1,] 4.502625 6.462625</code></pre>
 <p>Knowing that <span class="math inline">\(\mu = 5\)</span> we see that, for our example data, the confidence interval covers true value.</p>
@@ -429,9 +429,11 @@ upper &lt;-<span class="st"> </span><span class="kw">numeric</span>(<span class=
 
 <span class="co"># loop sampling / estimation / CI</span>
 <span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">10000</span>) {
-  Y &lt;-<span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">100</span>, <span class="dt">mean =</span> <span class="dv">5</span>, <span class="dt">sd =</span><span class="dv">5</span>)
-  lower[i] &lt;-<span class="st"> </span><span class="kw">mean</span>(Y) <span class="op">-</span><span class="st"> </span><span class="fl">1.96</span> <span class="op">*</span><span class="st"> </span><span class="dv">5</span><span class="op">/</span><span class="dv">10</span>
-  upper[i] &lt;-<span class="st"> </span><span class="kw">mean</span>(Y) <span class="op">+</span><span class="st"> </span><span class="fl">1.96</span> <span class="op">*</span><span class="st"> </span><span class="dv">5</span><span class="op">/</span><span class="dv">10</span>
+  
+  Y &lt;-<span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">100</span>, <span class="dt">mean =</span> <span class="dv">5</span>, <span class="dt">sd =</span> <span class="dv">5</span>)
+  lower[i] &lt;-<span class="st"> </span><span class="kw">mean</span>(Y) <span class="op">-</span><span class="st"> </span><span class="fl">1.96</span> <span class="op">*</span><span class="st"> </span><span class="dv">5</span> <span class="op">/</span><span class="st"> </span><span class="dv">10</span>
+  upper[i] &lt;-<span class="st"> </span><span class="kw">mean</span>(Y) <span class="op">+</span><span class="st"> </span><span class="fl">1.96</span> <span class="op">*</span><span class="st"> </span><span class="dv">5</span> <span class="op">/</span><span class="st"> </span><span class="dv">10</span>
+  
 }
 
 <span class="co"># join vectors of interval bounds in a matrix</span>
@@ -463,10 +465,12 @@ colors[ID] &lt;-<span class="st"> &quot;red&quot;</span>
 
 <span class="co"># add horizontal bars representing the CIs</span>
 <span class="cf">for</span>(j <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">100</span>) {
+  
   <span class="kw">lines</span>(<span class="kw">c</span>(CIs[j, <span class="dv">1</span>], CIs[j, <span class="dv">2</span>]), 
         <span class="kw">c</span>(j, j), 
         <span class="dt">col =</span> colors[j], 
         <span class="dt">lwd =</span> <span class="dv">2</span>)
+  
 }</code></pre></div>
 <p><img src="URFITE_files/figure-html/unnamed-chunk-204-1.png" width="384" style="display: block; margin: auto;" /></p>
 </div>
@@ -481,10 +485,8 @@ colors[ID] &lt;-<span class="st"> &quot;red&quot;</span>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># compute 95% confidence interval for coefficients in &#39;linear_model&#39; by hand</span>
 lm_summ &lt;-<span class="st"> </span><span class="kw">summary</span>(linear_model)
 
-<span class="kw">c</span>(
-  <span class="st">&quot;lower&quot;</span> =<span class="st"> </span>lm_summ<span class="op">$</span>coef[<span class="dv">2</span>,<span class="dv">1</span>] <span class="op">-</span><span class="st"> </span><span class="kw">qt</span>(<span class="fl">0.975</span>, <span class="dt">df =</span> lm_summ<span class="op">$</span>df[<span class="dv">2</span>]) <span class="op">*</span><span class="st"> </span>lm_summ<span class="op">$</span>coef[<span class="dv">2</span>,<span class="dv">2</span>],
-  <span class="st">&quot;upper&quot;</span> =<span class="st"> </span>lm_summ<span class="op">$</span>coef[<span class="dv">2</span>,<span class="dv">1</span>] <span class="op">+</span><span class="st"> </span><span class="kw">qt</span>(<span class="fl">0.975</span>, <span class="dt">df =</span> lm_summ<span class="op">$</span>df[<span class="dv">2</span>]) <span class="op">*</span><span class="st"> </span>lm_summ<span class="op">$</span>coef[<span class="dv">2</span>,<span class="dv">2</span>]
-)</code></pre></div>
+<span class="kw">c</span>(<span class="st">&quot;lower&quot;</span> =<span class="st"> </span>lm_summ<span class="op">$</span>coef[<span class="dv">2</span>,<span class="dv">1</span>] <span class="op">-</span><span class="st"> </span><span class="kw">qt</span>(<span class="fl">0.975</span>, <span class="dt">df =</span> lm_summ<span class="op">$</span>df[<span class="dv">2</span>]) <span class="op">*</span><span class="st"> </span>lm_summ<span class="op">$</span>coef[<span class="dv">2</span>, <span class="dv">2</span>],
+  <span class="st">&quot;upper&quot;</span> =<span class="st"> </span>lm_summ<span class="op">$</span>coef[<span class="dv">2</span>,<span class="dv">1</span>] <span class="op">+</span><span class="st"> </span><span class="kw">qt</span>(<span class="fl">0.975</span>, <span class="dt">df =</span> lm_summ<span class="op">$</span>df[<span class="dv">2</span>]) <span class="op">*</span><span class="st"> </span>lm_summ<span class="op">$</span>coef[<span class="dv">2</span>, <span class="dv">2</span>])</code></pre></div>
 <pre><code>##     lower     upper 
 ## -3.222980 -1.336636</code></pre>
 <p>The upper and the lower bounds coincide. We have used the <span class="math inline">\(0.975\)</span>-quantile of the <span class="math inline">\(t_{418}\)</span> distribution to get the exact result reported by <tt>confint</tt>. Obviously, this interval <em>does not</em> contain the value zero which, as we have already seen in the previous section, leads to the rejection of the null hypothesis <span class="math inline">\(\beta_{1,0} = 0\)</span>.</p>

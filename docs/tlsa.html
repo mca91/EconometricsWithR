@@ -25,7 +25,7 @@
 <meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber and Martin Schmelzer">
 
 
-<meta name="date" content="2018-08-02">
+<meta name="date" content="2018-08-05">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -402,13 +402,13 @@ X &lt;-<span class="st"> </span><span class="kw">runif</span>(<span class="dv">5
 u &lt;-<span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">50</span>, <span class="dt">sd =</span> <span class="dv">5</span>)  
 
 <span class="co"># the true relation  </span>
-Y &lt;-<span class="st"> </span>X<span class="op">^</span><span class="dv">2</span> <span class="op">+</span><span class="st"> </span><span class="dv">2</span><span class="op">*</span>X <span class="op">+</span><span class="st"> </span>u                
+Y &lt;-<span class="st"> </span>X<span class="op">^</span><span class="dv">2</span> <span class="op">+</span><span class="st"> </span><span class="dv">2</span> <span class="op">*</span><span class="st"> </span>X <span class="op">+</span><span class="st"> </span>u                
 
 <span class="co"># estimate a simple regression model </span>
 mod_simple &lt;-<span class="st"> </span><span class="kw">lm</span>(Y <span class="op">~</span><span class="st"> </span>X)
 
 <span class="co"># predict using a quadratic model </span>
-prediction &lt;-<span class="st"> </span><span class="kw">predict</span>(<span class="kw">lm</span>(Y <span class="op">~</span><span class="st"> </span>X <span class="op">+</span><span class="st">  </span><span class="kw">I</span>(X<span class="op">^</span><span class="dv">2</span>)), <span class="kw">data.frame</span>(<span class="dt">X =</span> <span class="kw">sort</span>(X)))
+prediction &lt;-<span class="st"> </span><span class="kw">predict</span>(<span class="kw">lm</span>(Y <span class="op">~</span><span class="st"> </span>X <span class="op">+</span><span class="st"> </span><span class="kw">I</span>(X<span class="op">^</span><span class="dv">2</span>)), <span class="kw">data.frame</span>(<span class="dt">X =</span> <span class="kw">sort</span>(X)))
 
 <span class="co"># plot the results</span>
 <span class="kw">plot</span>(Y <span class="op">~</span><span class="st"> </span>X)
@@ -437,7 +437,9 @@ X &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">5000<
 
 <span class="co"># generate time series observations with random influences</span>
 <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">2</span><span class="op">:</span><span class="kw">length</span>(Date)) {
+  
     X[i] &lt;-<span class="st"> </span><span class="op">-</span><span class="dv">50</span> <span class="op">+</span><span class="st"> </span><span class="fl">0.98</span> <span class="op">*</span><span class="st"> </span>X[i<span class="op">-</span><span class="dv">1</span>] <span class="op">+</span><span class="st"> </span><span class="kw">rnorm</span>(<span class="dt">n =</span> <span class="dv">1</span>, <span class="dt">sd =</span> <span class="dv">200</span>)
+    
 }
 
 <span class="co">#plot the results</span>
@@ -453,7 +455,7 @@ X &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">5000<
 </div>
 <div id="assumption-3-large-outliers-are-unlikely" class="section level3 unnumbered">
 <h3>Assumption 3: Large Outliers are Unlikely</h3>
-<p>It is easy to come up with situations where extreme observations, i.e. observations that deviate considerably from the usual range of the data, may occur. Such observations are called outliers. Technically speaking, assumption 3 requires that <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> have a finite kurtosis.<a href="#fn5" class="footnoteRef" id="fnref5"><sup>5</sup></a></p>
+<p>It is easy to come up with situations where extreme observations, i.e., observations that deviate considerably from the usual range of the data, may occur. Such observations are called outliers. Technically speaking, assumption 3 requires that <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> have a finite kurtosis.<a href="#fn5" class="footnoteRef" id="fnref5"><sup>5</sup></a></p>
 <p>Common cases where we want to exclude or (if possible) correct such outliers is when they are apparently typos, conversion errors or measurement errors. Even if it seems like extreme observations have been recorded correctly, it is advisable to exclude them before estimating a model since OLS suffers from <em>sensitivity to outliers</em>.</p>
 <p>What does this mean? One can show that extreme observations receive heavy weighting in the estimation of the unknown regression coefficients when using OLS. Therefore, outliers can lead to strongly distorted estimates of regression coefficients. To get a better impression of this issue, consider the following application where we have placed some sample data on <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> which are highly correlated. The relation between <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> seems to be explained pretty good by the plotted regression line: all of the blue dots lie close to the red line and we have <span class="math inline">\(R^2=0.92\)</span>.</p>
 <p>Now go ahead and add a further observation at, say, <span class="math inline">\((18,2)\)</span>. This observations clearly is an outlier. The result is quite striking: the estimated regression line differs greatly from the one we adjudged to fit the data well. The slope is heavily downward biased and <span class="math inline">\(R^2\)</span> decreased to a mere <span class="math inline">\(29\%\)</span>! <br> Double-click inside the coordinate system to reset the app. Feel free to experiment. Choose different coordinates for the outlier or add additional ones.</p>

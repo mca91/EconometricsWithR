@@ -161,7 +161,7 @@ This expression says that the probability of observing a deviation from the true
 
 To examine properties of the sample mean as an estimator for the corresponding population mean, consider the following `r ttcode("R")` example.
 
-We generate a population `pop` which consists observations $Y_i$, $i=1,\dots,10000$ that origin from a normal distribution with mean $\mu = 10$ and variance $\sigma^2 = 1$.
+We generate a population `r ttcode("pop")` consisting of observations $Y_i$, $i=1,\dots,10000$ that origin from a normal distribution with mean $\mu = 10$ and variance $\sigma^2 = 1$.
 
 To investigate the behavior of the estimator $\hat{\mu} = \bar{Y}$ we can draw random samples from this population and calculate $\bar{Y}$ for each of them. This is easily done by making use of the function `r ttcode("replicate()")`. The argument `r ttcode("expr")` is evaluated `r ttcode("n")` times. In this case we draw samples of sizes $n=5$ and $n=25$, compute the sample means and repeat this exactly $N=25000$ times.
 
@@ -345,14 +345,12 @@ plot(density(est2),
       lwd = 2,
       xlim = c(8, 11),
       xlab = 'Estimates',
-      main = 'When the i.i.d. Assumption Fails'
-     )
+      main = 'When the i.i.d. Assumption Fails')
 
 # sampling distribution of sample mean, i.i.d. fails, n=25
 lines(density(est3),
       col = 'red2',
-      lwd = 2
-      )
+      lwd = 2)
 
 # add a legend
 legend("topleft",
@@ -567,13 +565,15 @@ mean_estimates <- numeric(10000)
 se_estimates <- numeric(10000)
 
 for (i in 1:10000) {
+  
   s <- sample(0:1, 
               size = 100,  
               prob = c(0.9, 0.1),
-              replace = T
-              )
+              replace = T)
+  
   mean_estimates[i] <- mean(s)
-  se_estimates[i] <- sqrt(mean(s)*(1-mean(s))/100)
+  se_estimates[i] <- sqrt(mean(s) * (1 - mean(s)) / 100)
+
 }
 
 mean(mean_estimates)
@@ -598,13 +598,13 @@ samplemean_act <- mean(
          replace = T, 
          size = 100))
 
-SE_samplemean <- sqrt(samplemean_act * (1-samplemean_act)/100)
+SE_samplemean <- sqrt(samplemean_act * (1 - samplemean_act) / 100)
 
 # null hypothesis
 mean_h0 <- 0.1
 
 # compute the p-value
-pvalue <- 2 * pnorm(-abs(samplemean_act - mean_h0)/SE_samplemean)
+pvalue <- 2 * pnorm(- abs(samplemean_act - mean_h0) / SE_samplemean)
 pvalue
 ```
 
@@ -639,12 +639,14 @@ n <- 300
 
 # simulate 10000 t-statistics
 for (i in 1:10000) {
+  
   s <- sample(0:1, 
               size = n,  
               prob = c(0.9, 0.1),
-              replace = T
-              )
+              replace = T)
+  
   tstatistics[i] <- (mean(s)-0.1)/sqrt(var(s)/n)
+  
 }
 ```
 <div class="unfolded">
@@ -655,7 +657,7 @@ In the simulation above we estimate the variance of the $Y_i$ using `r ttcode("v
 # plot density and compare to N(0,1) density
 plot(density(tstatistics),
      xlab = 't-statistic',
-     main = 'Distribution of the t-statistic when n=300',
+     main = 'Estimated Distribution of the t-statistic when n=300',
      lwd = 2,
      xlim = c(-4, 4),
      col = 'steelblue')
@@ -1077,8 +1079,8 @@ set.seed(123)
 # generate data set
 X <- runif(n = 100, 
            min = 18, 
-           max = 70
-           )
+           max = 70)
+
 Y <- X + rnorm(n=100, 50, 15)
 
 # plot observations
@@ -1089,8 +1091,7 @@ plot(X,
      xlab = "Age",
      ylab = "Earnings",
      col = "steelblue",
-     pch = 19
-     )
+     pch = 19)
 ```
 
 
@@ -1120,8 +1121,8 @@ cov(X, Y)
 # compute sample correlation between X and Y
 cor(X, Y)
 
-# equivalent way to compute the sample correlation
-cov(X, Y)/(sd(X) * sd(Y))
+# an equivalent way to compute the sample correlation
+cov(X, Y) / (sd(X) * sd(Y))
 ```
 
 The estimates indicate that $X$ and $Y$ are moderately correlated.
@@ -1154,7 +1155,7 @@ example3 <- mvrnorm(100,
 
 # no correlation (quadratic relationship)
 X <- seq(-3, 3, 0.01)
-Y <- -X^2 + rnorm(length(X))
+Y <- - X^2 + rnorm(length(X))
 
 example4 <- cbind(X, Y)
 

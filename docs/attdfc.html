@@ -25,7 +25,7 @@
 <meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber and Martin Schmelzer">
 
 
-<meta name="date" content="2018-08-02">
+<meta name="date" content="2018-08-05">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -370,7 +370,7 @@ This book is in <b>Open Review</b>. We want your feedback to make the book bette
 <p>The model to be estimated by TSLS using the general sales tax and the cigarette-specific sales tax as instruments hence is</p>
 <span class="math display" id="eq:diffivreg">\[\begin{align}
 \begin{split}
-  \log(Q_{i,1995}^{cigarettes}) - \log(Q_{i,1995}^{cigarettes}) =&amp; \, \beta_0 + \beta_1 \left[\log(P_{i,1995}^{cigarettes}) - \log(P_{i,1985}^{cigarettes}) \right] \\ +&amp; \beta_2 \left[\log(income_{i,1995}) - \log(income_{i,1985})\right] + u_i. \end{split}\tag{12.10}
+  \log(Q_{i,1995}^{cigarettes}) - \log(Q_{i,1995}^{cigarettes}) =&amp; \, \beta_0 + \beta_1 \left[\log(P_{i,1995}^{cigarettes}) - \log(P_{i,1985}^{cigarettes}) \right] \\ &amp;+ \beta_2 \left[\log(income_{i,1995}) - \log(income_{i,1985})\right] + u_i. \end{split}\tag{12.10}
 \end{align}\]</span>
 <p>We first create differences from 1985 to 1995 for the dependent variable, the regressors and both instruments.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># subset data for year 1985</span>
@@ -438,10 +438,39 @@ cig_ivreg_diff3 &lt;-<span class="st"> </span><span class="kw">ivreg</span>(pack
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <p>We proceed by generating a tabulated summary of the estimation results using <tt>stargazer()</tt>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># gather robust standard errors in a list</span>
-rob_se &lt;-<span class="st"> </span><span class="kw">list</span>(
-  <span class="kw">sqrt</span>(<span class="kw">diag</span>(<span class="kw">vcovHC</span>(cig_ivreg_diff1, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>))),
-  <span class="kw">sqrt</span>(<span class="kw">diag</span>(<span class="kw">vcovHC</span>(cig_ivreg_diff2, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>))),
-  <span class="kw">sqrt</span>(<span class="kw">diag</span>(<span class="kw">vcovHC</span>(cig_ivreg_diff3, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>))))</code></pre></div>
+rob_se &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="kw">sqrt</span>(<span class="kw">diag</span>(<span class="kw">vcovHC</span>(cig_ivreg_diff1, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>))),
+               <span class="kw">sqrt</span>(<span class="kw">diag</span>(<span class="kw">vcovHC</span>(cig_ivreg_diff2, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>))),
+               <span class="kw">sqrt</span>(<span class="kw">diag</span>(<span class="kw">vcovHC</span>(cig_ivreg_diff3, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>))))
+
+<span class="co"># generate table</span>
+<span class="kw">stargazer</span>(cig_ivreg_diff1, cig_ivreg_diff2,cig_ivreg_diff3,
+  <span class="dt">header =</span> <span class="ot">FALSE</span>, 
+  <span class="dt">type =</span> <span class="st">&quot;html&quot;</span>,
+  <span class="dt">omit.table.layout =</span> <span class="st">&quot;n&quot;</span>,
+  <span class="dt">digits =</span> <span class="dv">3</span>, 
+  <span class="dt">column.labels =</span> <span class="kw">c</span>(<span class="st">&quot;IV: salestax&quot;</span>, <span class="st">&quot;IV: cigtax&quot;</span>, <span class="st">&quot;IVs: salestax, cigtax&quot;</span>),
+  <span class="dt">dep.var.labels.include =</span> <span class="ot">FALSE</span>,
+  <span class="dt">dep.var.caption =</span> <span class="st">&quot;Dependent Variable: 1985-1995 Difference in Log per Pack Price&quot;</span>,
+  <span class="dt">se =</span> rob_se)</code></pre></div>
+<pre><code>## 
+## &lt;table style=&quot;text-align:center&quot;&gt;&lt;tr&gt;&lt;td colspan=&quot;4&quot; style=&quot;border-bottom: 1px solid black&quot;&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style=&quot;text-align:left&quot;&gt;&lt;/td&gt;&lt;td colspan=&quot;3&quot;&gt;Dependent Variable: 1985-1995 Difference in Log per Pack Price&lt;/td&gt;&lt;/tr&gt;
+## &lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td colspan=&quot;3&quot; style=&quot;border-bottom: 1px solid black&quot;&gt;&lt;/td&gt;&lt;/tr&gt;
+## &lt;tr&gt;&lt;td style=&quot;text-align:left&quot;&gt;&lt;/td&gt;&lt;td&gt;IV: salestax&lt;/td&gt;&lt;td&gt;IV: cigtax&lt;/td&gt;&lt;td&gt;IVs: salestax, cigtax&lt;/td&gt;&lt;/tr&gt;
+## &lt;tr&gt;&lt;td style=&quot;text-align:left&quot;&gt;&lt;/td&gt;&lt;td&gt;(1)&lt;/td&gt;&lt;td&gt;(2)&lt;/td&gt;&lt;td&gt;(3)&lt;/td&gt;&lt;/tr&gt;
+## &lt;tr&gt;&lt;td colspan=&quot;4&quot; style=&quot;border-bottom: 1px solid black&quot;&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style=&quot;text-align:left&quot;&gt;pricediff&lt;/td&gt;&lt;td&gt;-0.938&lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;&lt;td&gt;-1.343&lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;&lt;td&gt;-1.202&lt;sup&gt;***&lt;/sup&gt;&lt;/td&gt;&lt;/tr&gt;
+## &lt;tr&gt;&lt;td style=&quot;text-align:left&quot;&gt;&lt;/td&gt;&lt;td&gt;(0.208)&lt;/td&gt;&lt;td&gt;(0.229)&lt;/td&gt;&lt;td&gt;(0.197)&lt;/td&gt;&lt;/tr&gt;
+## &lt;tr&gt;&lt;td style=&quot;text-align:left&quot;&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
+## &lt;tr&gt;&lt;td style=&quot;text-align:left&quot;&gt;incomediff&lt;/td&gt;&lt;td&gt;0.526&lt;/td&gt;&lt;td&gt;0.428&lt;/td&gt;&lt;td&gt;0.462&lt;/td&gt;&lt;/tr&gt;
+## &lt;tr&gt;&lt;td style=&quot;text-align:left&quot;&gt;&lt;/td&gt;&lt;td&gt;(0.339)&lt;/td&gt;&lt;td&gt;(0.299)&lt;/td&gt;&lt;td&gt;(0.309)&lt;/td&gt;&lt;/tr&gt;
+## &lt;tr&gt;&lt;td style=&quot;text-align:left&quot;&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
+## &lt;tr&gt;&lt;td style=&quot;text-align:left&quot;&gt;Constant&lt;/td&gt;&lt;td&gt;-0.118&lt;sup&gt;*&lt;/sup&gt;&lt;/td&gt;&lt;td&gt;-0.017&lt;/td&gt;&lt;td&gt;-0.052&lt;/td&gt;&lt;/tr&gt;
+## &lt;tr&gt;&lt;td style=&quot;text-align:left&quot;&gt;&lt;/td&gt;&lt;td&gt;(0.068)&lt;/td&gt;&lt;td&gt;(0.067)&lt;/td&gt;&lt;td&gt;(0.062)&lt;/td&gt;&lt;/tr&gt;
+## &lt;tr&gt;&lt;td style=&quot;text-align:left&quot;&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;&lt;/td&gt;&lt;/tr&gt;
+## &lt;tr&gt;&lt;td colspan=&quot;4&quot; style=&quot;border-bottom: 1px solid black&quot;&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td style=&quot;text-align:left&quot;&gt;Observations&lt;/td&gt;&lt;td&gt;48&lt;/td&gt;&lt;td&gt;48&lt;/td&gt;&lt;td&gt;48&lt;/td&gt;&lt;/tr&gt;
+## &lt;tr&gt;&lt;td style=&quot;text-align:left&quot;&gt;R&lt;sup&gt;2&lt;/sup&gt;&lt;/td&gt;&lt;td&gt;0.550&lt;/td&gt;&lt;td&gt;0.520&lt;/td&gt;&lt;td&gt;0.547&lt;/td&gt;&lt;/tr&gt;
+## &lt;tr&gt;&lt;td style=&quot;text-align:left&quot;&gt;Adjusted R&lt;sup&gt;2&lt;/sup&gt;&lt;/td&gt;&lt;td&gt;0.530&lt;/td&gt;&lt;td&gt;0.498&lt;/td&gt;&lt;td&gt;0.526&lt;/td&gt;&lt;/tr&gt;
+## &lt;tr&gt;&lt;td style=&quot;text-align:left&quot;&gt;Residual Std. Error (df = 45)&lt;/td&gt;&lt;td&gt;0.091&lt;/td&gt;&lt;td&gt;0.094&lt;/td&gt;&lt;td&gt;0.091&lt;/td&gt;&lt;/tr&gt;
+## &lt;tr&gt;&lt;td colspan=&quot;4&quot; style=&quot;border-bottom: 1px solid black&quot;&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</code></pre>
 
 
 
@@ -466,20 +495,6 @@ rob_se &lt;-<span class="st"> </span><span class="kw">list</span>(
 <caption><p style='text-align:center'><span id="tab:tslseotlteotdfcupd">Table 12.1: </span> TSLS Estimates of the Long-Term Elasticity of the Demand for Cigarettes using Panel Data</p></caption>
 
 
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(stargazer)
-
-<span class="kw">stargazer</span>(cig_ivreg_diff1, cig_ivreg_diff2,cig_ivreg_diff3,
-  <span class="dt">title =</span> <span class="st">&quot;</span><span class="ch">\\</span><span class="st">label{tab:tslseotlteotdfcupd} TSLS Estimates of the Long-Term Elasticity of the Demand for Cigarettes using Panel Data&quot;</span>,
-  <span class="dt">header =</span> F, 
-  <span class="dt">digits =</span> <span class="dv">3</span>,
-  <span class="dt">type =</span> <span class="st">&quot;latex&quot;</span>,
-  <span class="dt">no.space =</span> T,
-  <span class="dt">column.sep.width =</span> <span class="st">&quot;35pt&quot;</span>,
-  <span class="dt">omit.table.layout =</span> <span class="st">&quot;n&quot;</span>,
-  <span class="dt">column.labels =</span> <span class="kw">c</span>(<span class="st">&quot;IV: salestax&quot;</span>, <span class="st">&quot;IV: cigtax&quot;</span>, <span class="st">&quot;IVs: salestax, cigtax&quot;</span>),
-  <span class="dt">dep.var.labels.include =</span> <span class="ot">FALSE</span>,
-  <span class="dt">dep.var.caption =</span> <span class="st">&quot;Dependent variable: 1985-1995 difference in log per pack price&quot;</span>,
-  <span class="dt">se =</span> rob_se)</code></pre></div>
 <p>Table <a href="attdfc.html#tab:tslseotlteotdfcupd">12.1</a> reports negative estimates of the coefficient on <tt>pricediff</tt> that are quite different in magnitude. Which one should we trust? This hinges on the validity of the instruments used. To assess this we compute <span class="math inline">\(F\)</span>-statistics for the first-stage regressions of all three models to check instrument relevance.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># first-stage regressions</span>
 mod_relevance1 &lt;-<span class="st"> </span><span class="kw">lm</span>(pricediff <span class="op">~</span><span class="st"> </span>salestaxdiff <span class="op">+</span><span class="st"> </span>incomediff)
