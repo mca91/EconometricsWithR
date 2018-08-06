@@ -59,7 +59,7 @@ plot(as.zoo(FOJCPI),
      main = "Frozen Concentrated Orange Juice")
 ```
 
-```{r, fig.align='center'}
+```{r, fig.align='center', fig.height=7}
 # divide plotting area
 par(mfrow = c(2, 1))
 
@@ -108,7 +108,7 @@ As the result we obtain
 
 \begin{align}
   \begin{split}
-  \widehat{\%ChgOJC_t} &= -\underset{(0.21)}{0.69} + \underset{(0.14)}{0.47} FDD_t + \underset{(0.08)}{0.15} FDD_{t-1} + \underset{(0.06)}{0.06} FDD_{t-2} + \underset{(0.05)}{0.07} FDD_{t-3} \\ +& \underset{(0.03)}{0.04} FDD_{t-4} + \underset{(0.03)}{0.05} FDD_{t-5} + \underset{(0.05)}{0.05} FDD_{t-6},
+  \widehat{\%ChgOJC_t} =& -\underset{(0.21)}{0.69} + \underset{(0.14)}{0.47} FDD_t + \underset{(0.08)}{0.15} FDD_{t-1} + \underset{(0.06)}{0.06} FDD_{t-2} + \underset{(0.05)}{0.07} FDD_{t-3} \\ &+ \underset{(0.03)}{0.04} FDD_{t-4} + \underset{(0.03)}{0.05} FDD_{t-5} + \underset{(0.05)}{0.05} FDD_{t-6},
   \end{split}
   (\#eq:orangemod1)
 \end{align}
@@ -138,8 +138,8 @@ where it is assumed that
 1. $X$ is an exogenous variable, $$E(u_t\\vert X_t, X_{t-1}, X_{t-2},\\dots) = 0.$$
 
 2.
-     (a) $X_t,Y_t$ have a stationary distribution.
-     (b) $(Y_t,X_t)$ and $(Y_{t-j},X_{t-j})$ become independently distributed as $j$ gets large.
+     + a $X_t,Y_t$ have a stationary distribution.
+     + b $(Y_t,X_t)$ and $(Y_{t-j},X_{t-j})$ become independently distributed as $j$ gets large.
 
 3. Large outliers are unlikely. In particular, we need that all the variables have more than eight nonzero and finite moments --- a stronger assumption than before (four finite nonzero moments) that is required for computation of the HAC covariance matrix estimator.
 
@@ -283,7 +283,7 @@ the so-called *Newey-West variance estimator* for the variance of the OLS estima
 \begin{align}
   \widehat{f}_t = 1 + 2 \sum_{j=1}^{m-1} \left(\frac{m-j}{m}\right) \overset{\sim}{\rho}_j (\#eq:nwhacf)
 \end{align}
-is a correction factor that adjusts for serially correlated errors and involves estimates of $m-1$ autocorrelation coefficients $\overset{\sim}{\rho}_j$. As it turns out, using the sample autocorrelation as implemented in `acf()` to estimate the autocorrelation coefficients renders \@ref(eq:nwhac) inconsistent, see pp. 650-651 of the book for a detailed argument. Therefore, we use a somewhat different estimator. For a time series $X$ we have $$ \ \overset{\sim}{\rho}_j = \frac{\sum_{t=j+1}^T \hat v_t \hat v_{t-j}}{\sum_{t=1}^T \hat v_t^2}, \ \text{with} \ \hat v= (X_t-\overline{X}) \hat u_t. $$ We implement this estimator in the function `r ttcode("acf_c()")` below.
+is a correction factor that adjusts for serially correlated errors and involves estimates of $m-1$ autocorrelation coefficients $\overset{\sim}{\rho}_j$. As it turns out, using the sample autocorrelation as implemented in `r ttcode("acf()")` to estimate the autocorrelation coefficients renders \@ref(eq:nwhac) inconsistent, see pp. 650-651 of the book for a detailed argument. Therefore, we use a somewhat different estimator. For a time series $X$ we have $$ \ \overset{\sim}{\rho}_j = \frac{\sum_{t=j+1}^T \hat v_t \hat v_{t-j}}{\sum_{t=1}^T \hat v_t^2}, \ \text{with} \ \hat v= (X_t-\overline{X}) \hat u_t. $$ We implement this estimator in the function `r ttcode("acf_c()")` below.
 
 $m$ in \@ref{eq:nwhacf} is a truncation parameter to be chosen. A rule of thumb for choosing $m$ is
 \begin{align}
@@ -370,7 +370,7 @@ Consider the general distributed lag model with $r$ lags and errors following an
 Under strict exogeneity of $X_t$, one may rewrite the above model in the ADL specification
 \\begin{align*}
   Y_t =& \\, \\alpha_0 + \\phi_1 Y_{t-1} + \\phi_2 Y_{t-2} + \\dots + \\phi_p Y_{t-p} \\\\
-      +& \\, \\delta_0 X_t + \\delta_1 X_{t-1} + \\dots + \\delta_q X_{t-q} + \\overset{\\sim}{u}_t
+      &+ \\, \\delta_0 X_t + \\delta_1 X_{t-1} + \\dots + \\delta_q X_{t-q} + \\overset{\\sim}{u}_t
 \\end{align*}
 where $q=r+p$ and compute estimates of the dynamic multipliers $\\beta_1, \\beta_2, \\dots, \\beta_{r+1}$ using OLS estimates of $\\phi_1, \\phi_2, \\dots, \\phi_p, \\delta_0, \\delta_1, \\dots, \\delta_q$. 
 
@@ -392,7 +392,7 @@ Consider the general distributed lag model with $r$ lags and errors following an
 Under strict exogeneity of $X_t$, one may rewrite the above model in the ADL specification
 \\begin{align*}
   Y_t =& \\, \\alpha_0 + \\phi_1 Y_{t-1} + \\phi_2 Y_{t-2} + \\dots + \\phi_p Y_{t-p} \\\\
-      +& \\, \\delta_0 X_t + \\delta_1 X_{t-1} + \\dots + \\delta_q X_{t-q} + \\overset{\\sim}{u}_t
+      &+ \\, \\delta_0 X_t + \\delta_1 X_{t-1} + \\dots + \\delta_q X_{t-q} + \\overset{\\sim}{u}_t
 \\end{align*}
 where $q=r+p$ and compute estimates of the dynamic multipliers $\\beta_1, \\beta_2, \\dots, \\beta_{r+1}$ using OLS estimates of $\\phi_1, \\phi_2, \\dots, \\phi_p, \\delta_0, \\delta_1, \\dots, \\delta_q$.\\newline 
 
@@ -558,28 +558,10 @@ To check for sensitivity of the standard errors to different choices of the trun
 
 ```{r}
 # gather HAC standard error errors in a list
-SEs <- list(
-  sqrt(
-    diag(
-      NeweyWest(FOJC_mod_DM, lag = 7, prewhite = F)
-    )  
-  ), 
-  sqrt(
-    diag(
-      NeweyWest(FOJC_mod_CM1, lag = 7, prewhite = F)
-    )  
-  ), 
-   sqrt(
-    diag(
-      NeweyWest(FOJC_mod_CM1, lag = 14, prewhite = F)
-    )  
-  ),
-  sqrt(
-    diag(
-      NeweyWest(FOJC_mod_CM2, lag = 7, prewhite = F)
-    )  
-  )
-)
+SEs <- list(sqrt(diag(NeweyWest(FOJC_mod_DM, lag = 7, prewhite = F))), 
+            sqrt(diag(NeweyWest(FOJC_mod_CM1, lag = 7, prewhite = F))), 
+            sqrt(diag(NeweyWest(FOJC_mod_CM1, lag = 14, prewhite = F))),
+            sqrt(diag(NeweyWest(FOJC_mod_CM2, lag = 7, prewhite = F))))
 ```
 
 
@@ -711,10 +693,8 @@ The $95\%$ confidence intervals plotted in Figure \@ref(fig:DM) indeed include z
 # 95% CI bounds
 point_estimates <- FOJC_mod_CM1$coefficients
 
-CI_bounds <- cbind(
-   "lower" = point_estimates - 1.96 * SEs[[2]],
-   "upper" = point_estimates + 1.96 * SEs[[2]]
- )[-1,]
+CI_bounds <- cbind("lower" = point_estimates - 1.96 * SEs[[2]],
+                   "upper" = point_estimates + 1.96 * SEs[[2]])[-1,]
 
 
 # plot estimated dynamic multipliers
@@ -725,8 +705,7 @@ plot(0:18, point_estimates[-1],
      ylim = c(-0.4, 1.6),
      xlab = "Lag",
      ylab = "Cumulative dynamic multiplier",
-    main = "Cumulative Dynamic Effect of FDD on Orange Juice Price"
-     )
+     main = "Cumulative Dynamic Effect of FDD on Orange Juice Price")
 
 # add dashed line at 0
 abline(h = 0, lty = 2)
@@ -760,8 +739,7 @@ plot(0:18, FOJC_mod_CM1950$coefficients[-1],
      ylim = c(-0.5, 2),
      xlab = "Lag",
      ylab = "Cumulative dynamic multiplier",
-     main = "Cumulative Dynamic Effect for Different Sample Periods"
-)
+     main = "Cumulative Dynamic Effect for Different Sample Periods")
 
 # plot estimated dynamic multipliers (1967-1983)
 lines(0:18, FOJC_mod_CM1967$coefficients[-1], lwd = 2)
@@ -793,8 +771,6 @@ Fstats <- numeric(length(tau))
 
 # the restricted model
 res_model <- dynlm(FOJC_pctc ~ L(FDD, 0:18))
-#res_model <- update(unres_model, formula = . ~ L(FDD, 0:18))
-
 
 # estimation, loop over break dates
 for(i in 1:length(tau)) {
@@ -824,7 +800,7 @@ The QLR statistic is $`r round(max(Fstats),2)`$. From Table 14.5 of the book we 
 
 See Chapter 15.7 of the book for a discussion of empirical examples where it is questionable whether the assumption of (past and present) exogeneity of the regressors is plausible.
 
-## Summary
+#### Summary {-}
 
 + We have seen how `r ttcode("R")` can be used to estimate the time path of the effect on $Y$ of a change in $X$ (the dynamic causal effect on $Y$ of a change in $X$) using time series data on both. The corresponding model is called the distributed lag model. Distributed lag models are conveniently estimated using the function `r ttcode("dynlm()")` from the package `r ttcode("dynlm")`.
 

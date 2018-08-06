@@ -313,7 +313,7 @@ The matrices returned by `predict(VAR_est)` also include $95\%$ prediction inter
 
 We may also plot the iterated forecasts for both variables by calling `r ttcode("plot()")` on the output of `predict(VAR_est)`.
 
-```{r, fig.align='center', fig.height=6}
+```{r, fig.align='center', fig.height=7}
 # visualize the iterated forecasts
 plot(forecasts)
 ```
@@ -664,8 +664,8 @@ coeftest(VECM_EQ2, vcov. = NeweyWest(VECM_EQ2, prewhite = F, adjust = T))
 
 Thus the two estimated equations of the VECM are 
 \begin{align*}
- \widehat{\Delta TB3MS}_t =& \, -\underset{(0.11)}{0.06} + \underset{(0.11)}{0.24} \Delta TB3MS_{t-1} -\underset{(0.15)}{0.16} \Delta TB3MS_{t-2} \\ +& \underset{(0.13)}{0.11} \Delta TB10YS_{t-1} -\underset{(0.11)}{0.15} \Delta TB10YS_{t-2} + \underset{(0.05)}{0.03} ECT_{t-1} \\
- \widehat{\Delta TB10YS}_t =& \, \underset{(0.06)}{0.12} -\underset{(0.07)}{0.00} \Delta TB3MS_{t-1} -\underset{(0.04)}{0.07} \Delta TB3MS_{t-2} \\ +& \underset{(0.10)}{0.23} \Delta TB10YS_{t-1} -\underset{(0.07)}{0.07} \Delta TB10YS_{t-2} -\underset{(0.03)}{0.09} ECT_{t-1}.
+ \widehat{\Delta TB3MS}_t =& \, -\underset{(0.11)}{0.06} + \underset{(0.11)}{0.24} \Delta TB3MS_{t-1} -\underset{(0.15)}{0.16} \Delta TB3MS_{t-2} \\ &+ \underset{(0.13)}{0.11} \Delta TB10YS_{t-1} -\underset{(0.11)}{0.15} \Delta TB10YS_{t-2} + \underset{(0.05)}{0.03} ECT_{t-1} \\
+ \widehat{\Delta TB10YS}_t =& \, \underset{(0.06)}{0.12} -\underset{(0.07)}{0.00} \Delta TB3MS_{t-1} -\underset{(0.04)}{0.07} \Delta TB3MS_{t-2} \\ &+ \underset{(0.10)}{0.23} \Delta TB10YS_{t-1} -\underset{(0.07)}{0.07} \Delta TB10YS_{t-2} -\underset{(0.03)}{0.09} ECT_{t-1}.
 \end{align*}
 
 The output produced by `r ttcode("coeftest()")` shows that there is little evidence that lagged values of the differenced interest series are useful for prediction. This finding is more pronounced for the equation of the differenced series of the 3-month treasury bill rate, where the error correction term (the lagged term spread) is not significantly different from zero at any common level of significance. However, for the differenced 10-years treasury bonds rate the error correction term is statistically significant at $1\%$ with an estimate of $-0.09$. This can be interpreted as follows: although both interest rates are nonstationary, their conintegrating relationship allows to predict the *change* in the 10-years treasury bonds rate using the VECM. In particular, the negative estimate of the coefficient on the error correction term indicates that there will be a negative change in the next period's 10-years treasury bonds rate when the 10-years treasury bonds rate is unusually high relative to the 3-month treasury bill rate in the current period.
@@ -695,7 +695,7 @@ W5000 <- na.omit(W5000)
 
 # compute daily percentage changes
 W5000_PC <- data.frame("Date" = W5000$DATE, 
-                       "Value" = as.numeric(Delt(W5000$WILL5000INDFC)*100))
+                       "Value" = as.numeric(Delt(W5000$WILL5000INDFC) * 100))
 W5000_PC <- na.omit(W5000_PC)
 ```
 
@@ -769,6 +769,8 @@ plot(W5000_PC$Date, dev_mean_W5000_PC,
      xlab = "Date",
      main = "Estimated Bands of +- One Conditional Standard Deviation",
      lwd = 0.2)
+
+# add horizontal line at y = 0
 abline(0, 0)
 
 # add GARCH(1,1) confidence bands (one standard deviation) to the plot
@@ -785,7 +787,7 @@ lines(W5000_PC$Date,
 
 The bands of the estimated conditional standard deviations track the observed heteroskedasticity in the series of daily changes of the Wilshire 5000 index quite well. This is useful for quantifying the time-varying volatility and the resulting risk for investors holding stocks summarized by the index. Furthermore, this GARCH model may also be used to produce forecast intervals whose widths depend on the volatility of the most recent periods.
 
-## Summary 
+### Summary {-} 
 
 + We have discussed how vector autoregressions are conveniently estimated and used for forecasting in `r ttcode("R")` by means of functions from the `r ttcode("vars")` package. 
 
