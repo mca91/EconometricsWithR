@@ -33,7 +33,7 @@
   
   
 <link rel="prev" href="estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html">
-<link rel="next" href="summary-7.html">
+<link rel="next" href="atitsr.html">
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
@@ -326,7 +326,6 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 <li class="chapter" data-level="15.4" data-path="hac-standard-errors.html"><a href="hac-standard-errors.html"><i class="fa fa-check"></i><b>15.4</b> HAC Standard Errors</a></li>
 <li class="chapter" data-level="15.5" data-path="estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html"><a href="estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html"><i class="fa fa-check"></i><b>15.5</b> Estimation of Dynamic Causal Effects with Strictly Exogeneous Regressors</a></li>
 <li class="chapter" data-level="15.6" data-path="orange-juice-prices-and-cold-weather.html"><a href="orange-juice-prices-and-cold-weather.html"><i class="fa fa-check"></i><b>15.6</b> Orange Juice Prices and Cold Weather</a></li>
-<li class="chapter" data-level="15.7" data-path="summary-7.html"><a href="summary-7.html"><i class="fa fa-check"></i><b>15.7</b> Summary</a></li>
 </ul></li>
 <li class="chapter" data-level="16" data-path="atitsr.html"><a href="atitsr.html"><i class="fa fa-check"></i><b>16</b> Additional Topics in Time Series Regression</a><ul>
 <li class="chapter" data-level="16.1" data-path="vector-autoregressions.html"><a href="vector-autoregressions.html"><i class="fa fa-check"></i><b>16.1</b> Vector Autoregressions</a></li>
@@ -335,8 +334,8 @@ code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Inf
 <li class="chapter" data-level="16.4" data-path="volatility-clustering-and-autoregressive-conditional-heteroskedasticity.html"><a href="volatility-clustering-and-autoregressive-conditional-heteroskedasticity.html"><i class="fa fa-check"></i><b>16.4</b> Volatility Clustering and Autoregressive Conditional Heteroskedasticity</a><ul>
 <li class="chapter" data-level="" data-path="volatility-clustering-and-autoregressive-conditional-heteroskedasticity.html"><a href="volatility-clustering-and-autoregressive-conditional-heteroskedasticity.html#arch-and-garch-models"><i class="fa fa-check"></i>ARCH and GARCH Models</a></li>
 <li class="chapter" data-level="" data-path="volatility-clustering-and-autoregressive-conditional-heteroskedasticity.html"><a href="volatility-clustering-and-autoregressive-conditional-heteroskedasticity.html#application-to-stock-price-volatility"><i class="fa fa-check"></i>Application to Stock Price Volatility</a></li>
+<li class="chapter" data-level="" data-path="volatility-clustering-and-autoregressive-conditional-heteroskedasticity.html"><a href="volatility-clustering-and-autoregressive-conditional-heteroskedasticity.html#summary-8"><i class="fa fa-check"></i>Summary</a></li>
 </ul></li>
-<li class="chapter" data-level="16.5" data-path="summary-8.html"><a href="summary-8.html"><i class="fa fa-check"></i><b>16.5</b> Summary</a></li>
 </ul></li>
 <li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
 <li class="divider"></li>
@@ -384,28 +383,10 @@ FOJC_mod_CM2 &lt;-<span class="st"> </span><span class="kw">dynlm</span>(FOJC_pc
 <pre><code>## [1] 612</code></pre>
 <p>According to <a href="hac-standard-errors.html#eq:hactruncrot">(15.6)</a>, the rule of thumb for choosing the HAC standard error truncation parameter <span class="math inline">\(m\)</span>, we choose <span class="math display">\[m = \left\lceil0.75 \cdot 612^{1/3} \right\rceil = \lceil6.37\rceil = 7.\]</span> To check for sensitivity of the standard errors to different choices of the truncation parameter in the model that is used to estimate the cumulative multipliers, we also compute the Newey-West estimator for <span class="math inline">\(m=14\)</span>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># gather HAC standard error errors in a list</span>
-SEs &lt;-<span class="st"> </span><span class="kw">list</span>(
-  <span class="kw">sqrt</span>(
-    <span class="kw">diag</span>(
-      <span class="kw">NeweyWest</span>(FOJC_mod_DM, <span class="dt">lag =</span> <span class="dv">7</span>, <span class="dt">prewhite =</span> F)
-    )  
-  ), 
-  <span class="kw">sqrt</span>(
-    <span class="kw">diag</span>(
-      <span class="kw">NeweyWest</span>(FOJC_mod_CM1, <span class="dt">lag =</span> <span class="dv">7</span>, <span class="dt">prewhite =</span> F)
-    )  
-  ), 
-   <span class="kw">sqrt</span>(
-    <span class="kw">diag</span>(
-      <span class="kw">NeweyWest</span>(FOJC_mod_CM1, <span class="dt">lag =</span> <span class="dv">14</span>, <span class="dt">prewhite =</span> F)
-    )  
-  ),
-  <span class="kw">sqrt</span>(
-    <span class="kw">diag</span>(
-      <span class="kw">NeweyWest</span>(FOJC_mod_CM2, <span class="dt">lag =</span> <span class="dv">7</span>, <span class="dt">prewhite =</span> F)
-    )  
-  )
-)</code></pre></div>
+SEs &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="kw">sqrt</span>(<span class="kw">diag</span>(<span class="kw">NeweyWest</span>(FOJC_mod_DM, <span class="dt">lag =</span> <span class="dv">7</span>, <span class="dt">prewhite =</span> F))), 
+            <span class="kw">sqrt</span>(<span class="kw">diag</span>(<span class="kw">NeweyWest</span>(FOJC_mod_CM1, <span class="dt">lag =</span> <span class="dv">7</span>, <span class="dt">prewhite =</span> F))), 
+            <span class="kw">sqrt</span>(<span class="kw">diag</span>(<span class="kw">NeweyWest</span>(FOJC_mod_CM1, <span class="dt">lag =</span> <span class="dv">14</span>, <span class="dt">prewhite =</span> F))),
+            <span class="kw">sqrt</span>(<span class="kw">diag</span>(<span class="kw">NeweyWest</span>(FOJC_mod_CM2, <span class="dt">lag =</span> <span class="dv">7</span>, <span class="dt">prewhite =</span> F))))</code></pre></div>
 <p>The results are then used to reproduce the outcomes presented in Table 15.1 of the book.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">stargazer</span>(FOJC_mod_DM , FOJC_mod_CM1, FOJC_mod_CM1, FOJC_mod_CM2,
   <span class="dt">title =</span> <span class="st">&quot;Dynamic Effects of a Freezing Degree Day on the Price of Orange Juice&quot;</span>,
@@ -538,10 +519,8 @@ Figure 15.1: Dynamic Multipliers
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 95% CI bounds</span>
 point_estimates &lt;-<span class="st"> </span>FOJC_mod_CM1<span class="op">$</span>coefficients
 
-CI_bounds &lt;-<span class="st"> </span><span class="kw">cbind</span>(
-   <span class="st">&quot;lower&quot;</span> =<span class="st"> </span>point_estimates <span class="op">-</span><span class="st"> </span><span class="fl">1.96</span> <span class="op">*</span><span class="st"> </span>SEs[[<span class="dv">2</span>]],
-   <span class="st">&quot;upper&quot;</span> =<span class="st"> </span>point_estimates <span class="op">+</span><span class="st"> </span><span class="fl">1.96</span> <span class="op">*</span><span class="st"> </span>SEs[[<span class="dv">2</span>]]
- )[<span class="op">-</span><span class="dv">1</span>,]
+CI_bounds &lt;-<span class="st"> </span><span class="kw">cbind</span>(<span class="st">&quot;lower&quot;</span> =<span class="st"> </span>point_estimates <span class="op">-</span><span class="st"> </span><span class="fl">1.96</span> <span class="op">*</span><span class="st"> </span>SEs[[<span class="dv">2</span>]],
+                   <span class="st">&quot;upper&quot;</span> =<span class="st"> </span>point_estimates <span class="op">+</span><span class="st"> </span><span class="fl">1.96</span> <span class="op">*</span><span class="st"> </span>SEs[[<span class="dv">2</span>]])[<span class="op">-</span><span class="dv">1</span>,]
 
 
 <span class="co"># plot estimated dynamic multipliers</span>
@@ -552,8 +531,7 @@ CI_bounds &lt;-<span class="st"> </span><span class="kw">cbind</span>(
      <span class="dt">ylim =</span> <span class="kw">c</span>(<span class="op">-</span><span class="fl">0.4</span>, <span class="fl">1.6</span>),
      <span class="dt">xlab =</span> <span class="st">&quot;Lag&quot;</span>,
      <span class="dt">ylab =</span> <span class="st">&quot;Cumulative dynamic multiplier&quot;</span>,
-    <span class="dt">main =</span> <span class="st">&quot;Cumulative Dynamic Effect of FDD on Orange Juice Price&quot;</span>
-     )
+     <span class="dt">main =</span> <span class="st">&quot;Cumulative Dynamic Effect of FDD on Orange Juice Price&quot;</span>)
 
 <span class="co"># add dashed line at 0</span>
 <span class="kw">abline</span>(<span class="dt">h =</span> <span class="dv">0</span>, <span class="dt">lty =</span> <span class="dv">2</span>)
@@ -584,8 +562,7 @@ FOJC_mod_CM1984 &lt;-<span class="st"> </span><span class="kw">update</span>(FOJ
      <span class="dt">ylim =</span> <span class="kw">c</span>(<span class="op">-</span><span class="fl">0.5</span>, <span class="dv">2</span>),
      <span class="dt">xlab =</span> <span class="st">&quot;Lag&quot;</span>,
      <span class="dt">ylab =</span> <span class="st">&quot;Cumulative dynamic multiplier&quot;</span>,
-     <span class="dt">main =</span> <span class="st">&quot;Cumulative Dynamic Effect for Different Sample Periods&quot;</span>
-)
+     <span class="dt">main =</span> <span class="st">&quot;Cumulative Dynamic Effect for Different Sample Periods&quot;</span>)
 
 <span class="co"># plot estimated dynamic multipliers (1967-1983)</span>
 <span class="kw">lines</span>(<span class="dv">0</span><span class="op">:</span><span class="dv">18</span>, FOJC_mod_CM1967<span class="op">$</span>coefficients[<span class="op">-</span><span class="dv">1</span>], <span class="dt">lwd =</span> <span class="dv">2</span>)
@@ -613,8 +590,6 @@ Fstats &lt;-<span class="st"> </span><span class="kw">numeric</span>(<span class
 
 <span class="co"># the restricted model</span>
 res_model &lt;-<span class="st"> </span><span class="kw">dynlm</span>(FOJC_pctc <span class="op">~</span><span class="st"> </span><span class="kw">L</span>(FDD, <span class="dv">0</span><span class="op">:</span><span class="dv">18</span>))
-<span class="co">#res_model &lt;- update(unres_model, formula = . ~ L(FDD, 0:18))</span>
-
 
 <span class="co"># estimation, loop over break dates</span>
 <span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="kw">length</span>(tau)) {
@@ -637,14 +612,24 @@ res_model &lt;-<span class="st"> </span><span class="kw">dynlm</span>(FOJC_pctc 
 <pre><code>## [1] 36.76819</code></pre>
 <p>The QLR statistic is <span class="math inline">\(36.77\)</span>. From Table 14.5 of the book we see that the <span class="math inline">\(1\%\)</span> critical value for the QLR test with <span class="math inline">\(15\%\)</span> trimming and <span class="math inline">\(q=20\)</span> restrictions is <span class="math inline">\(2.43\)</span>. Since this is a right-sided test, the QLR statistic clearly lies in the region of rejection so we can discard the null hypothesis of no break in the population regression function.</p>
 <p>See Chapter 15.7 of the book for a discussion of empirical examples where it is questionable whether the assumption of (past and present) exogeneity of the regressors is plausible.</p>
+<div id="summary-7" class="section level4 unnumbered">
+<h4>Summary</h4>
+<ul>
+<li><p>We have seen how <tt>R</tt> can be used to estimate the time path of the effect on <span class="math inline">\(Y\)</span> of a change in <span class="math inline">\(X\)</span> (the dynamic causal effect on <span class="math inline">\(Y\)</span> of a change in <span class="math inline">\(X\)</span>) using time series data on both. The corresponding model is called the distributed lag model. Distributed lag models are conveniently estimated using the function <tt>dynlm()</tt> from the package <tt>dynlm</tt>.</p></li>
+<li><p>The regression error in distributed lag models is often serially correlated such that standard errors which are robust to heteroskedasticity <em>and</em> autocorrelation should be used to obtain valid inference. The package <tt>sandwich</tt> provides functions for computation of so-called HAC covariance matrix estimators, for example <tt>vcovHAC()</tt> and <tt>NeweyWest()</tt>.</p></li>
+<li><p>When <span class="math inline">\(X\)</span> is <em>strictly exogeneous</em>, more efficient estimates can be obtained using an ADL model or by GLS estimation. Feasible GLS algorithms can be found in the <tt>R</tt> packages <tt>orcutt</tt> and <tt>nlme</tt>. Chapter 15.7 of the book emphasizes that the assumption of strict exogeneity is often implausible in empirical applications.</p></li>
+</ul>
+
 </div>
+</div>
+<!-- </div> -->
             </section>
 
           </div>
         </div>
       </div>
 <a href="estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="summary-7.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="atitsr.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
