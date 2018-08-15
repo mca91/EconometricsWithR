@@ -25,7 +25,7 @@
 <meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber and Martin Schmelzer">
 
 
-<meta name="date" content="2018-08-06">
+<meta name="date" content="2018-08-14">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -515,9 +515,13 @@ SE.beta_<span class="fl">1.</span>hat</code></pre></div>
 <div id="computation-of-heteroskedasticity-robust-standard-errors" class="section level3 unnumbered">
 <h3>Computation of Heteroskedasticity-Robust Standard Errors</h3>
 <p>Consistent estimation of <span class="math inline">\(\sigma_{\hat{\beta}_1}\)</span> under heteroskedasticity is granted when the following <em>robust</em> estimator is used.</p>
-<p><span class="math display">\[ SE(\hat{\beta}_1) = \sqrt{ \frac{ \frac{1}{n-2} \sum_{i=1}^n (X_i - \overline{X})^2 \hat{u}_i^2 }{ \left[ \frac{1}{n} \sum_{i=1}^n (X_i - \overline{X})^2  \right]^2} } \tag{5.6} \]</span></p>
+<p><span class="math display">\[ SE(\hat{\beta}_1) = \sqrt{ \frac{1}{n} \cdot \frac{ \frac{1}{n} \sum_{i=1}^n (X_i - \overline{X})^2 \hat{u}_i^2 }{ \left[ \frac{1}{n} \sum_{i=1}^n (X_i - \overline{X})^2  \right]^2} } \tag{5.6} \]</span></p>
 <p>Standard error estimates computed this way are also referred to as <a href="https://en.wikipedia.org/wiki/Heteroscedasticity-consistent_standard_errors">Eicker-Huber-White standard errors</a>, the most frequently cited paper on this is <span class="citation">White (<a href="#ref-white1980">1980</a>)</span>.</p>
-<p>It can be quite cumbersome to do this calculation by hand. Luckily, there are <tt>R</tt> function for that purpose. A convenient one named <tt>vcovHC()</tt> is part of the package <tt>sandwich</tt>.<a href="#fn6" class="footnoteRef" id="fnref6"><sup>6</sup></a> This function can compute a variety of standard errors. The one brought forward in (<a href="#mjx-eqn-5.6">5.6</a>) is computed when the argument <tt>type</tt> is set to <tt>“HC0”</tt>. Most of the examples presented in the book rely on a slightly different formula which is the default in the statistics package <em>STATA</em>. To get <tt>vcovHC()</tt> to use this formula, we have to set <tt>type = HC1</tt>.</p>
+<p>It can be quite cumbersome to do this calculation by hand. Luckily, there are <tt>R</tt> function for that purpose. A convenient one named <tt>vcovHC()</tt> is part of the package <tt>sandwich</tt>.<a href="#fn6" class="footnoteRef" id="fnref6"><sup>6</sup></a> This function can compute a variety of standard errors. The one brought forward in (<a href="#mjx-eqn-5.6">5.6</a>) is computed when the argument <tt>type</tt> is set to <tt>“HC0”</tt>. Most of the examples presented in the book rely on a slightly different formula which is the default in the statistics package <em>STATA</em>:</p>
+<span class="math display" id="eq:hc1">\[\begin{align}
+SE(\hat{\beta}_1)_{HC1} = \sqrt{ \frac{1}{n} \cdot \frac{ \frac{1}{n-2} \sum_{i=1}^n (X_i - \overline{X})^2 \hat{u}_i^2 }{ \left[ \frac{1}{n} \sum_{i=1}^n (X_i - \overline{X})^2  \right]^2}} \tag{5.2}
+\end{align}\]</span>
+<p>The difference is that we multiply by <span class="math inline">\(\frac{1}{n-2}\)</span> in the numerator of <a href="hah.html#eq:hc1">(5.2)</a>. This is a degrees of freedom correction and was considered by <span class="citation">MacKinnon &amp; White (<a href="#ref-mackinnon1985">1985</a>)</span>. To get <tt>vcovHC()</tt> to use <a href="hah.html#eq:hc1">(5.2)</a>, we have to set <tt>type = “HC1”</tt>.</p>
 <p>Let us now compute robust standard error estimates for the coefficients in <tt>linear_model</tt>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># compute heteroskedasticity-robust standard errors</span>
 vcov &lt;-<span class="st"> </span><span class="kw">vcovHC</span>(linear_model, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>)
@@ -636,6 +640,9 @@ t.rob &lt;-<span class="st"> </span><span class="kw">c</span>()
 <div id="refs" class="references">
 <div id="ref-white1980">
 <p>White, H. (1980). A Heteroskedasticity-Consistent Covariance Matrix Estimator and a Direct Test for Heteroskedasticity. <em>Econometrica</em>, <em>48</em>(4), pp. 817–838.</p>
+</div>
+<div id="ref-mackinnon1985">
+<p>MacKinnon, J. G., &amp; White, H. (1985). Some heteroskedasticity-consistent covariance matrix estimators with improved finite sample properties. <em>Journal of Econometrics</em>, <em>29</em>(3), 305–325.</p>
 </div>
 </div>
 <div class="footnotes">

@@ -697,11 +697,17 @@ Indeed, the estimated values are equal.
 
 Consistent estimation of $\sigma_{\hat{\beta}_1}$ under heteroskedasticity is granted when the following *robust* estimator is used.
 
-\[ SE(\hat{\beta}_1) = \sqrt{ \frac{ \frac{1}{n-2} \sum_{i=1}^n (X_i - \overline{X})^2 \hat{u}_i^2 }{ \left[ \frac{1}{n} \sum_{i=1}^n (X_i - \overline{X})^2  \right]^2} } \tag{5.6} \]
+\[ SE(\hat{\beta}_1) = \sqrt{ \frac{1}{n} \cdot \frac{ \frac{1}{n} \sum_{i=1}^n (X_i - \overline{X})^2 \hat{u}_i^2 }{ \left[ \frac{1}{n} \sum_{i=1}^n (X_i - \overline{X})^2  \right]^2} } \tag{5.6} \]
 
 Standard error estimates computed this way are also referred to as [Eicker-Huber-White standard errors](https://en.wikipedia.org/wiki/Heteroscedasticity-consistent_standard_errors), the most frequently cited paper on this is @white1980.
 
-It can be quite cumbersome to do this calculation by hand. Luckily, there are `r ttcode('R')` function for that purpose. A convenient one named `r ttcode('vcovHC()')` is part of the package `r ttcode("sandwich")`.^[The package `r ttcode('sandwich')` is a dependency of the package `r ttcode('AER')`, meaning that it is attached automatically if you load `r ttcode('AER')`.] This function can compute a variety of standard errors. The one brought forward in (<a href="#mjx-eqn-5.6">5.6</a>) is computed when the argument `r ttcode('type')` is set to `r ttcode('"HC0"')`. Most of the examples presented in the book rely on a slightly different formula which is the default in the statistics package *STATA*. To get `r ttcode('vcovHC()')` to use this formula, we have to set `r ttcode('type = HC1')`.
+It can be quite cumbersome to do this calculation by hand. Luckily, there are `r ttcode('R')` function for that purpose. A convenient one named `r ttcode('vcovHC()')` is part of the package `r ttcode("sandwich")`.^[The package `r ttcode('sandwich')` is a dependency of the package `r ttcode('AER')`, meaning that it is attached automatically if you load `r ttcode('AER')`.] This function can compute a variety of standard errors. The one brought forward in (<a href="#mjx-eqn-5.6">5.6</a>) is computed when the argument `r ttcode('type')` is set to `r ttcode('"HC0"')`. Most of the examples presented in the book rely on a slightly different formula which is the default in the statistics package *STATA*:
+
+\begin{align}
+SE(\hat{\beta}_1)_{HC1} = \sqrt{ \frac{1}{n} \cdot \frac{ \frac{1}{n-2} \sum_{i=1}^n (X_i - \overline{X})^2 \hat{u}_i^2 }{ \left[ \frac{1}{n} \sum_{i=1}^n (X_i - \overline{X})^2  \right]^2}} (\#eq:hc1)
+\end{align}
+
+The difference is that we multiply by $\frac{1}{n-2}$ in the numerator of \@ref(eq:hc1). This is a degrees of freedom correction and was considered by @mackinnon1985. To get `r ttcode('vcovHC()')` to use \@ref(eq:hc1), we have to set `r ttcode('type = "HC1"')`.
 
 Let us now compute robust standard error estimates for the coefficients in `r ttcode('linear_model')`.
 
