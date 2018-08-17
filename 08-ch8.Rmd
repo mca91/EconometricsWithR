@@ -1791,11 +1791,19 @@ if (my_output=="html") {
   cat('
 <div  class = "DCexercise">
 
-#### 4. Expected Effect {-}
+#### 4. Estimated Effect of a Unit Change {-}
 
+Reconsider the polylog model from the previous exercise that was selected by the sequential testing approach. As this model is logarithmic and of quadratic form, we cannot simply read off the estimated effect of a unit change in <tt>lstat</tt> from the coefficient summary. Instead we have to compute it manually. To do so assume in the following that we are interested in the effect of an increase in <tt>lstat</tt> from 10% to 11%.
+
+The selected polylog model is available as <tt>mod_pl</tt> in your working environment. The package <tt>MASS</tt> has been loaded.
       
 **Instructions:**
         
+  + Arrange the relevant data points in a data frame.
+
+  + Use the new values to predict the corresponding values of <tt>medv</tt>.
+
+  + Compute the expected effect with the help of the function <tt>diff()</tt>.
 
 <!--html_preserve-->
 
@@ -1803,18 +1811,38 @@ if (my_output=="html") {
   
   <code data-type="pre-exercise-code">
   library(MASS)
+  mod_pl  <- lm(medv ~ poly(log(lstat), 2, raw = T), data = Boston)  
   </code>
   
   <code data-type="sample-code">
+  # Set up the relevant data points.
+  
+  
+  # Predict the corresponding values of medv.
+  
+  
+  # Compute the expected effect of the change.
+  
   
   </code>
    
   <code data-type="solution">
+  # Set up the relevant data points.
+  new_data <- data.frame(lstat = c(10, 11))
+  
+  # Predict the corresponding values of medv.
+  Y_hat <- predict(mod_pl, newdata = new_data)
+  
+  # Compute the expected effect of the change.
+  diff(Y_hat)
   
   </code>
   
   <code data-type="sct">
-  
+  ex() %>% check_object("new_data") %>% check_equal()
+  ex() %>% check_object("Y_hat") %>% check_equal()
+  ex() %>% check_function("diff") %>% check_result() %>% check_equal()
+  success_msg("Correct! The expected change in medv for an increase in lstat from 10% to 11% is about -1.16 (that is -1160$).")
   </code>
   
 </div>
@@ -1823,6 +1851,11 @@ if (my_output=="html") {
 
 **Hints:**
 
+- Note that the column name of the data points in the data frame has to coincide with the name of the regressor.
+
+- You can use <tt>predict()</tt> together with the new data points to obtain the relevant values of <tt>medv</tt>.
+
+- <tt>diff()</tt> expects a vector and computes the differences between all entries of this vector.
   
 </div>') 
 }
@@ -1834,7 +1867,7 @@ if (my_output=="html") {
   cat('
 <div  class = "DCexercise">
 
-#### 5. Interactions between Binary Variables {-}
+#### 5. Interactions between Independent Variables I {-}
 
 Consider the following regression model
 
@@ -1845,7 +1878,7 @@ where $chas_i$ and $old_i$ are dummy variables. The first one takes the value $1
 \\begin{align}
 old_i = & \\,
     \\begin{cases}
-      1 & \\text{if $age_i\\geq 95$}\\\
+      1 & \\text{if $age_i\\geq 95$},\\\
       0 & \\text{else},
     \\end{cases}
 \\end{align}
@@ -1962,13 +1995,13 @@ if (my_output=="html") {
   cat('
 <div  class = "DCexercise">
 
-#### 6. Interactions between Binary and Continuous Variables {-}
+#### 6. Interactions between Independent Variables II {-}
 
 Now consider the regression model
 
 $$medv_i=\\beta_0+\\beta_1\\times indus_i+\\beta_2\\times old_i+\\beta_3(indus_i\\times old_i)+u_i$$
 
-with $old_i$ defined as in the previous exercise and $indus_i$ being the proportion of non-retail business acres per town.
+with $old_i$ defined as in the previous exercise and $indus_i$ being the proportion of non-retail business acres per suburb.
 
 The variable <tt>old</tt> is already available in the dataset. The package <tt>MASS</tt> has been loaded.
       
@@ -1978,7 +2011,7 @@ The variable <tt>old</tt> is already available in the dataset. The package <tt>M
 
   + Extract the estimated coefficients of the model and assign them to <tt>params</tt>.
 
-  + Plot <tt>medv</tt> against <tt>indus</tt> and add the regression line for 
+  + Plot <tt>medv</tt> against <tt>indus</tt> and add the regression lines for both states of the binary variable $old$.
 
 <!--html_preserve-->
 
@@ -2018,7 +2051,69 @@ The variable <tt>old</tt> is already available in the dataset. The package <tt>M
   </code>
   
   <code data-type="sct">
-  
+  test_or({
+      test_object("mod_bc")
+    },{
+      f <- ex() %>% override_solution("lm(medv ~ old*indus, data = Boston)") %>% check_function("lm")
+      f %>% check_arg("formula") %>% check_equal()
+    },{
+      f <- ex() %>% override_solution("lm(Boston$medv ~ Boston$indus*Boston$old)") %>% check_function("lm")
+      f %>% check_arg("formula") %>% check_equal()
+    },{
+      f <- ex() %>% override_solution("lm(Boston$medv ~ Boston$old*Boston$indus)") %>% check_function("lm")
+      f %>% check_arg("formula") %>% check_equal()
+    },{
+      f <- ex() %>% override_solution("attach(Boston);lm(medv ~ indus*old)") %>% check_function("lm")
+      f %>% check_arg("formula") %>% check_equal()
+    },{
+      f <- ex() %>% override_solution("attach(Boston);lm(medv ~ old*indus)") %>% check_function("lm")
+      f %>% check_arg("formula") %>% check_equal()
+    },{
+      f <- ex() %>% override_solution("lm(medv ~ indus + old + indus:old, data = Boston)") %>% check_function("lm")
+      f %>% check_arg("formula") %>% check_equal()
+    },{
+      f <- ex() %>% override_solution("lm(medv ~ old + indus + old:indus, data = Boston)") %>% check_function("lm")
+      f %>% check_arg("formula") %>% check_equal()
+    },{
+      f <- ex() %>% override_solution("lm(Boston$medv ~ Boston$indus + Boston$old + Boston$indus:Boston$old)") %>% check_function("lm")
+      f %>% check_arg("formula") %>% check_equal()
+    },{
+      f <- ex() %>% override_solution("lm(Boston$medv ~ Boston$old + Boston$indus + Boston$old:Boston$indus)") %>% check_function("lm")
+      f %>% check_arg("formula") %>% check_equal()
+    },{
+      f <- ex() %>% override_solution("attach(Boston);lm(medv ~ indus + old + indus:old)") %>% check_function("lm")
+      f %>% check_arg("formula") %>% check_equal()
+    },{
+      f <- ex() %>% override_solution("attach(Boston);lm(medv ~ old + indus + old:indus)") %>% check_function("lm")
+      f %>% check_arg("formula") %>% check_equal()
+    })
+  ex() %>% check_object("params") %>% check_equal()
+  test_or(ex() %>% check_function("plot") %>% {
+          check_arg(., "formula") %>% check_equal()
+          check_arg(., "data") %>% check_equal()
+        },
+    ex() %>% override_solution("plot(Boston$indus, Boston$medv)") %>% check_function("plot") %>% {
+          check_arg(., "x") %>% check_equal()
+          check_arg(., "y") %>% check_equal()
+        },
+    ex() %>% override_solution("plot(Boston$medv ~ Boston$indus)") %>% check_function("plot") %>%
+          check_arg("formula") %>% check_equal()
+  )
+  test_or(ex() %>% check_function("abline") %>% {
+          check_arg(., "a") %>% check_equal()
+          check_arg(., "b") %>% check_equal()
+        },
+    ex() %>% override_solution("abline(coef = c(params[1], params[2]))") %>% check_function("abline") %>%
+          check_arg("coef") %>% check_equal()
+  )
+  test_or(ex() %>% check_function("abline") %>% {
+          check_arg(., "a") %>% check_equal()
+          check_arg(., "b") %>% check_equal()
+        },
+    ex() %>% override_solution("abline(coef = c(params[1] + params[3], params[2] + params[4]))") %>% check_function("abline") %>%
+          check_arg("coef") %>% check_equal()
+  )
+  success_msg("Correct!")
   </code>
   
 </div>
@@ -2030,63 +2125,6 @@ The variable <tt>old</tt> is already available in the dataset. The package <tt>M
   + You can use the structure of <tt>mod_bc</tt> or the function <tt>coef()</tt> to extract the estimated coefficients.
 
   + Besides passing a <tt>lm()</tt>-object to <tt>abline()</tt>, one can also manually specify intercept and slope with the arguments <tt>a</tt> and <tt>b</tt>, respectively.
-  
-</div>') 
-}
-
-```
-
-```{r, echo=FALSE, results='asis'}
-if (my_output=="html") {
-  cat('
-<div  class = "DCexercise">
-
-#### 7. Interactions between Continuous Variables {-}
-
-
-The package <tt>MASS</tt> has been loaded.
-      
-**Instructions:**
-        
-  + Conduct the regression from above and assign it to <tt>mod_cc</tt>.
-
-
-<!--html_preserve-->
-
-<div data-datacamp-exercise data-lang="r">
-  
-  <code data-type="pre-exercise-code">
-  library(MASS)
-  </code>
-  
-  <code data-type="sample-code">
-  # Conduct the regression and assign it to mod_cc.
-  
-  
-  #
-  
-  
-  </code>
-   
-  <code data-type="solution">
-  # Conduct the regression and assign it to mod_cc.
-  mod_bc <- lm(medv ~ , data = Boston)
-  
-  #
-  
-  
-  </code>
-  
-  <code data-type="sct">
-  
-  </code>
-  
-</div>
-
-<!--/html_preserve-->
-
-**Hints:**
-
   
 </div>') 
 }
