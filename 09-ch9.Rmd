@@ -94,7 +94,7 @@ External validity might be invalid
 
 - if there are differences in the *settings* of the considered populations, e.g., the legal framework or the time of the investigation.
 
-## Threats to Internal Validity of Multiple Regression Analysis
+## Threats to Internal Validity of Multiple Regression Analysis {#ttivomra}
 
 This section treats five sources that cause the OLS estimator in (multiple) regression models to be biased and inconsistent for the causal effect of interest and discusses possible remedies. All five sources imply a violation of the first least squares assumption presented in Key Concept 6.4.
 
@@ -309,8 +309,8 @@ Next, we visualize the results and compare with the population regression functi
 ```{r, fig.align='center'}
 # plot sample data
 plot(dat$X, dat$Y, 
-     pch=20, 
-     col="steelblue",
+     pch = 20, 
+     col = "steelblue",
      xlab = "X",
      ylab = "Y")
 
@@ -896,38 +896,38 @@ Next we reproduce the $F$-statistics and $p$-values for testing exclusion of gro
 # F-test model (3)
 linearHypothesis(TestScore_MA_mod3, 
                  c("I(income^2)=0", "I(income^3)=0"), 
-                 vcov. = vcovHC(TestScore_MA_mod3, type = "HC1"))
+                 vcov. = vcovHC, type = "HC1")
 
 # F-tests model (4)
 linearHypothesis(TestScore_MA_mod4, 
                  c("STR=0", "I(STR^2)=0", "I(STR^3)=0"), 
-                 vcov. = vcovHC(TestScore_MA_mod4, type = "HC1"))
+                 vcov. = vcovHC, type = "HC1")
 
 linearHypothesis(TestScore_MA_mod4, 
                  c("I(STR^2)=0", "I(STR^3)=0"), 
-                 vcov. = vcovHC(TestScore_MA_mod4, type = "HC1"))
+                 vcov. = vcovHC, type = "HC1")
 
 linearHypothesis(TestScore_MA_mod4, 
                  c("I(income^2)=0", "I(income^3)=0"), 
-                 vcov. = vcovHC(TestScore_MA_mod4, type = "HC1"))
+                 vcov. = vcovHC, type = "HC1")
 
 # F-tests model (5)
 linearHypothesis(TestScore_MA_mod5, 
                  c("STR=0", "STR:HiEL=0"), 
-                 vcov. = vcovHC(TestScore_MA_mod5, type = "HC1"))
+                 vcov. = vcovHC, type = "HC1")
 
 linearHypothesis(TestScore_MA_mod5, 
                  c("I(income^2)=0", "I(income^3)=0"), 
-                 vcov. = vcovHC(TestScore_MA_mod5, type = "HC1"))
+                 vcov. = vcovHC, type = "HC1")
 
 linearHypothesis(TestScore_MA_mod5, 
                  c("HiEL=0", "STR:HiEL=0"), 
-                 vcov. = vcovHC(TestScore_MA_mod5, type = "HC1"))
+                 vcov. = vcovHC, type = "HC1")
 
 # F-test Model (6)
 linearHypothesis(TestScore_MA_mod6, 
                  c("I(income^2)=0", "I(income^3)=0"), 
-                 vcov. = vcovHC(TestScore_MA_mod6, type = "HC1"))
+                 vcov. = vcovHC, type = "HC1")
 ```
 
 We see that, in terms of $\bar{R}^2$, specification (3) which uses a cubic to model the relationship between district income and test scores indeed performs better than the linear-log specification (2). Using different $F$-tests on models (4) and (5), we cannot reject the hypothesis that there is no nonlinear relationship between student teacher ratio and test score and also that the share of English learners has an influence on the relationship of interest. Furthermore, regression (6) shows that the percentage of English learners can be omitted as a regressor. Because of the model specifications made in (4) to (6) do not lead to substantially different results than those of regression (3), we choose model (3) as the most suitable specification.
@@ -989,3 +989,100 @@ Consult the book for an in-depth discussion of these threats in view of both tes
 We have found that there *is* a small but statistically significant effect of the student-teacher ratio on test scores. However, it remains unclear if we have indeed estimated the causal effect of interest since --- despite that our approach including control variables, taking into account nonlinearities in the population regression function and statistical inference using robust standard errors --- the results might still be biased for example if there are omitted factors which we have not considered. Thus *internal validity* of the study remains questionable. As we have concluded from comparison with the analysis of the Massachusetts data set, this result may be *externally valid*.   
 
 The following chapters address techniques that can be remedies to all the threats to internal validity listed in Key Concept 9.7 if multiple regression alone is insufficient. This includes regression using panel data and approaches that employ instrumental variables.
+
+## Exercises
+
+```{r, echo=FALSE, results='asis'}
+if (my_output=="html") {
+  cat('
+<div  class = "DCexercise">
+
+#### 1. Simulation Study: Misspecification of Functional Form  {-}
+
+As stated in Chapter \\@ref(ttivomra), misspecification of the regression function violates assumption 1 of Key Concept 6.3 so that the OLS estimator will be biased and inconsistent. We have illustrated the bias of $\\hat{\\beta}_0$ for the example of the quadratic population regression function
+$$Y_i = X_i^2 $$
+and the linear model $$Y_i = \\beta_0 + \\beta_1 X_i + u_i, \\, u_i \\sim \\mathcal{N}(0,1)$$ using 100 randomly generated observations. Strictly speaking, this finding could be just a coincidence because we consider just one estimate obtained using a single data set. 
+
+In this exercise, you will generate simulation evidence for the bias of $\\hat{\\beta}_0$ in the model $$Y_i = \\beta_0 + X_i \\beta_1 + u_i$$ if the population regression function is $$Y_i = X_i^2.$$
+
+
+**Instructions:**
+
+Make sure to use the definitions suggested in the skeleton code in <tt>script.R</tt> to complete the following tasks:
+
++ Generate 1000 OLS estimates of $\\beta_0$ in the model above using a <tt>for()</tt> loop where $X_i \\sim \\mathcal{U}[-5,5]$, $u_i \\sim \\mathcal{N}(0,1)$. Save the estimates in <tt>beta_hats</tt>.
+
++ Compare the sample mean of the estimates to the true parameter using the <tt>==</tt> operator.
+
+<!--html_preserve-->
+
+<div data-datacamp-exercise data-lang="r" height = "800">
+
+<code data-type="pre-exercise-code">
+
+</code>
+
+<code data-type="sample-code">
+# set seed for reproducibility
+set.seed(3)
+
+# set number of sampling iterations
+N <-
+
+# initialize `beta_hats`
+beta_hats <-
+
+# conduct the simulation using `for()`
+
+for(i in 1:N) {
+
+}
+
+# compare the mean of estimates to the true parameter
+
+</code>
+
+<code data-type="solution">
+# set seed for reproducibility
+set.seed(3)
+
+# set number of sampling iterations
+N <- 1000
+
+# initialize vector  `beta_hats`
+beta_hats <- c()
+
+# loop estimation
+for (i in 1:N) {
+  
+  # simulate the dataset
+  X <- runif(100, -5, 5)
+  Y <- X^2 + rnorm(100)
+  
+  # estimate the linear regression function
+  ms_mod <- lm(Y ~ X)
+  # save the estimate
+  beta_hats[i] <- ms_mod$coefficients[1]
+}
+
+# compare mean of estimates and the true parameter
+mean(beta_hats) == 0
+  
+</code>
+<code data-type="sct">
+test_object("beta_hats")
+test_student_typed("==")
+</code>
+
+</div>
+
+<!--/html_preserve-->
+
+**Hints:**
+
++ You can generate random numbers from a uniform distribution using <tt>runif()</tt>, see `?runif`.
+
+</div>') } else {
+  cat("\\begin{center}\\textit{This interactive part of URFITE is only available in the HTML version.}\\end{center}")
+}
+```

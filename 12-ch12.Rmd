@@ -107,7 +107,7 @@ The first stage regression is $$\log(P_i^{cigarettes}) = \pi_0 + \pi_1 SalesTax_
 # perform the first stage regression
 cig_s1 <- lm(log(rprice) ~ salestax, data = c1995)
 
-coeftest(cig_s1, vcov = vcovHC(cig_s1, type = "HC1"))
+coeftest(cig_s1, vcov = vcovHC, type = "HC1")
 ```
 
 The first stage regression is $$\widehat{\log(P_i^{cigarettes})} = \underset{(0.03)}{4.62} + \underset{(0.005)}{0.031} SalesTax_i$$ which predicts the relation between sales tax price per cigarettes to be positive. How much of the observed variation in $\log(P^{cigarettes})$ is explained by the instrument $SalesTax$? This can be answered by looking at the regression's $R^2$ which states that about $47\%$ of the variation in after tax prices is explained by the variation of the sales tax across states.
@@ -129,7 +129,7 @@ Next, we run the second stage regression which gives us the TSLS estimates we se
 ```{r}
 # run the stage 2 regression
 cig_s2 <- lm(log(c1995$packs) ~ lcigp_pred)
-coeftest(cig_s2, vcov = vcovHC(cig_s2))
+coeftest(cig_s2, vcov = vcovHC)
 ```
 
 Thus estimating the model \@ref(eq:cigstsls) using TSLS yields 
@@ -146,7 +146,7 @@ The function `r ttcode("ivreg()")` from the package `r ttcode("AER")` carries ou
 # perform TSLS using 'ivreg()'
 cig_ivreg <- ivreg(log(packs) ~ log(rprice) | salestax, data = c1995)
 
-coeftest(cig_ivreg, vcov = vcovHC(cig_ivreg, type = "HC1"))
+coeftest(cig_ivreg, vcov = vcovHC, type = "HC1")
 ```
 
 We find that the coefficient estimates coincide for both approaches.
@@ -356,7 +356,7 @@ c1995 <- subset(CigarettesSW, year == "1995")
 cig_ivreg2 <- ivreg(log(packs) ~ log(rprice) + log(rincome) | log(rincome) + 
                     salestax, data = c1995)
 
-coeftest(cig_ivreg2, vcov = vcovHC(cig_ivreg2, type = "HC1"))
+coeftest(cig_ivreg2, vcov = vcovHC, type = "HC1")
 ```
 
 We obtain
@@ -379,7 +379,7 @@ c1995 <- subset(CigarettesSW, year == "1995")
 cig_ivreg3 <- ivreg(log(packs) ~ log(rprice) + log(rincome) | 
                     log(rincome) + salestax + cigtax, data = c1995)
 
-coeftest(cig_ivreg3, vcov = vcovHC(cig_ivreg3, type = "HC1"))
+coeftest(cig_ivreg3, vcov = vcovHC, type = "HC1")
 ```
 
 Using the two instruments $salestax_i$ and $cigtax_i$ we have $m=2$ and $k=1$ so the coefficient on the endogenous regressor $\log(P_i^{cigarettes})$ is *overidentified*. The TSLS estimate of \@ref(eq:mcigstsls1) is
@@ -532,13 +532,13 @@ As usual we use `r ttcode("coeftest()")` in conjunction with `r ttcode("vcovHC()
 
 ```{r}
 # robust coefficient summary for 1.
-coeftest(cig_ivreg_diff1, vcov = vcovHC(cig_ivreg_diff1, type = "HC1"))
+coeftest(cig_ivreg_diff1, vcov = vcovHC, type = "HC1")
 
 # robust coefficient summary for 2.
-coeftest(cig_ivreg_diff2, vcov = vcovHC(cig_ivreg_diff2, type = "HC1"))
+coeftest(cig_ivreg_diff2, vcov = vcovHC, type = "HC1")
 
 # robust coefficient summary for 3.
-coeftest(cig_ivreg_diff3, vcov = vcovHC(cig_ivreg_diff3, type = "HC1"))
+coeftest(cig_ivreg_diff3, vcov = vcovHC, type = "HC1")
 ```
 
 We proceed by generating a tabulated summary of the estimation results using `r ttcode("stargazer()")`.
@@ -611,21 +611,21 @@ mod_relevance3 <- lm(pricediff ~ incomediff + salestaxdiff + cigtaxdiff)
 # check instrument relevance for model (1)
 linearHypothesis(mod_relevance1, 
                  "salestaxdiff = 0", 
-                 vcov = vcovHC(mod_relevance1, type = "HC1"))
+                 vcov = vcovHC, type = "HC1")
 ```
 
 ```{r}
 # check instrument relevance for model (2)
 linearHypothesis(mod_relevance2, 
                  "cigtaxdiff = 0", 
-                 vcov = vcovHC(mod_relevance2, type = "HC1"))
+                 vcov = vcovHC, type = "HC1")
 ```
 
 ```{r}
 # check instrument relevance for model (3)
 linearHypothesis(mod_relevance3, 
                  c("salestaxdiff = 0", "cigtaxdiff = 0"), 
-                 vcov = vcovHC(mod_relevance3, type = "HC1"))
+                 vcov = vcovHC, type = "HC1")
 ```
 
 We also conduct the overidentifying restrictions test for model three which is the only model where the coefficient on the difference in log prices is overidentified ($m=2$, $k=1$) such that the $J$-statistic can be computed. To do this we take the residuals stored in `r ttcode("cig_ivreg_diff3")` and regress them on both instruments and the presumably exogenous regressor `r ttcode("incomediff")`. We again use `r ttcode("linearHypothesis()")` to test whether the coefficients on both instruments are zero which is necessary for the exogeneity assumption to be fulfilled. Note that with `r ttcode('test = "Chisq"')` we obtain a chi-squared distributed test statistic instead of an $F$-statistic.

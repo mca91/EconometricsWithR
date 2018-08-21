@@ -102,8 +102,8 @@ Fatalities1988 <- subset(Fatalities, year == "1988")
 fatal1982_mod <- lm(fatal_rate ~ beertax, data = Fatalities1982)
 fatal1988_mod <- lm(fatal_rate ~ beertax, data = Fatalities1988)
 
-coeftest(fatal1982_mod, vcov. = vcovHC(fatal1982_mod, type = "HC1"))
-coeftest(fatal1988_mod, vcov. = vcovHC(fatal1988_mod, type = "HC1"))
+coeftest(fatal1982_mod, vcov. = vcovHC, type = "HC1")
+coeftest(fatal1988_mod, vcov. = vcovHC, type = "HC1")
 ```
 
 The estimated regression functions are
@@ -162,7 +162,7 @@ diff_beertax <- Fatalities1988$beertax - Fatalities1982$beertax
 # estimate a regression using differenced data
 fatal_diff_mod <- lm(diff_fatal_rate ~ diff_beertax)
 
-coeftest(fatal_diff_mod, vcov = vcovHC(fatal_diff_mod, type = "HC1"))
+coeftest(fatal_diff_mod, vcov = vcovHC, type = "HC1")
 ```
 
 Including the intercept allows for a change in the mean fatality rate in the time between 1982 and 1988 in the absence of a change in the beer tax.
@@ -330,7 +330,7 @@ fatal_fe_mod <- plm(fatal_rate ~ beertax,
                     model = "within")
 
 # print summary using robust standard errors
-coeftest(fatal_fe_mod, vcov. = vcovHC(fatal_fe_mod, type = "HC1"))
+coeftest(fatal_fe_mod, vcov. = vcovHC, type = "HC1")
 ```
 
 The estimated coefficient is again $-0.6559$. Note that `r ttcode("plm()")` uses the entity-demeaned OLS algorithm and thus does not report dummy coefficients. The estimated regression function is 
@@ -363,7 +363,7 @@ fatal_tefe_mod <- plm(fatal_rate ~ beertax,
                       model = "within", 
                       effect = "twoways")
 
-coeftest(fatal_tefe_mod, vcov = vcovHC(fatal_tefe_mod, type = "HC1"))
+coeftest(fatal_tefe_mod, vcov = vcovHC, type = "HC1")
 ```
 
 Before discussing the outcomes we convince ourselves that `r ttcode("state")` and `r ttcode("year")` are of the class `r ttcode("factor")` . 
@@ -442,14 +442,14 @@ class(fatal_tefe_lm_mod)
 
 # obtain a summary based on heteroskedasticity-robust standard errors 
 # (no adjustment for heteroskedasticity only)
-coeftest(fatal_tefe_lm_mod, vcov = vcovHC(fatal_tefe_lm_mod, type = "HC1"))[1, ]
+coeftest(fatal_tefe_lm_mod, vcov = vcovHC, type = "HC1")[1, ]
 
 # check class of the (plm) model object
 class(fatal_tefe_mod)
 
 # obtain a summary based on clusterd standard errors 
 # (adjustment for autocorrelation + heteroskedasticity)
-coeftest(fatal_tefe_mod, vcov = vcovHC(fatal_tefe_mod, type = "HC1"))
+coeftest(fatal_tefe_mod, vcov = vcovHC, type = "HC1")
 ```
 
 The outcomes differ rather strongly: imposing no autocorrelation we obtain a standard error of $0.25$ which implies significance of $\hat\beta_1$, the coefficient on $BeerTax$ at the level of $5\%$. On the contrary, using the clustered standard error $0.35$ leads to acceptance of the hypothesis $H_0: \beta_1 = 0$ at the same level, see equation \@ref(eq:cbnfemod). Consult Appendix 10.2 of the book for insights on the computation of clustered standard errors.   
@@ -625,7 +625,7 @@ The model specifications (4) to (7) include covariates that shall capture the ef
 linearHypothesis(fatalities_mod4,
                  test = "F",
                  c("drinkagec[18,19)=0", "drinkagec[19,20)=0", "drinkagec[20,21)"), 
-                 vcov. = vcovHC(fatalities_mod4, type = "HC1"))
+                 vcov. = vcovHC, type = "HC1")
 ```
 
 3. There is no evidence that punishment for first offenders has a deterring effects on drunk driving: the corresponding coefficient is not significant at the $10\%$ level.
@@ -636,7 +636,7 @@ linearHypothesis(fatalities_mod4,
 linearHypothesis(fatalities_mod4, 
                  test = "F",
                  c("log(income)", "unemp"), 
-                 vcov. = vcovHC(fatalities_mod4, type = "HC2"))
+                 vcov. = vcovHC, type = "HC1")
 ```
 
 Model (5) omits the economic factors. The result supports the notion that economic indicators should remain in the model as the coefficient on beer tax is sensitive to the inclusion of the latter.

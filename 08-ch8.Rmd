@@ -61,7 +61,7 @@ $$TestScore_i = \beta_0 + \beta_1 \times income_i + \beta_2 \times income_i^2 + 
 quadratic_model <- lm(score ~ income + I(income^2), data = CASchools)
 
 # obtain the model summary
-coeftest(quadratic_model, vcov. = vcovHC(quadratic_model, type = "HC1"))
+coeftest(quadratic_model, vcov. = vcovHC, type = "HC1")
 ```
 
 The output tells us that the estimated regression function is
@@ -108,7 +108,7 @@ We see that the quadratic function does fit the data much better than the linear
 The approach used to obtain a quadratic model can be generalized to polynomial models of arbitrary degree $r$,
 $$Y_i = \beta_0 + \beta_1 X_i + \beta_2 X_i^2 + \cdots + \beta_r X_i^r + u_i.$$
 
-A cubic model for instance can be estimated in the same way as the quadratic model; we just have to use a polynomial of degree $r=3$ in  `r ttcode("income")`. This conveniently done using the function `r ttcode("poly()")`.
+A cubic model for instance can be estimated in the same way as the quadratic model; we just have to use a polynomial of degree $r=3$ in  `r ttcode("income")`. This is conveniently done using the function `r ttcode("poly()")`.
 
 ```{r cubic}
 # estimate a cubic model
@@ -191,7 +191,7 @@ The $t$-statistic on $income^3$ is $1.42$ so the null that the relationship is q
 
 ```{r}
 # test the hypothesis using robust standard errors
-coeftest(cubic_model, vcov. = vcovHC(cubic_model, type = "HC1"))
+coeftest(cubic_model, vcov. = vcovHC, type = "HC1")
 ```
 
 The reported standard errors have changed. Furthermore, the coefficient for `income^3` is now significant at the $5\%$ level. This means we reject the hypothesis that the regression function is quadratic against the alternative that it is cubic. Furthermore, we can also test if the coefficients for `r ttcode("income^2")` and `r ttcode("income^3")` are jointly significant using a robust version of the $F$-test. 
@@ -200,7 +200,7 @@ The reported standard errors have changed. Furthermore, the coefficient for `inc
 # perform robust F-test 
 linearHypothesis(cubic_model, 
                  hypothesis.matrix = R,
-                 vcov. = vcovHC(cubic_model, type = "HC1"))
+                 vcov. = vcovHC, type = "HC1")
 ```
 
 With a $p$-value of $9.043e^{-16}$, i.e., much less than $0.05$, the null hypothesis of linearity is rejected in favor of the alternative that the relationship is quadratic *or* cubic. 
@@ -322,7 +322,7 @@ LinearLog_model <- lm(score ~ log(income), data = CASchools)
 
 # compute robust summary
 coeftest(LinearLog_model, 
-         vcov = vcovHC(LinearLog_model, type = "HC1"))
+         vcov = vcovHC, type = "HC1")
 ```
 
 Hence, the estimated regression function is
@@ -383,7 +383,7 @@ LogLinear_model <- lm(log(score) ~ income, data = CASchools)
 
 # obtain a robust coefficient summary
 coeftest(LogLinear_model, 
-         vcov = vcovHC(LogLinear_model, type = "HC1"))
+         vcov = vcovHC, type = "HC1")
 ```
 
 The estimated regression function is $$\widehat{\ln(TestScore)} = 6.439 + 0.00284 \times income.$$ An increase in district income by $\$1000$ is expected to increase test scores by $100\times 0.00284 \% = 0.284\%$. 
@@ -400,7 +400,7 @@ LogLog_model <- lm(log(score) ~ log(income), data = CASchools)
 
 # print robust coefficient summary to the console
 coeftest(LogLog_model, 
-         vcov = vcovHC(LogLog_model, type = "HC1"))
+         vcov = vcovHC, type = "HC1")
 ```
 
 The estimated regression function hence is $$\widehat{\ln(TestScore)} = 6.336 + 0.0554 \times \ln(income).$$ In a log-log model, a $1\%$ change in $X$ is associated with an estimated $\hat\beta_1 \%$ change in $Y$. 
@@ -506,7 +506,7 @@ polyLog_model <- lm(score ~ log(income) + I(log(income)^2) + I(log(income)^3),
 
 # print robust summary to the console
 coeftest(polyLog_model, 
-         vcov = vcovHC(polyLog_model, type = "HC1"))
+         vcov = vcovHC, type = "HC1")
 ```
 
 Comparing by $\bar{R}^2$ we find that, leaving out the log-linear model, all models have a similar adjusted fit. In the class of polynomial models, the cubic specification has the highest $\bar{R}^2$ whereas the linear-log specification is the best of the log-models. 
@@ -580,11 +580,11 @@ Now assume that
   D_{1i} =& \,
    \begin{cases}
       1 & \text{if $i^{th}$ person has a college degree,} \\
-      0 & \text{else},
+      0 & \text{else}.
     \end{cases} \\
   D_{2i} =& \, 
     \begin{cases}
-      1 & \text{if $i^{th}$ person is female} \\
+      1 & \text{if $i^{th}$ person is female,} \\
       0 & \text{if $i^{th}$ person is male}.
     \end{cases}
 \end{align*}
@@ -676,7 +676,7 @@ There are several ways to add the interaction term to the `r ttcode("formula")` 
 bi_model <- lm(score ~ HiSTR * HiEL, data = CASchools)
 
 # print a robust summary of the coefficients
-coeftest(bi_model, vcov. = vcovHC(bi_model, type = "HC1"))
+coeftest(bi_model, vcov. = vcovHC, type = "HC1")
 ```
 
 The estimated regression model is $$\widehat{TestScore} = \underset{(1.39)}{664.1} - \underset{(1.93)}{1.9} \times HiSTR - \underset{(2.33)}{18.3} \times HiEL - \underset{(3.12)}{3.3} \times (HiSTR \times HiEL)$$ and it predicts that the effect of moving from a school district with a low student-teacher ratio to a district with a high student-teacher ratio, depending on high or low percentage of english learners is $-1.9-3.3\times HiEL$. So for districts with a low share of english learners ($HiEL = 0$), the estimated effect is a decrease of $1.9$ points in test scores while for districts with a large fraction of English learners ($HiEL = 1$), the predicted decrease in test scores amounts to $1.9 + 3.3 = 5.2$ points.
@@ -857,7 +857,7 @@ $$ \widehat{TestScore_i} = \beta_0 + \beta_1 \times size_i + \beta_2 \times HiEL
 bci_model <- lm(score ~ size + HiEL + size * HiEL, data = CASchools)
 
 # print robust summary of coefficients to the console
-coeftest(bci_model, vcov. = vcovHC(bci_model, type = "HC1"))
+coeftest(bci_model, vcov. = vcovHC, type = "HC1")
 ```
 
 The estimated regression model is $$ \widehat{TestScore} = \underset{(11.87)}{682.2} - \underset{(0.59)}{0.97} \times size + \underset{(19.51)}{5.6} \times HiEL - \underset{(0.97)}{1.28} \times (size \times HiEL). $$ The estimated regression line for districts with a low fraction of English learners ($HiEL_i=0$) is $$ \widehat{TestScore} = 682.2 - 0.97\times size_i. $$
@@ -960,10 +960,10 @@ We now examine the interaction between the continuous variables student-teacher 
 
 ```{r}
 # estimate regression model including the interaction between 'PctEL' and 'size'
-cci_model <- lm(score ~ size + english + english*size, data = CASchools) 
+cci_model <- lm(score ~ size + english + english * size, data = CASchools) 
 
 # print a summary to the console
-coeftest(cci_model, vcov. = vcovHC(cci_model, type = "HC1"))
+coeftest(cci_model, vcov. = vcovHC, type = "HC1")
 ```
 
 The estimated model equation is $$ \widehat{TestScore} = \underset{(11.76)}{686.3} - \underset{(0.59)}{1.12} \times STR - \underset{(0.37)}{0.67} \times PctEL + \underset{(0.02)}{0.0012} \times (STR\times PctEL). $$
@@ -1063,7 +1063,7 @@ We use an $F$-Test to test if the transformations of $\ln(PricePerCitation)$ in 
 # F-Test for significance of cubic terms
 linearHypothesis(Journals_mod3, 
                  c("I(log(PricePerCitation)^2)=0", "I(log(PricePerCitation)^3)=0"),
-                 vcov. = vcovHC(Journals_mod3, type = "HC1"))
+                 vcov. = vcovHC, type = "HC1")
 ```
 
 Clearly, we cannot reject the null hypothesis $H_0: \beta_3=\beta_4=0$ in model $(III)$.
@@ -1235,7 +1235,7 @@ The considered model specifications are:
 \end{align}
 
 ```{r, tidy=TRUE}
-# Estimate all models
+# estimate all models
 TestScore_mod1 <- lm(score ~ size + english + lunch, data = CASchools)
 
 TestScore_mod2 <- lm(score ~ size + english + lunch + log(income), data = CASchools)
@@ -1355,7 +1355,7 @@ Consequently, regression (6) further explores whether the fraction of English le
 # check joint significance of the interaction terms
 linearHypothesis(TestScore_mod6, 
                  c("size:HiEL=0", "I(size^2):HiEL=0", "I(size^3):HiEL=0"),
-                 vcov. = vcovHC(TestScore_mod6, type = "HC1"))
+                 vcov. = vcovHC, type = "HC1")
 ```
 
 We find that the null can be rejected at the level of $5\%$ and conclude that the regression function differs for districts with high and low percentage of English learners.
@@ -1498,3 +1498,618 @@ We are now able to answer the three question posed at the beginning of this sect
 2. When controlling for the students' economic background we find evidence of nonlinearities in the relationship between student-teacher ratio and test scores.
 
 3. The linear specification (2) predicts that a reduction of the student-teacher ratio by two students per teacher leads to an improvement in test scores of about $-0.73 \times (-2) = 1.46$ points. Since the model is linear, this effect is independent of the class size. Assume that the student-teacher ratio is $20$. For example, the nonlinear model (5) predicts that the reduction increases test scores by $$64.33\cdot18+18^2\cdot(-3.42)+18^3\cdot(0.059) - (64.33\cdot20+20^2\cdot(-3.42)+20^3\cdot(0.059)) \approx 3.3$$ points. If the ratio is $22$, a reduction to $20$ leads to a predicted improvement in test scores of $$64.33\cdot20+20^2\cdot(-3.42)+20^3\cdot(0.059) - (64.33\cdot22+22^2\cdot(-3.42)+22^3\cdot(0.059)) \approx 2.4$$ points. This suggests that the effect is stronger in smaller classes.
+
+## Exercises
+
+```{r, echo=FALSE, results='asis'}
+if (my_output=="html"){
+  cat('
+<div  class = "DCexercise">
+
+#### 1. Correlation and (Non)linearity I {-}
+ 
+Consider the estimated simple linear regression model $$\\widehat{medv_i} = 34.554 - 0.95\\times lstat_i.$$
+
+with <tt>medv</tt> (median house value) and <tt>lstat</tt> (percent of households with low socioeconomic status) being variables from the already known <tt>Boston</tt> dataset.
+
+The <tt>lm()</tt>  object of the above model is available as <tt>mod</tt> in your working environment. The package <tt>MASS</tt> has been loaded.
+
+**Instructions:**
+
+  + Compute the correlation between <tt>medv</tt> and <tt>lstat</tt>.
+  
+  + Plot <tt>medv</tt> against <tt>lstat</tt> and add the regression line of the estimated model. What do you notice?
+        
+<!--html_preserve-->
+
+<div data-datacamp-exercise data-lang="r">
+        
+  <code data-type="pre-exercise-code">
+  library(MASS)
+  mod <- lm(medv ~ lstat, data = Boston)
+  </code>
+  
+  <code data-type="sample-code">
+  # compute the correlation between medv and lstat
+  
+  
+  # plot medv against lstat and add the regression line
+  
+  
+  
+  </code>
+  
+  <code data-type="solution">
+  # Compute the correlation between medv and lstat
+  cor(Boston$medv, Boston$lstat)
+  
+  # Plot medv against lstat and add the regression line
+  plot(medv ~ lstat, data = Boston)
+  abline(mod, col = "red")
+  
+  </code>
+  
+  <code data-type="sct">
+  ex() %>% check_function("cor") %>% check_result() %>% check_equal()
+  test_or(ex() %>% check_function("plot") %>% {
+        check_arg(., "formula") %>% check_equal()
+        check_arg(., "data") %>% check_equal()
+      },
+  ex() %>% override_solution("plot(Boston$lstat, Boston$medv)") %>% check_function("plot") %>% {
+        check_arg(., "x") %>% check_equal()
+        check_arg(., "y") %>% check_equal()
+      },
+  ex() %>% override_solution("plot(Boston$medv ~ Boston$lstat)") %>% check_function("plot") %>%
+        check_arg("formula") %>% check_equal()
+      )
+  ex() %>% check_function("abline") #%>% check_arg("reg") %>% check_equal()
+  success_msg("Correct! Although the correlation coefficient suggests that medv and lstat are negatively linearly dependent, the relationship between them clearly is nonlinear. Hence a simple linear regression specification is inappropriate here.")
+  
+  </code>
+  
+</div>
+        
+<!--/html_preserve-->
+        
+**Hints:**
+        
+  + You can use <tt>cor()</tt> to compute the correlation between variables.
+      
+  + You may use <tt>plot()</tt> and <tt>abline()</tt> to visualize regression results.
+      
+</div>')
+} else {
+  cat('\\begin{center}\\textit{This interactive part of URFITE is only available in the HTML version.}\\end{center}')
+}
+```
+
+```{r, echo=FALSE, results='asis'}
+if (my_output=="html") {
+  cat('
+<div  class = "DCexercise">
+
+#### 2. Correlation and (Non)linearity II {-}
+
+In the previous exercise we saw that the correlation between the dependent variable and the regressors is not useful for choosing the functional form of the model since it captures only the linear relationship. 
+
+As an alternative, consider the nonlinear specification
+
+$$medv_i = \\beta_0 + \\beta_1\\times\\log(lstat_i) + u_i.$$
+
+The package <tt>MASS</tt> has been loaded.
+      
+**Instructions:**
+        
+  + Conduct the regression from above and assign the result to <tt>log_mod</tt>.
+      
+  + Visualize your results by drawing a scatterplot and adding the corresponding regression line. In comparison to the previous exercise what do you notice now? 
+
+<!--html_preserve-->
+
+<div data-datacamp-exercise data-lang="r">
+  
+  <code data-type="pre-exercise-code">
+  library(MASS)
+  </code>
+  
+  <code data-type="sample-code">
+  # conduct the regression and assign it to mod_log
+  
+  
+  # draw a scatterplot and add the corresponding regression line
+  
+  
+  
+  </code>
+  
+  <code data-type="solution">
+  # conduct the regression and assign it to mod_log
+  mod_log <- lm(medv ~ log(lstat), data = Boston)
+  
+  # draw a scatterplot and add the corresponding regression line
+  plot(medv ~ log(lstat), data = Boston)
+  abline(mod_log, col = "red")
+  
+  </code>
+  
+  <code data-type="sct">
+  ex() %>% check_object("mod_log") %>% check_equal()
+  test_or(ex() %>% check_function("plot") %>% {
+        check_arg(., "formula") %>% check_equal()
+        check_arg(., "data") %>% check_equal()
+      },
+  ex() %>% override_solution("plot(log(Boston$lstat), Boston$medv)") %>% check_function("plot") %>% {
+        check_arg(., "x") %>% check_equal()
+        check_arg(., "y") %>% check_equal()
+      },
+  ex() %>% override_solution("plot(Boston$medv ~ log(Boston$lstat))") %>% check_function("plot") %>%
+        check_arg("formula") %>% check_equal()
+      )
+  ex() %>% check_function("abline") #%>% check_arg("reg") %>% check_equal()
+  success_msg("Correct! Although the relationship is not perfectly linear, using a log transformation considerably improves our model fit and seems to be a reasonable model specification.")
+  </code>
+  
+</div>
+
+<!--/html_preserve-->
+
+**Hints:**
+  
+  + Use <tt>lm()</tt> to conduct a regression.
+
+  + As usual you can use <tt>plot()</tt> and <tt>abline()</tt> to visualize regression results.
+  
+</div>')
+}
+```
+
+```{r, echo=FALSE, results='asis'}
+if (my_output=="html") {
+  cat('
+<div  class = "DCexercise">
+
+#### 3. Optimal Polynomial Order --- Sequential Testing {-}
+
+Recall the following model from the previous exercise $$medv_i = \\beta_0 + \\beta_1\\times\\log(lstat_i) + u_i.$$
+
+We saw that this model specification seems to be a reasonable choice. However, a higher order polynomial may be more suited to describe the data. Therefore please try the following:
+
+The packages <tt>AER</tt> and <tt>MASS</tt> have been loaded.
+      
+**Instructions:**
+        
+  + Determine the optimal order of a polylog model using sequential testing. Assume a maximum polynomial order of $r=4$ and a significance level of $\\alpha=0.05$. We would like you to use a <tt>for()</tt> loop and recommend the following approach:
+
+    1. Estimate a model, say <tt>mod</tt>, which starts with the highest polynomial order.
+    2. Save the $p$-value (use robust standard errors) of the relevant parameter and compare it to the significance level $\\alpha$.
+    3. If you cannot reject the null, repeat steps 1 and 2 for the next lowest polynomial order, otherwise stop the loop and print out the polynomial order.
+
+  + Extract the $R^2$ of the selected model and assign it to the variable <tt>R2</tt>.
+
+
+<!--html_preserve-->
+
+<div data-datacamp-exercise data-lang="r">
+  
+  <code data-type="pre-exercise-code">
+  library(AER)
+  library(MASS)
+  </code>
+  
+  <code data-type="sample-code">
+  # find the optimal polynomial order of the polylog model.
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  # extract the R^2 from the selected model and assign it to R2.
+  
+  
+  </code>
+   
+  <code data-type="solution">
+  # find the optimal polynomial order of the polylog model.
+  for(i in 4:1){
+  mod  <- lm(medv ~ poly(log(lstat), i, raw = T), data = Boston)
+  pval <- coeftest(mod, vcov = vcovHC)[(i+1), 4]
+  if(pval < 0.05){
+    print(i)
+    break
+    }
+  }
+  
+  # extract the R^2 from the selected model and assign it to R2.
+  R2 <- summary(mod)$r.squared
+  
+  </code>
+  
+  <code data-type="sct">
+  ex() %>% check_for()
+  ex() %>% check_object("R2") %>% check_equal()
+  success_msg("Correct! Using the sequential testing approach we get an optimal order of r=2.")
+  </code>
+  
+</div>
+
+<!--/html_preserve-->
+
+**Hints:**
+
+  + The index for the <tt>for()</tt> loop should start at 4 and end at 1.
+
+  + Using <tt>poly()</tt> in the argument <tt>formula</tt> of <tt>lm()</tt> is a generic way to incorporate higher orders of a certain variable in the model. Besides the variable, you have to specify the degree of the polynomial via the argument <tt>degree</tt> and set <tt>raw = TRUE</tt>.
+
+  + Use <tt>coeftest()</tt> together with the argument <tt>vcov</tt> to obtain $p$-values (with robust standard errors). Use the structure of the resulting object to extract the relevant $p$-value.
+
+  + An <tt>if()</tt> statement may be useful to check whether the condition for acceptance of the null in step 3 is fulfilled. A <tt>for()</tt> loop is stopped using the statement <tt>break</tt>.
+
+  + Use <tt>summary()</tt> to obtain the $R^2$. You may extract it by appending <tt>$r.squared</tt>.
+  
+</div>') 
+}
+
+```
+
+```{r, echo=FALSE, results='asis'}
+if (my_output=="html") {
+  cat('
+<div  class = "DCexercise">
+
+#### 4. Estimated Effect of a Unit Change {-}
+
+Reconsider the polylog model from the previous exercise that was selected by the sequential testing approach. As this model is logarithmic and of quadratic form, we cannot simply read off the estimated effect of a unit change in <tt>lstat</tt> from the coefficient summary. Instead we have to compute it manually. To do so, assume that we are interested in the effect of an increase in <tt>lstat</tt> from 10% to 11%.
+
+The selected polylog model <tt>mod_pl</tt> is available in your working environment. The package <tt>MASS</tt> has been loaded.
+      
+**Instructions:**
+        
+  + Set up a <tt>data.frame</tt> with the relevant observations of <tt>lstat</tt>.
+
+  + Use the new observations to predict the corresponding values of <tt>medv</tt>.
+
+  + Compute the expected effect with the help of the function <tt>diff()</tt>.
+
+<!--html_preserve-->
+
+<div data-datacamp-exercise data-lang="r">
+  
+  <code data-type="pre-exercise-code">
+  library(MASS)
+  mod_pl  <- lm(medv ~ poly(log(lstat), 2, raw = T), data = Boston)  
+  </code>
+  
+  <code data-type="sample-code">
+  # set up the relevant data points.
+  
+  
+  # predict the corresponding values of medv.
+  
+  
+  # compute the expected effect of the change.
+  
+  
+  </code>
+   
+  <code data-type="solution">
+  # Set up the relevant data points.
+  new_data <- data.frame(lstat = c(10, 11))
+  
+  # Predict the corresponding values of medv.
+  Y_hat <- predict(mod_pl, newdata = new_data)
+  
+  # Compute the expected effect of the change.
+  diff(Y_hat)
+  
+  </code>
+  
+  <code data-type="sct">
+  ex() %>% check_object("new_data") %>% check_equal()
+  ex() %>% check_object("Y_hat") %>% check_equal()
+  ex() %>% check_function("diff") %>% check_result() %>% check_equal()
+  success_msg("Correct! The expected change in medv for an increase in lstat from 10% to 11% is about -1.16 (that is -1160$).")
+  </code>
+  
+</div>
+
+<!--/html_preserve-->
+
+**Hints:**
+
+- Note that the column names of the <tt>data.frame</tt> has to match the name of the regressor.
+
+- You may use <tt>predict()</tt> together with the new data to obtain the predicted values of <tt>medv</tt>.
+
+- <tt>diff()</tt> expects a vector. It computes the differences between all entries of this vector.
+  
+</div>') 
+}
+
+```
+
+```{r, echo=FALSE, results='asis'}
+if (my_output=="html") {
+  cat('
+<div  class = "DCexercise">
+
+#### 5. Interactions between Independent Variables I {-}
+
+Consider the following regression model
+
+$$medv_i=\\beta_0+\\beta_1\\times chas_i+\\beta_2\\times old_i+\\beta_3(chas_i\\times old_i)+u_i$$
+
+where $chas_i$ and $old_i$ are dummy variables. The former takes the value $1$, if the Charles River (a short river in the proximity of Boston) passes through suburb $i$ and is $0$ otherwise. The latter accounts for a high proportion of old buildings and is constructed as follows
+
+\\begin{align}
+old_i = & \\,
+    \\begin{cases}
+      1 & \\text{if $age_i\\geq 95$},\\\\
+      0 & \\text{else},
+    \\end{cases}
+\\end{align}
+
+with $age_i$ being the proportion of owner-occupied units built prior to 1940 in suburb $i$.
+
+The package <tt>MASS</tt> has been loaded.
+      
+**Instructions:**
+        
+  + Append the binary variable <tt>old</tt> to the dataset <tt>Boston</tt>.
+
+  + Conduct the regression from above and assign the result to <tt>mod_bb</tt>.
+
+  + Obtain a coefficient summary of the model. How do you interpret the results?
+
+<!--html_preserve-->
+
+<div data-datacamp-exercise data-lang="r">
+  
+  <code data-type="pre-exercise-code">
+  library(MASS)
+  </code>
+  
+  <code data-type="sample-code">
+  # create the binary variable old and append it to the dataset
+  
+  
+  # conduct the regression and assign it to mod_bb
+  
+  
+  # print the summary to the console
+  
+  
+  </code>
+   
+  <code data-type="solution">
+  # create the binary variable old and append it to the dataset.
+  Boston$old <- as.numeric(Boston$age >= 95)
+  
+  # conduct the regression and assign it to mod_bb.
+  mod_bb <- lm(medv ~ chas*old, data = Boston)
+  
+  # print the summary to the console
+  summary(mod_bb)
+  
+  </code>
+  
+  <code data-type="sct">
+  ex() %>% check_object("Boston") %>%
+  check_column("old", col_missing_msg = "Have you added the column `old` to `Boston`?") %>%
+  check_equal(incorrect_msg = "Have you correctly calculated the column `old` based on `age`?")
+  test_or({
+    test_object("mod_bb")
+  },{
+    f <- ex() %>% override_solution("lm(medv ~ old*chas, data = Boston)") %>% check_function("lm")
+    f %>% check_arg("formula") %>% check_equal()
+  },{
+    f <- ex() %>% override_solution("lm(Boston$medv ~ Boston$chas*Boston$old)") %>% check_function("lm")
+    f %>% check_arg("formula") %>% check_equal()
+  },{
+    f <- ex() %>% override_solution("lm(Boston$medv ~ Boston$old*Boston$chas)") %>% check_function("lm")
+    f %>% check_arg("formula") %>% check_equal()
+  },{
+    f <- ex() %>% override_solution("attach(Boston);lm(medv ~ chas*old)") %>% check_function("lm")
+    f %>% check_arg("formula") %>% check_equal()
+  },{
+    f <- ex() %>% override_solution("attach(Boston);lm(medv ~ old*chas)") %>% check_function("lm")
+    f %>% check_arg("formula") %>% check_equal()
+  },{
+    f <- ex() %>% override_solution("lm(medv ~ chas + old + chas:old, data = Boston)") %>% check_function("lm")
+    f %>% check_arg("formula") %>% check_equal()
+  },{
+    f <- ex() %>% override_solution("lm(medv ~ old + chas + old:chas, data = Boston)") %>% check_function("lm")
+    f %>% check_arg("formula") %>% check_equal()
+  },{
+    f <- ex() %>% override_solution("lm(Boston$medv ~ Boston$chas + Boston$old + Boston$chas:Boston$old)") %>% check_function("lm")
+    f %>% check_arg("formula") %>% check_equal()
+  },{
+    f <- ex() %>% override_solution("lm(Boston$medv ~ Boston$old + Boston$chas + Boston$old:Boston$chas)") %>% check_function("lm")
+    f %>% check_arg("formula") %>% check_equal()
+  },{
+    f <- ex() %>% override_solution("attach(Boston);lm(medv ~ chas + old + chas:old)") %>% check_function("lm")
+    f %>% check_arg("formula") %>% check_equal()
+  },{
+    f <- ex() %>% override_solution("attach(Boston);lm(medv ~ old + chas + old:chas)") %>% check_function("lm")
+    f %>% check_arg("formula") %>% check_equal()
+  })
+  ex() %>% check_function("summary") %>% check_arg("object") %>% check_equal(eval = F)
+  success_msg("Correct! The estimated effect of moving from a suburb with a low proportion of old buildings to a one with a high proportion is -7.13 + 10.55 * chas. So depending on the passing of the Charles River through a suburb, the effect is positive or negative.")
+  </code>
+  
+</div>
+
+<!--/html_preserve-->
+
+**Hints:**
+
+  + Use the operator <tt>>=</tt> to create a logical vector and transform it to the numeric type via <tt>as.numeric()</tt>.
+
+  + Inside of <tt>lm()</tt> there are two ways to incorporate interaction terms using <tt>formula</tt> (see <tt>?formula</tt>):
+
+      1. <tt>Var1*Var2</tt> to add <tt>Var1</tt>, <tt>Var2</tt> and the corresponding interaction term at once.  
+      2. <tt>Var1:Var2</tt> to manually add the interaction term (which of course requires you to add the remaining terms manually as well)
+
+  + Use <tt>summary()</tt> to get a comprehensive overview of the results.
+  
+</div>') 
+}
+
+```
+
+```{r, echo=FALSE, results='asis'}
+if (my_output=="html") {
+  cat('
+<div  class = "DCexercise">
+
+#### 6. Interactions between Independent Variables II {-}
+
+Now consider the regression model
+
+$$medv_i=\\beta_0+\\beta_1\\times indus_i+\\beta_2\\times old_i+\\beta_3(indus_i\\times old_i)+u_i$$
+
+with $old_i$ defined as in the previous exercise and $indus_i$ being the proportion of non-retail business acres per suburb.
+
+The vector <tt>old</tt> from the previous exercise has been appended to the dataset. The package <tt>MASS</tt> has been loaded.
+      
+**Instructions:**
+        
+  + Conduct the regression from above and assign it to <tt>mod_bc</tt>.
+
+  + Extract the estimated coefficients of the model and assign them to <tt>params</tt>.
+
+  + Plot <tt>medv</tt> against <tt>indus</tt> and add the regression lines for both states of the binary variable $old$.
+
+<!--html_preserve-->
+
+<div data-datacamp-exercise data-lang="r">
+  
+  <code data-type="pre-exercise-code">
+  library(MASS)
+  Boston$old <- as.numeric(Boston$age >= 95)
+  </code>
+  
+  <code data-type="sample-code">
+  # conduct the regression and assign it to mod_bc.
+  
+  
+  # extract the estimated model coefficients and assign them to params.
+  
+  
+  # plot medv against indus and add the regression lines.
+  
+  
+  
+  
+  </code>
+   
+  <code data-type="solution">
+  # conduct the regression and assign it to mod_bc.
+  mod_bc <- lm(medv ~ indus*old, data = Boston)
+  
+  # extract the estimated model coefficients and assign them to params.
+  params <- coef(mod_bc)
+  
+  # plot medv against indus and add the regression lines.
+  plot(medv ~ indus, data = Boston)
+  abline(a = params[1], b = params[2], col = "red")
+  abline(a = params[1] + params[3], b = params[2] + params[4], col = "darkblue")
+  
+  </code>
+  
+  <code data-type="sct">
+  test_or({
+      test_object("mod_bc")
+    },{
+      f <- ex() %>% override_solution("lm(medv ~ old*indus, data = Boston)") %>% check_function("lm")
+      f %>% check_arg("formula") %>% check_equal()
+    },{
+      f <- ex() %>% override_solution("lm(Boston$medv ~ Boston$indus*Boston$old)") %>% check_function("lm")
+      f %>% check_arg("formula") %>% check_equal()
+    },{
+      f <- ex() %>% override_solution("lm(Boston$medv ~ Boston$old*Boston$indus)") %>% check_function("lm")
+      f %>% check_arg("formula") %>% check_equal()
+    },{
+      f <- ex() %>% override_solution("attach(Boston);lm(medv ~ indus*old)") %>% check_function("lm")
+      f %>% check_arg("formula") %>% check_equal()
+    },{
+      f <- ex() %>% override_solution("attach(Boston);lm(medv ~ old*indus)") %>% check_function("lm")
+      f %>% check_arg("formula") %>% check_equal()
+    },{
+      f <- ex() %>% override_solution("lm(medv ~ indus + old + indus:old, data = Boston)") %>% check_function("lm")
+      f %>% check_arg("formula") %>% check_equal()
+    },{
+      f <- ex() %>% override_solution("lm(medv ~ old + indus + old:indus, data = Boston)") %>% check_function("lm")
+      f %>% check_arg("formula") %>% check_equal()
+    },{
+      f <- ex() %>% override_solution("lm(Boston$medv ~ Boston$indus + Boston$old + Boston$indus:Boston$old)") %>% check_function("lm")
+      f %>% check_arg("formula") %>% check_equal()
+    },{
+      f <- ex() %>% override_solution("lm(Boston$medv ~ Boston$old + Boston$indus + Boston$old:Boston$indus)") %>% check_function("lm")
+      f %>% check_arg("formula") %>% check_equal()
+    },{
+      f <- ex() %>% override_solution("attach(Boston);lm(medv ~ indus + old + indus:old)") %>% check_function("lm")
+      f %>% check_arg("formula") %>% check_equal()
+    },{
+      f <- ex() %>% override_solution("attach(Boston);lm(medv ~ old + indus + old:indus)") %>% check_function("lm")
+      f %>% check_arg("formula") %>% check_equal()
+    })
+  ex() %>% check_object("params") %>% check_equal()
+  test_or({
+      ex() %>% check_function("plot") %>% {
+          check_arg(., "formula") %>% check_equal()
+          check_arg(., "data") %>% check_equal()
+    }},{
+      f <- ex() %>% override_solution("plot(Boston$indus, Boston$medv)") %>% check_function("plot")
+      f %>% {
+          check_arg(., "x") %>% check_equal()
+          check_arg(., "y") %>% check_equal()
+    }},{
+      f <- ex() %>% override_solution("plot(Boston$medv ~ Boston$indus)") %>% check_function("plot")
+      f %>% check_arg("formula") %>% check_equal()
+  })
+  test_or({
+      ex() %>% check_function("abline", index = 1) %>% {
+          check_arg(., "a") %>% check_equal()
+          check_arg(., "b") %>% check_equal()
+      }
+      ex() %>% check_function("abline", index = 2) %>% {
+          check_arg(., "a") %>% check_equal()
+          check_arg(., "b") %>% check_equal()
+      }},{
+      f <- ex() %>% override_solution("abline(a = params[1], b = params[2]);abline(coef = c(params[1] + params[3], params[2] + params[4]))")
+      f %>% check_function("abline", index = 1) %>% {
+          check_arg(., "a") %>% check_equal()
+          check_arg(., "b") %>% check_equal()
+      }
+      f %>% check_function("abline", index = 2) %>% check_arg("coef") %>% check_equal()
+      },{
+      f <- ex() %>% override_solution("abline(coef = c(params[1], params[2]));abline(coef = c(params[1] + params[3], params[2] + params[4]))")
+      f %>% check_function("abline", index = 1) %>% check_arg("coef") %>% check_equal()
+      f %>% check_function("abline", index = 2) %>% check_arg("coef") %>% check_equal()
+      },{
+      f <- ex() %>% override_solution("abline(coef = c(params[1], params[2]));abline(a = params[1] + params[3], b = params[2] + params[4])")
+      f %>% check_function("abline", index = 1) %>% check_arg("coef") %>% check_equal()
+      f %>% check_function("abline", index = 2) %>% {
+          check_arg(., "a") %>% check_equal()
+          check_arg(., "b") %>% check_equal()
+      }})
+  success_msg("Correct! We see that the decrease in the median house value due to the proportion of industrial buildings is absolutely smaller in suburbs with a high proportion of old buildings.")
+  </code>
+  
+</div>
+
+<!--/html_preserve-->
+
+**Hints:**
+
+  + You may use the structure of <tt>mod_bc</tt> or <tt>coef()</tt> to extract the estimated coefficients.
+
+  + Besides passing a <tt>lm()</tt> object to <tt>abline()</tt>, one may also manually specify intercept and slope using the arguments <tt>a</tt> and <tt>b</tt>, respectively.
+  
+</div>') 
+}
+```
