@@ -62,7 +62,7 @@ CASchools$size <- CASchools$students/CASchools$teachers
 CASchools$score <- (CASchools$read + CASchools$math)/2
 
 model <- lm(score ~ size + english, data = CASchools)
-coeftest(model, vcov. = vcovHC(model, type = "HC1"))
+coeftest(model, vcov. = vcovHC, type = "HC1")
 ```
 
 You may check that these quantities are computed as in the simple regression model by computing the $t$-statistics or $p$-values by hand using the output above and `r ttcode("R")` as a calculator.
@@ -71,7 +71,7 @@ For example, using the definition of the $p$-value for a two-sided test as given
 
 ```{r, warning=F, message=F}
 # compute two-sided p-value
-2 * (1 - pt(abs(coeftest(model, vcov. = vcovHC(model, type = "HC1"))[2, 3]),
+2 * (1 - pt(abs(coeftest(model, vcov. = vcovHC, type = "HC1")[2, 3]),
             df = model$df.residual))
 ```
 
@@ -164,7 +164,7 @@ CASchools$expenditure <- CASchools$expenditure/1000
 
 # estimate the model
 model <- lm(score ~ size + english + expenditure, data = CASchools)
-coeftest(model, vcov. = vcovHC(model, type = "HC1"))
+coeftest(model, vcov. = vcovHC, type = "HC1")
 ```
 
 The estimated effect of a one unit change in the student-teacher ratio on test scores with expenditure and the share of english learning pupils held constant is $-0.29$, which is rather small. What is more, the coefficient on $size$ is not significantly different from zero anymore even at $10\%$ since $p\text{-value}=0.55$. Can you come up with an interpretation for these findings (see Chapter 7.1 of the book)? The insignificance of $\hat\beta_1$ could be due to a larger standard error of $\hat{\beta}_1$ resulting from adding $expenditure$ to the model so that we estimate the coefficient on $size$ less precisely. This illustrates the issue of strongly correlated regressors (imperfect multicollinearity). The correlation between $size$ and $expenditure$ can be computed using `r ttcode("cor()")`.
@@ -321,7 +321,7 @@ CASchools$score <- (CASchools$read + CASchools$math)/2
 
 # estimate the model and print the summary to console
 model <- lm(score ~ size + english + lunch, data = CASchools)
-coeftest(model, vcov. = vcovHC(model, type = "HC1"))
+coeftest(model, vcov. = vcovHC, type = "HC1")
 ```
 
 Thus, the estimated regression line is
@@ -763,7 +763,7 @@ is available in your working environment. The packages <tt>AER</tt> and <tt>MASS
 </code>
 <code data-type="sct">
   test_function_result("coeftest")
-  test_or(test_output_contains("coeftest(mod, vcov. = vcovHC)[, 4] < 0.01", incorrect_msg = "Not correct! Please make sure you     select the correct entries of the matrix."), test_output_contains("coeftest(mod, vcov. = vcovHC)[, 4] > 0.01", incorrect_msg =   "Not correct! Please make sure you select the correct entries of the matrix."))
+  test_or(test_output_contains("coeftest(mod, vcov. = vcovHC)[, 4] < 0.01", incorrect_msg = "Not correct! Please make sure you select the correct entries of the matrix."), test_output_contains("coeftest(mod, vcov. = vcovHC)[, 4] > 0.01", incorrect_msg = "Not correct! Please make sure you select the correct entries of the matrix."))
   success_msg("Correct! We see that by using robust standard errors the coefficient for the crime rate (crim) becomes              significant, whereas the coefficient for the average age of the buildings (age) becomes insignificant at a 1% significance level.")
 </code>
 

@@ -1565,9 +1565,9 @@ The model object <tt>dummy_mod</tt> is available in your working environment.
   
   </code>
   <code data-type="solution">
-  coeftest(dummy_mod, vcov. = vcovHC(dummy_mod, type = "HC0"))
+  coeftest(dummy_mod, vcov. = vcovHC, type = "HC1")
   # or
-  linearHypothesis(dummy_mod, "genderfemale=0", vcov. = vcovHC(dummy_mod, type = "HC0"))
+  linearHypothesis(dummy_mod, "genderfemale=0", vcov. = vcovHC, type = "HC1")
   </code>
   <code data-type="sct">
   test_predefined_objects("dummy_mod")
@@ -1576,10 +1576,7 @@ The model object <tt>dummy_mod</tt> is available in your working environment.
   },{
     test_function("linearHypothesis", args = c("model", "vcov.", "hypothesis.matrix"))
   },{
-    f <- ex() %>% override_solution("linearHypothesis(dummy_mod, "genderfemale", vcov. = vcovHC(dummy_mod, type = "HC0"))") %>% check_function("linearHypothesis")
-    f %>% check_arg("model")
-    f %>% check_arg("vcov.")
-    f %>% check_arg("hypothesis.matrix")
+    test_function("linearHypothesis", args = c("model", "hypothesis.matrix", "type"))
   })
   success_msg("Right! The hypothesis that there is no wage gap is rejected at any common level.")
   </code>
@@ -1603,12 +1600,12 @@ In the simple regression model, the covariance matrix of the coefficient estimat
 \\begin{equation}
 \\text{Var}
   \\begin{pmatrix}
-    \\hat\beta_0 \\
-    \\hat\beta_1
+    \\hat\\beta_0 \\
+    \\hat\\beta_1
   \\end{pmatrix} = 
 \\begin{pmatrix}
   \\text{Var}(\\hat\\beta_0) & \\text{Cov}(\\hat\\beta_0,\\hat\\beta_1) \\\\
-\text{Cov}(\\hat\\beta_0,\\hat\\beta_1) & \\text{Var}(\\hat\beta_1)
+\\text{Cov}(\\hat\\beta_0,\\hat\\beta_1) & \\text{Var}(\\hat\\beta_1)
 \\end{pmatrix}
 \\end{equation}
 
@@ -1618,7 +1615,7 @@ The function <tt>vcovHC</tt> can be used to obtain estimates of this matrix for 
 
 **Instructions**
 
-+ Compute robust standard errors of the type <tt>HC0</tt> for the coefficients estimators in the model object <tt>gender_mod</tt>. Store the standard errors in a vector named <tt>rob_SEs</tt>.
++ Compute robust standard errors of the type <tt>HC1</tt> for the coefficients estimators in the model object <tt>gender_mod</tt>. Store the standard errors in a vector named <tt>rob_SEs</tt>.
 
 **Hint:**
 
@@ -1641,7 +1638,7 @@ The function <tt>vcovHC</tt> can be used to obtain estimates of this matrix for 
   
   </code>
   <code data-type="solution">
-  rob_SEs <- sqrt(diag(vcovHC(dummy_mod, type = "HC0")))
+  rob_SEs <- sqrt(diag(vcovHC(dummy_mod, type = "HC1")))
   </code>
   <code data-type="sct">
   test_predefined_objects("dummy_mod")
@@ -1671,7 +1668,7 @@ The function <tt>Rob_CI()</tt> is meant to compute and report heteroskedasticity
 
 **Instructions**
 
-+ Complete the code of <tt>Rob_CI()</tt> given in <tt>Script.R</tt> such that lower and upper bounds of $95\\%$ confidence intervals are returned. 
++ Complete the code of <tt>Rob_CI()</tt> given in <tt>Script.R</tt> such that lower and upper bounds of $95\\%$ robust confidence intervals are returned. Use standard errors of the type <tt>HC1</tt>.
 
 + Use the function to obtain $95\\%$ confidence intervals for the model coefficients in <tt>dummy_mod</tt>.
 
@@ -1699,7 +1696,7 @@ The function <tt>Rob_CI()</tt> is meant to compute and report heteroskedasticity
   </code>
   <code data-type="solution">
     Rob_CI <- function(model) {
-    SEs <- sqrt(diag(vcovHC(model, type = "HC0")))
+    SEs <- sqrt(diag(vcovHC(model, type = "HC1")))
     lower <- model$coef - 1.96 * SEs
     upper <- model$coef + 1.96 * SEs
     return(
@@ -1734,7 +1731,7 @@ Consider the data generating process
   e_i \\sim& \\, \\mathcal{N}(0, X_i),\\\\
   Yi =& \\, \\beta_1 X_i + e_i  
 \\end{align*}
-where $\\mathcal{U}[0,10]$ denotes the uniform distribution on the interval $[0,10]$ and $\\beta_1=2$.
+where $\\mathcal{U}[2,10]$ denotes the uniform distribution on the interval $[2,10]$ and $\\beta_1=2$.
 
 Notice that the errors $e_i$ are heteroskedastic since the variance is a linear function of $X_i$.
 

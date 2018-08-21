@@ -738,7 +738,7 @@ test_function("library", index = 2)
 test_function("data")
 
 test_or({
-  test_function("coeftest", args=c("x","vcov."))
+  test_function("coeftest", args=c("x", "vcov."))
 },{
   f <- ex() %>% override_solution("coeftest(bh_mod, vcov. = vcovHC)") %>% check_function("coeftest")
   f %>% check_arg("x") %>% check_equal()
@@ -749,6 +749,14 @@ test_or({
   f %>% check_arg("vcov.") %>% check_equal()
 },{
   f <- ex() %>% override_solution("coeftest(bh_mod, vcov. = vcovHC(bh_mod, type = "HC1"))") %>% check_function("coeftest")
+  f %>% check_arg("x") %>% check_equal()
+  f %>% check_arg("vcov.") %>% check_equal()
+},{
+  f <- ex() %>% override_solution("coeftest(bh_mod, vcov. = vcovHC, type = "HC0")") %>% check_function("coeftest")
+  f %>% check_arg("x") %>% check_equal()
+  f %>% check_arg("vcov.") %>% check_equal()
+},{
+  f <- ex() %>% override_solution("coeftest(bh_mod, vcov. = vcovHC, type = "HC1")") %>% check_function("coeftest")
   f %>% check_arg("x") %>% check_equal()
   f %>% check_arg("vcov.") %>% check_equal()
 })
@@ -763,7 +771,7 @@ test_or({
   f %>% check_arg("formula") %>% check_equal()
 })
 
-success_msg("Correct. Notice both model coefficients are highly significant.")
+success_msg("Correct. Notice that both coefficients are highly significant.")
 
 </code>
 
@@ -1002,7 +1010,7 @@ data(Boston)
 full_mod <- lm(medv ~., data = Boston)
 
  # obtain a robust summary of the coefficients
-coeftest(full_mod, vcov. = vcovHC(full_mod, type = "HC0"))
+coeftest(full_mod, vcov. = vcovHC, type = "HC1")
 
  # What is the R^2 of the model?
 summary(full_mod)$adj.r.squared
