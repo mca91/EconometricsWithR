@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+      <head>
+	      <meta charset='utf-8'/>
+	      <link rel='stylesheet' href='exercise.css'/>
+        <script async src='https://cdn.datacamp.com/dcl-react-dev.js.gz'></script>
+      </head>
+      <body>
+      <div data-datacamp-exercise data-lang='r' data-height =320><code data-type="sample-code">
+ # attach both packages and load the data set
+
+
+ # obtain an overview over the data set
+
+
+ # estimate the simple regression model
+
+
+ # print the summary to the console
+
+
+</code>
+<code data-type="solution">
+# attach both packages and load the data set
+library(AER)
+library(MASS)
+data("Boston")
+# obtain an overview over the data set
+summary(Boston)
+# or
+str(Boston)
+# or
+head(Boston)
+# estimate the simple regression model
+bh_mod <- lm(medv ~ lstat, data = Boston)
+# print the summary to the console
+coeftest(bh_mod, vcov. = vcovHC)
+</code>
+<code data-type="sct">
+test_function("library", index = 1)
+test_function("library", index = 2)
+test_function("data")
+
+test_or({
+test_function("head")
+},{
+test_function("summary")
+},{
+test_function("str")
+})
+
+test_function("coeftest", args=c("x", "vcov."), eval = F)
+
+test_or({
+  test_object("bh_mod")
+},{
+  f <- ex() %>% override_solution("lm(Boston$medv ~ Boston$lstat)") %>% check_function("lm")
+  f %>% check_arg("formula") %>% check_equal()
+},{
+  f <- ex() %>% override_solution("attach(Boston);lm(medv ~ lstat)") %>% check_function("lm")
+  f %>% check_arg("formula") %>% check_equal()
+})
+
+success_msg("Correct. Notice that both coefficients are highly significant.")
+
+</code></div>
+      </body>
+      </html>

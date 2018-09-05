@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+      <head>
+	      <meta charset='utf-8'/>
+	      <link rel='stylesheet' href='exercise.css'/>
+        <script async src='https://cdn.datacamp.com/dcl-react-dev.js.gz'></script>
+      </head>
+      <body>
+      <div data-datacamp-exercise data-lang='r' data-height =320><code data-type="pre-exercise-code">
+  library(AER)
+  library(MASS)
+</code>
+<code data-type="sample-code">
+# estimate the restricted model and save it in `model_res`
+  
+  
+# compute the SSR of the restricted model and assign it to `RSSR`
+  
+  
+# estimate the unrestricted model and save it in `model_unres`
+  
+  
+# compute the SSR of the unrestricted model and assign it to `USSR`
+  
+  
+</code>
+<code data-type="solution">
+# estimate the restricted model and save it in `model_res`
+model_res <- lm(medv ~ lstat + I(crim + age), data = Boston)
+  
+# compute the SSR of the restricted model and assign it to `RSSR`
+RSSR <- sum(model_res$residuals^2)
+  
+# estimate the unrestricted model and save it in `model_unres`
+model_unres <- lm(medv ~ lstat + crim + age, data = Boston)
+  
+# compute the SSR of the unrestricted model and assign it to `USSR`
+USSR <- sum(model_unres$residuals^2)
+  
+</code>
+<code data-type="sct">
+  test_or({
+  test_function("lm", 
+               args = c("formula", "data"),
+               not_called_msg = "Something is wrong.",
+               args_not_specified_msg = "Something is wrong.")
+  },{
+  sol <- ex() %>% override_solution("model_res <- lm(medv ~ lstat + I(crim + age), data = Boston)")
+  sol %>% check_function("lm") %>% check_arg("formula") %>% check_equal()
+  },{
+  sol <- ex() %>% override_solution("model_res <- lm(Boston$medv ~ Boston$lstat + I(Boston$crim + Boston$age))")
+  sol %>% check_function("lm") %>% check_arg("formula") %>% check_equal()})
+  test_object("model_res", eval = F)
+  test_object("RSSR")
+  test_or({
+  test_function("lm", 
+               args = c("formula", "data"),
+               not_called_msg = "Something is wrong.",
+               args_not_specified_msg = "Something is wrong.")
+  },{
+  sol <- ex() %>% override_solution("model_unres <- lm(medv ~ lstat + crim + age, data = Boston)")
+  sol %>% check_function("lm") %>% check_arg("formula") %>% check_equal()
+  },{
+  sol <- ex() %>% override_solution("model_unres <- lm(Boston$medv ~ Boston$lstat + Boston$crim + Boston$age)")
+  sol %>% check_function("lm") %>% check_arg("formula") %>% check_equal()
+  })
+  test_object("model_unres", eval = F)
+  test_object("USSR")
+  success_msg("Correct! Note that the SSR of the restricted model is always greater or equal than the SSR of the unrestricted model.")
+</code>
+
+</div></div>
+      </body>
+      </html>

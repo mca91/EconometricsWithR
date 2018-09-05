@@ -27,8 +27,43 @@ ttcode <- function(x, type = "tt") {
 
 # function to add html title and tag below stargazer table
 stargazer_html_title <- function(title, tag) {
-  cat(paste("<caption><p style='text-align:center'>(#tab:",tag,")", " ", title, "</p></caption>", sep = ""))
-} 
+  cat(paste("<caption><p style='text-align:center'>(#tab:", tag, ")", " ", title, "</p></caption>", sep = ""))
+}
+
+# function that generates a html file from dc exercise code and includes an iframe
+write_html <- function(html_body = NULL, label = NULL, write = T, ex = T, height = 320, playground = F) {
+  
+  #out_type <- knitr::opts_knit$get("rmarkdown.pandoc.to")
+  
+  if (playground) {
+    cat(paste("<iframe src='DCL/playground.html' frameborder='0' scrolling='no' style='width:100%;height:", height+20, "px'></iframe>", sep = ""))
+  } 
+  else if (write) {
+    code <- paste(
+      "<!DOCTYPE html>
+      <head>
+	      <meta charset='utf-8'/>
+	      <link rel='stylesheet' href='exercise.css'/>
+        <script async src='https://cdn.datacamp.com/dcl-react-dev.js.gz'></script>
+      </head>
+      <body>
+      <div data-datacamp-exercise data-lang='r' data-height =", height, ">",
+      html_body,
+      "</div>
+      </body>
+      </html>", sep = "")
+    if (ex == T) {
+      writeLines(code, sep = "\n", paste("DCL/ex", label, ".html", sep = ""))
+      cat(paste("<iframe src='DCL/ex", label, ".html' frameborder='0' scrolling='no' style='width:100%;height:", height+20, "px'></iframe>", sep = ""))
+    }
+    if (ex == F) {
+      writeLines(code, sep = "\n", paste("DCL/", label, ".html", sep = ""))
+      cat(paste("<iframe src='DCL/", label, ".html' frameborder='0' scrolling='no' style='width:100%;height:", height+20, "px'></iframe>", sep = ""))
+    }
+  } else {
+    cat(paste("<iframe src='DCL/ex", label, ".html' frameborder='0' scrolling='no' style='width:100%;height:", height+20, "px'></iframe>", sep = ""))
+  }
+  }
 ```
 
 

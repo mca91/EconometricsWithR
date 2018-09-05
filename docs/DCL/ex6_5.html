@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+      <head>
+	      <meta charset='utf-8'/>
+	      <link rel='stylesheet' href='exercise.css'/>
+        <script async src='https://cdn.datacamp.com/dcl-react-dev.js.gz'></script>
+      </head>
+      <body>
+      <div data-datacamp-exercise data-lang='r' data-height =320><code data-type="pre-exercise-code">
+library(AER)
+library(MASS)
+data(Boston)
+full_mod <- lm(medv ~., data = Boston)
+</code>
+<code data-type="sample-code">
+# find the model which fits the data better than full_mod
+
+
+
+
+
+</code>
+<code data-type="solution">
+# this solution is a bit technical but efficient
+
+# loop estimation of models
+l <- list()
+for (i in 1:13) {
+  d <- Boston[, -i]
+  # save each adj. R^2 as a list entry in l
+  l[[i]] <- summary(lm(medv ~., data=d))$adj.r.squared 
+}
+
+# assign variable names to the list entries
+names(l) <- names(Boston[, 1:13]) 
+
+# select the variable whose omission leads to the highest improvement in adj. R^2
+which.max(l) # 7th column this is "age"
+
+# hence a model that fits the data better is
+better_model <- lm(medv ~., data = Boston[, -7])
+</code>
+<code data-type="sct">
+test_object("better_model")
+success_msg("Correct. Notice that this model fits the data better than the full model and does better than all other models which include 12 of the available set of 13 regressors, in terms of adj. R^2. Note, however, that the increase in adj. R^2 is very small and that the model is not the best of all conceivable models.")
+</code></div>
+      </body>
+      </html>
