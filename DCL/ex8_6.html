@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+      <head>
+	      <meta charset='utf-8'/>
+	      <link rel='stylesheet' href='exercise.css'/>
+        <script async src='https://cdn.datacamp.com/dcl-react-dev.js.gz'></script>
+      </head>
+      <body>
+      <div data-datacamp-exercise data-lang='r' data-height =320><code data-type="pre-exercise-code">
+  library(MASS)
+  Boston$old <- as.numeric(Boston$age >= 95)
+  </code>
+  
+  <code data-type="sample-code">
+  # conduct the regression and assign it to mod_bc.
+  
+  
+  # extract the estimated model coefficients and assign them to params.
+  
+  
+  # plot medv against indus and add the regression lines.
+  
+  
+  
+  
+  </code>
+   
+  <code data-type="solution">
+  # conduct the regression and assign it to mod_bc.
+  mod_bc <- lm(medv ~ indus*old, data = Boston)
+  
+  # extract the estimated model coefficients and assign them to params.
+  params <- coef(mod_bc)
+  
+  # plot medv against indus and add the regression lines.
+  plot(medv ~ indus, data = Boston)
+  abline(a = params[1], b = params[2], col = "red")
+  abline(a = params[1] + params[3], b = params[2] + params[4], col = "darkblue")
+  
+  </code>
+  
+  <code data-type="sct">
+  test_or({
+      test_object("mod_bc")
+    },{
+      f <- ex() %>% override_solution("lm(medv ~ old*indus, data = Boston)") %>% check_function("lm")
+      f %>% check_arg("formula") %>% check_equal()
+    },{
+      f <- ex() %>% override_solution("lm(Boston$medv ~ Boston$indus*Boston$old)") %>% check_function("lm")
+      f %>% check_arg("formula") %>% check_equal()
+    },{
+      f <- ex() %>% override_solution("lm(Boston$medv ~ Boston$old*Boston$indus)") %>% check_function("lm")
+      f %>% check_arg("formula") %>% check_equal()
+    },{
+      f <- ex() %>% override_solution("attach(Boston);lm(medv ~ indus*old)") %>% check_function("lm")
+      f %>% check_arg("formula") %>% check_equal()
+    },{
+      f <- ex() %>% override_solution("attach(Boston);lm(medv ~ old*indus)") %>% check_function("lm")
+      f %>% check_arg("formula") %>% check_equal()
+    },{
+      f <- ex() %>% override_solution("lm(medv ~ indus + old + indus:old, data = Boston)") %>% check_function("lm")
+      f %>% check_arg("formula") %>% check_equal()
+    },{
+      f <- ex() %>% override_solution("lm(medv ~ old + indus + old:indus, data = Boston)") %>% check_function("lm")
+      f %>% check_arg("formula") %>% check_equal()
+    },{
+      f <- ex() %>% override_solution("lm(Boston$medv ~ Boston$indus + Boston$old + Boston$indus:Boston$old)") %>% check_function("lm")
+      f %>% check_arg("formula") %>% check_equal()
+    },{
+      f <- ex() %>% override_solution("lm(Boston$medv ~ Boston$old + Boston$indus + Boston$old:Boston$indus)") %>% check_function("lm")
+      f %>% check_arg("formula") %>% check_equal()
+    },{
+      f <- ex() %>% override_solution("attach(Boston);lm(medv ~ indus + old + indus:old)") %>% check_function("lm")
+      f %>% check_arg("formula") %>% check_equal()
+    },{
+      f <- ex() %>% override_solution("attach(Boston);lm(medv ~ old + indus + old:indus)") %>% check_function("lm")
+      f %>% check_arg("formula") %>% check_equal()
+    })
+  ex() %>% check_object("params") %>% check_equal()
+  test_or({
+      ex() %>% check_function("plot") %>% {
+          check_arg(., "formula") %>% check_equal()
+          check_arg(., "data") %>% check_equal()
+    }},{
+      f <- ex() %>% override_solution("plot(Boston$indus, Boston$medv)") %>% check_function("plot")
+      f %>% {
+          check_arg(., "x") %>% check_equal()
+          check_arg(., "y") %>% check_equal()
+    }},{
+      f <- ex() %>% override_solution("plot(Boston$medv ~ Boston$indus)") %>% check_function("plot")
+      f %>% check_arg("formula") %>% check_equal()
+  })
+  test_or({
+      ex() %>% check_function("abline", index = 1) %>% {
+          check_arg(., "a") %>% check_equal()
+          check_arg(., "b") %>% check_equal()
+      }
+      ex() %>% check_function("abline", index = 2) %>% {
+          check_arg(., "a") %>% check_equal()
+          check_arg(., "b") %>% check_equal()
+      }},{
+      f <- ex() %>% override_solution("abline(a = params[1], b = params[2]);abline(coef = c(params[1] + params[3], params[2] + params[4]))")
+      f %>% check_function("abline", index = 1) %>% {
+          check_arg(., "a") %>% check_equal()
+          check_arg(., "b") %>% check_equal()
+      }
+      f %>% check_function("abline", index = 2) %>% check_arg("coef") %>% check_equal()
+      },{
+      f <- ex() %>% override_solution("abline(coef = c(params[1], params[2]));abline(coef = c(params[1] + params[3], params[2] + params[4]))")
+      f %>% check_function("abline", index = 1) %>% check_arg("coef") %>% check_equal()
+      f %>% check_function("abline", index = 2) %>% check_arg("coef") %>% check_equal()
+      },{
+      f <- ex() %>% override_solution("abline(coef = c(params[1], params[2]));abline(a = params[1] + params[3], b = params[2] + params[4])")
+      f %>% check_function("abline", index = 1) %>% check_arg("coef") %>% check_equal()
+      f %>% check_function("abline", index = 2) %>% {
+          check_arg(., "a") %>% check_equal()
+          check_arg(., "b") %>% check_equal()
+      }})
+  success_msg("Correct! We see that the decrease in the median house value due an increase in the proportion of industrial buildings is, in absolute terms, smaller in suburbs where theproportion of old buildings is high.")
+  </code></div>
+      </body>
+      </html>

@@ -476,7 +476,7 @@ summary(dummy_model)
 </div>
 
 ```{block2, precision, type='rmdnote'}
-<tt>summary()</tt> reports the $p$-value of the test that the coefficient on <tt>(Intercept)</tt> is zero to to be <tt>< 2e-16</tt>. This scientific notation states that the $p$-value is samller than $\frac{2}{10^{16}}$, so a very small number. The reason for this is that computers cannot handle arbitrary small numbers. In fact, $\frac{2}{10^{16}}$ is the smallest possble number <tt>R</tt> can work with.
+<tt>summary()</tt> reports the $p$-value of the test that the coefficient on <tt>(Intercept)</tt> is zero to to be <tt>< 2e-16</tt>. This scientific notation states that the $p$-value is smaller than $\frac{2}{10^{16}}$, so a very small number. The reason for this is that computers cannot handle arbitrary small numbers. In fact, $\frac{2}{10^{16}}$ is the smallest possble number <tt>R</tt> can work with.
 ```
 
 The vector `r ttcode("CASchools\\$D")` has the type `r ttcode("logical")` (to see this, use `r ttcode("typeof(CASchools$D)")`) which is shown in the output of `r ttcode("summary(dummy_model)")`: the label `r ttcode("DTRUE")` states that all entries `r ttcode("TRUE")` are coded as `r ttcode("1")` and all entries `r ttcode("FALSE")` are coded as `r ttcode("0")`. Thus, the interpretation of the coefficient `r ttcode("DTRUE")` is as stated above for $\beta_1$.  
@@ -1026,9 +1026,9 @@ if (my_output=="html") {
   cat('
 <div  class = "DCexercise">
 
-#### 1. Testing Two Null Hypotheses Individually {-}
+#### 1. Testing Two Null Hypotheses Separately {-}
 
-Consider the estimated regression line
+Consider the estimated regression model
 
 $$ \\widehat{TestScore} = \\underset{(23.96)}{567.43} - \\underset{(0.85)}{7.15} \\times STR, \\, R^2 = 0.8976, \\, SER=15.19 $$
 
@@ -1036,37 +1036,14 @@ with standard errors in parentheses.
 
 **Instructions:**
 
-+ Compute the $p$-value for a $t$-test of the hypothesis that the intercept is zero. Save the result to <tt>p_int</tt>
-+ Compute the $p$-value for a $t$-test of the hypothesis that the coefficient of <tt>STR</tt> is zero. Save the result to <tt>p_STR</tt>
++ Compute the $p$-value for a $t$-test of the hypothesis that the intercept is zero against the two-sided alternative that it is non-zero. Save the result to <tt>p_int</tt>
++ Compute the $p$-value for a $t$-test of the hypothesis that the coefficient of <tt>STR</tt> is zero against the two-sided alternative that it is non-zero. Save the result to <tt>p_STR</tt>
 
-**Hint:** both hypotheses can be tested individually using a two-sided test. Use <tt>pnorm()</tt> to obtain cumulated probabilities for standard normally distributed outcomes, see <tt>?pnorm</tt>
+<iframe src="DCL/ex5_1.html" frameborder="0" scrolling="no" style="width:100%;height:340px"></iframe>
 
-<!--html_preserve-->
+**Hint:** 
 
-<div data-datacamp-exercise data-lang="r">
-
-  <code data-type="sample-code">
-  # Compute the p-value for the first significance test and save it to p_int
-
-
-  # Compute the p-value for the second significance test and save it to p_cs
-  
-  
-  </code>
-  <code data-type="solution">
-  t_int <- 567.43/23.9606
-  p_int <- 2*(1-pnorm(abs(t_int)))
-  t_STR <- 7.15/0.8536
-  p_STR <- 2*(1-pnorm(abs(t_STR)))
-  </code>
-  <code data-type="sct">
-  test_object("p_int")
-  test_object("p_STR")
-  </code>
-  
-</div>
-
-<!--/html_preserve-->
+Both hypotheses can be tested individually using a two-sided test. Use <tt>pnorm()</tt> to obtain cumulated probabilities for standard normally distributed outcomes.
 
 </div>')
 } else {
@@ -1081,56 +1058,24 @@ if (my_output=="html") {
 
 #### 2. Two Null Hypotheses You Cannot Reject, Can You? {-}
 
+Consider again the estimated regression model
+
 $$\\widehat{TestScore} = \\underset{(23.96)}{567.43} - \\underset{(0.85)}{7.15} \\times STR, \\, R^2 = 0.8976, \\,SER=15.19$$
 
 Can you reject the null hypotheses discussed in the previous code exercise using individual $t$-tests at the $5\\%$ significance level?
 
 The variables <tt>t_int</tt> and <tt>t_STR</tt> are the $t$-statistics. Both are available in your working environment.
 
-**Instructions**
+**Instructions:**
 
 + Gather <tt>t_int</tt> and <tt>t_STR</tt> in a vector <tt>test</tt> and use logical operators to check whether the corresponding rejection rule applies.
+
+<iframe src="DCL/ex5_2.html" frameborder="0" scrolling="no" style="width:100%;height:340px"></iframe>
 
 **Hints:**
 
 + Both tests are two-sided $t$-tests. Key Concept 5.2 recaps how a two-sided $t$-test is conducted. 
-+ Use <tt>qnorm()</tt> to obtain normal critical values.
-
-<!--html_preserve-->
-
-<div data-datacamp-exercise data-lang="r">
-
-  <code data-type="pre-exercise-code">
-  t_int <- 567.43/23.9606
-  t_STR <- 7.15/0.8536
-  </code>
-  <code data-type="sample-code">
-  # check whether the t-tests reject
-  
-  
-  </code>
-  <code data-type="solution">
-  test <- c(t_int, t_STR)
-  # entry is `TRUE` if a test rejects
-  abs(test) >= qnorm(0.95)
-  </code>
-
-  <code data-type="sct">
-  test_or({
-    test <- c(t_int,t_STR)
-  },{
-    test <- c(t_STR, t_int)
-  })
-  test_or({
-    test_student_typed("abs(test) >= qnorm(0.95)")
-  },{
-    test_student_typed("abs(test) <= qnorm(0.95)")
-  })
-  </code>
-  
-</div>
-
-<!--/html_preserve-->
++ Use <tt>qnorm()</tt> to obtain standard normal critical values.
 
 </div>')}
 ```
@@ -1142,41 +1087,17 @@ if (my_output=="html") {
 
 #### 3. Confidence Intervals {-}
 
-<tt>mod</tt>, an object of class <tt>lm</tt> which contains the estimated model $$\\widehat{TestScore} = \\underset{(23.96)}{567.43} - \\underset{(0.85)}{7.15} \\times STR, \\, R^2 = 0.8976, \\,SER=15.19$$ is available in your working environment.
+<tt>mod</tt>, the object of class <tt>lm</tt> which contains the estimated regression model $$\\widehat{TestScore} = \\underset{(23.96)}{567.43} - \\underset{(0.85)}{7.15} \\times STR, \\, R^2 = 0.8976, \\,SER=15.19$$ is available in your working environment.
 
-**Instructions**
+**Instructions:**
 
-+ Compute $90\\%$ confidence intervals for both coefficients. 
+Compute $90\\%$ confidence intervals for both coefficients. 
 
-**Hints:**
+<iframe src="DCL/ex5_3.html" frameborder="0" scrolling="no" style="width:100%;height:340px"></iframe>
+
+**Hint:**
 
 Use the function <tt>confint()</tt>, see <tt>?confint</tt>. The argument <tt>level</tt> sets the confidence level to be used.
-
-<!--html_preserve-->
-
-<div data-datacamp-exercise data-lang="r">
-
-  <code data-type="pre-exercise-code">
-    STR <- c(23, 19, 30, 22, 23, 29, 35, 36, 33, 25)
-    TS <- c(430, 430, 333, 410, 390, 377, 325, 310, 328, 375)
-    mod <- lm(TS ~ STR)
-  </code>
-  <code data-type="sample-code">
-  # compute 90% confidence intervals for the model coefficients
-  
-  
-  </code>
-  <code data-type="solution">
-  confint(mod, level = 0.9)
-  </code>
-
-  <code data-type="sct">
-  test_function("confint", args = c("object","level"))
-  </code>
-  
-</div>
-
-<!--/html_preserve-->
 
 </div>')}
 ```
@@ -1188,59 +1109,21 @@ if (my_output=="html") {
 
 #### 4. A Confidence Interval for the Mean I {-}
 
-Consider the model $$Y_i = \\beta_1 + u_i$$ where $Y_i \\sim \\mathcal{N}(\\mu, \\sigma^2)$. Following the discussion preceding equation \\@ref(eq:KI), a $95\\%$ confidence interval for the mean of the $Y_i$ can be computed as
+Consider the regression model $$Y_i = \\beta_1 + u_i$$ where $Y_i \\sim \\mathcal{N}(\\mu, \\sigma^2)$. Following the discussion preceding equation \\@ref(eq:KI), a $95\\%$ confidence interval for the mean of the $Y_i$ can be computed as
 
-$$KI^{\\mu}_{0.95} = \\left[\\hat\\mu - 1.96 \\times \\frac{\\sigma}{\\sqrt{n}} \\, \\ \\hat\\mu + 1.96 \\times \\frac{\\sigma}{\\sqrt{n}} \\right].$$
+$$CI^{\\mu}_{0.95} = \\left[\\hat\\mu - 1.96 \\times \\frac{\\sigma}{\\sqrt{n}}; \\, \\hat\\mu + 1.96 \\times \\frac{\\sigma}{\\sqrt{n}} \\right].$$
 
-**Instructions**
+**Instructions:**
 
 + Sample $n=100$ observations from a normal distribution with variance $100$ and mean $10$.
 + Use the sample to estimate $\\beta_1$. Save the estimate in <tt>mu_hat</tt>.
-+ Assume that $\\sigma^2 = 100$ is known. Replace the zeros in the code below to obtain a $95\\%$ confidence interval for the mean of the $Y_i$.
++ Assume that $\\sigma^2 = 100$ is known. Replace the <tt>NA</tt>s in the code below to obtain a $95\\%$ confidence interval for the mean of the $Y_i$.
 
-**Hints:**
+<iframe src="DCL/ex5_4.html" frameborder="0" scrolling="no" style="width:100%;height:340px"></iframe>
 
-Use the function <tt>confint()</tt>, see <tt>?confint</tt>. The argument <tt>level</tt> sets the confidence level to be used.
+**Hint:**
 
-<!--html_preserve-->
-
-<div data-datacamp-exercise data-lang="r">
-
-  <code data-type="sample-code">
-  # set seed for reproducibility
-  set.seed(1)
-  
-  
-  # sample the observations
-  
-  
-  # estimate the mean, assign the estimate to `mu_hat`
-  
-  
-  # compute the 95% confidence interval using the formula above
-  CI <- c(
-    "lower" = 0,
-    "upper" = 0
-  )
-  
-  </code>
-  <code data-type="solution">
-  set.seed(1)
-  mu_hat <- mean(rnorm(100, mean = 10, sd = 10))
-  CI <- c(
-   "lower" = mu_hat - 1.96,
-   "upper" = mu_hat + 1.96
-  )
-  </code>
-  test_object("CI")
-  <code data-type="sct">
-  test_object("mu_hat")
-  test_object("CI")
-  </code>
-  
-</div>
-
-<!--/html_preserve-->
+Use the function <tt>confint()</tt>, see <tt>?confint</tt>. The argument <tt>level</tt> sets the confidence level.
 
 </div>')}
 ```
@@ -1252,45 +1135,19 @@ if (my_output=="html") {
 
 #### 5. A Confidence Interval for the Mean II {-}
 
-For historical reasons, some <tt>R</tt> functions that we use to obtain statistical inference on model parameters, among them <tt>confint()</tt> and <tt>summary()</tt>, rely on the $t$-distribution instead of using the large-sample normal approximation. This is why for small sample sizes (and hence small degrees of freedom), $p$-values and confidence intervals reported by these functions deviate from those computed using critical values or cumulative probabilities of the standard normal distribution.
+For historical reasons, some <tt>R</tt> functions which we use to obtain inference on model parameters, among them <tt>confint()</tt> and <tt>summary()</tt>, rely on the $t$-distribution instead of using the large-sample normal approximation. This is why for small sample sizes (and hence small degrees of freedom), $p$-values and confidence intervals reported by these functions deviate from those computed using critical values or cumulative probabilities of the standard normal distribution.
 
-The $95\\%$ confidence interval for the mean in the previous exercise is $[9.128874, 13.048874]$.
+The $95\\%$ confidence interval for the mean in the previous exercise is $[9.13, 13.05]$.
+
+**Instructions:**
 
 100 observations sampled from a normal distribution with $\\mu=10$ and $\\sigma^2=100$ have been assigned to the vector <tt>s</tt> which is available in your environment.
 
-**Instructions**
-
-+ Set up a suitable regression model to estimate the mean of the observations in <tt>s</tt>. Then use <tt>confint()</tt> to compute a $95\\%$ confidence interval for the mean.
+Set up a suitable regression model to estimate the mean of the observations in <tt>s</tt>. Then use <tt>confint()</tt> to compute a $95\\%$ confidence interval for the mean.
 
 (Check that the result is different from the interval reported above.)
 
-<!--html_preserve-->
-
-<div data-datacamp-exercise data-lang="r">
-
-  <code data-type="pre-exercise-code">
-  set.seed(1); s <- rnorm(100, mean = 10, sd = 10)
-  </code>
-  <code data-type="sample-code">
-  # use a regression to obtain an estimate of the mean
-  
-  
-  # compute the 95% CI
-  
-  
-  </code>
-  <code data-type="solution">
-  set.seed(1)
-  confint(lm(s ~ 1))
-  </code>
-  <code data-type="sct">
-  test_predefined_objects("s")
-  test_output_contains("confint(lm(s ~ 1))")
-  </code>
-  
-</div>
-
-<!--/html_preserve-->
+<iframe src="DCL/ex5_5.html" frameborder="0" scrolling="no" style="width:100%;height:340px"></iframe>
 
 </div>')}
 ```
@@ -1300,47 +1157,19 @@ if (my_output=="html") {
   cat('
 <div  class = "DCexercise">
 
-#### 6. Regression on a Dummy I {-}
+#### 6. Regression on a Dummy Variable I {-}
 
-Chapter \\@ref(rwxiabv) discusses regression when $X$ is a dummy variables where we have used a <tt>for()</tt> loop to generate a binary variable indicating whether a schooling district in the <tt>CASchools</tt> data set has a student-teacher ratio below $20$. Though it is instructive to use a loop for this, there are ways to achieve the same with less code.
+Chapter \\@ref(rwxiabv) discusses regression when $X$ is a dummy variable. We have used a <tt>for()</tt> loop to generate a binary variable indicating whether a schooling district in the <tt>CASchools</tt> data set has a student-teacher ratio below $20$. Though it is instructive to use a loop for this, there are alternate ways to achieve the same with fewer lines of code.
 
 A <tt>data.frame</tt> <tt>DF</tt> with $100$ observations of a variable <tt>X</tt> is available in your working environment.
 
-**Instructions**
+**Instructions:**
 
-+ Use <tt>ifelse()</tt> to generate a binary vector <tt>dummy</tt> indicating whether the observations in <tt>X</tt> are positive.
++ Use <tt>ifelse()</tt> to generate a binary vector <tt>dummy</tt> indicating whether the observations in <tt>X</tt> are *positive*.
 
 + Append <tt>dummy</tt> to the <tt>data.frame</tt> <tt>DF</tt>.
 
-<!--html_preserve-->
-
-<div data-datacamp-exercise data-lang="r">
-
-  <code data-type="pre-exercise-code">
-  set.seed(1)
-  DF <- <tt>data.frame</tt>("X" = rnorm(100))
-  </code>
-  <code data-type="sample-code">
-  # generate the dummy vector `dummy` using `ifelse()`
-  
-  
-  # append `dummy` to `DF`
-  
-  
-  </code>
-  <code data-type="solution">
-  dummy <- ifelse(DF$X > 0, 1, 0)
-  DF$dummy <- dummy
-  </code>
-  <code data-type="sct">
-  test_object("dummy")
-  test_function("ifelse")
-  test_object("DF")
-  </code>
-  
-</div>
-
-<!--/html_preserve-->
+<iframe src="DCL/ex5_6.html" frameborder="0" scrolling="no" style="width:100%;height:340px"></iframe>
 
 </div>')}
 ```
@@ -1350,115 +1179,41 @@ if (my_output=="html") {
   cat('
 <div  class = "DCexercise">
 
-#### 7. Regression on a Dummy II {-}
+#### 7. Regression on a Dummy Variable II {-}
 
-A <tt>data.frame</tt> <tt>DF</tt> with 100 observations on <tt>Y</tt> and the binary variable <tt>D</tt> from the previous exercise are available in your working environment.
+A <tt>data.frame</tt> <tt>DF</tt> with 100 observations on <tt>Y</tt> and the binary variable <tt>D</tt> from the previous exercise is available in your working environment.
 
-**Instructions**
+**Instructions:**
 
-+ Compute the group-specific sample means of the observations in <tt>Y</tt>. Save the mean of observations in <tt>Y</tt> where <tt>dummy == 1</tt> to <tt>mu_Y_D1</tt> and assign the mean of those observations with <tt>D == 0</tt> to <tt>mu_Y_D0</tt>. 
++ Compute the group-specific sample means of the observations in <tt>Y</tt>: save the mean of observations in <tt>Y</tt> where <tt>dummy == 1</tt> to <tt>mu_Y_D1</tt> and assign the mean of those observations with <tt>D == 0</tt> to <tt>mu_Y_D0</tt>. 
 
-+ Use <tt>lm()</tt> to regress <tt>Y</tt> on <tt>D</tt>, i.e., estimate the coefficients in the model $$\\widehat{Y}_i = \\beta_0 + \\beta_1 \\times D_i + u_i.$$
++ Use <tt>lm()</tt> to regress <tt>Y</tt> on <tt>D</tt>, i.e., estimate the coefficients in the model $$Y_i = \\beta_0 + \\beta_1 \\times D_i + u_i.$$
 
-Check that the estimates of the coefficients $\\beta_0$ and $\\beta_1$ reflect specific sample means. Can you tell which?
+Also check that the estimates of the coefficients $\\beta_0$ and $\\beta_1$ reflect specific sample means. Can you tell which (no code submission needed)?
 
-<!--html_preserve-->
+<iframe src="DCL/ex5_7.html" frameborder="0" scrolling="no" style="width:100%;height:340px"></iframe>
 
-<div data-datacamp-exercise data-lang="r">
+</div>')}
+```
 
-  <code data-type="pre-exercise-code">
-  set.seed(1)
-  DF <- <tt>data.frame</tt>("Y" = rnorm(100))
-  DF$D <- ifelse(DF$Y > 0, 1, 0)
-  </code>
-  <code data-type="sample-code">
-  # compute group-specific sample means of `Y`
-  
-  
-  # Regress `Y` on `D`
-  
-  
-  </code>
-  <code data-type="solution">
-   mu_Y_D1 <- mean(DF$Y[DF$D ==1])
-   mu_Y_D0 <- mean(DF$Y[DF$D ==0])
-   lm(Y ~ dummy, data = DF)
-  </code>
-  <code data-type="sct">
-  test_object("mu_Y_D1")
-  test_object("mu_Y_D1")
-  test_or(
-  {
-  test_function("lm", args = "formula")
-  },{
-  ex() %>% override_solution("lm(DF$Y ~ DF$dummy)") %>% check_function("lm") %>% check_arg("formula")
-  }
-  )
-  </code>
-  
-</div>
-
-<!--/html_preserve-->
-
-</div>
-
+```{r, echo=FALSE, results='asis'}
+if (my_output=="html") {
+  cat('
 <div  class = "DCexercise">
 
-#### 8. Regression on a Dummy III {-}
+#### 8. Regression on a Dummy Variable III {-}
 
 In this exercise, you have to visualize some of the results from the dummy regression model $$\\widehat{Y}_i = -0.66 + 1.43 \\times D_i$$ estimated in the previous exercise.
 
 A <tt>data.frame</tt> <tt>DF</tt> with 100 observations on <tt>X</tt> and the binary variable <tt>dummy</tt> as well as the model object <tt>dummy_mod</tt> from the previous exercise are available in your working environment.
 
-**Instructions**
+**Instructions:**
 
 + Start by drawing a visually appealing plot of the observations on $Y$ and $D$ based on the code chunk provided in <tt>Script.R</tt>. Replace the <tt>???</tt> by the correct expressions!
 
 + Add the regression line to the plot.
 
-<!--html_preserve-->
-
-<div data-datacamp-exercise data-lang="r">
-
-  <code data-type="pre-exercise-code">
-  set.seed(1)
-  DF <- <tt>data.frame</tt>("Y" = rnorm(100))
-  DF$D <- ifelse(DF$Y > 0, 1, 0)
-  dummy_mod <- lm(Y ~ D, data = DF)
-  </code>
-  <code data-type="sample-code">
-  # Replace the `???` by the correct values
-  plot(x = ??? , y = ???, 
-     pch = 20, 
-     cex = 1,
-     col = "Steelblue",
-     xlab = expression(D[i]), ylab = "Test Score",
-     main = "Dummy Regression"
-     )
-  
-  # add the regression line   
-  
-  </code>
-  <code data-type="solution">
-  plot(x = DF$D , y = DF$Y, 
-     pch = 20, 
-     cex = 1,
-     col = "Steelblue",
-     xlab = expression(D[i]), ylab = "Test Score",
-     main = "Dummy Regression"
-    )  
-    abline(dummy_mod)
-  </code>
-  <code data-type="sct">
-  test_predefined_objects(c("DF","dummy_mod"))
-  test_function("abline")
-  test_function("plot", args = c("x","y"))
-  success_msg("Nice! Clearly, a line is not a suitable way to think of this model!")
-  </code>
-  
-</div>
-
-<!--/html_preserve-->
+<iframe src="DCL/ex5_8.html" frameborder="0" scrolling="no" style="width:100%;height:340px"></iframe>
 
 </div>')}
 ```
@@ -1470,60 +1225,27 @@ if (my_output=="html") {
 
 #### 9. Gender Wage Gap I {-}
 
-<tt>CPS1985</tt> is a cross-section data set originating from the May 1985 *Current Population Survey* by the *US Census Bureau* and, among others things, contains observations on wage and gender of employees.
+The cross-section data set <tt>CPS1985</tt> is a subsample from the May 1985 *Current Population Survey* conducted by the *US Census Bureau* which contains observations on, among others things, wage and the gender of employees.
 
 <tt>CPS1985</tt> is part of the package <tt>AER</tt>.
 
-**Instructions**
+**Instructions:**
 
-+ Load the package <tt>AER</tt> and attach the data set <tt>CPS1985</tt>.
++ Attach the package <tt>AER</tt> and load the data set <tt>CPS1985</tt>.
 
 + Estimate the dummy regression model $$wage_i = \\beta_0 + \\beta_1 \\cdot female_i + u_i$$ where 
   
     \\begin{align*}
-      female = 
+      female_i = 
       \\begin{cases}
-        1, & \\text{if employee is female} \\\\
-        0, & \\text{if employee is male}.
+        1, & \\text{if employee} \\, i \\, \\text{is female,} \\\\
+        0, & \\text{if employee} \\, i \\,  \\text{is male.}
       \\end{cases}
     \\end{align*}
   
     Save the result in <tt>wage_mod</tt>.
 
-<!--html_preserve-->
-
-<div data-datacamp-exercise data-lang="r">
-
-  <code data-type="sample-code">
-  # Load the package and attach the data set
-  
-  
-  # Perform the regression
-  
-  
-  </code>
-  <code data-type="solution">
-  library(AER)
-  data(CPS1985)
-  dummy_mod <- lm(wage ~ gender, data = CPS1985)
-  </code>
-  <code data-type="sct">
-  test_function("library")
-  test_function("data")
-  test_or({
-    ex() %>% override_solution("attach(CPS1985); dummy_mod <- lm(wage ~ gender)") %>% check_object("dummy_mod")
-  },{
-    ex() %>% override_solution("dummy_mod <- lm(CPS1985$wage ~ CPS1985$gender)") %>% check_object("dummy_mod")
-  },{
-    ex() %>% override_solution("dummy_mod <- lm(wage ~ gender, data = CPS1985)") %>% check_object("dummy_mod")
-  }
-  )
-  success_msg("Well done!")
-  </code>
-  
-</div>
-
-<!--/html_preserve-->
+<iframe src="DCL/ex5_9.html" frameborder="0" scrolling="no" style="width:100%;height:340px"></iframe>
 
 </div>')}
 ```
@@ -1541,49 +1263,15 @@ The model object <tt>dummy_mod</tt> is available in your working environment.
 
 **Instructions:**
 
-+ Test the hypothesis that the coefficient on $female_i$ is zero. This would imply that there is no gender wage gap. Use the heteroskedasticity-robust estimator proposed by @white1980.
++ Test the hypothesis that the coefficient on $female_i$ is zero against the alternative that it is non-zero. The null hypothesis implies that there is no gender wage gap. Use the heteroskedasticity-robust estimator proposed by @white1980.
 
-**Hint:**
+<iframe src="DCL/ex5_10.html" frameborder="0" scrolling="no" style="width:100%;height:340px"></iframe>
 
-+ <tt>vcovHC()</tt> computes heteroskedasticity-robust estimates of the covariance matrix of the coefficient estimators for the model supplied, see <tt>?vcovHC</tt>.
+**Hints:**
 
-+ <tt>coeftest()</tt> performs significance tests for the coefficients in model objects. A covariance matrix can be supplied using the argument <tt>vcov.</tt>.
++ <tt>vcovHC()</tt> computes heteroskedasticity-robust estimates of the covariance matrix of the coefficient estimators for the model supplied. The estimator proposed by @white1980 is computed if you set <tt>type = "HC0"</tt>.
 
-<!--html_preserve-->
-
-<div data-datacamp-exercise data-lang="r">
-  
-  <code data-type="pre-exercise-code">
-    library(AER)
-    data(CPS1985)
-    dummy_mod <- lm(wage ~ gender, data = CPS1985)
-  </code>
-  <code data-type="sample-code">
-  # test whether the gender gap is significantly different from zero 
-  # use robust standard errors
-  
-  
-  </code>
-  <code data-type="solution">
-  coeftest(dummy_mod, vcov. = vcovHC, type = "HC1")
-  # or
-  linearHypothesis(dummy_mod, "genderfemale=0", vcov. = vcovHC, type = "HC1")
-  </code>
-  <code data-type="sct">
-  test_predefined_objects("dummy_mod")
-  test_or({
-    test_function("coeftest", args = c("x", "vcov.")) 
-  },{
-    test_function("linearHypothesis", args = c("model", "vcov.", "hypothesis.matrix"))
-  },{
-    test_function("linearHypothesis", args = c("model", "hypothesis.matrix", "type"))
-  })
-  success_msg("Right! The hypothesis that there is no wage gap is rejected at any common level.")
-  </code>
-  
-</div>
-
-<!--/html_preserve-->
++ The function <tt>coeftest()</tt> performs significance tests for the coefficients in model objects. A covariance matrix can be supplied using the argument <tt>vcov.</tt>.
 
 </div>')}
 ```
@@ -1593,7 +1281,7 @@ if (my_output=="html") {
   cat('
 <div  class = "DCexercise">
 
-#### 11. Heteroskedasticity-Robust Standard Errors {-}
+#### 11. Computation of Heteroskedasticity-Robust Standard Errors {-}
 
 In the simple regression model, the covariance matrix of the coefficient estimators is denoted
 
@@ -1611,44 +1299,19 @@ In the simple regression model, the covariance matrix of the coefficient estimat
 
 The function <tt>vcovHC</tt> can be used to obtain estimates of this matrix for a model object of interest.
 
-<tt>gender_mod</tt>, a model object containing the wage regression dealt with in Exercises 9 and 10 is available in your working environment.
+<tt>dummy_mod</tt>, a model object containing the wage regression dealt with in Exercises 9 and 10 is available in your working environment.
 
-**Instructions**
+**Instructions:**
 
-+ Compute robust standard errors of the type <tt>HC1</tt> for the coefficients estimators in the model object <tt>gender_mod</tt>. Store the standard errors in a vector named <tt>rob_SEs</tt>.
++ Compute robust standard errors of the type <tt>HC1</tt> for the coefficients estimators in the model object <tt>dummy_mod</tt>. Store the standard errors in a vector named <tt>rob_SEs</tt>.
 
-**Hint:**
+<iframe src="DCL/ex5_11.html" frameborder="0" scrolling="no" style="width:100%;height:340px"></iframe>
+
+**Hints**
 
 + The standard errors we seek can be obtained by taking the square root of the diagonal elements of the estimated covariance matrix. 
-
 + <tt>diag(A)</tt> returns the diagonal elements of the matrix <tt>A</tt>.
 
-<!--html_preserve-->
-
-<div data-datacamp-exercise data-lang="r">
-  
-  <code data-type="pre-exercise-code">
-    library(AER)
-    data(CPS1985)
-    dummy_mod <- lm(wage ~ gender, data = CPS1985)
-  </code>
-  <code data-type="sample-code">
-  # compute robust standard errors and save them in rob_SEs
-  
-  
-  </code>
-  <code data-type="solution">
-  rob_SEs <- sqrt(diag(vcovHC(dummy_mod, type = "HC1")))
-  </code>
-  <code data-type="sct">
-  test_predefined_objects("dummy_mod")
-  test_object("rob_SEs")
-  success_msg("Nice! ")
-  </code>
-  
-</div>
-
-<!--/html_preserve-->
 
 </div>')}
 ```
@@ -1660,60 +1323,19 @@ if (my_output=="html") {
 
 #### 12. Robust Confidence Intervals {-}
 
-The function <tt>confint()</tt> computes confidence intervals for regression models using homoskedasticity-only standard errors such that this function is not an option when there is heteroskedasticity.
+The function <tt>confint()</tt> computes confidence intervals for regression models using homoskedasticity-only standard errors so this function is not an option when there is heteroskedasticity.
 
-The function <tt>Rob_CI()</tt> is meant to compute and report heteroskedasticity-robust confidence intervals for both model coefficients in a simple regression model.
+The function <tt>Rob_CI()</tt> in <tt>script.R</tt> is meant to compute and report heteroskedasticity-robust confidence intervals for both model coefficients in a simple regression model.
 
 <tt>gender_mod</tt>, a model object containing the wage regression dealt with in the previous exercises is available in your working environment.
 
-**Instructions**
+**Instructions:**
 
 + Complete the code of <tt>Rob_CI()</tt> given in <tt>Script.R</tt> such that lower and upper bounds of $95\\%$ robust confidence intervals are returned. Use standard errors of the type <tt>HC1</tt>.
 
-+ Use the function to obtain $95\\%$ confidence intervals for the model coefficients in <tt>dummy_mod</tt>.
++ Use the function <tt>Rob_CI()</tt> to obtain $95\\%$ confidence intervals for the model coefficients in <tt>dummy_mod</tt>.
 
-<!--html_preserve-->
-
-<div data-datacamp-exercise data-lang="r">
-  
-  <code data-type="pre-exercise-code">
-    library(AER)
-    data(CPS1985)
-    dummy_mod <- lm(wage ~ gender, data = CPS1985)
-  </code>
-  <code data-type="sample-code">
-  # complete the function below
-  
-  Rob_CI <- function(model) {
-    SEs <- ???
-    lower <- model$coef - ???
-    upper <- model$coef + ???
-    return(
-      cbind("Lower" = lower, "Upper" = upper)
-    )
-  }
-  
-  </code>
-  <code data-type="solution">
-    Rob_CI <- function(model) {
-    SEs <- sqrt(diag(vcovHC(model, type = "HC1")))
-    lower <- model$coef - 1.96 * SEs
-    upper <- model$coef + 1.96 * SEs
-    return(
-      cbind("Lower" = lower, "Upper" = upper)
-    )
-  }
-  </code>
-  <code data-type="sct">
-  test_function_definition("Rob_CI",
-                         function_test = test_expression_result("Rob_CI(dummy_mod)"))
-  test_output_contains("Rob_CI(dummy_mod)")
-  success_msg("Nice!")
-  </code>
-  
-</div>
-
-<!--/html_preserve-->
+<iframe src="DCL/ex5_12.html" frameborder="0" scrolling="no" style="width:100%;height:340px"></iframe>
 
 </div>')}
 ```
@@ -1723,58 +1345,27 @@ if (my_output=="html") {
   cat('
 <div  class = "DCexercise">
 
-#### 13. A Small Simulation Study I {-}
+#### 13. A Small Simulation Study --- I {-}
 
-Consider the data generating process
-\\begin{align*}
-  X_i \\sim& \\, \\mathcal{U}[2,10],\\\\
-  e_i \\sim& \\, \\mathcal{N}(0, X_i),\\\\
-  Yi =& \\, \\beta_1 X_i + e_i  
-\\end{align*}
+Consider the data generating process (DGP)
+\\begin{align}
+  X_i \\sim& \\, \\mathcal{U}[2,10], \\notag \\\\
+  e_i \\sim& \\, \\mathcal{N}(0, X_i), \\notag \\\\
+  Y_i =& \\, \\beta_1 X_i + e_i, (\\#eq:asss)  
+\\end{align}
 where $\\mathcal{U}[2,10]$ denotes the uniform distribution on the interval $[2,10]$ and $\\beta_1=2$.
 
-Notice that the errors $e_i$ are heteroskedastic since the variance is a linear function of $X_i$.
+Notice that the errors $e_i$ are heteroskedastic since the variance of the $e_i$ is a function of $X_i$.
 
-**Instructions**
+**Instructions:**
 
-+ Write a function <tt>DGP_OLS</tt> that generates a sample $(X_i,Y_i)$, $i=1,…,100$ and returns the OLS estimate of $\beta_1$.
++ Write a function <tt>DGP_OLS</tt> that generates a sample $(X_i,Y_i)$, $i=1,…,100$ using the DGP above and returns the OLS estimate of $\\beta_1$ based on this sample.
 
-**Hints**
+<iframe src="DCL/ex5_13.html" frameborder="0" scrolling="no" style="width:100%;height:340px"></iframe>
 
-<tt>runif()</tt> can be used to obtain random samples form a uniform distribution, see <tt>?runif</tt>
+**Hint:**
 
-<!--html_preserve-->
-
-<div data-datacamp-exercise data-lang="r">
-  
-  <code data-type="pre-exercise-code">
-
-  </code>
-  <code data-type="sample-code">
-  # write the function
-  </code>
-  <code data-type="solution">
-  set.seed(1)
-  # write the function
-  DGP_OLS <- function() {
-  X <- runif(100,2,10)
-  Y <- X + rnorm(100, sd = sqrt(X))
-  return(
-    c("beta_1_hat" = sum(X*Y)/sum(X^2))
-  )
-  }
-  </code>
-  <code data-type="sct">
-  test_function_definition("DGP_OLS", 
-                           function_test =
-                           test_expression_result("DGP_OLS()")
-  )
-  success_msg("Well Done!")
-  </code>
-  
-</div>
-
-<!--/html_preserve-->
+<tt>runif()</tt> can be used to obtain random samples from a uniform distribution, see <tt>?runif</tt>.
 
 </div>')}
 ```
@@ -1784,54 +1375,17 @@ if (my_output=="html") {
   cat('
 <div  class = "DCexercise">
 
-#### 14. A Small Simulation Study II {-}
+#### 14. A Small Simulation Study --- II {-}
 
 The function <tt>DGP_OLS()</tt> from the previous exercise is available in your working environment.
 
-**Instructions**
+**Instructions:**
 
 + Use <tt>replicate()</tt> to generate a sample of $1000$ OLS estimates $\\widehat{\\beta}_1$ using the function <tt>DGP_OLS</tt>. Store the estimates in a vector named <tt>estimates</tt>.
 
-+ Estimate the variance of the OLS estimates. Store the result in <tt>est_var_OLS</tt>.
++ Next, estimate the variance of $\\widehat{\\beta}_1$ in \\@ref(eq:asss): compute the sample variance of the $1000$ OLS estimates in <tt>estimates</tt>. Store the result in <tt>est_var_OLS</tt>.
 
-<!--html_preserve-->
-
-<div data-datacamp-exercise data-lang="r">
-  
-  <code data-type="pre-exercise-code">
-  DGP_OLS <- function() {
-    X <- runif(100,2,10)
-    Y <- X + rnorm(100, sd = sqrt(X))
-    return(
-      c("beta_1_hat" = sum(X*Y)/sum(X^2))
-    )
-    }
-  </code>
-  <code data-type="sample-code">
-  set.seed(1)
-  # Generate 1000 estimates of beta_1 using "GDP_OLS()", store them in "estimates"
-
-
-  # Estimate the variance of the estimates
-  
-  
-  </code>
-  <code data-type="solution">
-  set.seed(1)
-  # Generate 1000 estimates of beta_1 using "GDP_OLS()", store them in "estimates"
-  estimates <- replicate(1000, DGP_OLS())
-  # Estimate the variance of the estimates
-  est_var_OLS <- var(estimates)
-  </code>
-  <code data-type="sct">
-  test_predefined_objects("DGP_OLS")
-  test_object("estimates")
-  test_object("est_var_OLS")
-  </code>
-  
-</div>
-
-<!--/html_preserve-->
+<iframe src="DCL/ex5_14.html" frameborder="0" scrolling="no" style="width:100%;height:340px"></iframe>
 
 </div>')}
 ```
@@ -1841,96 +1395,29 @@ if (my_output=="html") {
   cat('
 <div  class = "DCexercise">
 
-#### 15. A Small Simulation Study III {-}
+#### 15. A Small Simulation Study --- III {-}
 
-The Gauss-Markov Theorem states that the OLS estimator in linear regression models is no longer the most efficient estimator (in the sense of minimum variance) among the conditionally unbiased linear estimators, that is, the OLS estimator loses the BLUE property, under heteroskedasticity.
+According to the the Gauss-Markov theorem, the OLS estimator in linear regression models is no longer the most efficient estimator among the conditionally unbiased linear estimators when there is heteroskedasticity. In other words, the OLS estimator loses the BLUE property when the assumption of homoskedasticity is violated.
 
-It turns out that OLS applied to the weighted observations $(w_i X_i, w_i Y_i)$ where $w_i=\\frac{1}{\\sigma_i}$ yields the BLUE estimator under heteroskedasticity. This estimator is called the *weighted least squares* (WLS) estimator so that its variance is smaller than the variance of the OLS estimator.
+It turns out that OLS applied to the weighted observations $(w_i X_i, w_i Y_i)$ where $w_i=\\frac{1}{\\sigma_i}$ is the BLUE estimator under heteroskedasticity. This estimator is called the *weighted least squares* (WLS) estimator. Thus, when there is heteroskedasticity, the WLS estimator has lower variance than OLS.
 
 The function <tt>DGP_OLS()</tt> and the estimated variance <tt>est_var_OLS</tt> from the previous exercises are available in your working environment.
 
-**Instructions**
+**Instructions:**
 
-+ Write a function <tt>DGP_WLS()</tt> that generates $100$ samples using the DGP introduced in Exercise 13 and returns the WLS estimate of $\\beta_1$. Treat $\\sigma_i$ as known, i.e., set $w_i=\\frac{1}{X_i}$.
++ Write a function <tt>DGP_WLS()</tt> that generates $100$ samples using the DGP introduced in Exercise 13 and returns the WLS estimate of $\\beta_1$. Treat $\\sigma_i$ as known, i.e., set $w_i=\\frac{1}{\\sqrt{X_i}}$.
 
-+ Repeat exercise 14 using <tt>DGP_WLS()</tt>. Store the estimated variance in <tt>est_var_GLS</tt>.
++ Repeat exercise 14 using <tt>DGP_WLS()</tt>. Store the variance estimate in <tt>est_var_GLS</tt>.
 
 + Compare the estimated variances <tt>est_var_OLS</tt> and <tt>est_var_GLS</tt> using logical operators (<tt><</tt> or <tt>></tt>).
 
-**Hints**
+<iframe src="DCL/ex5_15.html" frameborder="0" scrolling="no" style="width:100%;height:340px"></iframe>
+
+**Hints:**
 
 + <tt>DGP_WLS()</tt> can be obtained using a modified code of <tt>DGP_OLS()</tt>.
 
 + Remember that functions are objects and you may print the code of a function to the console.
-
-<!--html_preserve-->
-
-<div data-datacamp-exercise data-lang="r">
-  
-  <code data-type="pre-exercise-code">
-  set.seed(1)
-  DGP_OLS <- function() {
-    X <- runif(100,2,10)
-    Y <- X + rnorm(100, sd = sqrt(X))
-    return(
-      c("beta_1_hat" = sum(X*Y)/sum(X^2))
-    )
-  }
-  estimates <- replicate(1000, DGP_OLS())
-  est_var_OLS <- var(estimates)
-  </code>
-  <code data-type="sample-code">
-  set.seed(1)
-  # Define the function "DGP_GLS()"
-  
-  
-  # estimate the variance, assign the value to "var_est_GLS"
-  
-  
-  # compare the estimated variances
-  
-  
-  </code>
-  <code data-type="solution">
-  set.seed(1)
-  # Define the function "DGP_GLS()"
-  DGP_GLS <- function() {
-  X <- runif(100,2,10)
-  Y <- X + rnorm(100, sd = sqrt(X))
-  w <- 1/sqrt(X)
-  return(
-    c("beta_1_hat" = sum(w^2*X*Y)/sum((w*X)^2))
-  )
-  }
-  # estimate the variance, assign the value to "var_est_GLS"
-  est_var_GLS <- var(replicate(1000, DGP_GLS()))
-
-  # compare the estimated variances
-  est_var_GLS < est_var_OLS
-  </code>
-  <code data-type="sct">
-  test_predefined_objects(c("DGP_OLS","est_var_OLS"))
-  test_function_definition("DGP_GLS",
-                           function_test =
-                           test_expression_result("DGP_OLS()")
-  
-  )
-  test_object("est_var_GLS")
-  test_or({
-    test_student_typed("est_var_GLS < est_var_OLS")
-  },{
-    test_student_typed("est_var_GLS > est_var_OLS")
-  },{
-    test_student_typed("est_var_OLS > est_var_GLS")
-  },{
-    test_student_typed("est_var_OLS < est_var_GLS")
-  })
-  success_msg("Nice! This shows that the GLS estimator indeed has lower variance than OLS.")
-  </code>
-  
-</div>
-
-<!--/html_preserve-->
 
 </div>')}
 ```

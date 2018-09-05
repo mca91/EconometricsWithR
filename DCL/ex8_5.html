@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+      <head>
+	      <meta charset='utf-8'/>
+	      <link rel='stylesheet' href='exercise.css'/>
+        <script async src='https://cdn.datacamp.com/dcl-react-dev.js.gz'></script>
+      </head>
+      <body>
+      <div data-datacamp-exercise data-lang='r' data-height =320><code data-type="pre-exercise-code">
+  library(AER)
+  library(MASS)
+  </code>
+  
+  <code data-type="sample-code">
+  # generate the binary variable `old` and append it to the dataset
+  
+  
+  # conduct the regression and assign it to `mod_bb`
+  
+  
+  # print a robust summary to the console
+  
+  
+  </code>
+   
+  <code data-type="solution">
+  # generate the binary variable `old` and append it to the dataset
+  Boston$old <- as.numeric(Boston$age >= 95)
+  
+  # conduct the regression and assign it to `mod_bb`
+  mod_bb <- lm(medv ~ chas*old, data = Boston)
+  
+  # print a robust summary to the console
+  coeftest(mod_bb, vcov. = vcovHC)
+  
+  </code>
+  
+  <code data-type="sct">
+  ex() %>% check_object("Boston") %>% check_column("old", col_missing_msg = "Have you added the column `old` to `Boston`?") %>%
+  check_equal(incorrect_msg = "Have you correctly calculated the column `old` based on `age`?")
+  test_or({
+    test_object("mod_bb")
+  },{
+    f <- ex() %>% override_solution("lm(medv ~ old*chas, data = Boston)") %>% check_function("lm")
+    f %>% check_arg("formula") %>% check_equal()
+  },{
+    f <- ex() %>% override_solution("lm(Boston$medv ~ Boston$chas*Boston$old)") %>% check_function("lm")
+    f %>% check_arg("formula") %>% check_equal()
+  },{
+    f <- ex() %>% override_solution("lm(Boston$medv ~ Boston$old*Boston$chas)") %>% check_function("lm")
+    f %>% check_arg("formula") %>% check_equal()
+  },{
+    f <- ex() %>% override_solution("attach(Boston);lm(medv ~ chas*old)") %>% check_function("lm")
+    f %>% check_arg("formula") %>% check_equal()
+  },{
+    f <- ex() %>% override_solution("attach(Boston);lm(medv ~ old*chas)") %>% check_function("lm")
+    f %>% check_arg("formula") %>% check_equal()
+  },{
+    f <- ex() %>% override_solution("lm(medv ~ chas + old + chas:old, data = Boston)") %>% check_function("lm")
+    f %>% check_arg("formula") %>% check_equal()
+  },{
+    f <- ex() %>% override_solution("lm(medv ~ old + chas + old:chas, data = Boston)") %>% check_function("lm")
+    f %>% check_arg("formula") %>% check_equal()
+  },{
+    f <- ex() %>% override_solution("lm(Boston$medv ~ Boston$chas + Boston$old + Boston$chas:Boston$old)") %>% check_function("lm")
+    f %>% check_arg("formula") %>% check_equal()
+  },{
+    f <- ex() %>% override_solution("lm(Boston$medv ~ Boston$old + Boston$chas + Boston$old:Boston$chas)") %>% check_function("lm")
+    f %>% check_arg("formula") %>% check_equal()
+  },{
+    f <- ex() %>% override_solution("attach(Boston);lm(medv ~ chas + old + chas:old)") %>% check_function("lm")
+    f %>% check_arg("formula") %>% check_equal()
+  },{
+    f <- ex() %>% override_solution("attach(Boston);lm(medv ~ old + chas + old:chas)") %>% check_function("lm")
+    f %>% check_arg("formula") %>% check_equal()
+  })
+  
+ex() %>% check_function("coeftest") %>% {
+    check_arg(., "x") %>% check_equal()
+    check_arg(., "vcov.") %>% check_equal()
+  }
+  success_msg("Correct! The estimated effect of moving from a suburb with a low proportion of old buildings to a one with a high proportion is -7.13 + 10.55 * chas. So depending on the passing of the Charles River through a suburb, the effect is positive or negative.")
+  </code></div>
+      </body>
+      </html>

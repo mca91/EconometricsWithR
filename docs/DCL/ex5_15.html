@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+      <head>
+	      <meta charset='utf-8'/>
+	      <link rel='stylesheet' href='exercise.css'/>
+        <script async src='https://cdn.datacamp.com/dcl-react-dev.js.gz'></script>
+      </head>
+      <body>
+      <div data-datacamp-exercise data-lang='r' data-height =320>  <code data-type="pre-exercise-code">
+  set.seed(1)
+  DGP_OLS <- function() {
+    X <- runif(100,2,10)
+    Y <- X + rnorm(100, sd = sqrt(X))
+    return(
+      c("beta_1_hat" = sum(X*Y)/sum(X^2))
+    )
+  }
+  estimates <- replicate(1000, DGP_OLS())
+  est_var_OLS <- var(estimates)
+  </code>
+  <code data-type="sample-code">
+  set.seed(1)
+  # define the function `DGP_GLS()`
+  
+  
+  # estimate the variance, assign the value to `var_est_GLS`
+  
+  
+  # compare the estimated variances
+  
+  
+  </code>
+  <code data-type="solution">
+  set.seed(1)
+  # define the function `DGP_GLS()`
+  DGP_GLS <- function() {
+  X <- runif(100,2,10)
+  Y <- X + rnorm(100, sd = sqrt(X))
+  w <- 1/sqrt(X)
+  return(
+    c("beta_1_hat" = sum(w^2*X*Y)/sum((w*X)^2))
+  )
+  }
+  # estimate the variance, assign the value to `var_est_GLS`
+  est_var_GLS <- var(replicate(1000, DGP_GLS()))
+
+  # compare the estimated variances
+  est_var_GLS < est_var_OLS
+  </code>
+  <code data-type="sct">
+  test_predefined_objects(c("DGP_OLS","est_var_OLS"))
+  test_function_definition("DGP_GLS",
+                           function_test =
+                           test_expression_result("DGP_OLS()")
+  
+  )
+  test_object("est_var_GLS")
+  test_or({
+    test_student_typed("est_var_GLS < est_var_OLS")
+  },{
+    test_student_typed("est_var_GLS > est_var_OLS")
+  },{
+    test_student_typed("est_var_OLS > est_var_GLS")
+  },{
+    test_student_typed("est_var_OLS < est_var_GLS")
+  })
+  success_msg("Nice! This indicates that the GLS estimator indeed has lower variance than OLS under heteroskedasticity.")
+  </code></div>
+      </body>
+      </html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+      <head>
+	      <meta charset='utf-8'/>
+	      <link rel='stylesheet' href='exercise.css'/>
+        <script async src='https://cdn.datacamp.com/dcl-react-dev.js.gz'></script>
+      </head>
+      <body>
+      <div data-datacamp-exercise data-lang='r' data-height =320><code data-type="pre-exercise-code">
+  library(AER)
+library(MASS)
+data("Boston")
+attach(Boston)
+bh_mod <- lm(medv ~ lstat, data = Boston)
+R2_res <- summary(bh_mod)$r.squared
+</code>
+  <code data-type="sample-code">
+  # conduct the regression
+  
+  
+  # obtain a robust coefficient summary
+  
+  
+  # compare both coefficients of determination
+  
+  
+  </code>
+  <code data-type="solution">
+  # conduct the regression
+  mod <- lm(medv ~ lstat + crim + age, data = Boston)
+
+# obtain a robust coefficient summary
+coeftest(mod, vcov. = vcovHC)
+
+# compare both coefficients of determination
+R2_unres <- summary(mod)$r.squared
+R2_unres < R2_res
+
+</code>
+  <code data-type="sct">
+  
+  test_or({
+    ex() %>% check_function("lm") %>% check_result()
+  },{
+    ex() %>% override_solution("lm(Boston$medv ~ Boston$lstat + Boston$crim + Boston$age)") %>% check_function("lm") %>% check_result()
+  },{
+    ex() %>% override_solution("lm(medv ~ lstat + crim + age)") %>% check_function("lm") %>% check_result()
+  })
+
+
+test_or({
+  test_function("coeftest")
+},{
+  f <- ex() %>% override_solution("coeftest(lm(Boston$medv ~ Boston$lstat + Boston$crim + Boston$age), vcov. = vcovHC)") %>% check_function("coeftest") 
+  f %>% check_arg("x") %>% check_equal()
+},{   
+  f <- ex() %>% override_solution("coeftest(lm(medv ~ lstat + crim + age), vcov. = vcovHC)") %>% check_function("coeftest") 
+  f %>% check_arg("x") %>% check_equal()
+})
+
+test_student_typed("vcov. = vcovHC")
+
+test_predefined_objects("R2_res")
+test_object("R2_unres")
+
+test_or({
+  test_student_typed("R2_unres > R2_res")
+},{
+  test_student_typed("R2_unres < R2_res")
+},{
+  test_student_typed("R2_res < R2_unres")
+},{
+  test_student_typed("R2_res > R2_unres")
+})
+
+success_msg("Right. Remember that R2 generally grows when a regressor is added to the model but this does not necessarily mean that the model improves upon a model with less regressors in any case.")
+</code></div>
+      </body>
+      </html>
