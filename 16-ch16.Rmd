@@ -699,11 +699,11 @@ W5000_PC <- data.frame("Date" = W5000$DATE,
 W5000_PC <- na.omit(W5000_PC)
 ```
 
-```{r, fig.align='center'}
+```{r pcw5000, fig.align='center', fig.cap="Daily Percentage Returns in the Wilshire 5000 Indrx"}
 # plot percentage changes
 plot(W5000_PC, 
      ylab = "Percent", 
-     main = "Daily Percentage Changes in the Wilshire Index",
+     main = "Daily Percentage Changes",
      type="l", 
      col = "steelblue", 
      lwd = 0.5)
@@ -712,15 +712,24 @@ plot(W5000_PC,
 abline(0, 0)
 ```
 
-The series of daily percentage changes in the Wilshire index seems to randomly fluctuate around zero, meaning there is little autocorrelation so that it is difficult to predict future outcomes using, e.g., an AR model. However, there is visual evidence that the series exhibits conditional heteroskedasticity since we observe volatility clustering. For some applications it is useful to measure and forecast these patterns. This can be done using models which assume that the volatility can be described by an autoregressive process.
+The series of daily percentage changes in the Wilshire index seems to randomly fluctuate around zero, meaning there is little autocorrelation. This is confirmed by a plot of the sample autocorrelation function.
+
+```{r acfw5000, fig.align='center', fig.cap="Autocorrelation in Daily Price Changes of W5000 Index"}
+# plot sample autocorrelation of daily percentage changes
+acf(W5000_PC$Value, main = "Wilshire 5000 Series")
+```
+
+In Figure \@ref(fig:acfw5000) we see that autocorrelations are rather weak so that it is difficult to predict future outcomes using, e.g., an AR model. 
+
+However, there is visual evidence in \@ref(fig:pcw5000) that the series of returns exhibits conditional heteroskedasticity since we observe volatility clustering. For some applications it is useful to measure and forecast these patterns. This can be done using models which assume that the volatility can be described by an autoregressive process.
 
 ### ARCH and GARCH Models {-}
 
-Consider $$Y_t = \beta_0 + \beta_1 Y_{t-1} + \gamma_1 X_{t-1} + u_t,$$ an ADL($1$,$1$) regression model. The econometrician Robert @engle1982 proposed to model $\sigma^2_t$, the variance of the error $u_t$, by an order $p$ distributed lag model,
+Consider $$Y_t = \beta_0 + \beta_1 Y_{t-1} + \gamma_1 X_{t-1} + u_t,$$ an ADL($1$,$1$) regression model. The econometrician Robert @engle1982 proposed to model $\sigma^2_t = Var(u_t | u_{t-1},u_{t-2},\ldots)$, the conditional variance of the error $u_t$ given its past, by an order $p$ distributed lag model,
 \begin{align}
  \sigma^2_t = \alpha_0 + \alpha_1 u_{t-1}^2 + \alpha_2 u_{t-2}^2 + \dots + \alpha_p u_{t-p}^2, (\#eq:archmodel)
 \end{align}
-called the *autoregressive conditional heteroskedasticity* (ARCH) model of order $p$, or short ARCH($p$).^[Although we introduce the ARCH model as a component in an ADL($1$,$1$) model, it can be used for modelling the conditional zero-mean error term of any time series model.] The general idea is apparent from the model structure: positive coefficients $\alpha_0,\alpha_1,\dots,\alpha_p$ imply that recent large squared errors lead to a large variance, and thus large squared errors, in the current period.
+called the *autoregressive conditional heteroskedasticity* (ARCH) model of order $p$, or short ARCH($p$).^[Although we introduce the ARCH model as a component in an ADL($1$,$1$) model, it can be used for modelling the conditional zero-mean error term of any time series model.] We assume $\alpha_0>0$ and $\alpha_1,\ldots,\alpha_p\geq0$ to ensure a positive variance $\sigma_t^2>0$. The general idea is apparent from the model structure: positive coefficients $\alpha_0,\alpha_1,\dots,\alpha_p$ imply that recent large squared errors lead to a large variance, and thus large squared errors, in the current period.
 
 The generalized ARCH (GARCH) model, developed by Tim @bollerslev1986, is an extension of the ARCH model, where $\sigma^2_t$ is allowed to depend on its own lags and lags of the squared error term. The GARCH($p$,$q$) model is given by
 \begin{align}
@@ -735,9 +744,9 @@ Maximum likelihood estimates of ARCH and GARCH models are efficient and have nor
 The GARCH($1$,$1$) model of daily changes in the Wilshire 5000 index we estimate is given by
 \begin{align}
   R_t =& \, \beta_0 + u_t \ , \ u_t \sim \mathcal{N}(0,\sigma^2_t), \\
-  \sigma^2_t =& \, \alpha_0 + \alpha_1 u_{t-1}^2 + \phi_1 \sigma_{t-1}^2 + \nu_t, (\#eq:w5000g11)
+  \sigma^2_t =& \, \alpha_0 + \alpha_1 u_{t-1}^2 + \phi_1 \sigma_{t-1}^2 (\#eq:w5000g11)
 \end{align}
-where $R_t$ is the percentage change in period $t$. $\beta_1$, $\alpha_0$, $\alpha_1$ and $\phi_1$ are unknown coefficients and $u_t$ and $\nu_t$ are error terms with conditional mean zero. We do not include any lagged predictors in the equation of $R_t$ because the daily changes in the Wilshire 5000 index reflect daily stock returns which are essentially unpredictable. Note that $u_t$ is assumed to be normally distributed and the variance $\sigma^2_t$ depends on $t$ as it follows the GARCH($1$,$1$) recursion \@ref(eq:w5000g11).
+where $R_t$ is the percentage change in period $t$. $\beta_1$, $\alpha_0$, $\alpha_1$ and $\phi_1$ are unknown coefficients and $u_t$ is an error term with conditional mean zero. We do not include any lagged predictors in the equation of $R_t$ because the daily changes in the Wilshire 5000 index reflect daily stock returns which are essentially unpredictable. Note that $u_t$ is assumed to be normally distributed and the variance $\sigma^2_t$ depends on $t$ as it follows the GARCH($1$,$1$) recursion \@ref(eq:w5000g11).
 
 It is straightforward to estimate this model using `r ttcode("garchFit()")`.
 
