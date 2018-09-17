@@ -161,7 +161,7 @@ The estimated regression function is
 
 The coefficient on $black$ is positive and significantly different from zero at the $0.01\%$ level. The interpretation is that, holding constant the $P/I \ ratio$, being black increases the probability of a mortgage application denial by about $17.7\%$. This finding is compatible with racial discrimination. However, it might be distorted by omitted variable bias so discrimination could be a premature conclusion.
 
-## Probit and Logit Regression
+## Probit and Logit Regression {#palr}
 
 The linear probability model has a major flaw: it assumes the conditional probability function to be linear. This does not restrict $P(Y=1\vert X_1,\dots,X_k)$ to lie between $0$ and $1$. We can easily see this in our reproduction of Figure 11.1 of the book: for $P/I \ ratio \geq 1.75$, \@ref(eq:lpm) predicts the probability of a mortgage application denial to be bigger than $1$. For applications with $P/I \ ratio$ close to $0$, the predicted probability of denial is even negative so that the model has no meaningful interpretation here.
 
@@ -174,7 +174,7 @@ In Probit regression, the cumulative standard normal distribution function $\Phi
   E(Y\vert X) = P(Y=1\vert X) = \Phi(\beta_0 + \beta_1 X). (\#eq:probitmodel)
 \end{align}
 
-$\beta_0 + \beta_1 X$ in \@ref(eq:probitmodel) plays the role of a quantile $z$. Remember that $$\Phi(z) = P(Z \leq z) \ , \ Z \sim \mathcal{N}(0,1).$$ such that the Probit coefficient $\beta_1$ in \@ref(eq:probitmodel) is the change in $z$ associated with a one unit change in $X$. Although the effect on $z$ of a change in $X$ is linear, the link between $z$ and the dependent variable $Y$ is nonlinear since $\Phi$ is a nonlinear function of $X$.
+$\beta_0 + \beta_1 X$ in \@ref(eq:probitmodel) plays the role of a quantile $z$. Remember that $$\Phi(z) = P(Z \leq z) \ , \ Z \sim \mathcal{N}(0,1)$$ such that the Probit coefficient $\beta_1$ in \@ref(eq:probitmodel) is the change in $z$ associated with a one unit change in $X$. Although the effect on $z$ of a change in $X$ is linear, the link between $z$ and the dependent variable $Y$ is nonlinear since $\Phi$ is a nonlinear function of $X$.
 
 Since the dependent variable is a nonlinear function of the regressors, the coefficient on $X$ has no simple interpretation. According to Key Concept 8.1, the expected change in the probability that $Y=1$ due to a change in $P/I \ ratio$ can be computed as follows:
 
@@ -786,4 +786,278 @@ linearHypothesis(probit_HMDA_4,
 Models (1) to (6) provide evidence that there is an effect of being African American on the probability of a mortgage application denial: in all specifications, the effect is estimated to be positive (ranging from $4\%$ to $5\%$) and is significantly different from zero at the $1\%$ level. While the linear probability model seems to slightly overestimate this effect, it still can be used as an approximation to an intrinsically nonlinear relationship.
 
 See Chapters 11.4 and 11.5 of the book for a discussion of external and internal validity of this study and some concluding remarks on regression models where the dependent variable is binary.
- 
+
+## Exercises 
+
+```{r, echo=FALSE, results='asis'}
+if (my_output=="html") {
+  cat('
+<div  class = "DCexercise">
+
+#### 1. Titanic Survival Data {-}
+
+Chapter \\@ref(palr) presented three approaches to model the conditional expectation function of a binary dependent variable: the linear probability model as well as Probit and Logit regression.
+
+The exercises in this Chapter use data on the fate of the passengers of the ocean linear *Titanic*. We aim to explain survival, a binary variable, by socioeconomic variables using the above approaches. 
+
+In this exercise we start with the aggregated data set <tt>Titanic</tt>. It is part of the package <tt>datasets</tt> which is part of base <tt>R</tt>. The following quote from the [description](https://stat.ethz.ch/R-manual/R-devel/library/datasets/html/Titanic.html) of the dataset motivates the attempt to predict the *probability* of survival:
+
+*The sinking of the Titanic is a famous event, and new books are still being published about it. Many well-known facts — from the proportions of first-class passengers to the ‘women and children first’ policy, and the fact that that policy was not entirely successful in saving the women and children in the third class — are reflected in the survival rates for various classes of passenger.*
+
+**Instructions:**
+
++ Assign the <tt>Titanic</tt> data to <tt>Titanic_1</tt> and get an overview.
+
++ Visualize the conditional survival rates for travel class (<tt>Class</tt>), gender (<tt>Sex</tt>) and age (<tt>Age</tt>) using <tt>mosaicplot()</tt>.
+
+<iframe src="DCL/ex11_1.html" frameborder="0" scrolling="no" style="width:100%;height:360px"></iframe>
+
+</div>') } else {
+  cat("\\begin{center}\\textit{This interactive part of URFITE is only available in the HTML version.}\\end{center}")
+}
+```
+
+```{r, echo=FALSE, results='asis'}
+if (my_output=="html") {
+  cat('
+<div  class = "DCexercise">
+
+#### 2. Titanic Survival Data --- Ctd. {-}
+
+The <tt>Titanic</tt> data set from Exercise 1 is not useful for regression analysis because it is highly aggregated. In this exercise you will work with <tt>titanic.csv</tt> which is available under the URL https://stanford.io/2O9RUCF.
+
+The columns of <tt>titanic.csv</tt> contain the following variables:
+
+  <tt>Survived</tt> --- The survived indicator
+    
+  <tt>Pclass</tt> --- passenger class
+    
+  <tt>Name</tt> --- passenger\'s Name
+    
+  <tt>Sex</tt> --- passenger\'s gender
+    
+  <tt>Age</tt> --- passengers\'s age
+    
+  <tt>Siblings</tt> --- number of siblings aboard
+    
+  <tt>Parents.Children.Aboard</tt> --- number of parents and children aboard
+    
+  <tt>fare</tt> --- the fare paid in british pound
+
+**Instructions:**
+
++ Import the data from <tt>titanic.csv</tt> using the function <tt>read.csv2()</tt>. Save it to <tt>Titanic_2</tt>.
+
++ Assign the following column names to <tt>Titanic_2</tt>: 
+  
+    <tt>Survived, Class, Name, Sex, Age, Siblings, Parents</tt> and <tt>Fare</tt>.
+
++ Get an overview over the data set. Drop the column <tt>Name</tt>.
+
++ Attach the packages <tt>corrplot</tt> and <tt>dplyr</tt>. Check whether there is multicollinearity in the data using <tt>corrplot()</tt>.
+
+<iframe src="DCL/ex11_2.html" frameborder="0" scrolling="no" style="width:100%;height:560px"></iframe>
+
+**Hints:**
+
++ <tt>read_csv()</tt> guesses the column specification as well as the seperators used in the <tt>.csv</tt> file. You should always check if the result is correct. 
+
++ You may use <tt>select_if()</tt> from the <tt>dplyr</tt> package to select all numeric columns from the data set.
+
+</div>')}
+```
+
+```{r, echo=FALSE, results='asis'}
+if (my_output=="html") {
+  cat('
+<div  class = "DCexercise">
+
+#### 3. Titanic Survival Data --- Survival Rates {-}
+
+Contingency tables similar to those provided by the data set <tt>Titanic</tt> from Exercise 1 may shed some light on the distribution of survival conditional and possible determinants thereof, e.g., the passenger class. Contingency tables are easily created using the base <tt>R</tt> function <tt>table</tt>. 
+
+**Instructions:**
+
++ Generate a contingency table for <tt>Survived</tt> and <tt>Class</tt> using <tt>table()</tt>. Save the table to <tt>t_abs</tt>.
+
++ <tt>t_abs</tt> reports absolute frequencies. Transform <tt>t_abs</tt> into a table which reports relative frequencies (relative to the total number of observations). Save the result to <tt>t_rel</tt>.
+
++ Visualize the relative frequencies in <tt>t_rel</tt> using <tt>barplot()</tt>. Use different colors for better distinquishablitly among survival and non-survival rate (it does not matter which colors you use).
+
+<iframe src="DCL/ex11_4_3.html" frameborder="0" scrolling="no" style="width:100%;height:320px"></iframe>
+
+</div>')}
+```
+
+
+```{r, echo=FALSE, results='asis'}
+if (my_output=="html") {
+  cat('
+<div  class = "DCexercise">
+
+#### 4. Titanic Survival Data --- Conditional Distributions of <tt>Age</tt> {-}
+
+Contingency tables are useful for summarizing distribution of categorical variables like <tt>Survived</tt> and <tt>Class</tt> in Exercise 3. They are, however, not useful when the variable of interest takes on many different integers (and they are even impossible to generate when the variable is continuous).  
+
+In this exercise you are asked to generate and visualize density estimates of the distribution of <tt>Age</tt> conditional on <tt>Survived</tt> to see whether there are indications how age relates to the chance of survival (despite that the data set reports integers, we treat <tt>Age</tt> as a continuous variable here). For example, it is interesting to see if the \'women and children first\' policy was effective.
+
+The data set <tt>Titanic_2</tt> from the previous exercises is available in your working environment.
+
+**Instructions:**
+
++ Obtain kernel density estimates of the distributions of <tt>Age</tt> for both the survivors and the deceased. 
+
++ Save the results to <tt>dens_age_surv</tt> (survived) and <tt>dens_age_died</tt> (died).
+
++ Plot both kernel density estimates (overlay them in a single plot!). Use different colors of your choive to make the estimates distinguishable.
+
+<iframe src="DCL/ex11_5_4.html" frameborder="0" scrolling="no" style="width:100%;height:330px"></iframe>
+
+**Hints:**
+
++ Kernel density estimates can be obtained using the functon <tt>density()</tt>.
+
++ Use <tt>plot()</tt> and <tt>lines()</tt> to plot the density estimates.
+
+</div>')}
+```
+
+```{r, echo=FALSE, results='asis'}
+if (my_output=="html") {
+  cat('
+<div  class = "DCexercise">
+
+#### 5. Titanic Survival Data --- A Linear Probability Model for <tt>Survival</tt> I {-}
+
+How do socio-economic characteristics of the passengers impact the probability of survival? In particular, are there systematic differences between the three passenger classes? Do the data reflect the \'children and women first\' policy? 
+
+It is natural to start the analysis by estimating a simple linear probability model like (LMP) $$Survived_i = \\beta_0 + \\beta_1 Class2_i + \\beta_2 Class3_i + u_i$$ with dummy variables $Class2_i$ and $Class3_i$.
+
+The data set <tt>Titanic_2</tt> from the previous exercises is available in your working environment.
+
+**Instructions:**
+
++ Attach the <tt>AER</tt> package.
+
++ <tt>Class</tt> is of type <tt>int</tt> (integer), Convert <tt>Class</tt> to a factor variable.
+
++ Estimate the linear probability model and save the result to <tt>surv_mod</tt>.
+
++ Obtain a robust summary of the model coefficients.
+
++ Use <tt>surv_mod</tt> to predict the probability of survival for the three passenger classes.
+
+<iframe src="DCL/ex11_lpm.html" frameborder="0" scrolling="no" style="width:100%;height:320px"></iframe>
+
+**Hints:**
+
++ Linear probability models can be estimated using <tt>lm()</tt>.
+
++ Use <tt>predict()</tt> to obtain the predictions. Remember that a <tt>data.frame</tt> must be provided to the argument <tt>newdata</tt>.
+
+</div>')}
+```
+
+```{r, echo=FALSE, results='asis'}
+if (my_output=="html") {
+  cat('
+
+<div  class = "DCexercise">
+
+#### 6. Titanic Survival Data --- A Linear Probability Model for <tt>Survival</tt> II {-}
+
+Consider again the outcome from Exercise 5:
+
+$$\\widehat{Survived}_i = \\underset{(0.03)}{0.63} - \\underset{(0.05)}{0.16} Class2_i - \\underset{(0.04)}{0.39} Class3_i + u_i $$
+
+(The estimated coefficients in this model are related to the class specific sample means of <tt>Survived</tt>. You are asked to compute them below.)
+
+The highly significant coefficients indicate that the probability of survival decreases with the passenger class, that is, passengers from a less luxurious class are less likely to survive. 
+
+This result could be affected by omitted variable bias arising from correlation of the passenger class with determinants of the probability of survival not included in the model. We therefore augment the model such that it includes all remaining variables as regressors.
+
+The data set <tt>Titanic_2</tt> as well as the model <tt>surv_mod</tt> from the previous exercises are available in your working environment. The <tt>AER</tt> package is attached.
+
+**Instructions:**
+
++ Use the model object <tt>surv_mod</tt> to obtain the class specific estimates for the probability of survival. Store them in <tt>surv_prob_c1</tt>, <tt>surv_prob_c2</tt> and <tt>surv_prob_c3</tt>.
+
++ Fit the augmented LMP and assign the result to the object <tt>LPM_mod</tt>.
+
++ Obtain a robust summary of the model coefficients.
+
+<iframe src="DCL/ex11_lpm2.html" frameborder="0" scrolling="no" style="width:100%;height:320px"></iframe>
+
+**Hint:**
+
++ Remember that the formula <tt>a ~ .</tt> specifies a regression of <tt>a</tt> on all other variables in the data set provided as the argument <tt>data</tt> in <tt>glm()</tt>.
+
+</div>')}
+```
+
+```{r, echo=FALSE, results='asis'}
+if (my_output=="html") {
+  cat('
+<div  class = "DCexercise">
+
+#### 7. Titanic Survival Data --- Logistic Regression {-}
+
+Chapter \\@ref(palr) introduces Logistic regression, also called Logit regression, which is a more suitable than the LPM for modelling the conditional probability function of a dichotomous outcome variable. Logit regression uses a nonlinear link function that restricts the fitted values to lie between $0$ and $1$: in Logit regression, the *log-odds* of the outcome are modeled as a linear combination of the predictors while the LPM assumes that the conditional probability function of outcome is linear.
+
+The data set <tt>Titanic_2</tt> from Exercise 2 is available in your working environment. The package <tt>AER</tt> is attached.
+
+**Instructions:**
+
++ Use <tt>glm()</tt> to estimate the model
+\\begin{align*}
+\\log\\left(\\frac{P(survived_i = 1)}{1-P(survived_i = 1)}\\right) =& \\, \\beta_0 + \\beta_1 Class2_i + \\beta_2 Ckass3_i + \\beta_3 Sex_i \\\\ +& \\, \\beta_4 Age_i + \\beta_5 Siblings_i + \\beta_6 Perents_i + \\beta_7 Fare_i + u_i.
+\\end{align*}
+
++ Obtain a robust summary of the model coefficients.
+
++ The data frame <tt>passengers</tt> contains data on three hypothetical male passengers that differ only in their passenger class (the other variables are set to the respective sample average). Use <tt>Logit_mod</tt> to predict the probability of survival for these passengers.
+
+<iframe src="DCL/ex11_3_6.html" frameborder="0" scrolling="no" style="width:100%;height:430px"></iframe>
+
+**Hints:**
+
++ Remember that the formula <tt>a ~ .</tt> specifies a regression of <tt>a</tt> on all other variables in the data set provided as the argument <tt>data</tt> in <tt>glm()</tt>.
+
++ You need to specify the correct type of prediction in <tt>predict()</tt>.
+
+</div>')}
+```
+
+```{r, echo=FALSE, results='asis'}
+if (my_output=="html") {
+  cat('
+<div  class = "DCexercise">
+
+#### 8. Titanic Survival Data --- Probit Regression {-}
+
+Repeat Exercise 7 but this time estimate the Probit model
+\\begin{align*}
+P(Survived_i = 1\\vert Class2_i, Class3_i, \\dots, Fare_i) =& \\, \\Phi (\\beta_0 + \\beta_1 Class2_i + \\beta_2 Class3_i + \\beta_3 Sex_i \\\\ +& \\, \\beta_4 Age_i + \\beta_5 Siblings_i + \\beta_6 Parents_i + \\beta_7 Fare_i + u_i).
+\\end{align*}
+
+The data set <tt>Titanic_2</tt> from the previous exercises as well as the Logit model <tt>Logit_mod</tt> are available in your working environment. The package <tt>AER</tt> is attached.
+
+**Instructions:**
+
++ Use <tt>glm()</tt> to estimate the above Probit model. Save the result to <tt>Probit_mod</tt>.
+
++ Obtain a robust summary of the model coefficients.
+
++ The data frame <tt>passengers</tt> contains data on three hypothetical male passengers that differ only in their passenger class (the other variables are set to the respective sample average). Use <tt>Probit_mod</tt> to predict the probability of survival for these passengers.
+
+<iframe src="DCL/ex11_8.html" frameborder="0" scrolling="no" style="width:100%;height:430px"></iframe>
+
+**Hints:**
+
++ Remember that the formula <tt>a ~ .</tt> specifies a regression of <tt>a</tt> on all other variables in the data set provided as the argument <tt>data</tt> in <tt>glm()</tt>.
+
++ You need to specify the correct type of prediction in <tt>predict()</tt>.
+
+</div>')}
+```
+

@@ -269,10 +269,10 @@ For example, consider two bivariate normally distributed random variables $X,Y$.
   (X, Y) \sim \mathcal{N}\left[\begin{pmatrix}50\\ 100\end{pmatrix},\begin{pmatrix}10 & 5 \\ 5 & 10 \end{pmatrix}\right] (\#eq:bvnormd)
 \end{align} according to \@ref(eq:bnormexpfn), the population regression function is
 \begin{align*}
-  Y_i =& \, 100 + 0.5 (X - 50) \\
-      =& \, 75 + 0.5 X.
+  Y_i =& \, 100 + 0.5 (X_i - 50) \\
+      =& \, 75 + 0.5 X_i. (\#eq:bnormregfun)
 \end{align*}
-Now suppose you gather data on $X$ and $Y$, but that you can only measure $\overset{\sim}{X_i} = X_i + w_i$ with $w_i \overset{i.i.d.}{\sim} \mathcal{N}(0,\sqrt{10})$. Since the $w_i$ are independent of the $X_i$, there is no correlation between the $X_i$ and the $w_i$ so that we have a case of the classical measurement error model. We now illustrate this example in `r ttcode("R")` using the package `r ttcode("mvtnorm")` [@R-mvtnorm].
+Now suppose you gather data on $X$ and $Y$, but that you can only measure $\overset{\sim}{X_i} = X_i + w_i$ with $w_i \overset{i.i.d.}{\sim} \mathcal{N}(0,10)$. Since the $w_i$ are independent of the $X_i$, there is no correlation between the $X_i$ and the $w_i$ so that we have a case of the classical measurement error model. We now illustrate this example in `r ttcode("R")` using the package `r ttcode("mvtnorm")` [@R-mvtnorm].
 
 ```{r, eval = T}
 # set seed
@@ -288,7 +288,7 @@ dat <- data.frame(
 colnames(dat) <- c("X", "Y")
 ```
 
-We now estimate a simple linear regression of $Y$ on $X$ using this sample data and run the same regression again but this time we add i.i.d. $\mathcal{N}(0,\sqrt{10})$ errors added to $X$.
+We now estimate a simple linear regression of $Y$ on $X$ using this sample data and run the same regression again but this time we add i.i.d. $\mathcal{N}(0,10)$ errors added to $X$.
 
 ```{r, eval = T}
 # estimate the model (without measurement error)
@@ -553,7 +553,7 @@ cat('
 <div class = "keyconcept"> 
 <h3 class = "right"> Key Concept 9.6 </h3>
 <h3 class = "left"> Simultaneous Causality Bias </h3>
-So far we have assumed that the changes in the independent variable $X$ are responsible for changes in the dependent variable $Y$. When the reverse is also true, we say that there is *simultaneous causality* between $X$ and $Y$. This reverse causality leads to correlation between $X$ and the error in the population regression of interest such that the coefficient on $X$ is estimated with a bias.
+So far we have assumed that the changes in the independent variable $X$ are responsible for changes in the dependent variable $Y$. When the reverse is also true, we say that there is *simultaneous causality* between $X$ and $Y$. This reverse causality leads to correlation between $X$ and the error in the population regression of interest such that the coefficient on $X$ is estimated with bias.
 </div>
 ')
 ```
@@ -1003,7 +1003,7 @@ As stated in Chapter \\@ref(ttivomra), misspecification of the regression functi
 $$Y_i = X_i^2 $$
 and the linear model $$Y_i = \\beta_0 + \\beta_1 X_i + u_i, \\, u_i \\sim \\mathcal{N}(0,1)$$ using 100 randomly generated observations. Strictly speaking, this finding could be just a coincidence because we consider just one estimate obtained using a single data set. 
 
-In this exercise, you will generate simulation evidence for the bias of $\\hat{\\beta}_0$ in the model $$Y_i = \\beta_0 + X_i \\beta_1 + u_i$$ if the population regression function is $$Y_i = X_i^2.$$
+In this exercise, you have to generate simulation evidence for the bias of $\\hat{\\beta}_0$ in the model $$Y_i = \\beta_0 + \\beta_1 X_i + u_i$$ if the population regression function is $$Y_i = X_i^2.$$
 
 **Instructions:**
 
@@ -1022,4 +1022,44 @@ You can generate random numbers from a uniform distribution using <tt>runif()</t
 </div>') } else {
   cat("\\begin{center}\\textit{This interactive part of URFITE is only available in the HTML version.}\\end{center}")
 }
+```
+
+```{r, echo=FALSE, results='asis'}
+if (my_output=="html") {
+  cat('
+<div  class = "DCexercise">
+
+#### 2. Simulation Study: Errors-in-Variables Bias {-}
+
+Consider again the application of the classical measurement error model introduced in Chapter \\@ref(ttivomra):  
+
+The single regressor $X_i$ is measured with error so that $\\overset{\\sim}{X}_i$ is observed instead. Thus one estimates $\\beta_1$ in
+\\begin{align*}
+  Y_i =& \\, \\beta_0 + \\beta_1 \\overset{\\sim}{X}_i + \\underbrace{\\beta_1 (X_i -\\overset{\\sim}{X}_i) + u_i}_{=v_i} \\\\
+  Y_i =& \\, \\beta_0 + \\beta_1 \\overset{\\sim}{X}_i + v_i
+\\end{align*}
+instead of $$Y_i = \\beta_0 + \\beta_1 X_i + u_i,$$
+
+with the zero mean error $w_i$ being uncorrelated with $X_i$ and $u_i$. Then $\\beta_1$ is inconsistently estimated by OLS:
+\\begin{equation}
+  \\widehat{\\beta}_1 \\xrightarrow{p}{\\frac{\\sigma_{X}^2}{\\sigma_{X}^2 + \\sigma_{w}^2}} \\beta_1
+\\end{equation}
+
+Let $$(X, Y) \\sim \\mathcal{N}\\left[\\begin{pmatrix}50\\\\ 100\\end{pmatrix},\\begin{pmatrix}10 & 5 \\\\ 5 & 10 \\end{pmatrix}\\right].$$ Recall from \\@ref(eq:bnormexpfn) that $E(Y_i\\vert X_i) = 75 + 0.5 X_i$ in this case. Further Assume that $\\overset{\\sim}{X_i} = X_i + w_i$ with $w_i \\overset{i.i.d}{\\sim} \\mathcal{N}(0,10)$.
+
+As mentioned in Exercise 1, Chapter \\@ref(ttivomra) discusses the consequences of the measurement error for the OLS estimator of $\\beta_1$ in this setting based on a *single* sample and and thus just one estimate. Strictly speaking, the conclusion made could be wrong because the oberseved bias may be due to random variation. A Monto Carlo simulation is more appropriate here.
+
+**Instructions:**
+
+Show that $\\beta_1$ is estimated with a bias using a simulation study. Make sure to use the definitions suggested in the skeleton code in <tt>script.R</tt> to complete the following tasks:
+
++ Generate 1000 estimates of $\\beta_1$ in the simple regression model $$Y_i = \\beta_0 + \\beta_1 X_i + u_i.$$ Use <tt>rmvnorm()</tt> to generate samples of 100 random observations from the bivariate normal distribution stated above.
+
++ Save the estimates in <tt>beta_hats</tt>.
+
++ Compute the sample mean of the estimates.
+
+<iframe src="DCL/ex9_2.html" frameborder="0" scrolling="no" style="width:100%;height:400px"></iframe>
+
+</div>')}
 ```

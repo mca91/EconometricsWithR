@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+         <html>
+         <head>
+<meta charset='utf-8'/>
+<script async='async' src='https://cdn.datacamp.com/dcl-react-dev.js.gz'></script>
+<style>
+.DCexercise .datacamp-exercise {
+     border: 2px solid #3D678D;
+     border-radius: 10px 10px 10px 10px !important;
+     }
+
+     *[class*="lm_"], .ace_gutter, textarea[class*="ace_"], .ace_scroller {
+     background-color: #F0EFF0 !important;
+     }
+
+     div[class*="Editor-module__editor"], div[class*="dcl__Footer"] {
+     background-color: #3D678D !important; 
+     } 
+
+     *[class*="lm_"] {
+     border-radius: 10px 10px 0px 0px !important;
+     }
+
+     div[class*="dcl__Footer"] {
+     border-radius: 0px 0px 10px 10px !important;
+     }
+
+     .lm_content {
+     border-radius: 0px !important;
+     }
+
+     .lm_splitter {
+     background-color: #3D678D !important; 
+     width: 3px !important;
+     }
+
+     .lm_drag_handle {
+     background: transparent !important;
+     }
+
+     div[class*="dcl__index-module"] {
+     outline-color: transparent !important;
+     border-radius: 10px !important;
+     }
+
+     button[class*="secondary-light"] {
+     background-color: #FF0000;
+     }
+</style>
+         </head>
+         <body>
+          
+          <div data-datacamp-exercise data-lang="r" data-height="auto">
+  
+           <code data-type="pre-exercise-code">
+           library(readr)
+           Titanic_2 <- read_csv("https://stanford.io/2O9RUCF")[,-3]
+           colnames(Titanic_2) = c("Survived", "Class", "Sex", "Age", "Siblings", "Parents", "Fare")
+           </code>
+           
+           <code data-type="sample-code">
+           # attach the `AER` package
+           
+           
+           # encode `Class` as a factor
+
+             
+           # fit the linear probability model, assign it to `surv_mod`
+           
+           
+           # obtain a robust summary of the model coefficients
+
+
+           # predict the probability of survival for all passenger classes
+
+           
+           </code>
+           
+           <code data-type="solution">
+           # attach the `AER` package
+           library(AER)
+
+           # encode `Class` as a factor
+           Titanic_2$Class <- as.factor(Titanic_2$Class)
+
+           # fit the linear probability model, assign it to `surv_mod`
+           surv_mod <- lm(Survived ~ Class, data = Titanic_2)
+           
+           # obtain a robust summary of the model coefficients
+           coeftest(surv_mod, vcovHC)
+           
+           # predict the probability of survival for all passenger classes
+           predict(surv_mod, newdata = data.frame("Class" = as.factor(1:3)))
+           </code>
+             
+           <code data-type="sct">
+           test_object("Titanic_2")
+           test_or({
+           test_object("surv_mod")
+           },{
+           f <- ex() %>% override_solution("surv_mod<-lm(Titanic_2$Survived ~ Boston$Class)") %>% check_function("lm")
+           f %>% check_arg("formula") %>% check_equal()
+           },{
+           f <- ex() %>% override_solution("attach(Titanic_2);surv_mod<-lm(Survived ~ Class)") %>% check_function("lm")
+           f %>% check_arg("formula") %>% check_equal()
+           }
+           )
+           test_function("coeftest", args = c("x", "vcov."))
+           test_function("predict", args = c("object", "newdata"))
+           success_msg("Nice. The coefficients on both dummy variables are negative and significant. In particular, the probability of survival is reported to be highest for first class passengers and lowest for passengers in the third class. This seems plausible in view of the discriptive analyis done in Exercise 3.")
+           </code>
+           
+           </div>
+           </body>
+          </html>
