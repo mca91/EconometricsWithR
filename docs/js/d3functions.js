@@ -2,9 +2,9 @@
 
 var  eqtext = function(coefs) {
   if (coefs[0].m < 0) { 
-    return( "$Y = " + d3.round(coefs[0].b,2) + " - " + Math.abs(d3.round(coefs[0].m,2)) + " \\cdot X$" ); 
+    return( "$\\widehat{Y} = " + d3.round(coefs[0].b,2) + " - " + Math.abs(d3.round(coefs[0].m,2)) + " \\cdot X$" ); 
 } else {
-    return( "$Y = " + d3.round(coefs[0].b,2) + " + " + d3.round(coefs[0].m,2) + " \\cdot X$" );
+    return( "$\\widehat{Y} = " + d3.round(coefs[0].b,2) + " + " + d3.round(coefs[0].m,2) + " \\cdot X$" );
 } 
 };
 
@@ -66,7 +66,7 @@ var drawline = function(data){
 
 svg.append("text")
      .attr("class","subject")
-     .attr("x", w-200)
+     .attr("x", w-225)
      .attr("y", 40)
      .attr("text-anchor", "left")
      .text("Estimated Model:")
@@ -74,8 +74,8 @@ svg.append("text")
 
 svg.append("foreignObject")
      .attr("class", "SSR")
-         .attr("x", w-200)
-         .attr("y", 75)
+         .attr("x", w-225)
+         .attr("y", 80)
          .attr("width",100)
          .attr("height",50)
          .attr("text-anchor", "left")
@@ -83,8 +83,8 @@ svg.append("foreignObject")
 
 svg.append("foreignObject")
      .attr("class", "R2")
-         .attr("x", w-200)
-         .attr("y", 90)
+         .attr("x", w-225)
+         .attr("y", 95)
          .attr("width",100)
          .attr("height",50)
          .attr("text-anchor", "left")
@@ -92,7 +92,7 @@ svg.append("foreignObject")
 
   svg.append("foreignObject")
      .attr("class", "equation")
-     .attr("x", w-200)
+     .attr("x", w-225)
      .attr("y", 60)
      .attr("width",150)
      .attr("height",50)
@@ -102,7 +102,7 @@ svg.append("foreignObject")
 
   svg.append("text")
      .attr("class","subject")
-     .attr("x", w-200)
+     .attr("x", w-225)
      .attr("y", 135)
      .attr("text-anchor", "left")
      .text("Data:")
@@ -111,7 +111,7 @@ svg.append("foreignObject")
 
     svg.append("foreignObject")
        .attr("class", "n")
-           .attr("x", w-200)
+           .attr("x", w-225)
            .attr("y", 150)
            .attr("width",100)
            .attr("height",50)
@@ -120,7 +120,7 @@ svg.append("foreignObject")
 
     svg.append("foreignObject")
      .attr("class", "meanx")
-         .attr("x", w-200)
+         .attr("x", w-225)
          .attr("y", 170)
          .attr("width",100)
          .attr("height",50)
@@ -129,7 +129,7 @@ svg.append("foreignObject")
 
     svg.append("foreignObject")
      .attr("class", "meany")
-         .attr("x", w-200)
+         .attr("x", w-225)
          .attr("y", 190)
          .attr("width",100)
          .attr("height",50)
@@ -138,13 +138,12 @@ svg.append("foreignObject")
 
   svg.append("foreignObject")
      .attr("class", "cor draggable")
-         .attr("x", w-200)
+         .attr("x", w-225)
          .attr("y", 215)
          .attr("width",100)
          .attr("height",50)
          .attr("text-anchor", "left")
-         .text("$Cor(X,Y) = " + d3.round(cor(data),2) + "$");
-
+         .text("$\\text{Cor}(X,Y) = " + d3.round(cor(data),2) + "$");
 
   svg.selectAll("text.meany, .meanx, .cor, .n, .equation, .SSR, .subject, .R2")
    .style({
@@ -186,7 +185,7 @@ var transitionline = function(data){
          .text("$SSR = "+ d3.round(SSR(data),2) + "$");
 
       svg.select("foreignObject.cor")
-         .text("$Cor(X,Y) = " + d3.round(cor(data),3) + "$");
+         .text("$\\text{Cor}(X,Y) = " + d3.round(cor(data),3) + "$");
 
       svg.select("foreignObject.R2")
          .text("$R^2 = " + d3.round(R2(data),2) + "$");

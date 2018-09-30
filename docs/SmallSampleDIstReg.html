@@ -25,14 +25,25 @@
 			.axis path,
 			.axis line {
 				fill: none;
-				stroke: black;
+				stroke: white;
 				shape-rendering: crispEdges;
 			}
 
 			text, #durations, .slider {
 				font-family: Century Gothic, CenturyGothic, AppleGothic, sans-serif;
+				fill: white;
 				font-size: 10px;
 			}
+
+			.d3slider-rect-value {
+			  fill: white;
+			  stroke: none;
+			}
+
+			.tick line{
+				stroke:white;
+			}
+
 
 		</style>
 	</head>
@@ -59,9 +70,9 @@
 		  		"float":"left",
 		  		"width":""+w+"px",
 		  		"height":"100px",
-		  		"border-radius":"5px",
-    			"border":"1px solid #ccc",
-    			"font-size":"12px"
+    			"font-size":"12px",
+    			"background-color":"#356185",
+    			"color":"white"
 		  	}
 		  )
 		  .style("margin", "0 0 5px 0px");
@@ -125,8 +136,8 @@
 						.attr("height", h)
 						.style(
 		  	{
-		  		"border-radius":"5px",
-    			"border":"1px solid #ccc"
+    			"background-color":"#356185",
+    			"color":"white"
 		  	});
 
 
@@ -146,8 +157,8 @@
 
     		// draw path
 			svg.append("path")
-			.attr("class", "reg")
-        	.style("stroke", "black")
+			    .attr("class", "reg")
+        	.style("stroke", "white")
         	.style("stroke-width", "1.5px")
         	.attr("d", path(regline))
         	.attr("clip-path", "url(#chart-area)");
@@ -161,7 +172,7 @@
 
         	svg.append("path")
 			.attr("class", "trueline")
-        	.style("stroke", "green")
+        	.style("stroke", "red")
         	.style("stroke-width", "1.5px")
         	.attr("d", path(tl))
    			.attr("clip-path", "url(#chart-area)");
@@ -179,8 +190,7 @@
 			svg.append("g")
 			   .attr("id", "circles")
 			   .attr("clip-path", "url(#chart-area)")
-			   .style("fill", "steelblue")
-			   .style("opacity", 0.85)
+			   .style("fill", "white")
 			   .selectAll("circle")
 			   .data(dataset)
 			   .enter()
@@ -197,12 +207,14 @@
 			svg.append("g")
 				.attr("class", "x axis")
 				.attr("transform", "translate(0," + (h - padding) + ")")
+				.attr("fill", "white")
 				.call(xAxis);
 
 			//Create Y axis
 			svg.append("g")
 				.attr("class", "y axis")
 				.attr("transform", "translate(" + padding + ",0)")
+				.attr("fill", "white")
 				.call(yAxis);
 
 			svg.append("foreignObject")
@@ -217,8 +229,8 @@
 			   .attr("x", 40)
 			   .attr("y", 40)
 			   .attr("text-anchor", "left")
-			   .text("$Y = 100 + 3 \\cdot X$")
-			   .style("color","green");
+			   .text("$\\mathrm{E}(Y\\vert X) = 100 + 3 \\cdot X$")
+			   .style("color","red");
 
 			svg.selectAll("foreignObject.equation, .trequation")
 			   .style("font-size","10pt");
@@ -227,8 +239,6 @@
 			   MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
 
 // Histogram
-
-	var color = "steelblue";
 
 	// function for x axis ticks
 	var tickvals = function(hist) {
@@ -260,11 +270,6 @@ var data = d3.layout.histogram()
 
 var yMax = d3.max(data, function(d){return d.length});
 var yMin = d3.min(data, function(d){return d.length});
-var colorScale = d3.scale.linear()
-            .domain([yMin, yMax])
-            .range([d3.rgb(color).brighter(), d3.rgb(color).darker()]);
-
-
 
 var y = d3.scale.linear()
     .domain([0, yMax])
@@ -288,7 +293,7 @@ bar.append("rect")
     .attr("x", 1)
     .attr("width", (x(data[0].dx) - x(0)) - 1)
     .attr("height", function(d) { return h - padding - y(d.y); })
-    .attr("fill", function(d) { return colorScale(d.y) });
+    .attr("fill", "white");
 
 bar.append("text")
     .attr("dy", ".75em")
@@ -296,7 +301,7 @@ bar.append("text")
     .attr("x", (x(data[0].dx) - x(0)) / 2)
     .attr("text-anchor", "middle")
     .style({
-    	"fill": "#999999",
+    	"fill": "white",
     	"font": "10px sans-serif"
     	   })
     .text(function(d) { return formatCount(d.y); });
@@ -304,6 +309,7 @@ bar.append("text")
 svg.append("g")
     .attr("class", "x axis H")
 	.attr("transform", "translate(0," + (h - padding) + ")")
+	.attr("fill", "white")
     .call(xAxisH)
     .selectAll("text")
     .attr("dy", ".35em")
@@ -323,7 +329,7 @@ svg.append("g")
      				.attr("y2", 0+1.1*padding)
      				.style("stroke-dasharray", ("4, 5"))
      				.style("stroke-width","1.5")
-     				.style("stroke", "green");
+     				.style("stroke", "red");
 
      		  svg.append("text")
      		  	 .attr("class", "truev")
@@ -332,7 +338,7 @@ svg.append("g")
      		  	 .text("3")
      		  	 .style("font", "8pt sans-serif")
      		  	 .style("text-anchor", "middle")
-     		  	 .style("fill", "green");
+     		  	 .style("fill", "red");
 
 // Refresh
 
@@ -353,7 +359,6 @@ var rep = function() {
 					   .duration(transdur*0.5)
 					   .each("start", function() {
 						   d3.select(this)
-						     .attr("fill", "red")
 						     .attr("r", 3.5);
 					   })
 					   .attr("cx", function(d) {
@@ -366,7 +371,6 @@ var rep = function() {
 						   d3.select(this)
 						     .transition()
 						     .duration(transdur*0.5)
-						     .attr("fill", "steelblue")
 						     .attr("r", 2.5);
 					   });
 
@@ -434,9 +438,6 @@ var rep = function() {
          	var yMax = d3.max(data, function(d){return d.length});
 			var yMin = d3.min(data, function(d){return d.length});
 			y.domain([0, yMax]);
-			var colorScale = d3.scale.linear()
-            						 .domain([yMin, yMax])
-            						 .range([d3.rgb(color).brighter(), d3.rgb(color).darker()]);
 
             var bar = svg.selectAll(".bar").data(data);
 
@@ -462,7 +463,7 @@ var rep = function() {
       .attr("x", 1)
       .attr("width", (x(data[0].dx) - x(0)) - 1)
       .attr("height", function(d) { return h - padding - y(d.y); })
-      .attr("fill", function(d) { return colorScale(d.y) });
+      .attr("fill", "white");
 
   bar.select("text")
       .transition()

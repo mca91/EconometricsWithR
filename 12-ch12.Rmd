@@ -11,7 +11,7 @@ A general technique for obtaining a consistent estimator of the coefficient of i
 
 Just like for the previous chapter, the packages `r ttcode("AER")` [@R-AER] and `r ttcode("stargazer")` [@R-stargazer] are required for reproducing the code presented in this chapter. Check whether the code chunk below executes without any error messages.
 
-```{r, warning=FALSE, message=FALSE, eval=FALSE}
+```{r, warning=FALSE, message=FALSE}
 library(AER)
 library(stargazer)
 ```
@@ -543,7 +543,7 @@ coeftest(cig_ivreg_diff3, vcov = vcovHC, type = "HC1")
 
 We proceed by generating a tabulated summary of the estimation results using `r ttcode("stargazer()")`.
 
-```{r}
+```{r, eval = F}
 # gather robust standard errors in a list
 rob_se <- list(sqrt(diag(vcovHC(cig_ivreg_diff1, type = "HC1"))),
                sqrt(diag(vcovHC(cig_ivreg_diff2, type = "HC1"))),
@@ -564,7 +564,10 @@ stargazer(cig_ivreg_diff1, cig_ivreg_diff2,cig_ivreg_diff3,
 <!--html_preserve-->
 
 ```{r, message=F, warning=F, results='asis', echo=F, eval=my_output == "html"}
-library(stargazer)
+# gather robust standard errors in a list
+rob_se <- list(sqrt(diag(vcovHC(cig_ivreg_diff1, type = "HC1"))),
+               sqrt(diag(vcovHC(cig_ivreg_diff2, type = "HC1"))),
+               sqrt(diag(vcovHC(cig_ivreg_diff3, type = "HC1"))))
 
 stargazer(cig_ivreg_diff1, cig_ivreg_diff2,cig_ivreg_diff3,
   header = FALSE, 
@@ -644,7 +647,7 @@ cig_OR_test
 
 ```{r}
 # compute correct p-value for J-statistic
-pchisq(cig_OR_test[2,5], df = 1, lower.tail = FALSE)
+pchisq(cig_OR_test[2, 5], df = 1, lower.tail = FALSE)
 ```
 
 Since this value is smaller than $0.05$ we reject the hypothesis that both instruments are exogenous at the level of $5\%$. This means one of the following: 
@@ -674,3 +677,101 @@ This section is not directly related to applications in `r ttcode("R")` which is
 Besides treating IV estimation, we have also discussed how to test for weak instruments and how to conduct an overidentifying restrictions test when there are more instruments than endogenous regressors using `r ttcode("R")`. 
 
 An empirical application has shown how `r ttcode("ivreg()")` can be used to estimate the long-run elasticity of demand for cigarettes based on `r ttcode("CigarettesSW")`, a panel data set on cigarette consumption and economic indicators for all 48 continental U.S. states for 1985 and 1995. Different sets of instruments were used and it has been argued why using the general sales tax as the only instrument is the preferred choice. The estimate of the demand elasticity deemed the most trustworthy is $-0.94$. This estimate suggests that there is a remarkable negative long-run effect on cigarette consumption of increasing prices.
+
+## Exercises
+
+```{r, echo=FALSE, results='asis'}
+if (my_output == "html") {
+  cat('
+<div  class = "DCexercise">
+
+#### 1. The College Distance Data {-}
+
+There are many studies in labor economics which deal with the issue of estimating human capital earnings functions which explain wage income by education and working experience. A prominent example is Card (1995) who investigaes the economic return to schooling and uses the distance from a college as an instrumental variable.
+
+The exercises in this chapter deal with the dataset <tt>CollegeDistance</tt> which is a survey of high school graduates with variables coded for wages, education, average tuition and a number of socio-economic variables. It also includes the distance from a college while the survey participants were in high school. <tt>CollegeDistance</tt> comes with the <tt>AER</tt> package.
+
+**Instructions:**
+
++ Attach the <tt>AER</tt> package and load the <tt>CollegeDistance</tt> data.
+
++ Get an overview over the data set.
+
++ The variable <tt>distance</tt> (the distance to the closest 4-year college in 10 miles) will serve as an instrument in later exercises. Use a histogram to visualize the distribution of <tt>distance</tt>.
+
+<iframe src="DCL/ex12_1.html" frameborder="0" scrolling="no" style="width:100%;height:330px"></iframe>
+
+**Hints:**
+
++ Use <tt>data()</tt> to attach the data set.
+
++ The function <tt>hist()</tt> can be used to generate histograms.
+
+</div>')}
+```
+
+
+```{r, echo=FALSE, results='asis'}
+if (my_output == "html") {
+  cat('
+<div  class = "DCexercise">
+
+#### 2. The Selection Problem {-}
+
+Regressing <tt>wage</tt> on <tt>education</tt> and control variables to estimate the human capital earnings function is problematic because education is not randomly assigned across the surveyed: individuals make their own education choices and so measured differences in earnings between individuals with different levels of education depend on how these choices are made. In the literature this is referred to as a *selection problem*. This selection problem implies that <tt>education</tt> is *endogenous* so the OLS estimate will be biased and we cannot make valid inference regarding the true coefficient. 
+
+In this exercise you are asked to estimate two regressions which both do not yield trustworthy estimates of the coefficient on education due to the issue sketched above. Later you will compare the results to those obtained using the instrumental variables approach applied by Card (1995)
+
+The <tt>AER</tt> package has been attached. The data set <tt>CollegeDistance</tt> is available in your global environment.
+
+**Instructions:**
+
++ Regress <tt>wage</tt> on <tt>education</tt>. Save the result to <tt>wage_mod_1</tt>.
+
++ Augment the model by including the regressors <tt>unemp</tt>, <tt>hispanic</tt>, <tt>af-am</tt>, <tt>female</tt> and <tt>urban</tt>. Save the result to <tt>wage_mod_2</tt>
+
++ Obtain summaries on the estimated coefficients in both models.
+
+<iframe src="DCL/ex12_2.html" frameborder="0" scrolling="no" style="width:100%;height:330px"></iframe>
+
+</div>')}
+```
+
+```{r, echo=FALSE, results='asis'}
+if (my_output == "html") {
+  cat('
+<div  class = "DCexercise">
+
+#### 3. An Instrumental Variables Regression Model {-}
+
+The above discussed selection problem renders the regression estimates in Exercise 2 implausible which is why Card (1995) suggests instrumental variables regression that uses college distance as an instrument for education. 
+
+Why use college distance as an instrument? The logic behind this is that distance from a college will be strongly correlated to the decision to pursue a college degree (relevance) but may not predict wages apart from increased education (exogeneity) so college distance could be considered a valid instrument (recall the definition of a valid instrument stated at the beginning of Chapter \\@ref(TIVEWASRAASI)).
+
+The <tt>AER</tt> package has been attached. The data set <tt>CollegeDistance</tt> is available in your global environment.
+
+**Instructions:**
+
++ Compute the correlations of the instrument <tt>distance</tt> with the edogenous regressor <tt>education</tt> and the dependent variable <tt>wage</tt>.
+
++ How much of the variation in <tt>education</tt> is explained by the *first-stage-regression* on <tt>distance</tt>? Save the result to <tt>R2</tt>.
+
++ Repeat Exercise 2 with IV regression, i.e., employ <tt>distance</tt> as an instrument for <tt>education</tt> in both regressions using <tt>ivreg()</tt>. Save the results to <tt>wage_mod_iv1</tt> and <tt>wage_mod_iv2</tt>. Obtain robust coefficient summaries for both models.
+
+<iframe src="DCL/ex12_3.html" frameborder="0" scrolling="no" style="width:100%;height:410px"></iframe>
+
+</div>')}
+```
+
+
+```{r, echo=FALSE, results='asis'}
+if (my_output == "html") {
+  cat('
+<div  class = "DCexercise">
+
+#### 4. An Instrumental Variables Regression Model {-}
+
+We are asserting the strength and validity of the instrument in question (more on that in a bit). We can imagine some problems with an instrument like college distance; families who value education may move into neighborhoods close to colleges or neighborhoods near colleges may have stronger job markets. Both of those features may invalidate the instrument by introducing unobserved variables which influence lifetime earnings but cannot be captured in our measure of schooling. However, for our purposes it may work.
+
+</div>')}
+```
