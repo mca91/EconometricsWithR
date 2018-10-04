@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+         <html>
+         <head>
+<meta charset='utf-8'/>
+<script async='async' src='https://cdn.datacamp.com/dcl-react-dev.js.gz'></script>
+<style>
+.DCexercise .datacamp-exercise {
+     border: 2px solid #3D678D;
+     border-radius: 10px 10px 10px 10px !important;
+     }
+
+     *[class*="lm_"], .ace_gutter, textarea[class*="ace_"], .ace_scroller {
+     background-color: #F0EFF0 !important;
+     }
+
+     div[class*="Editor-module__editor"], div[class*="dcl__Footer"] {
+     background-color: #3D678D !important; 
+     } 
+
+     *[class*="lm_"] {
+     border-radius: 10px 10px 0px 0px !important;
+     }
+
+     div[class*="dcl__Footer"] {
+     border-radius: 0px 0px 10px 10px !important;
+     }
+
+     .lm_content {
+     border-radius: 0px !important;
+     }
+
+     .lm_splitter {
+     background-color: #3D678D !important; 
+     width: 3px !important;
+     }
+
+     .lm_drag_handle {
+     background: transparent !important;
+     }
+
+     div[class*="dcl__index-module"] {
+     outline-color: transparent !important;
+     border-radius: 10px !important;
+     }
+
+     button[class*="secondary-light"] {
+     background-color: #FF0000;
+     }
+</style>
+         </head>
+         <body>
+          
+          <div data-datacamp-exercise data-lang="r" data-height="450px">
+  
+           <code data-type="pre-exercise-code">
+           library(AER)
+           data(CollegeDistance)
+           </code>
+           
+           <code data-type="sample-code">
+           # complete the function `TSLS()`
+           TSLS <- function(Y, X, W = NULL, Z, data) {
+           fs_model <- lm(as.formula(paste(..., collapse = "+"))), data = data)
+           X_fitted <- ...
+           
+           ss_model <- lm(as.formula(paste(..., paste(..., collapse = "+"))),  data = data)
+
+           return(coefficients(...))}
+          
+            # use `TSLS()` to reproduce the estimates from Exercise 3
+          
+           </code>
+           
+           <code data-type="solution">
+           # complete the function `TSLS()`
+           TSLS <- function(Y, X, W = NULL, Z, data) {
+            # first stage regression & fitted values
+            fs_model <- lm(as.formula(paste(X, "~", paste(c(Z, W), collapse = "+"))), data = data)
+            X_fitted <- fs_model$fitted.values
+  
+            # second-stage regression
+            ss_model <- lm(as.formula(paste(Y, "~", paste(W, collapse = "+"), "+ X_fitted")),  data = data)
+
+            # return coefficients of second stage
+            return(
+              coefficients(ss_model)
+            )}
+          
+           # use `TSLS()` to reproduce the estimates from Exercise 3
+           TSLS(Y = "log(wage)", X = "education", Z = "distance", data = CollegeDistance)
+           
+           TSLS(Y = "log(wage)", 
+                X = "education", 
+                W = c("unemp", "ethnicity", "gender", "urban"), 
+                Z = "distance", 
+                data = CollegeDistance)
+           </code>
+           <code data-type="sct">
+            ex() %>% check_fun_def("TSLS") %>% {
+             check_arguments(.)
+             check_call(., Y = "log(wage)", X = "education", Z = "distance", data = CollegeDistance) %>% check_result %>% check_equal
+            }
+          
+            ex() %>% check_function("TSLS", index = 1) %>% {
+              check_arg(., "Y") %>% check_equal()
+              check_arg(., "X") %>% check_equal()
+              check_arg(., "Z") %>% check_equal()
+            } 
+            ex() %>% check_function("TSLS", index = 2) %>% {
+              check_arg(., "Y") %>% check_equal()
+              check_arg(., "X") %>% check_equal()
+              check_arg(., "W") %>% check_equal()
+              check_arg(., "Z") %>% check_equal()
+            } 
+
+           success_msg("Nicely done!")
+           </code>
+           
+           </div></body>
+          </html>

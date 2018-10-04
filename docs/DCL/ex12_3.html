@@ -62,9 +62,9 @@
            
            # perform the first stage regression and compute the fraction of explained variation
           
-           # regress `wage` on `education` and save the result to `wage_mod_1`
+           # regress `log(wage)` on `education` and save the result to `wage_mod_1`
            
-           # regress `wage` on `education` and controls and save the result to `wage_mod_2`
+           # regress `log(wage)` on `education` and controls and save the result to `wage_mod_2`
            
            # obtain robust coefficient summaries on both models
            
@@ -77,15 +77,15 @@
            # perform the first stage regression and compute the fraction of explained variation
            R2 <- summary(lm(education ~ distance, data = CollegeDistance))$r.squared  
            
-           # estimate the IV regression of `wage` on `education` using distance as the instrument and save the result to `wage_mod_iv1`
-           wage_mod_iv1 <- ivreg(wage ~ education | distance, data = CollegeDistance)           
+           # estimate the IV regression of `log(wage)` on `education` using distance as the instrument and save the result to `wage_mod_iv1`
+           wage_mod_iv1 <- ivreg(log(wage) ~ education | distance, data = CollegeDistance)           
            
-           # perform TSLS regression of `wage` on `education` and controls using distance as the instrument and save the result to `wage_mod_iv12`
-           wage_mod_iv12 <- ivreg(wage ~ unemp + ethnicity + gender + urban + education | . - education + distance, data = CollegeDistance) 
+           # perform TSLS regression of `log(wage)` on `education` and controls using distance as the instrument and save the result to `wage_mod_iv2`
+           wage_mod_iv2 <- ivreg(log(wage) ~ unemp + ethnicity + gender + urban + education | . - education + distance, data = CollegeDistance) 
            
            # obtain robust coefficient summaries on both models
            coeftest(wage_mod_iv1, vcov. = vcovHC, type = "HC1")
-           coeftest(wage_mod_iv12, vcov. = vcovHC, type = "HC1")
+           coeftest(wage_mod_iv2, vcov. = vcovHC, type = "HC1")
 
            </code>
            <code data-type="sct">
@@ -95,26 +95,26 @@
              
             test_or({
             
-              f <- ex() %>% override_solution("attach(CollegeDistance); wage_mod_iv1 <- ivreg(wage ~ education | distance); wage_mod_iv12 <- ivreg(wage ~ unemp + ethnicity + gender + urban + education | . - education + distance); coeftest(wage_mod_iv1, vcov. = vcovHC, type = \"HC1\"); coeftest(wage_mod_iv12, vcov. = vcovHC, type = \"HC1\")")
+              f <- ex() %>% override_solution("attach(CollegeDistance); wage_mod_iv1 <- ivreg(log(wage) ~ education | distance); wage_mod_iv2 <- ivreg(log(wage) ~ unemp + ethnicity + gender + urban + education | . - education + distance); coeftest(wage_mod_iv1, vcov. = vcovHC, type = \"HC1\"); coeftest(wage_mod_iv2, vcov. = vcovHC, type = \"HC1\")")
               
               f %>% check_function("ivreg", index = 1) %>% check_arg("formula") %>% check_equal()
               f %>% check_function("ivreg", index = 2) %>% check_arg("formula") %>% check_equal()
               
               f %>% check_object("wage_mod_iv1")
-              f %>% check_object("wage_mod_iv12")
+              f %>% check_object("wage_mod_iv2")
 
               f %>% check_function("coeftest", index = 1) %>%  check_arg("vcov.") %>% check_equal()
               f %>% check_function("coeftest", index = 2) %>%  check_arg("vcov.") %>% check_equal()
             
             },{
             
-              f <- ex() %>% override_solution("wage_mod_iv1 <- ivreg(CollegeDistance$wage ~ CollegeDistance$education | CollegeDistance$distance); wage_mod_iv12 <- ivreg(CollegeDistance$wage ~ CollegeDistance$unemp + CollegeDistance$ethnicity + CollegeDistance$gender + CollegeDistance$urban + CollegeDistance$education | . - CollegeDistance$education + CollegeDistance$distance); coeftest(wage_mod_iv1, vcov. = vcovHC, type = \"HC1\"); coeftest(wage_mod_iv12, vcov. = vcovHC, type = \"HC1\")")
+              f <- ex() %>% override_solution("wage_mod_iv1 <- ivreg(log(CollegeDistance$wage) ~ CollegeDistance$education | CollegeDistance$distance); wage_mod_iv2 <- ivreg(log(CollegeDistance$wage) ~ CollegeDistance$unemp + CollegeDistance$ethnicity + CollegeDistance$gender + CollegeDistance$urban + CollegeDistance$education | . - CollegeDistance$education + CollegeDistance$distance); coeftest(wage_mod_iv1, vcov. = vcovHC, type = \"HC1\"); coeftest(wage_mod_iv2, vcov. = vcovHC, type = \"HC1\")")
               
               f %>% check_function("ivreg", index = 1) %>% check_arg("formula") %>% check_equal()
               f %>% check_function("ivreg", index = 2) %>% check_arg("formula") %>% check_equal()
               
               f %>% check_object("wage_mod_iv1")
-              f %>% check_object("wage_mod_iv12")
+              f %>% check_object("wage_mod_iv2")
 
               f %>% check_function("coeftest", index = 1) %>%  check_arg("vcov.") %>% check_equal()
               f %>% check_function("coeftest", index = 2) %>%  check_arg("vcov.") %>% check_equal()

@@ -58,20 +58,20 @@
            </code>
            
            <code data-type="sample-code">
-           # regress `wage` on `education` and save the result to `wage_mod_1`
+           # regress the log `wage` on `education` and save the result to `wage_mod_1`
            
-           # regress `wage` on `education` and controls and save the result to `wage_mod_2`
+           # regress the log of `wage` on `education` and controls and save the result to `wage_mod_2`
            
            # obtain robust coefficient summaries on both models
            
            </code>
            
            <code data-type="solution">
-           # regress `wage` on `education` and save the result to `wage_mod_1`
-           wage_mod_1 <- lm(wage ~ education, data = CollegeDistance)           
+           # regress the log of `wage` on `education` and save the result to `wage_mod_1`
+           wage_mod_1 <- lm(log(wage) ~ education, data = CollegeDistance)           
            
-           # regress `wage` on `education` and controls and save the result to `wage_mod_2`
-           wage_mod_2 <- lm(wage ~ unemp + ethnicity + gender + urban + education, data = CollegeDistance)     
+           # regress log of `wage` on `education` and controls and save the result to `wage_mod_2`
+           wage_mod_2 <- lm(log(wage) ~ unemp + ethnicity + gender + urban + education, data = CollegeDistance)     
            
            # obtain robust coefficient summaries on both models
            coeftest(wage_mod_1, vcov. = vcovHC, type = "HC1")
@@ -81,7 +81,7 @@
            <code data-type="sct">
             test_or({
             
-              f <- ex() %>% override_solution("attach(CollegeDistance); wage_mod_1 <- lm(wage ~ education); wage_mod_2 <- lm(wage ~ unemp + ethnicity + gender + urban + education); coeftest(wage_mod_1, vcov. = vcovHC, type = \"HC1\"); coeftest(wage_mod_2, vcov. = vcovHC, type = \"HC1\")")
+              f <- ex() %>% override_solution("attach(CollegeDistance); wage_mod_1 <- lm(log(wage) ~ education); wage_mod_2 <- lm(log(wage) ~ unemp + ethnicity + gender + urban + education); coeftest(wage_mod_1, vcov. = vcovHC, type = \"HC1\"); coeftest(wage_mod_2, vcov. = vcovHC, type = \"HC1\")")
               
               f %>% check_function("lm", index = 1) %>% check_arg("formula") %>% check_equal()
               f %>% check_function("lm", index = 2) %>% check_arg("formula") %>% check_equal()
@@ -94,7 +94,7 @@
             
             },{
             
-              f <- ex() %>% override_solution("wage_mod_1 <- lm(CollegeDistance$wage ~ CollegeDistance$education); wage_mod_2 <- lm(CollegeDistance$wage ~ CollegeDistance$unemp + CollegeDistance$ethnicity + CollegeDistance$gender + CollegeDistance$urban + CollegeDistance$education); coeftest(wage_mod_1, vcov. = vcovHC, type = \"HC1\"); coeftest(wage_mod_2, vcov. = vcovHC, type = \"HC1\")")
+              f <- ex() %>% override_solution("wage_mod_1 <- lm(log(CollegeDistance$wage) ~ CollegeDistance$education); wage_mod_2 <- lm(log(CollegeDistance$wage) ~ CollegeDistance$unemp + CollegeDistance$ethnicity + CollegeDistance$gender + CollegeDistance$urban + CollegeDistance$education); coeftest(wage_mod_1, vcov. = vcovHC, type = \"HC1\"); coeftest(wage_mod_2, vcov. = vcovHC, type = \"HC1\")")
               
               f %>% check_function("lm", index = 1) %>% check_arg("formula") %>% check_equal()
               f %>% check_function("lm", index = 2) %>% check_arg("formula") %>% check_equal()
