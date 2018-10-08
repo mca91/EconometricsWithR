@@ -1,4 +1,4 @@
-![alt text](https://github.com/mca91/EconometricsWithR/docs/images/cover.png)
+<img src="https://github.com/mca91/EconometricsWithR/blob/master/docs/images/cover.png" width="40%" height="40%">
 
 [Introduction to Econometrics](https://emwikts1970.github.io/URFITE-Bookdown/)
 
