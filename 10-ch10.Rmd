@@ -649,28 +649,74 @@ For the course of this section, you will work with <tt>Guns</tt>, a balanced pan
 <div  class = "DCexercise">
 
 #### 1. The Guns Data Set {-}
- 
-
 
 **Instructions:**
 
+  + Load both the package and the data set. 
   
+  + Get yourself an overview over the data set using the <tt>summary()</tt> function. Use <tt>?Guns</tt> for detailed information on the variables.
+
+  + Verify that <tt>Guns</tt> is a balanced panel. To do so extract the number of years and states from the data set and assign them to the predefined variables <tt>years</tt> and <tt>states</tt>, respectively. Afterwards use these variables within a logical comparison. In particular, what has to hold for a balanced panel?
         
 <!--html_preserve-->
 
 <div data-datacamp-exercise data-lang="r">
         
   <code data-type="pre-exercise-code">
-  library(AER)
   </code>
   
   <code data-type="sample-code">
+  # attach the package and load the data set
+  
+  
+  
+  # obtain an overview over the data set
+  
+  
+  # verify that Guns is a balanced panel
+  years  <- 
+  states <- 
+  
+  
   </code>
   
   <code data-type="solution">
+  # attach the package and load the data set
+  library(AER)  
+  data("Guns")  
+    
+  # obtain an overview over the data set
+  summary(Guns)
+  
+  # verify that Guns is a balanced panel
+  years  <- length(levels(Guns$year))
+  states <- length(levels(Guns$state))
+  years*states == nrow(Guns)
+  
   </code>
   
   <code data-type="sct">
+  ex %>% check_library("AER")
+  test_function("data")
+  test_or({
+      ex() %>% check_function("summary") %>% check_result() %>% check_equal()
+    },{
+      f <- ex() %>% override_solution("str(Guns)") 
+      f %>% check_function("str") %>% check_result() %>% check_equal()
+    })
+  ex() %>% check_object("years") %>% check_equal()
+  ex() %>% check_object("states") %>% check_equal()
+  ex() %>% check_function("nrow") %>% check_arg("x") %>% check_equal()
+  test_or({
+      test_student_typed("years*states == nrow(Guns)")
+    },{
+      test_student_typed("states*years == nrow(Guns)")
+    },{
+      test_student_typed("nrow(Guns) == years*states")
+    },{
+      test_student_typed("nrow(Guns) == states*years")
+    })
+  success_msg("Correct! Overall there are 51 states (entities) over 23 years whose product coincides with the number of total observations in the dataset.")
   </code>
   
 </div>
@@ -679,9 +725,268 @@ For the course of this section, you will work with <tt>Guns</tt>, a balanced pan
         
 **Hints:**
   
+  + Use <tt>library()</tt> and <tt>data()</tt> to attach the package and load the data set, respectively.
+
+  + Use <tt>summary()</tt> to obtain a comprehensive overview of the dataset.
+
+  + In order to be a balanced panel the number of entities times the number of years has to be equal to the total number of observations in the dataset. The basic functions <tt>levels()</tt>, <tt>length()</tt> and <tt>nrow()</tt> may be useful here to accomplish this task.
       
 </div>')
 } else {
   cat('\\begin{center}\\textit{This interactive part of URFITE is only available in the HTML version.}\\end{center}')
+}
+```
+
+```{r, echo=FALSE, results='asis'}
+if (my_output=="html") {
+  cat('
+<div  class = "DCexercise">
+
+#### 2. Strict or Loose? Gun Laws and the Effect on Crime I {-}
+
+In criminal sciences there is a controversial debate on whether and to what extent the right to carry a gun influences crime. Proponents of so-called "Carrying a Concealed Weapon" (CCW) laws argue that the deterrent effect of guns prevents crime, whereas opponents argue that ... In the following exercises you will empirically investigate this topic.
+
+To begin with consider the following estimated model
+
+$$\\widehat{{\\log(violent_i)}} = 6.135 - 0.443 \\times law_i$$,
+
+where <tt>violent</tt> and <tt>law</tt> denote the violent crime rate (incidents per 100000) and a binary variable for the implementation of a CCW law (1 = yes, 0 = no), respectively.
+
+The packages <tt>AER</tt> and <tt>plm</tt> have been loaded.
+      
+**Instructions:**
+        
+  + Is the proposed model a good model? In particular are there variable that vary across
+
+  + Print a summary of the model using robust standard errors. Critically analyze your result.
+
+<!--html_preserve-->
+
+<div data-datacamp-exercise data-lang="r">
+  
+  <code data-type="pre-exercise-code">
+  library(AER)
+  </code>
+  
+  <code data-type="sample-code">
+  # estimate a model with fixed state effects
+  model_fe <- 
+  
+  # print a summary using robust standard errors
+  
+  
+  </code>
+  
+  <code data-type="solution">
+  # estimate a model with fixed state effects
+  model_fe <- plm(log(violent) ~ law, data = Guns, index = c("state", "year"), model = "within")
+  
+  # print a summary using robust standard errors
+  coeftest(model_fe, vcov. = vcovHC, type = "HC1")
+  
+  </code>
+  
+  <code data-type="sct">
+  success_msg("Correct! The proposed model has two severe shortcomings: First the model does not account for variables that vary across the entities... Still the coefficient is relatively large in magnitude which is likely due to omitted variable bias.")
+  </code>
+  
+</div>
+
+<!--/html_preserve-->
+
+**Hints:**
+  
+  + 
+  
+  + As usual you can use <tt>coeftest()</tt> in conjunction with appropriate arguments to obtain a summary output with robust standard errors.
+
+</div>')
+}
+```
+
+```{r, echo=FALSE, results='asis'}
+if (my_output=="html") {
+  cat('
+<div  class = "DCexercise">
+
+#### 3. Strict or Loose? Gun Laws and the Effect on Crime II {-}
+
+As touched upon the end of the last exercise there is likely an omitted variables bias.. For that reason we incorporate further criminal and sociodemographic variables into our model which then reads as follows
+
+$$\\log(violent_i) = \\beta_1\\times law_i + \\beta_2\\times density_i + \\beta_3\\times income_i + \\beta_4\\times population_i + \\beta_5\\times afam_i + \\beta_6\\times cauc_i + \\beta_7\\times male_i + \\alpha_i + u_i.$$
+
+For detailed information on the additional variables consider <tt>?Guns</tt>.
+
+The packages <tt>AER</tt> and <tt>plm</tt> have been loaded.
+      
+**Instructions:**
+        
+  + Estimate the extended model
+
+<!--html_preserve-->
+
+<div data-datacamp-exercise data-lang="r">
+  
+  <code data-type="pre-exercise-code">
+  </code>
+  # estimate the extended model
+  model_fe_ext <- 
+  
+  # 
+  
+  
+  # 
+  <code data-type="sample-code">
+  
+  </code>
+  
+  <code data-type="solution">
+  
+  </code>
+  
+  <code data-type="sct">
+  
+  </code>
+  
+</div>
+
+<!--/html_preserve-->
+
+**Hints:**
+  
+  + Us...
+  
+</div>')
+}
+```
+
+```{r, echo=FALSE, results='asis'}
+if (my_output=="html") {
+  cat('
+<div  class = "DCexercise">
+
+#### 4. Strict or Loose? Gun Laws and the Effect on Crime III {-}
+
+As touched upon the end of the last exercise there is likely an omitted variables bias.. For that reason we incorporate further criminal and sociodemographic variables into our model which then reads as follows
+
+$$\\log(violent_i) = \\beta_1\\times law_i + \\beta_2\\times density_i + \\beta_3\\times income_i + \\beta_4\\times population_i + \\beta_5\\times afam_i + \\beta_6\\times cauc_i + \\beta_7\\times male_i + \\alpha_i + u_i.$$
+
+For detailed information on the additional variables consider <tt>?Guns</tt>.
+
+The packages <tt>AER</tt> and <tt>plm</tt> have been loaded.
+      
+**Instructions:**
+        
+  + Estimate the extended model
+
+<!--html_preserve-->
+
+<div data-datacamp-exercise data-lang="r">
+  
+  <code data-type="pre-exercise-code">
+  </code>
+  # estimate the extended model
+  model_fe_ext <- 
+  
+  # 
+  
+  
+  # 
+  <code data-type="sample-code">
+  
+  </code>
+  
+  <code data-type="solution">
+  
+  </code>
+  
+  <code data-type="sct">
+  
+  </code>
+  
+</div>
+
+<!--/html_preserve-->
+
+**Hints:**
+  
+  + Us...
+  
+</div>')
+}
+```
+
+```{r, echo=FALSE, results='asis'}
+if (my_output=="html") {
+  cat('
+<div  class = "DCexercise">
+
+#### 5. Fixed Effects Regression - Estimation {-}
+
+This exercise serves to illustrate that for $T=2$ the "Before and After" comparison is 
+
+The package <tt>AER</tt> has been loaded.
+      
+**Instructions:**
+        
+  + Estimate the coefficients of the model by incorporating dummies for each entity.
+
+  + 
+
+  + Estimate the coefficients of the model using the entity-demeaned data.
+
+  + Verify that both procedures numerically yield the same estimates.
+
+<!--html_preserve-->
+
+<div data-datacamp-exercise data-lang="r">
+  
+  <code data-type="pre-exercise-code">
+  library(microbenchmark)
+  </code>
+  
+  <code data-type="sample-code">
+  # estimate the model using dummies for each entity
+  
+  
+  # 
+  
+  
+  # estimate the model using the entity-demeaned data
+  
+  
+  # verify that both estimates are numerically identi
+  
+  
+  </code>
+  
+  <code data-type="solution">
+  # estimate the model using dummies for each entity
+  
+  
+  # 
+  
+  
+  # estimate the model using the entity-demeaned data
+  
+  
+  # verify that both estimates are numerically identi
+  
+  
+  </code>
+  
+  <code data-type="sct">
+  
+  </code>
+  
+</div>
+
+<!--/html_preserve-->
+
+**Hints:**
+  
+  + Us...
+  
+</div>')
 }
 ```
