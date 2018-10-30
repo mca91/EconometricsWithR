@@ -4,7 +4,7 @@
 
 <p><img src="https://github.com/mca91/EconometricsWithR/blob/master/images/logo.png" alt="logo" align="right" width="20%" height="20%"> Beginners with little background in statistics and econometrics often have a hard time understanding the benefits of having programming skills for learning and applying Econometrics. <i>Introduction to Econometrics with R</i> is an interactive companion to the well-received textbook <i>Introduction to Econometrics</i> by James H. Stock and Mark W. Watson (2015). It gives a gentle introduction to the essentials of R programing and guides students in implementing the empirical applications presented throughout the textbook using the newly aquired skills. This is supported by interactive programming exercises generated with DataCamp Light and integration of interactive visualizations of central concepts which are based on the flexible JavaScript library D3.js.</p>
 
-The book can be found here: [Introduction to Econometrics](https://emwikts1970.github.io/URFITE-Bookdown/)
+The book can be found here: [Introduction to Econometrics](https://www.econometrics-with-r.org/)
 
 ___
 
