@@ -696,7 +696,7 @@ For the course of this section, you will work with <tt>Guns</tt>, a balanced pan
   </code>
   
   <code data-type="sct">
-  ex %>% check_library("AER")
+  ex() %>% check_library("AER")
   test_function("data")
   test_or({
       ex() %>% check_function("summary") %>% check_result() %>% check_equal()
@@ -744,21 +744,23 @@ if (my_output=="html") {
 
 #### 2. Strict or Loose? Gun Laws and the Effect on Crime I {-}
 
-In criminal sciences there is a controversial debate on whether and to what extent the right to carry a gun influences crime. Proponents of so-called "Carrying a Concealed Weapon" (CCW) laws argue that the deterrent effect of guns prevents crime, whereas opponents argue that ... In the following exercises you will empirically investigate this topic.
+In criminal sciences there is a controversial debate on whether and to what extent the right to carry a gun influences crime. Proponents of so-called "Carrying a Concealed Weapon" (CCW) laws argue that the deterrent effect of guns prevents crime, whereas opponents argue that the public availability of guns increases their usage and thus makes it easier to commit crimes. In the following exercises you will empirically investigate this topic.
 
 To begin with consider the following estimated model
 
-$$\\widehat{{\\log(violent_i)}} = 6.135 - 0.443 \\times law_i$$,
+$$\\widehat{{\\log(violent_i)}} = 6.135 - 0.443 \\times law_i,$$
 
-where <tt>violent</tt> and <tt>law</tt> denote the violent crime rate (incidents per 100000) and a binary variable for the implementation of a CCW law (1 = yes, 0 = no), respectively.
+for $i=1,\\ldots,51$ where <tt>violent</tt> and <tt>law</tt> denote the violent crime rate (incidents per 100000) and a binary variable for the implementation of a CCW law (1 = yes, 0 = no), respectively.
 
-The packages <tt>AER</tt> and <tt>plm</tt> have been loaded.
+The estimated model is available as <tt>model</tt> in your working environment. The packages <tt>AER</tt> and <tt>plm</tt> have been loaded.
       
 **Instructions:**
         
-  + Is the proposed model a good model? In particular are there variable that vary across
+  + Extend the model by including state fixed effects with the function <tt>plm()</tt> and assign the model object to the predefined variable <tt>model_se</tt>. Can you think of a variable that is captured with this model specification?
 
-  + Print a summary of the model using robust standard errors. Critically analyze your result.
+  + Print a summary of the model using robust standard errors.
+
+  + Test whether the fixed state effects are jointly significant from zero. To do so use the function <tt>pFtest()</tt>. You may consider <tt>?pFtest</tt> for additional information.
 
 <!--html_preserve-->
 
@@ -766,28 +768,49 @@ The packages <tt>AER</tt> and <tt>plm</tt> have been loaded.
   
   <code data-type="pre-exercise-code">
   library(AER)
+  library(plm)
+  data(Guns)
+  model <- plm(log(violent) ~ law, data = Guns, index = c("state", "year"), model = "pooling")
   </code>
   
   <code data-type="sample-code">
-  # estimate a model with fixed state effects
-  model_fe <- 
+  # estimate a model with state fixed effects using plm()
+  model_se <- 
   
   # print a summary using robust standard errors
+  
+  
+  # test whether the state fixed effects are jointly significant from zero
   
   
   </code>
   
   <code data-type="solution">
-  # estimate a model with fixed state effects
-  model_fe <- plm(log(violent) ~ law, data = Guns, index = c("state", "year"), model = "within")
+  # estimate a model with state fixed effects using plm()
+  model_se <- plm(log(violent) ~ law, data = Guns, index = c("state", "year"), model = "within")
   
   # print a summary using robust standard errors
-  coeftest(model_fe, vcov. = vcovHC, type = "HC1")
+  coeftest(model_se, vcov. = vcovHC, type = "HC1")
+  
+  # test whether the state fixed effects are jointly significant from zero
+  pFtest(model_se, model)
   
   </code>
   
   <code data-type="sct">
-  success_msg("Correct! The proposed model has two severe shortcomings: First the model does not account for variables that vary across the entities... Still the coefficient is relatively large in magnitude which is likely due to omitted variable bias.")
+  ex() %>% check_function("plm") %>% {
+    check_arg(., "formula") %>% check_equal()
+    check_arg(., "data") %>% check_equal()
+    check_arg(., "index") %>% check_equal()
+    check_arg(., "model") %>% check_equal()
+  }
+  test_function("coeftest", args="x")
+  test_student_typed("vcov. = vcovHC")
+  ex() %>% check_function("pFtest") %>% {
+    check_arg(., "x") %>% check_equal()
+    check_arg(., "z") %>% check_equal()
+  }
+  success_msg("Correct! Incorporating state fixed effects (here e.g. attitudes towards guns) changes the sign and the magnitude of the coefficient and a F test additionally reveals that the state fixed effects are indeed jointly significant from zero. But still there is the possibility of an omitted variable bias due to missing time fixed effects and further explanatory variables.")
   </code>
   
 </div>
@@ -796,9 +819,11 @@ The packages <tt>AER</tt> and <tt>plm</tt> have been loaded.
 
 **Hints:**
   
-  + 
+  + The function <tt>plm()</tt> allows you to conduct regressions with panel data and works very similar to <tt>lm()</tt>. Additionally you only have to give the entity and time variable inside a vector using the argument <tt>index</tt> and specify the estimator with the argument <tt>model</tt> (for the fixed effects estimator this is <tt>"within"</tt>).
   
-  + As usual you can use <tt>coeftest()</tt> in conjunction with appropriate arguments to obtain a summary output with robust standard errors.
+  + As usual you can use <tt>coeftest()</tt> in conjunction with appropriate arguments (<tt>vcov.</tt>) to obtain a summary output with robust standard errors.
+
+  + <tt>pFtest()</tt> expects two model objects. The first one incorporates the fixed effects, the second one not.
 
 </div>')
 }
@@ -811,41 +836,73 @@ if (my_output=="html") {
 
 #### 3. Strict or Loose? Gun Laws and the Effect on Crime II {-}
 
-As touched upon the end of the last exercise there is likely an omitted variables bias.. For that reason we incorporate further criminal and sociodemographic variables into our model which then reads as follows
+As touched upon the end of the last exercise it is reasonable to also include fixed time effects which is why we also consider the following model
 
-$$\\log(violent_i) = \\beta_1\\times law_i + \\beta_2\\times density_i + \\beta_3\\times income_i + \\beta_4\\times population_i + \\beta_5\\times afam_i + \\beta_6\\times cauc_i + \\beta_7\\times male_i + \\alpha_i + u_i.$$
+\\begin{align}\\log(violent_i)  & = \\beta_1\\times law_i + \\alpha_i + \\lambda_t + u_i,\\end{align}
 
-For detailed information on the additional variables consider <tt>?Guns</tt>.
+for $i=1,\\ldots,51$ and $t=1977,\\ldots,1999$.
 
-The packages <tt>AER</tt> and <tt>plm</tt> have been loaded.
+Both models from the previous exercise are available as <tt>model</tt> and <tt>model_se</tt> in your working environment. The packages <tt>AER</tt> and <tt>plm</tt> have been loaded.
       
 **Instructions:**
         
-  + Estimate the extended model
+  + Estimate the model from above (that is, a model with state and time fixed effects) and assign it to the predefined variable <tt>model_sete</tt>. Again use the function <tt>plm()</tt>.
+
+  + Print a summary of the model using robust standard errors.
+
+  + Test whether the state and time fixed effects are jointly significant from zero.
 
 <!--html_preserve-->
 
 <div data-datacamp-exercise data-lang="r">
   
   <code data-type="pre-exercise-code">
+  library(AER)
+  library(plm)
+  data(Guns)
+  model <- plm(log(violent) ~ law, data = Guns, index = c("state", "year"), model = "pooling")
+  model_fe <- plm(log(violent) ~ law, data = Guns, index = c("state", "year"), model = "within")
   </code>
-  # estimate the extended model
-  model_fe_ext <- 
-  
-  # 
-  
-  
-  # 
+   
   <code data-type="sample-code">
+  # estimate a model with state and time fixed effects using plm()
+  model_sete <- 
+  
+  # print a summary using robust standard errors
+  
+  
+  # test whether the state and time fixed effects are jointly significant from zero
+  
   
   </code>
   
   <code data-type="solution">
+  # estimate a model with state and time fixed effects using plm()
+  model_sete <- plm(log(violent) ~ law, data = Guns, index = c("state", "year"), model = "within", effect = "twoways")
+  
+  # print a summary using robust standard errors
+  coeftest(model_sete, vcov. = vcovHC, type = "HC1")
+  
+  # test whether the state and time fixed effects are jointly significant from zero
+  pFtest(model_sete, model)
   
   </code>
   
   <code data-type="sct">
-  
+  ex() %>% check_function("plm") %>% {
+    check_arg(., "formula") %>% check_equal()
+    check_arg(., "data") %>% check_equal()
+    check_arg(., "index") %>% check_equal()
+    check_arg(., "model") %>% check_equal()
+    check_arg(., "effect") %>% check_equal()
+  }
+  test_function("coeftest", args="x")
+  test_student_typed("vcov. = vcovHC")
+  ex() %>% check_function("pFtest") %>% {
+    check_arg(., "x") %>% check_equal()
+    check_arg(., "z") %>% check_equal()
+  }
+  success_msg("Correct! Additionally incorporating state time effects makes the coefficient very small and not significantly different from zero for any common level. The F test reveals that the state and time fixed effects are jointly significant different from zero.")
   </code>
   
 </div>
@@ -854,7 +911,9 @@ The packages <tt>AER</tt> and <tt>plm</tt> have been loaded.
 
 **Hints:**
   
-  + Us...
+  + To additionally incorparate time fixed effects, one can set the argument <tt>effect="twoways"</tt> inside of <tt>plm()</tt>.
+
+  + Note that we want to test whether the state *and* time fixed effects are jointly significant from zero.
   
 </div>')
 }
@@ -867,9 +926,9 @@ if (my_output=="html") {
 
 #### 4. Strict or Loose? Gun Laws and the Effect on Crime III {-}
 
-As touched upon the end of the last exercise there is likely an omitted variables bias.. For that reason we incorporate further criminal and sociodemographic variables into our model which then reads as follows
+Although we found evidence for state as well as time effects there is still the possibility of an omitted variable bias due to missing covariates. For that reason we incorporate further criminal and sociodemographic variables into our model which now reads as follows
 
-$$\\log(violent_i) = \\beta_1\\times law_i + \\beta_2\\times density_i + \\beta_3\\times income_i + \\beta_4\\times population_i + \\beta_5\\times afam_i + \\beta_6\\times cauc_i + \\beta_7\\times male_i + \\alpha_i + u_i.$$
+\\begin{align}\\log(violent_i)  & = \\beta_1\\times law_i + \\beta_2\\times density_i + \\beta_3\\times income_i + \\beta_4\\times population_i \\\\&\\quad + \\beta_5\\times afam_i + \\beta_6\\times cauc_i + \\beta_7\\times male_i + \\alpha_i + \\lambda_t + u_i.\\end{align}
 
 For detailed information on the additional variables consider <tt>?Guns</tt>.
 
@@ -877,40 +936,54 @@ The packages <tt>AER</tt> and <tt>plm</tt> have been loaded.
       
 **Instructions:**
         
-  + Estimate the extended model
+  + Estimate the extended model and assign it to the predefined variable <tt>model_sete_ext</tt>.
+
+  + Print a robust summary of the model object. All in all what can you say about the effect of a CCW law?
 
 <!--html_preserve-->
 
 <div data-datacamp-exercise data-lang="r">
   
   <code data-type="pre-exercise-code">
+  library(AER)
+  library(plm)
+  data(Guns)
   </code>
-  # estimate the extended model
-  model_fe_ext <- 
   
-  # 
-  
-  
-  # 
   <code data-type="sample-code">
+  # estimate the extended model
+  model_sete_ext <- 
   
+  # print a summary using robust standard errors
+  
+
   </code>
   
   <code data-type="solution">
+  # estimate the extended model
+  model_sete_ext <- plm(log(violent) ~ law + prisoners + density + income + population + afam + cauc + male, data = Guns, index = c("state", "year"), model = "within", effect = "twoways")
+  
+  # print a summary using robust standard errors
+  coeftest(model_sete_ext, vcov. = vcovHC, type = "HC1")
   
   </code>
   
   <code data-type="sct">
-  
+  ex() %>% check_function("plm") %>% {
+    check_arg(., "formula") %>% check_equal()
+    check_arg(., "data") %>% check_equal()
+    check_arg(., "index") %>% check_equal()
+    check_arg(., "model") %>% check_equal()
+    check_arg(., "effect") %>% check_equal()
+  }
+  test_function("coeftest", args="x")
+  test_student_typed("vcov. = vcovHC")
+  success_msg("Correct! Based on the available data there is no evidence for CCw laws having an effect on crime rates.")
   </code>
   
 </div>
 
 <!--/html_preserve-->
-
-**Hints:**
-  
-  + Us...
   
 </div>')
 }
@@ -921,62 +994,102 @@ if (my_output=="html") {
   cat('
 <div  class = "DCexercise">
 
-#### 5. Fixed Effects Regression - Estimation {-}
+#### 5. Fixed Effects Regression - Two Time Periods {-}
 
-This exercise serves to illustrate that for $T=2$ the "Before and After" comparison is 
+Recall the fixed effects model from Exercise 10.2, but now assume we only have observations for the years 1978 and 1984. Then consider the following two model specifications
 
-The package <tt>AER</tt> has been loaded.
+\\begin{align}
+\\log(violent_{i1984}) - \\log(violent_{i1978}) = \\beta_{BA}\\times(law_{i1984}-law_{i1978}) + u_{i1984} - u_{i1978}
+\\end{align}
+and
+\\begin{align}
+\\log(violent_{it}) = \\beta_{FE}\\times law_{it} + \\alpha_i + u_{it},\\\\
+\\end{align}
+with $i=1,\\ldots,51$ and $t=1978,1984$.
+
+In this exercise you need to show that $\\widehat{\\beta}_{BA}=\\widehat{\\beta}_{FE}$.
+
+The subsets of <tt>Guns</tt> for the years 1978 and 1984 are already available as <tt>Guns78</tt> and <tt>Guns84</tt> in your working environment. The packages <tt>AER</tt> and <tt>plm</tt> have been loaded.
       
 **Instructions:**
         
-  + Estimate the coefficients of the model by incorporating dummies for each entity.
+  + Compute the differences necessary to estimate the first model and assign them to the predefined variables <tt>diff_logv</tt> and <tt>diff_law</tt>.
 
-  + 
+  + Estimate both models by using the differenced data and <tt>plm()</tt>, respectively. 
 
-  + Estimate the coefficients of the model using the entity-demeaned data.
-
-  + Verify that both procedures numerically yield the same estimates.
+  + Verify with a logical comparison that both procedures numerically yield the same estimate. To accomplish this task use the predefined variables <tt>coef_diff</tt> and <tt>coef_plm</tt> containing the relevant coefficients rounded to the fourth decimal place.
 
 <!--html_preserve-->
 
 <div data-datacamp-exercise data-lang="r">
   
   <code data-type="pre-exercise-code">
-  library(microbenchmark)
+  library(AER)
+  library(plm)
+  data(Guns)
+  Guns78     <- subset(Guns, year == "1978")
+  Guns78$law <- as.numeric(Guns78$law)
+  Guns84     <- subset(Guns, year == "1984")
+  Guns84$law <- as.numeric(Guns84$law)
   </code>
   
   <code data-type="sample-code">
-  # estimate the model using dummies for each entity
+  # create the necessary variables to estimate the first model
+  diff_logv <- 
+  diff_law  <- 
   
+  # estimate the first model using the differenced data
+  mod_diff <- 
+  coef_diff <- round(mod_diff$coef, 4)
   
-  # 
-  
-  
-  # estimate the model using the entity-demeaned data
-  
-  
-  # verify that both estimates are numerically identi
+  # estimate the second model using plm()
+  mod_plm <- 
+  coef_plm <- round(mod_plm$coef, 4)  
+
+  # verify that both estimates are numerically identical
   
   
   </code>
   
   <code data-type="solution">
-  # estimate the model using dummies for each entity
+  # create the necessary variables to estimate the first model
+  diff_logv <- log(Guns84$violent/Guns78$violent)
+  diff_law  <- Guns84$law - Guns78$law
   
+  # estimate the first model using the differenced data
+  mod_diff <- lm(diff_logv ~ diff_law - 1)
+  coef_diff <- round(mod_diff$coef, 4)
   
-  # 
-  
-  
-  # estimate the model using the entity-demeaned data
-  
-  
-  # verify that both estimates are numerically identi
-  
+  # estimate the second model using plm()
+  mod_plm <- plm(log(violent) ~ law, data = Guns, subset = (year == "1978" | year == "1984"), index = c("state", "year"), model = "within")
+  coef_plm <- round(mod_plm$coef, 4)  
+
+  # verify that both estimates are numerically identical
+  coef_diff == coef_plm
   
   </code>
   
   <code data-type="sct">
-  
+  ex() %>% check_predefined_objects(c("Guns78", "Guns84"))
+  ex() %>% check_object("diff_logv") %>% check_equal()
+  ex() %>% check_object("diff_law") %>% check_equal()
+  test_or({
+      ex() %>% check_object("mod_diff") %>% check_equal()
+    },{
+      ex() %>% override_solution("lm(diff_logv ~ diff_law + 0)") %>% check_function("lm") %>% check_result()
+    })
+  ex() %>% check_object("coef_diff") %>% check_equal()
+  ex() %>% check_function("plm") %>% {
+    check_arg(., "index") %>% check_equal()
+    check_arg(., "model") %>% check_equal()
+  }
+  ex() %>% check_object("coef_plm") %>% check_equal()
+  test_or({
+      test_student_typed("coef_diff == coef_plm")
+    },{
+      test_student_typed("coef_plm == coef_diff")
+    })
+  success_msg("Correct! For T=2 the first model specification arises as a special case of the fixed effects model.")
   </code>
   
 </div>
@@ -985,7 +1098,11 @@ The package <tt>AER</tt> has been loaded.
 
 **Hints:**
   
-  + Us...
+  + Keep in mind that the regressand is log-transformed.
+
+  + You can use <tt>plm()</tt> as in previous exercises, however note that you only need a subset of the original <tt>Guns</tt> dataset. One solution to that is the additional argument <tt>subset</tt> which allows you to logically subset the dataset passed via the argument <tt>data</tt>. Alternatively you can join the two datasets <tt>Guns78</tt> and <tt>Guns84</tt> into one using e.g. <tt>rbind()</tt>.
+
+  + Use the logical operator <tt>==</tt> to compare both estimates.
   
 </div>')
 }
