@@ -581,6 +581,34 @@ stargazer(spec1, spec2, spec3, spec4, spec5,
 
 Table \@ref(tab:rotsostracv) states that $score$ is the dependent variable and that we consider five models. We see that the columns of Table \@ref(tab:rotsostracv) contain most of the information provided by `r ttcode("coeftest()")` and `r ttcode("summary()")` for the regression models under consideration: the coefficients estimates equipped with significance codes (the asterisks) and standard errors in parentheses below. Although there are no $t$-statistics, it is straightforward for the reader to compute them simply by dividing a coefficient estimate by the corresponding standard error. The bottom of the table reports summary statistics for each model and a legend. For an in-depth discussion of the tabular presentation of regression results, see Chapter 7.6 of the book.
 
+There is a more efficient and elegant way to carry out the calculations above. That way uses `r ttcode("lapply()")` which iterates over a list and applys a function with every iteration We also make use of the pipe operator which was introdueced in Chapter \@ref(aattggoe)
+Hence the following code is completely equiavalent to the code above.
+
+```{r, eval=F}
+# load the stargazer library
+library(stargazer)
+
+# create an empty list for different model specifications
+specs <- list()
+
+# estimate different model specifications
+specs[[1]] <- lm(score ~ size, data = CASchools)
+specs[[2]] <- lm(score ~ size + english, data = CASchools)
+specs[[3]] <- lm(score ~ size + english + lunch, data = CASchools)
+specs[[4]] <- lm(score ~ size + english + calworks, data = CASchools)
+specs[[5]] <- lm(score ~ size + english + lunch + calworks, data = CASchools)
+
+# gather robust standard errors in a list
+rob_se <- lapply(specs, FUN = function(x) x %>% vcovHC(type = "HC1") %>% diag() %>% sqrt())
+
+# generate a LaTeX table using stargazer
+stargazer(specs,
+          se = rob_se,
+          digits = 3,
+          header = F,
+          column.labels = c("(I)", "(II)", "(III)", "(IV)", "(V)"))
+```
+
 What can we conclude from the model comparison? 
 
 1. We see that adding control variables roughly halves the coefficient on `r ttcode("size")`. Also, the estimate is not sensitive to the set of control variables used. The conclusion is that decreasing the student-teacher ratio ceteris paribus by one unit leads to an estimated average increase in test scores of about $1$ point.
