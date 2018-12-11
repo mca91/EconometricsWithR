@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+      <head>
+<meta charset='utf-8'/>
+<script async='async' src='https://cdn.datacamp.com/dcl-react-dev.js.gz'></script>
+<style>
+.DCexercise .datacamp-exercise {
+     border: 2px solid #3D678D;
+     border-radius: 10px 10px 10px 10px !important;
+     }
+
+     *[class*="lm_"], .ace_gutter, textarea[class*="ace_"], .ace_scroller {
+     background-color: #F0EFF0 !important;
+     }
+
+     div[class*="Editor-module__editor"], div[class*="dcl__Footer"] {
+     background-color: #3D678D !important; 
+     } 
+
+     *[class*="lm_"] {
+     border-radius: 10px 10px 0px 0px !important;
+     }
+
+     div[class*="dcl__Footer"] {
+     border-radius: 0px 0px 10px 10px !important;
+     }
+
+     .lm_content {
+     border-radius: 0px !important;
+     }
+
+     .lm_splitter {
+     background-color: #3D678D !important; 
+     width: 3px !important;
+     }
+
+     .lm_drag_handle {
+     background: transparent !important;
+     }
+
+     div[class*="dcl__index-module"] {
+     outline-color: transparent !important;
+     border-radius: 10px !important;
+     }
+
+     button[class*="secondary-light"] {
+     background-color: #FF0000;
+     }
+</style>
+      </head>
+      <body>
+      <div data-datacamp-exercise data-lang='r' data-height =320>  <code data-type="pre-exercise-code">
+  library(zoo)
+  set.seed(1)
+  y <- zoo(rnorm(100))
+  </code>
+  <code data-type="sample-code">
+  # complete the blank lines in the function definition of acov()
+  acov <- function(series, max_lag){
+    FinalT   <- ___(series)
+    Y_bar    <- ___(series)
+    acov_lag <- function(lag){
+      ___((series - Y_bar) * (___(series, k = lag) - Y_bar)) / FinalT
+    }
+    acf_out  <- sapply(0:max_lag, acov_lag)
+    return(acf_out)
+  }
+
+  # Compute all autocovariances up to lag 5 for the series y using acov()
+  
+  
+  # verify your results using the built-in function acf()
+  
+  
+  </code>
+  <code data-type="solution">
+  # complete the blank lines in the function definition of acov()
+  acov <- function(series, max_lag){
+    FinalT   <- length(series)
+    Y_bar    <- mean(series)
+    acov_lag <- function(lag){
+      sum((series - Y_bar) * (lag(series, k = lag) - Y_bar)) / FinalT
+    }
+    acf_out  <- sapply(0:max_lag, acov_lag)
+    return(acf_out)
+  }
+
+  # Compute all autocovariances up to lag 5 for the series y using acov()
+  acov(series = y, max_lag = 5)
+  
+  # verify your results using the built-in function acf()
+  acf(x = y, lag.max = 5, type = "covariance", plot = F)
+  
+  </code>
+  <code data-type="sct">
+  test_predefined_objects("y")
+  ex() %>% check_fun_def('acov') %>% check_correct(
+    check_call(., zoo(1:10), 2) %>% {
+      check_result(.) %>% check_equal()
+      check_output(.) %>% check_equal()
+    },
+    {
+      check_arguments(.)
+      check_body(.) %>% {
+        check_function(., "length") %>% check_arg("x") %>% check_equal()
+        check_function(., "mean") %>% check_arg("x") %>% check_equal()
+        check_function(., "sum")
+        check_function(., "lag") %>% {
+          check_arg("x") %>% check_equal()
+          check_arg("k") %>% check_equal()
+        }
+      }
+    }
+  )
+  ex() %>% check_function("acov") %>% {
+    check_arg(., "series") %>% check_equal()
+    check_arg(., "max_lag") %>% check_equal()
+  }
+  ex() %>% check_function("acf") %>% {
+    check_arg(., "x") %>% check_equal()
+    check_arg(., "lag.max") %>% check_equal()
+    check_arg(., "type") %>% check_equal()
+    check_arg(., "plot") %>% check_equal()
+  }
+  success_msg("Correct! Both functions yield the same autocovariances.")
+  </code></div>
+      </body>
+      </html>
