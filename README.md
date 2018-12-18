@@ -1,12 +1,12 @@
 <p align="center"><img align="center" src="https://github.com/mca91/EconometricsWithR/blob/master/docs/images/cover.png" width="30%" height="30%"></p>
 
-## About the book
+## 📖 About the book
 
 <p><img src="https://github.com/mca91/EconometricsWithR/blob/master/images/logo.png" alt="logo" align="right" width="20%" height="20%"> Beginners with little background in statistics and econometrics often have a hard time understanding the benefits of having programming skills for learning and applying Econometrics. <i>Introduction to Econometrics with R</i> is an interactive companion to the well-received textbook <i>Introduction to Econometrics</i> by James H. Stock and Mark W. Watson (2015). It gives a gentle introduction to the essentials of R programming and guides students in implementing the empirical applications presented throughout the textbook using the newly aquired skills. This is supported by interactive programming exercises generated with DataCamp Light and integration of interactive visualizations of central concepts which are based on the flexible JavaScript library D3.js.</p>
 
 The book can be found here: [Introduction to Econometrics with R](https://www.econometrics-with-r.org/)
 
-### Download Materials using the `itewrpkg` R package
+### 📦 How to download materials using the `itewrpkg` R package
 
 It is straightforward to download and install the `itewrpkg` [metapackage](https://github.com/mca91/itewrpkg/) for the companion using `install_github()` from the `devtools` package. Run `install.packages("devtools")` if you are not sure whether `devtools` is installed. 
 
