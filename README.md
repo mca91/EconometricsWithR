@@ -17,7 +17,7 @@ The following one-liner installs `itewrpkg`:
 devtools::install_github("mca91/itewrpkg")
 ```
 
-Running the above command will also install all R packages which are required for reproducing the code examples presented throughout the book. Running `library(itewrpkg)` will load the package and all dependencies which makes it unnecessary to individually attach the packages introduced at the beginning of chapter. This may take a few seconds but may be convenient if you are playing around with code chunks from various chapters.
+Running the above command will also install all R packages which are required for reproducing the code examples presented throughout the book. Running `library(itewrpkg)` will load the package and all dependencies which makes it unnecessary to individually attach the packages introduced at the beginning of each chapter. This may take a few seconds but may be convenient if you are playing around with code chunks from various chapters.
 
 The function `get_materials_itewr()` is intented as a convenience function for students working with the companion. It downloads up-to-date versions of all supplements to the book such as datasets and R codes from the [GitHub repository](https://github.com/mca91/EconometricsWithR) of the book and saves them to the current working directory (or a location of choice provided to the argument `dir`) according to the following structure:
 
