@@ -6,6 +6,28 @@
 
 The book can be found here: [Introduction to Econometrics with R](https://www.econometrics-with-r.org/)
 
+### Download Materials using the `itewrpkg` R package
+
+It is straightforward to download and install the `itewrpkg` [metapackage](https://github.com/mca91/itewrpkg/) for the companion using `install_github()` from the `devtools` package. Run `install.packages("devtools")` if you are not sure whether `devtools` is installed. 
+
+The following one-liner installs `itewrpkg`:
+
+```
+# install `itewrpkg`
+devtools::install_github("mca91/itewrpkg")
+```
+
+Running the above command will also install all R packages which are required for reproducing the code examples presented throughout the book. Running `library(itewrpkg)` will load the package and all dependencies which makes it unnecessary to individually attach the packages introduced at the beginning of chapter. This may take a few seconds but may be convenient if you are playing around with code chunks from various chapters.
+
+The function `get_materials_itewr()` is intented as a convenience function for students working with the companion. It downloads up-to-date versions of all supplements to the book such as datasets and R codes from the [GitHub repository](https://github.com/mca91/EconometricsWithR) of the book and saves them to the current working directory (or a location of choice provided to the argument `dir`) according to the following structure:
+
+- `<your_working_directory>/ITEWR/Rmds/` (.Rmd files)
+
+- `<your_working_directory>/ITEWR/Data/` (datasets)
+
+- `<your_working_directory>/ITEWR/Rcodes/` (R scripts, numbered by chapter)
+
+Make sure to check your working directory using `getwd()`!
 ___
 
 <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://mirrors.creativecommons.org/presskit/buttons/88x31/svg/by-nc-sa.eu.svg"/></a><br/>This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License</a>.
