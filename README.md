@@ -6,7 +6,7 @@
 
 The book can be found here: [Introduction to Econometrics with R](https://www.econometrics-with-r.org/)
 
-### 📦 How to download materials using the `itewrpkg` R package
+### 📦 How to download materials using the itewrpkg R package
 
 It is straightforward to download and install the `itewrpkg` [metapackage](https://github.com/mca91/itewrpkg/) for the companion using `install_github()` from the `devtools` package. Run `install.packages("devtools")` if you are not sure whether `devtools` is installed. 
 
