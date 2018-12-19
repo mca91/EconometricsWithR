@@ -23,7 +23,7 @@ library(scales)
 
 Using the fact that $\hat{\beta}_1$ is approximately normally distributed in large samples (see [Key Concept 4.4](#tsdotoe)), testing hypotheses about the true value $\beta_1$ can be done as in Chapter \@ref(potsm).
 
-```{r, eval = my_output == "html", results='asis', echo=FALSE}
+```{r, eval = my_output == "html", results='asis', echo=F, purl=F}
 cat('
 <div class = "keyconcept" id="KC5.1">
 <h3 class = "right"> Key Concept 5.1 </h3>
@@ -34,7 +34,7 @@ $$ t = \\frac{\\text{estimated value} - \\text{hypothesized value}}{\\text{stand
 ')
 ```
 
-```{r, eval = my_output == "latex", results='asis', echo=FALSE}
+```{r, eval = my_output == "latex", results='asis', echo=F, purl=F}
 cat('\\begin{keyconcepts}[General Form of the $t$-Statistic]{5.1}
 Remember from Chapter \\ref{arosur} that a general $t$-statistic has the form
 $$ t = \\frac{\\text{estimated value} - \\text{hypothesized value}}{\\text{standard error of the estimator}}.$$
@@ -42,7 +42,7 @@ $$ t = \\frac{\\text{estimated value} - \\text{hypothesized value}}{\\text{stand
 ')
 ```
 
-```{r, eval = my_output == "html", results='asis', echo=FALSE}
+```{r, eval = my_output == "html", results='asis', echo=F, purl=F}
 cat('
 <div class = "keyconcept" id="KC5.2">
 <h3 class = "right"> Key Concept 5.2 </h3>
@@ -75,7 +75,7 @@ Recall the definition of the $p$-value:
 ')
 ```
 
-```{r, eval = my_output == "latex", results='asis', echo=FALSE}
+```{r, eval = my_output == "latex", results='asis', echo=F, purl=F}
 cat('\\begin{keyconcepts}[Testing Hypotheses regarding $\\beta_1$]{5.2}
 For testing the hypothesis $H_0: \\beta_1 = \\beta_{1,0}$, we need to perform the following steps:\\newline
 
@@ -105,24 +105,33 @@ The last transformation is due to the normal approximation for large samples.
 ')
 ```
 
-
 Consider again the OLS regression stored in `r ttcode('linear_model')` from Chapter \@ref(lrwor) that gave us the regression line
 
 \[ \widehat{TestScore} \ = \underset{(9.47)}{698.9} - \underset{(0.49)}{2.28} \times STR \ , \ R^2=0.051 \ , \ SER=18.6. \]
+
+Copy and execute the following code chunk if the above model object is not available in your working environment.
+
+```{r, message=F, warning=F}
+# load the `CASchools` dataset
+data(CASchools)
+
+# add student-teacher ratio
+CASchools$STR <- CASchools$students/CASchools$teachers
+
+# add average test-score
+CASchools$score <- (CASchools$read + CASchools$math)/2
+
+# estimate the model
+linear_model <- lm(score ~ STR, data = CASchools)          
+```
 
 For testing a hypothesis concerning the slope parameter (the coefficient on $STR$), we need $SE(\hat{\beta}_1)$, the standard error of the respective point estimator. As is common in the literature, standard errors are presented in parentheses below the point estimates. 
 
 Key Concept 5.1 reveals that it is rather cumbersome to compute the standard error and thereby the $t$-statistic by hand. The question you should be asking yourself right now is: can we obtain these values with minimum effort using `r ttcode('R')`? Yes, we can. Let us first use `r ttcode('summary()')` to get a summary on the estimated coefficients in `r ttcode('linear_model')`.
 
-**Note**: Throughout the book, robust standard errors are reported. We consider it instructive keep things simple at the beginning and thus start out with simple examples that do not allow for robust inference. Standard errors that are robust to heteroskedasticity are introduced in Chapter \@ref(hah) where we also demonstrate how they can be computed using `r ttcode('R')`. A discussion of heteroskedasticity-autocorrelation robust standard errors takes place in Chapter \@ref(eodce).
+**Note**: Throughout the textbook, robust standard errors are reported. We consider it instructive keep things simple at the beginning and thus start out with simple examples that do not allow for robust inference. Standard errors that are robust to heteroskedasticity are introduced in Chapter \@ref(hah) where we also demonstrate how they can be computed using `r ttcode('R')`. A discussion of heteroskedasticity-autocorrelation robust standard errors takes place in Chapter \@ref(eodce).
 
-```{r, echo=6:7, warning=F, message=F}
-library(AER)
-data(CASchools)
-CASchools$STR <- CASchools$students/CASchools$teachers     # class size
-CASchools$score <- (CASchools$read + CASchools$math)/2     # average test-score
-linear_model <- lm(score ~ STR, data = CASchools)          # estimate the model
-
+```{r, warning=F, message=F}
 # print the summary of the coefficients to the console
 summary(linear_model)$coefficients
 ```
@@ -242,7 +251,7 @@ A $95\%$ confidence interval for $\beta_i$ has two equivalent definitions:
 
 We also say that the interval has a confidence level of $95\%$. The idea of the confidence interval is summarized in Key Concept 5.3.
 
-```{r, eval = my_output == "html", results='asis', echo=FALSE}
+```{r, eval = my_output == "html", results='asis', echo=F, purl=F}
 cat('
 <div class = "keyconcept" id="KC5.3">
 <h3 class = "right"> Key Concept 5.3 </h3>
@@ -257,7 +266,7 @@ Equivalently, this interval can be seen as the set of null hypotheses for which 
 ')
 ```
 
-```{r, eval = my_output == "latex", results='asis', echo=FALSE}
+```{r, eval = my_output == "latex", results='asis', echo=F, purl=F}
 cat('\\begin{keyconcepts}[A Confidence Interval for $\\beta_i$]{5.3}
 Imagine you could draw all possible random samples of given size. The interval that contains the true value $\\beta_i$ in $95\\%$ of all samples is given by the expression
 
@@ -511,7 +520,7 @@ We reject the hypothesis that there is no difference between group means at the 
 
 All inference made in the previous chapters relies on the assumption that the error variance does not vary as regressor values change. But this will often not be the case in empirical applications.
 
-```{r, eval = my_output == "html", results='asis', echo=FALSE}
+```{r, eval = my_output == "html", results='asis', echo=F, purl=F}
 cat('
 <div class = "keyconcept" id="KC5.4">
 <h3 class = "right"> Key Concept 5.4 </h3>          
@@ -527,7 +536,7 @@ cat('
 ')
 ```
 
-```{r, eval = my_output == "latex", results='asis', echo=FALSE}
+```{r, eval = my_output == "latex", results='asis', echo=F, purl=F}
 cat('\\begin{keyconcepts}[Heteroskedasticity and Homoskedasticity]{5.4}
 \\begin{itemize}
 \\item The error term of our regression model is homoskedastic if the variance of the conditional distribution of $u_i$ given $X_i$, $Var(u_i|X_i=x)$, is constant \\textit{for all} observations in our sample:
@@ -591,8 +600,7 @@ boxplot(formula = y ~ x,
         add = TRUE, 
         at = c(10, 15, 20, 25), 
         col = alpha("gray", 0.4), 
-        border = "black"
-        )
+        border = "black")
 ```
 </div>
 
@@ -824,7 +832,7 @@ for (i in 1:10000) {
   
   # sample data
   X <- 1:1000
-  Y <- rnorm(n = 1000, mean = X, sd = 0.6*X)
+  Y <- rnorm(n = 1000, mean = X, sd = 0.6 * X)
 
   # estimate regression model
   reg <- lm(Y ~ X)
@@ -847,7 +855,7 @@ These results reveal the increased risk of falsely rejecting the null using the 
 
 When estimating regression models, we know that the results of the estimation procedure are random. However, when using unbiased estimators, at least on average, we estimate the true parameter. When comparing different unbiased estimators, it is therefore interesting to know which one has the highest precision: being aware that the likelihood of estimating the *exact* value of the parameter of interest is $0$ in an empirical application, we want to make sure that the likelihood of obtaining an estimate very close to the true value is as high as possible. This means we want to use the estimator with the lowest variance of all unbiased estimators, provided we care about unbiasedness. The Gauss-Markov theorem states that, in the class of conditionally unbiased linear estimators, the OLS estimator has this property under certain conditions.
 
-```{r, eval = my_output == "html", results='asis', echo=FALSE}
+```{r, eval = my_output == "html", results='asis', echo=F, purl=F}
 cat('
 <div class = "keyconcept" id="KC5.5">
 <h3 class = "right"> Key Concept 5.5 </h3>          
@@ -865,7 +873,7 @@ Let us have a closer look at what this means:
 ')
 ```
 
-```{r, eval = my_output == "latex", results='asis', echo=FALSE}
+```{r, eval = my_output == "latex", results='asis', echo=F, purl=F}
 cat('\\begin{keyconcepts}[The Gauss-Markov Theorem for $\\hat{\\beta}_1$]{5.5}
 Suppose that the assumptions made in Key Concept 4.3 hold \\textit{and} that the errors are \\textit{homoskedastic}. The OLS estimator is the best (in the sense of smallest variance) linear conditionally unbiased estimator (BLUE) in this setting.\\newline
 
@@ -1021,7 +1029,7 @@ The outcomes are consistent with our expectations: the empirical distributions o
 
 ## Exercises
 
-```{r, echo=FALSE, results='asis'}
+```{r, echo=F, purl=F, results='asis'}
 if (my_output=="html") {
   cat('
 <div  class = "DCexercise">
@@ -1051,7 +1059,7 @@ Both hypotheses can be tested individually using a two-sided test. Use <tt>pnorm
 }
 ```
 
-```{r, echo=FALSE, results='asis'}
+```{r, echo=F, purl=F, results='asis'}
 if (my_output=="html") {
   cat('
 <div  class = "DCexercise">
@@ -1080,7 +1088,7 @@ The variables <tt>t_int</tt> and <tt>t_STR</tt> are the $t$-statistics. Both are
 </div>')}
 ```
 
-```{r, echo=FALSE, results='asis'}
+```{r, echo=F, purl=F, results='asis'}
 if (my_output=="html") {
   cat('    
 <div  class = "DCexercise">
@@ -1102,7 +1110,7 @@ Use the function <tt>confint()</tt>, see <tt>?confint</tt>. The argument <tt>lev
 </div>')}
 ```
 
-```{r, echo=FALSE, results='asis'}
+```{r, echo=F, purl=F, results='asis'}
 if (my_output=="html") {
   cat('
 <div  class = "DCexercise">
@@ -1128,7 +1136,7 @@ Use the function <tt>confint()</tt>, see <tt>?confint</tt>. The argument <tt>lev
 </div>')}
 ```
 
-```{r, echo=FALSE, results='asis'}
+```{r, echo=F, purl=F, results='asis'}
 if (my_output=="html") {
   cat('
 <div  class = "DCexercise">
@@ -1152,7 +1160,7 @@ Set up a suitable regression model to estimate the mean of the observations in <
 </div>')}
 ```
 
-```{r, echo=FALSE, results='asis'}
+```{r, echo=F, purl=F, results='asis'}
 if (my_output=="html") {
   cat('
 <div  class = "DCexercise">
@@ -1174,7 +1182,7 @@ A <tt>data.frame</tt> <tt>DF</tt> with $100$ observations of a variable <tt>X</t
 </div>')}
 ```
 
-```{r, echo=FALSE, results='asis'}
+```{r, echo=F, purl=F, results='asis'}
 if (my_output=="html") {
   cat('
 <div  class = "DCexercise">
@@ -1196,7 +1204,7 @@ Also check that the estimates of the coefficients $\\beta_0$ and $\\beta_1$ refl
 </div>')}
 ```
 
-```{r, echo=FALSE, results='asis'}
+```{r, echo=F, purl=F, results='asis'}
 if (my_output=="html") {
   cat('
 <div  class = "DCexercise">
@@ -1218,7 +1226,7 @@ A <tt>data.frame</tt> <tt>DF</tt> with 100 observations on <tt>X</tt> and the bi
 </div>')}
 ```
 
-```{r, echo=FALSE, results='asis'}
+```{r, echo=F, purl=F, results='asis'}
 if (my_output=="html") {
   cat('
 <div  class = "DCexercise">
@@ -1250,7 +1258,7 @@ The cross-section data set <tt>CPS1985</tt> is a subsample from the May 1985 *Cu
 </div>')}
 ```
 
-```{r, echo=FALSE, results='asis'}
+```{r, echo=F, purl=F, results='asis'}
 if (my_output=="html") {
   cat('
 <div  class = "DCexercise">
@@ -1276,7 +1284,7 @@ The model object <tt>dummy_mod</tt> is available in your working environment.
 </div>')}
 ```
 
-```{r, echo=FALSE, results='asis'}
+```{r, echo=F, purl=F, results='asis'}
 if (my_output=="html") {
   cat('
 <div  class = "DCexercise">
@@ -1316,7 +1324,7 @@ The function <tt>vcovHC</tt> can be used to obtain estimates of this matrix for 
 </div>')}
 ```
 
-```{r, echo=FALSE, results='asis'}
+```{r, echo=F, purl=F, results='asis'}
 if (my_output=="html") {
   cat('
 <div  class = "DCexercise">
@@ -1340,7 +1348,7 @@ The function <tt>Rob_CI()</tt> in <tt>script.R</tt> is meant to compute and repo
 </div>')}
 ```
 
-```{r, echo=FALSE, results='asis'}
+```{r, echo=F, purl=F, results='asis'}
 if (my_output=="html") {
   cat('
 <div  class = "DCexercise">
@@ -1370,7 +1378,7 @@ Notice that the errors $e_i$ are heteroskedastic since the variance of the $e_i$
 </div>')}
 ```
 
-```{r, echo=FALSE, results='asis'}
+```{r, echo=F, purl=F, results='asis'}
 if (my_output=="html") {
   cat('
 <div  class = "DCexercise">
@@ -1390,7 +1398,7 @@ The function <tt>DGP_OLS()</tt> from the previous exercise is available in your 
 </div>')}
 ```
 
-```{r, echo=FALSE, results='asis'}
+```{r, echo=F, purl=F, results='asis'}
 if (my_output=="html") {
   cat('
 <div  class = "DCexercise">

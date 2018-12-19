@@ -55,28 +55,49 @@
   
   <code data-type="pre-exercise-code">
   library(AER)
+  library(plm)
+  data(Guns)
+  model <- plm(log(violent) ~ law, data = Guns, index = c("state", "year"), model = "pooling")
   </code>
   
   <code data-type="sample-code">
-  # estimate a model with fixed state effects
-  model_fe <- 
+  # estimate a model with state fixed effects using plm()
+  model_se <- 
   
   # print a summary using robust standard errors
+  
+  
+  # test whether the state fixed effects are jointly significant from zero
   
   
   </code>
   
   <code data-type="solution">
-  # estimate a model with fixed state effects
-  model_fe <- plm(log(violent) ~ law, data = Guns, index = c("state", "year"), model = "within")
+  # estimate a model with state fixed effects using plm()
+  model_se <- plm(log(violent) ~ law, data = Guns, index = c("state", "year"), model = "within")
   
   # print a summary using robust standard errors
-  coeftest(model_fe, vcov. = vcovHC, type = "HC1")
+  coeftest(model_se, vcov. = vcovHC, type = "HC1")
+  
+  # test whether the state fixed effects are jointly significant from zero
+  pFtest(model_se, model)
   
   </code>
   
   <code data-type="sct">
-  success_msg("Correct! The proposed model has two severe shortcomings: First the model does not account for variables that vary across the entities. The coefficient is surprisingly large in magnitude which is likely due to omitted variable bias.")
+  ex() %>% check_function("plm") %>% {
+    check_arg(., "formula") %>% check_equal()
+    check_arg(., "data") %>% check_equal()
+    check_arg(., "index") %>% check_equal()
+    check_arg(., "model") %>% check_equal()
+  }
+  test_function("coeftest", args="x")
+  test_student_typed("vcov. = vcovHC")
+  ex() %>% check_function("pFtest") %>% {
+    check_arg(., "x") %>% check_equal()
+    check_arg(., "z") %>% check_equal()
+  }
+  success_msg("Correct! Incorporating state fixed effects control for state specific unobservable omitted variables which do not vary over time (e.g. the residents attitude towards guns). Note that Including fixed effects changes both the sign and the magnitude of the estimated coefficient. The F-test reveals that the state fixed effects are jointly significantly different from zero. There is the possibility of an omitted variable bias, e.g., due to omitted variables that change over time.")
   </code>
   
 </div>

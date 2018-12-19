@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+      <html>
+      <head>
+<meta charset='utf-8'/>
+<script async='async' src='https://cdn.datacamp.com/dcl-react-dev.js.gz'></script>
+<style>
+.DCexercise .datacamp-exercise {
+     border: 2px solid #3D678D;
+     border-radius: 10px 10px 10px 10px !important;
+     }
+
+     *[class*="lm_"], .ace_gutter, textarea[class*="ace_"], .ace_scroller {
+     background-color: #F0EFF0 !important;
+     }
+
+     div[class*="Editor-module__editor"], div[class*="dcl__Footer"] {
+     background-color: #3D678D !important; 
+     } 
+
+     *[class*="lm_"] {
+     border-radius: 10px 10px 0px 0px !important;
+     }
+
+     div[class*="dcl__Footer"] {
+     border-radius: 0px 0px 10px 10px !important;
+     }
+
+     .lm_content {
+     border-radius: 0px !important;
+     }
+
+     .lm_splitter {
+     background-color: #3D678D !important; 
+     width: 3px !important;
+     }
+
+     .lm_drag_handle {
+     background: transparent !important;
+     }
+
+     div[class*="dcl__index-module"] {
+     outline-color: transparent !important;
+     border-radius: 10px !important;
+     }
+
+     button[class*="secondary-light"] {
+     background-color: #FF0000;
+     }
+</style>
+      </head>
+      <body>
+      <div data-datacamp-exercise data-lang='r' data-height =320>
+      
+      <code data-type="pre-exercise-code">
+      library(foreign)
+      library(dplyr)
+      data_URL <- "https://github.com/mca91/EconometricsWithR/blob/master/data/fastfood.dta?raw=true"
+      dat <- read.dta(data_URL)
+      dat <- dat %>% 
+        mutate(FTE = nmgrs + empft + (0.5 * emppt),
+        FTE2 = nmgrs2 + empft2 + (0.5 * emppt2))
+      dat_NJ <- subset(dat, state == 1)
+      dat_PA <- subset(dat, state == 0)
+      reg_dat <- data.frame(
+            rbind(
+              data.frame(id = dat$sheet, 
+                         chain = dat$chain,
+                         state = dat$state,
+                         empl = dat$FTE,
+                         D = 0),
+              data.frame(id = dat$sheet,
+                         chain = dat$chain,
+                         state = dat$state,
+                         empl = dat$FTE2,
+                         D = 1)))
+      library(AER)
+      </code>
+      
+      <code data-type="sample-code">
+      # estimate the DID model 
+      
+      
+      # obtain a robust summary of the model
+
+
+      </code>
+           
+           <code data-type="solution">
+           # estimate the DID model 
+           emp_did_mod <- lm(empl ~ D*state, data = reg_dat)
+      
+           # obtain a robust summary of the model
+           coeftest(emp_did_mod, vcov. = vcovHC, type = "HC1")
+
+           </code>
+           
+           <code data-type="sct">
+           ex() %>% check_predefined_objects("reg_dat")
+
+           ex() %>% check_object("emp_did_mod") %>% check_equal()
+
+           check_or(
+             ex() %>%
+               check_function(., "lm") %>% {
+                 check_arg(., "formula") %>% check_equal()
+                 check_arg(., "data") %>% check_equal()
+               },
+             ex() %>%
+             override_solution("emp_did_mod <- lm(reg_dat$empl ~ reg_dat$D*reg_dat$state)") %>% 
+             check_function("lm") %>% check_arg("formula") %>% check_equal()
+             )
+
+           check_or(
+             ex() %>% check_function("coeftest") %>% {
+               check_arg(., "x") %>% check_equal()
+               check_arg(., "vcov.") %>% check_equal()
+             },
+             ex() %>% 
+             override_solution("emp_did_mod <- lm(reg_dat$empl ~ reg_dat$D*reg_dat$state); coeftest(emp_did_mod, vcov. = vcovHC, type = 'HC1')") %>%
+             check_function("coeftest") %>% {
+               check_arg(., "x") %>% check_equal()
+               check_arg(., "vcov.") %>% check_equal()
+             }
+           )
+           success_msg(msg = "Correct! The estimate of the coefficient on the interaction term `D:state` is the estimate of the average treatment effect we are insterested in. The interpretation is that employment in New Jersey rose by about 2.75 FTE due to the minimum wage increase. However, we cannot reject the hypothesis that the coefficient is zero due to different standard errors than those repoted in the paper.")
+           </code></div>
+      </body>
+      </html>

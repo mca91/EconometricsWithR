@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+         <html>
+         <head>
+<meta charset='utf-8'/>
+<script async='async' src='https://cdn.datacamp.com/dcl-react-dev.js.gz'></script>
+<style>
+.DCexercise .datacamp-exercise {
+     border: 2px solid #3D678D;
+     border-radius: 10px 10px 10px 10px !important;
+     }
+
+     *[class*="lm_"], .ace_gutter, textarea[class*="ace_"], .ace_scroller {
+     background-color: #F0EFF0 !important;
+     }
+
+     div[class*="Editor-module__editor"], div[class*="dcl__Footer"] {
+     background-color: #3D678D !important; 
+     } 
+
+     *[class*="lm_"] {
+     border-radius: 10px 10px 0px 0px !important;
+     }
+
+     div[class*="dcl__Footer"] {
+     border-radius: 0px 0px 10px 10px !important;
+     }
+
+     .lm_content {
+     border-radius: 0px !important;
+     }
+
+     .lm_splitter {
+     background-color: #3D678D !important; 
+     width: 3px !important;
+     }
+
+     .lm_drag_handle {
+     background: transparent !important;
+     }
+
+     div[class*="dcl__index-module"] {
+     outline-color: transparent !important;
+     border-radius: 10px !important;
+     }
+
+     button[class*="secondary-light"] {
+     background-color: #FF0000;
+     }
+</style>
+         </head>
+         <body>
+         
+<div data-datacamp-exercise data-lang="r">
+  
+  <code data-type="pre-exercise-code">
+  library(AER)
+  library(plm)
+  data(Guns)
+  Guns78     <- subset(Guns, year == "1978")
+  Guns78$law <- as.numeric(Guns78$law)
+  Guns84     <- subset(Guns, year == "1984")
+  Guns84$law <- as.numeric(Guns84$law)
+  </code>
+  
+  <code data-type="sample-code">
+  # create the necessary variables to estimate the first model
+  diff_logv <- 
+  diff_law  <- 
+  
+  # estimate the first model using the differenced data
+  mod_diff <- 
+  coef_diff <- round(mod_diff$coef, 4)
+  
+  # estimate the second model using plm()
+  mod_plm <- 
+  coef_plm <- round(mod_plm$coef, 4)  
+  # verify that both estimates are numerically identical
+  
+  
+  </code>
+  
+  <code data-type="solution">
+  # create the necessary variables to estimate the first model
+  diff_logv <- log(Guns84$violent/Guns78$violent)
+  diff_law  <- Guns84$law - Guns78$law
+  
+  # estimate the first model using the differenced data
+  mod_diff <- lm(diff_logv ~ diff_law - 1)
+  coef_diff <- round(mod_diff$coef, 4)
+  
+  # estimate the second model using plm()
+  mod_plm <- plm(log(violent) ~ law, data = Guns, subset = (year == "1978" | year == "1984"), index = c("state", "year"), model = "within")
+  coef_plm <- round(mod_plm$coef, 4)  
+  # verify that both estimates are numerically identical
+  coef_diff == coef_plm
+  
+  </code>
+  
+  <code data-type="sct">
+  ex() %>% check_predefined_objects(c("Guns78", "Guns84"))
+  ex() %>% check_object("diff_logv") %>% check_equal()
+  ex() %>% check_object("diff_law") %>% check_equal()
+  test_or({
+      ex() %>% check_object("mod_diff") %>% check_equal()
+    },{
+      ex() %>% override_solution("lm(diff_logv ~ diff_law + 0)") %>% check_function("lm") %>% check_result()
+    })
+  ex() %>% check_object("coef_diff") %>% check_equal()
+  ex() %>% check_function("plm") %>% {
+    check_arg(., "index") %>% check_equal()
+    check_arg(., "model") %>% check_equal()
+  }
+  ex() %>% check_object("coef_plm") %>% check_equal()
+  test_or({
+      test_student_typed("coef_diff == coef_plm")
+    },{
+      test_student_typed("coef_plm == coef_diff")
+    })
+  success_msg("Correct! For T=2 time periods, the first model specification arises as a special case of the fixed effects model so that both estimates coincide.")
+  </code>
+  
+</div>
+
+          
+         </body>
+         </html>

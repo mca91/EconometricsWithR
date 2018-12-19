@@ -1,3 +1,6 @@
+# globally set chunk options
+opts_chunk$set(fig.align='center', out.with='50%')
+
 # ---- preloads ----
 
 my_output <- knitr::opts_knit$get("rmarkdown.pandoc.to")

@@ -35,7 +35,7 @@ library(stargazer)
 library(tidyr)
 ```
 
-## Potential Outcomes, Causal Effects and Idealized Experiments
+## Potential Outcomes, Causal Effects and Idealized Experiments {#poceaie}
 
 We now briefly recap the idea of the average causal effect and how it can be estimated using the *differences estimator*. We advise you to work through Chapter 13.1 of the book for a better understanding.
 
@@ -211,7 +211,7 @@ stargazer(fmk,fm1,fm2,fm3,
 
 <!--html_preserve-->
 
-```{r, message=F, warning=F, results='asis', echo=F, eval=my_output=="html"}
+```{r, message=F, warning=F, results='asis', echo=F, purl=F, eval=my_output=="html"}
 library(stargazer)
 
 stargazer(fmk,fm1,fm2,fm3,
@@ -230,7 +230,7 @@ stargazer_html_title("Project STAR - Differences Estimates", "psde")
 
 <!--/html_preserve-->
 
-```{r, message=F, warning=F, results='asis', echo=F, eval=my_output=="latex"}
+```{r, message=F, warning=F, results='asis', echo=F, purl=F, eval=my_output=="latex"}
 library(stargazer)
 
 stargazer(fmk,fm1,fm2,fm3,
@@ -353,7 +353,7 @@ stargazer(fmk, fm1, fm2, fm3,
 
 <!--html_preserve-->
 
-```{r, message=F, warning=F, results='asis', echo=F, eval=my_output=="html"}
+```{r, message=F, warning=F, results='asis', echo=F, purl=F, eval=my_output=="html"}
 stargazer(fmk,gradeK1,gradeK2,gradeK3,
   header = FALSE, 
   type = "html",
@@ -376,7 +376,7 @@ stargazer_html_title("Project STAR - Differences Estimates with Additional Regre
 
 <!--/html_preserve-->
 
-```{r, message=F, warning=F, results='asis', echo=F, eval=my_output=="latex"}
+```{r, message=F, warning=F, results='asis', echo=F, purl=F, eval=my_output=="latex"}
 stargazer(fmk,gradeK1,gradeK2,gradeK3,
   title = "\\label{tab:psdewarfk} Project STAR - Differences Estimates with 
   Additional Regressors for Kindergarten",
@@ -457,7 +457,7 @@ stargazer(df,
 
 <!--html_preserve-->
 
-```{r, message=F, warning=F, results='asis', echo=F, eval=my_output=="html"}
+```{r, message=F, warning=F, results='asis', echo=F, purl=F, eval=my_output=="html"}
 stargazer(df,
           type = "html",
           header = FALSE,
@@ -469,7 +469,7 @@ stargazer_html_title("Estimated Class Size Effects
 
 <!--/html_preserve-->
 
-```{r, message=F, warning=F, results='asis', echo=F, eval=my_output=="latex"}
+```{r, message=F, warning=F, results='asis', echo=F, purl=F, eval=my_output=="latex"}
 stargazer(df,
           title = "\\label{tab:ecse} Estimated Class Size Effects 
           (in Units of Standard Deviations)",
@@ -482,7 +482,7 @@ The estimated effect of a small classes is largest for grade 1. As pointed out i
 
 The remainder of Chapter 13.3 in the book discusses to what extent these experimental estimates are comparable with observational estimates obtained using data on school districts in California and Massachusetts in Chapter \@ref(asbomr). It turns out that the estimates are indeed very similar. Please refer to the aforementioned section in the book for a more detailed discussion.
 
-## Quasi Experiments
+## Quasi Experiments {#qe}
 
 In quasi-experiments, "as if" randomness is exploited to use methods similar to those that have been discussed in the previous chapter. There are two types of quasi-experiments:^[See Chapter 13.4 of the book for some example studies that are based on quasi-experiments.]
 
@@ -652,7 +652,7 @@ lm(I(y_post - y_pre) ~ TDummy)
 
 We find that the estimates coincide. Furthermore, one can show that the DID estimate obtained by estimating specification \@ref(eq:did) OLS is the same as the OLS estimate of $\beta_{TE}$ in 
 \begin{align}
-  Y_i =& \beta_0 + \beta_1 D_i + \beta_2 Period_i + \beta_{TE} (Period_i \times D_i) (\#eq:DIDint)
+  Y_i =& \beta_0 + \beta_1 D_i + \beta_2 Period_i + \beta_{TE} (Period_i \times D_i) + \varepsilon_i (\#eq:DIDint)
 \end{align}
 where $D_i$ is the binary treatment indicator, $Period_i$ is a binary indicator for the after-treatment period and the $Period_i \times D_i$ is the interaction of both.
 
@@ -847,3 +847,237 @@ This chapter has introduced the concept of causal effects in randomized controll
 In an empirical application we have shown how to replicate the results of the analysis of the STAR data presented in Chapter 13.3 of the book using `r ttcode("R")`. This study uses a randomized controlled experiment to assess whether smaller classes improve students' performance on standardized tests. Being related to a randomized controlled experiment, the data of this study is fundamentally different to those used in the cross-section studies in Chapters \@ref(lrwor) to \@ref(nrf). We therefore have motivated usage of a *differences estimator*.
 
 Chapter \@ref(attdfc) demonstrated how estimates of treatment effects can be obtained when the design of the study is a quasi-experiment that allows for *differences-in-differences* or *regression discontinuity design* estimators. In particular, we have introduced functions of the package `r ttcode("rddtools")` that are convenient for estimation as well as graphical analysis when estimating a regression discontinuity design. 
+
+## Exercises
+
+The subsequent exercises guide you in reproducing some of the results presented in one of the most famous DID studies by @card1994. The authors use geography as the “as if” random treatment assignment to study the effect on employment in fast food restaurants caused by an increase in the state minimum wage in New Jersey in the year of 1992, see Chapter \@ref(qe). 
+
+The study is based on survey data collected in February 1992 and in November 1992, after New Jersey's minimum wage rose by $\$0.80$ from $\$4.25$ to $\$5.05$ in April 1992.
+
+Estimating the effect of the wage increase simply by computing the change in employment in New Jersey (as you are asked to do in Exercise 3) would fail to control for omitted variables. By using Pennsylvania as a control in a difference-in-differences (DID) model one can control for variables with a common influence on New Jersey (treatment group) and Pennsylvania (control group). This reduces the risk of omitted variable bias enormously and even works when these variables are unobserved. 
+
+For the DID approach to work we must assume that New Jersey and Pennsylvania have parallel trends over time, i.e., we assume that the (unobserved) factors influence employment in Pennsylvania and New Jersey in the same manner. This allows to interpret an observed change in employment in Pennsylvania as the change New Jersey would have experienced if there was no increase in minimum wage (and vice versa). 
+
+Against to what standard economic theory would suggest, the authors did not find evidence that the increased minimum wage induced an increase in unemployment in New Jersey using the DID approach: quite the contrary, their results suggest that the $\$0.80$ minimum wage increase in New Jersey led to a 2.75 full-time equivalent (FTE) increase in employment.
+
+```{r, echo=F, purl=F, results='asis'}
+if (my_output == "html") {
+  cat('
+<div  class = "DCexercise">
+
+#### 1. The Data from Card & Krueger (1994) {-}
+
+<tt>fastfood.dat</tt>, the dataset used by Card & Krueger (1994) can be downloaded [here](http://www.stat.ucla.edu/projects/datasets/fastfood.dta). See this [link](http://www.stat.ucla.edu/projects/datasets/fastfood-explanation.html) for a detailed explanation of the variables.
+
+This exercise asks you to import the dataset in <tt>R</tt> and to perform some formatting necessary for the subsequent analysis. This can be tedious using base <tt>R</tt> functions but is easily done using the <tt>dplyr</tt> package introducted in Chapter \\@ref(aattggoe). 
+
+The URL to the dataset is saved in <tt>data_URL</tt>.
+
+**Instructions:**
+
+- Attach the packages <tt>dplyr</tt> and <tt>foreign</tt>.
+
+- Read in the dataset <tt>fastfood.dta</tt> using <tt>data_URL</tt> and assign it to a <tt>data.frame</tt> named <tt>dat</tt>.
+
+In their study, Card & Krueger (1994) measure employment in full time equivalents which they define as the number of full time employees (<tt>empft</tt> and <tt>empft2</tt>) plus the number of managers (<tt>nmgrs</tt> and <tt>nmgrs2</tt>) plus 0.5 times the number part-time employees (<tt>emppt</tt> / <tt>emppt2</tt>). 
+- Define full-time employment before (<tt>FTE</tt>) and after the wage increase (<tt>FTE2</tt>) and add both variables to <tt>dat</tt>
+
+<iframe src="DCL/ex13_1.html" frameborder="0" scrolling="no" style="width:100%;height:340px"></iframe>
+
+**Hints:**
+
+- <tt>read.dta()</tt> from the <tt>foreign</tt> package reads <tt>.dta</tt> files, a format used by the statistical software package *STATA*.
+
+- <tt>mutate()</tt> generates new columns using existing ones.
+
+</div>')}
+```
+
+```{r, echo=F, purl=F, results='asis'}
+if (my_output == "html") {
+  cat('
+<div  class = "DCexercise"> 
+
+#### 2. State Specific Estimates of Full-Time Employment --- I {-}
+
+This exercise asks you to perform a quick calculation of state specific sample means in order to check whether our data on full-time employment is in alignment with the data used by Card & Krueger (1994).   
+
+**Instructions:**
+
+- Generate subsets of <tt>dat</tt> to seperate observations for New Jersey and Pennsylvania. Save them as <tt>dat_NJ</tt> and <tt>dat_PA</tt>. 
+
+- Compute sample means of full-time employment equivalents for New Jersey and Pennsylvania both before and after the minium wage increase in New Jersey. It suffices if your code prints the correct values to the console.
+
+<iframe src="DCL/ex13_2.html" frameborder="0" scrolling="no" style="width:100%;height:340px"></iframe>
+
+**Hints:**
+
+- You may use <tt>group_by()</tt> in conjunction with <tt>summarise()</tt> to compute groupwise means. Both function come with the <tt>dplyr</tt> package.
+
+</div>')}
+```
+
+
+```{r, echo=F, purl=F, results='asis'}
+if (my_output == "html") {
+  cat('
+<div  class = "DCexercise"> 
+
+#### 3. State Specific Estimates of Full-Time Employment --- II {-}
+  
+A naive approach to investigate the impact of the minimum wage increase on employment is to use the estimated difference in mean employment before and after the wage increase for New Jersey fast food restaurants.
+
+This exercise asks you to do the aforementioned and further to test if the estimated difference is significantly different from zero using a *robust* $t$-test.
+
+The subsets <tt>dat_NJ</tt> and <tt>dat_PA</tt> from the previous exercise are available in your working environment. 
+
+**Instructions:**
+
+- Use <tt>dat_NJ</tt> for a robust test of the hypothesis that there is no difference in full-time employment before and after the wage hike in New Jersey at the level of $5\\%$.
+
+<iframe src="DCL/ex13_3.html" frameborder="0" scrolling="no" style="width:100%;height:340px"></iframe>
+
+**Hints:**
+
+- The testing problem amounts to a two-sample $t$-test which is conveniently done using <tt>t.test()</tt>.
+
+</div>')}
+```
+
+```{r, echo=F, purl=F, results='asis'}
+if (my_output == "html") {
+  cat('
+<div  class = "DCexercise"> 
+
+#### 4. Preparing the Data for Regression {-}
+
+The estimations done in Exercise 3 and the difference-in-differences approach we are working towards can be shown to produce the same results OLS applied to specific regression models, see Chapters \\@ref(poceaie) and \\@ref(aattggoe).
+
+This exercise asks you to construct a dataset which is more convenient for this purpose than the dataset <tt>dat</tt>.
+
+**Instructions:**
+
+Generate the dataset <tt>reg_dat</tt> from <tt>dat</tt> in *long format*, i.e., make sure that for each restaurant (identified by <tt>sheet</tt>) one observation before and one after the minimum wage increase (identified by <tt>D</tt>) are included.
+
+Only consider the following variables:
+
+- <tt>id</tt>: sheet number (unique store id)
+
+- <tt>chain</tt>: chain 1=Burger King; 2=KFC; 3=Roy Rogers; 4=Wendys
+
+- <tt>state</tt>: 1 if New Jersey; 0 if Pennsylvania
+
+- <tt>empl</tt>: measure of full-time employment (<tt>FTE</tt> / <tt>FTE2</tt>)
+
+- <tt>D</tt>: dummy indicating if the observation was made before or after the minimum wage increase in New Jersey. 
+
+<iframe src="DCL/ex13_4.html" frameborder="0" scrolling="no" style="width:100%;height:340px"></iframe>
+
+**Hints:**
+
+- The original dataset <tt>dat</tt> has 410 observations of 48 variables (check this using <tt>dim(dat)</tt>). The dataset <tt>reg_dat</tt> you are asked to generate must consist of 820 observations of the variables listed above.
+
+- It is straightforward to generate a <tt>data.frame</tt> from the columns of another <tt>data.frame</tt> using <tt>data.frame(...)</tt>.
+
+- Use <tt>rbind()</tt> to combine two objects of type <tt>data.frame</tt> by row. 
+
+</div>')}
+```
+
+```{r, echo=F, purl=F, results='asis'}
+if (my_output == "html") {
+  cat('
+<div  class = "DCexercise">   
+
+#### 5. A Difference Estimate using Data from Card & Krueger (1994) --- II {-}
+
+<tt>reg_dat</tt> from Exercise 4 is a *panel dataset* as it has two observations for each fast food restaurant $i=1,\\dots,410$, at time periods $t=0,1$.   
+
+Thus we may write down the simple regression model 
+
+$$employment_{i,t} = \\beta_0 + \\beta_1 D_t + \\varepsilon_{i,t},$$
+
+where $D_t$ is a dummy variable which equals $0$ if the observation was made before the minimum wage change ($t=0$) and $1$ after the minimum wage change ($t=1$), i.e.,
+
+\\begin{align*}
+D_t = \\begin{cases}
+0, & \\, \\text{if $t=0$ (before wage change),} \\\\
+1, & \\, \\text{if $t=1$ (after wage change)}
+\\end{cases}
+\\end{align*}
+
+and assume that observations for *New Jersey restaurants only* are used in computing $\\hat\\beta_1$, the OLS estimator of $\\beta_1$, which is also called the *differences estimator*. 
+
+The dataset <tt>reg_dat</tt> from Exercise 4 and the New Jersey subset <tt>dat_NJ</tt> are available in your working environment.
+
+**Instructions:**
+
+- Estimate $\\beta_1$ in the model above using OLS. Save the estimated model to <tt>emp_mod</tt>. 
+
+- Obtain a robust summary of the results and interpret your findings.
+
+<iframe src="DCL/ex13_5.html" frameborder="0" scrolling="no" style="width:100%;height:340px"></iframe>
+
+**Hints:**
+
+- Remember that dependencies of the <tt>AER</tt> package include functions for robust inference on regression models.
+
+- The argument <tt>subset</tt> in <tt>lm()</tt> takes a logical vector which identifies observations used for estimation.
+
+</div>')}
+```
+
+```{r, echo=F, purl=F, results='asis'}
+if (my_output == "html") {
+  cat('
+<div  class = "DCexercise">
+
+#### 6. A Difference Estimate using Data from Card & Krueger (1994) --- II {-}
+
+The estimate obtained using <tt>t.test()</tt> on the New Jersey subset in Exercise 3 and the OLS estimate of $\\hat\\beta_1$ in Exercise 5 are numercially the same. This also holds for the reported $t$-statistics if the same standard error formulas are used (<tt>t.test(..., var.equal = T)</tt> and <tt>coeftest(..., vcov. = vcovHC, type = "HC1")</tt>).
+
+This exercise asks you to check that the above statement is true. 
+
+The data from the previous exercises, the result of <tt>t.test(...)</tt> from Exercise 3 as well as the regression model object <tt>emp_mod</tt> from Exercise 5 are available in your working environment. The <tt>AER</tt> package has been attached.
+
+*No submission correctness tests are run.*
+
+**Instructions:**
+
+- Check that the estimate of $\\beta_1$ in Exercise 5 is equal to the estimated difference in mean employment of New Jersey fastfood restaurants before and after the minimum wage increase from Exercise 3. 
+
+- Convince yourself that the $t$-statistics reported by <tt>coeftest(...)</tt> in Exercise 5 and <tt>t.test(...)</tt> in Exercise 3 match.
+
+<iframe src="DCL/ex13_6.html" frameborder="0" scrolling="no" style="width:100%;height:340px"></iframe>
+
+</div>')}
+```
+
+```{r, echo=F, purl=F, results='asis'}
+if (my_output == "html") {
+  cat('
+<div  class = "DCexercise">
+
+#### 7. A Difference-in-Differences Estimate --- II {-}
+
+As mentioned in Chapter \\@ref(aattggoe), the approach discussed in Exercises 5 and 6 is naive: $\\hat\\beta_1$ is a biased estimate of the average effect of the minimum wage increase on employment because we cannot control for other determinants of employment that correlate with $D_t$. As an example, think about macro-economic developments which have a positive impact on the labor market such that employment is higher in the period after the minimum wage increase. It is likely that $D_t$ is positively correlated with the error term such that $\\hat\\beta_1$ *overestimates* the effect of the wage hike on employment.
+
+This motivates usage of the difference-in-differences (DID) estimator outlined in Chapter \\@ref(aattggoe).
+
+Consider the liner regression model
+
+$$employment_{i,t} = \\beta_0 + \\beta_1 D_t + \\beta_2 state_i + \\beta_3 (D_t \\times state_i) + \\varepsilon_{i,t},$$
+
+where we use indices $i$ and $t$ just as in the simple regression model in Exercise 5. 
+In this model, $\\beta_3$ is the coefficient we are interested in as it is interpreted as the average difference in employment of New Jersey fastfood restaurants before and after the wage increase after controlling for unobservables which are common to New Jersey and Pennsylvania, the control group. The OLS estimator of $\\beta_3$ is called a DID estimator. 
+
+**Instructions:**
+
+- Estimate the above model using OLS and obtain a robust summary.
+
+- Interpret your findings.
+
+<iframe src="DCL/ex13_7.html" frameborder="0" scrolling="no" style="width:100%;height:340px"></iframe>
+
+</div>')}
+```
