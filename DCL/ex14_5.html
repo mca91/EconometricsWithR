@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+      <head>
+<meta charset='utf-8'/>
+<script async='async' src='https://cdn.datacamp.com/dcl-react-dev.js.gz'></script>
+<style>
+.DCexercise .datacamp-exercise {
+     border: 2px solid #3D678D;
+     border-radius: 10px 10px 10px 10px !important;
+     }
+
+     *[class*="lm_"], .ace_gutter, textarea[class*="ace_"], .ace_scroller {
+     background-color: #F0EFF0 !important;
+     }
+
+     div[class*="Editor-module__editor"], div[class*="dcl__Footer"] {
+     background-color: #3D678D !important; 
+     } 
+
+     *[class*="lm_"] {
+     border-radius: 10px 10px 0px 0px !important;
+     }
+
+     div[class*="dcl__Footer"] {
+     border-radius: 0px 0px 10px 10px !important;
+     }
+
+     .lm_content {
+     border-radius: 0px !important;
+     }
+
+     .lm_splitter {
+     background-color: #3D678D !important; 
+     width: 3px !important;
+     }
+
+     .lm_drag_handle {
+     background: transparent !important;
+     }
+
+     div[class*="dcl__index-module"] {
+     outline-color: transparent !important;
+     border-radius: 10px !important;
+     }
+
+     button[class*="secondary-light"] {
+     background-color: #FF0000;
+     }
+</style>
+      </head>
+      <body>
+      <div data-datacamp-exercise data-lang='r' data-height =320>  <code data-type="pre-exercise-code">
+  library(dynlm)
+  library(lmtest)
+  library(urca)
+  </code>
+  <code data-type="sample-code">
+  # estimate the model
+  model <- 
+  
+  # test whether the test rejects at the 1%, 5% and 10% level
+  cval <- c(-3.12, -3.41, -3.96)
+  
+  
+  # verify your results using the function ur.df() from the urca package
+  adf <- 
+  summary(adf)
+  
+  </code>
+  <code data-type="solution">
+  # estimate the model
+  model <- dynlm(diff(DAX) ~ trend(DAX, scale = F) + L(DAX, 1), data = EuStockMarkets)
+  
+  # test whether the test rejects at the 1%, 5% and 10% level
+  cval <- c(-3.12, -3.41, -3.96)
+  coeftest(model)[3, 3] < cval
+  
+  # verify your results using the function ur.df() from the urca package
+  adf <- ur.df(EuStockMarkets[, "DAX"], type = "trend", lags = 0, selectlags = "Fixed")
+  summary(adf)
+  
+  </code>
+  <code data-type="sct">
+  ex() %>% check_function("ur.df") %>% {
+    check_arg(., "y") %>% check_equal()
+    check_arg(., "type") %>% check_equal()
+    check_arg(., "lags") %>% check_equal()
+    check_arg(., "selectlags") %>% check_equal()
+  }
+  success_msg("Correct! For all three significance levels the test cannot reject the null that the DAX is stationary around a deterministic linear time trend.")
+  </code></div>
+      </body>
+      </html>
