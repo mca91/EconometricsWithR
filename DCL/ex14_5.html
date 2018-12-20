@@ -49,44 +49,45 @@
       </head>
       <body>
       <div data-datacamp-exercise data-lang='r' data-height =320>  <code data-type="pre-exercise-code">
-  library(dynlm)
-  library(lmtest)
-  library(urca)
+  set.seed(1)
+  
   </code>
   <code data-type="sample-code">
-  # estimate the model
-  model <- 
-  
-  # test whether the test rejects at the 1%, 5% and 10% level
-  cval <- c(-3.12, -3.41, -3.96)
+  # run the simulation study
+  n       <- c(100, 1000, 10000)
+  tstats  <- matrix(nrow = 1000, ncol = 3)
   
   
-  # verify your results using the function ur.df() from the urca package
-  adf <- 
-  summary(adf)
+  
+  
+  
+  
+  
+  
+  
+  # compute the fraction exceeding the absolute value of 1.96
+  
   
   </code>
   <code data-type="solution">
-  # estimate the model
-  model <- dynlm(diff(DAX) ~ trend(DAX, scale = F) + L(DAX, 1), data = EuStockMarkets)
+  # run the simulation study
+  n       <- c(100, 1000, 10000)
+  tstats  <- matrix(nrow = 1000, ncol = 3)
+  for(i in 1:3){
+    for(j in 1:1000){
+      rw1   <- cumsum(rnorm(n[i]))
+      rw2   <- cumsum(rnorm(n[i]))
+      sr    <- lm(rw2 ~ rw1)
+      tstats[j, i] <- summary(sr)$coef[2, 3]
+    }
+  }
   
-  # test whether the test rejects at the 1%, 5% and 10% level
-  cval <- c(-3.12, -3.41, -3.96)
-  coeftest(model)[3, 3] < cval
-  
-  # verify your results using the function ur.df() from the urca package
-  adf <- ur.df(EuStockMarkets[, "DAX"], type = "trend", lags = 0, selectlags = "Fixed")
-  summary(adf)
+  # compute the fraction exceeding the absolute value of 1.96
+  apply(abs(tstats) > 1.96, MARGIN = 2, FUN = sum)/nrow(tstats)
   
   </code>
   <code data-type="sct">
-  ex() %>% check_function("ur.df") %>% {
-    check_arg(., "y") %>% check_equal()
-    check_arg(., "type") %>% check_equal()
-    check_arg(., "lags") %>% check_equal()
-    check_arg(., "selectlags") %>% check_equal()
-  }
-  success_msg("Correct! For all three significance levels the test cannot reject the null that the DAX is stationary around a deterministic linear time trend.")
+  success_msg("Correct! We see that for increasing sample sizes the fraction gets closer to 1, that is, we reject the null more frequently. Or put differently, in the majority of the cases the regression model finds a relationship that, by construction, does not exist.")
   </code></div>
       </body>
       </html>

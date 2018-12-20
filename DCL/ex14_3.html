@@ -49,16 +49,61 @@
       </head>
       <body>
       <div data-datacamp-exercise data-lang='r' data-height =320>  <code data-type="pre-exercise-code">
-  
+  set.seed(1)
+  test_series <- arima.sim(n = 1000, list(ar = c(.2, .5)))
+  library(dynlm)
+  library(lmtest)
   </code>
   <code data-type="sample-code">
+  # write the function ft()
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  # test your function with test_series and the argument max_lag set to 10
+  
   
   </code>
   <code data-type="solution">
+  # write the function ft()
+  ft <- function(series, max_lag = 5){
+    for(i in max_lag:1){
+      mod  <- dynlm(series ~ L(series, 1:i))
+      pval <- coeftest(mod, vcov = vcovHC)[(i+1), 4]
+      if(pval < 0.01){
+        print(i)
+        break
+      }
+    }
+  }
+  
+  # test your function with test_series and the argument max_lag set to 10
+  ft(test_series, max_lag = 10)
   
   </code>
   <code data-type="sct">
-  success_msg("Correct!")
+  test_predefined_objects("test_series")
+  ex() %>% check_fun_def('ft') %>% check_correct(
+    check_call(., zoo(1:10), 5) %>% {
+      check_result(.) %>% check_equal()
+      check_output(.) %>% check_equal()
+    },
+    {
+      check_arguments(.)
+    }
+  )
+  ex() %>% check_function("ft") %>% {
+    check_arg(., "series") %>% check_equal()
+    check_arg(., "max_lag") %>% check_equal()
+  }
+  success_msg("Correct! Based on the F-test approach an AR(2) model seems appropriate. In this particular case this is indeed correct, as the test series was generated as an AR(2). However note that in general the F-test approach tends to select too many lags.")
   </code></div>
       </body>
       </html>
