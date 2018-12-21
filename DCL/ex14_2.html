@@ -49,16 +49,56 @@
       </head>
       <body>
       <div data-datacamp-exercise data-lang='r' data-height =320>  <code data-type="pre-exercise-code">
-  
   </code>
   <code data-type="sample-code">
+  # run the simulation study
+  set.seed(123)
+  n   <- c(10, 100, 1000, 10000)
+  betas <- numeric(4)
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  # print out the vector betas
+  
   
   </code>
   <code data-type="solution">
+  # run the simulation study
+  set.seed(123)
+  n   <- c(10, 100, 1000, 10000)
+  betas <- numeric(4)
+  for(i in 1:4){
+    coefs <- c()
+    for(j in 1:100){
+      smpl   <- arima.sim(n = n[i], list(ar = 0.3))
+      model  <- arima(smpl, order = c(1, 0, 0), include.mean = F)
+      coefs[j] <- model$coef
+    }
+    betas[i] <- mean(coefs)
+  }
+  
+  # print out the vector betas
+  betas
   
   </code>
   <code data-type="sct">
-  success_msg("Correct!")
+  test_predefined_objects("n")
+  ex() %>% check_for() %>% {
+    check_body(.) %>% {
+      check_function(., "arima.sim")
+      check_function(., "arima")
+    }
+  }
+  ex() %>% check_object("betas") %>% check_equal()
+  ex() %>% check_output_expr("betas")
+  success_msg("Correct! With increasing sample sizes the estimate converges to the true value of 0.3.")
   </code></div>
       </body>
       </html>

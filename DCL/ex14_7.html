@@ -49,16 +49,42 @@
       </head>
       <body>
       <div data-datacamp-exercise data-lang='r' data-height =320>  <code data-type="pre-exercise-code">
-  
+  library(car)
+  library(sandwich)
+  library(xts)
+  set.seed(123)
+  a <- arima.sim(120, model = list(ar = .3))+4
+  b <- arima.sim(120, model = list(ar = .3))
+  series <- ts(c(a, b), start = c(1990, 1), end = c(2009, 12), frequency = 12)
+  plot(as.xts(series), main = "")
   </code>
   <code data-type="sample-code">
+  # set up the dummy variable D
+  D <- 
+  
+  # estimate the model necessary to conduct the Chow test
+  model <- lm(series[-1] ~ series[-240] + D[-240]*series[-240])
+  
+  # conduct the Chow test using linearHypothesis()
+  
   
   </code>
   <code data-type="solution">
+  # set up the dummy variable D
+  D <- time(series) >= 2000
+  
+  # estimate the model necessary to conduct the Chow test
+  model <- lm(series[-1] ~ series[-240] + D[-240]*series[-240])
+  
+  # conduct the Chow test using linearHypothesis()
+  linearHypothesis(model, c("D[-240]TRUE=0", "series[-240]:D[-240]TRUE=0"), vcov. = sandwich)
   
   </code>
   <code data-type="sct">
-  success_msg("Correct!")
+  ex() %>% check_function("time") %>% check_arg("x") %>% check_equal()
+  ex() %>% check_object("D") %>% check_equal()
+  ex() %>% check_function("linearHypothesis") %>% check_result() %>% check_equal()
+  success_msg("Correct! There seems to be a structural break in the transition from 1999 to 2000.")
   </code></div>
       </body>
       </html>

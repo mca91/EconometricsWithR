@@ -49,16 +49,41 @@
       </head>
       <body>
       <div data-datacamp-exercise data-lang='r' data-height =320>  <code data-type="pre-exercise-code">
-  
+  library(dynlm)
+  library(AER)
+  library(lmtest)
+  data("USMacroG")
   </code>
   <code data-type="sample-code">
+  # estimate the ADL(1,1) model
+  adl_model <- 
+  
+  # print a robust summary of the ADL(1,1)
+  
+  
+  # test whether dpi Granger causes consumption at a 95% confidence level
+  
   
   </code>
   <code data-type="solution">
+  # estimate the ADL(1,1) model
+  adl_model <- dynlm(consumption ~ L(consumption) + L(dpi), data = USMacroG)
+  
+  # print a robust summary of the ADL(1,1)
+  coeftest(adl_model, vcov. = sandwich)
+  
+  # test whether dpi Granger causes consumption at a 95% confidence level
+  coeftest(adl_model, vcov. = sandwich)[3, 4] < 0.05
   
   </code>
   <code data-type="sct">
-  success_msg("Correct!")
+  ex() %>% check_object("adf_model") %>% check_equal()
+  ex() %>% check_function(coeftest %>% check_arg("vcov.") %>% check_equal()
+  ex() %>% check_or(
+    check_output_expr("coeftest(adl_model, vcov. = sandwich)[3, 4] < 0.05"),
+    check_output_expr("coeftest(adl_model, vcov. = sandwich)[3, 4] > 0.05")
+  )
+  success_msg("Correct! In this particular model specification the null that the first lag of dpi has no predictive power for consumption is rejected at a 95% confidence level.")
   </code></div>
       </body>
       </html>

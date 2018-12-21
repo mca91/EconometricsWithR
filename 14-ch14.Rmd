@@ -2023,31 +2023,41 @@ if (my_output=="html") {
   cat('
 <div  class = "DCexercise">
 
-#### 2. Consistency {-}
+#### 2. Autoregressive Model - Consistency {-}
 
 Consider the following simple AR(1) model without intercept 
 
-$$Y_t=\\beta_1 Y_{t-1} + u_t$$.
+$$Y_t=\\beta_1 Y_{t-1} + u_t.$$
 
 In this exercise we will show that the OLS estimate $\\widehat{\\beta_1}$ is a biased but consistent estimator of $\\beta_1$. To do so assume we have the following true DGP
 
-$$Y_t=0.5 Y_{t-1} + u_t$$.
+$$Y_t=0.3\\times Y_{t-1} + u_t.$$
 
-
-
-The packages <tt>AER</tt> and <tt>plm</tt> have been loaded.
-      
+Your task is now to repeatedly (1000 times) draw from the DGP, fit an AR(1) without intercept and save the estimate. Afterwards you compute the mean over all estimates and repeat the whole procedure for different sample sizes. A corresponding vector of sample sizes has already been created and is available as <tt>n</tt> in your working environment.
+    
 **Instructions:**
 
-  + Write a for loop which ...
+  + Run the simulation study, in particular do the following:
+  
+      1. Write an inner and outer <tt>for()</tt> loop which iterate over all sample sizes and repetitions, respectively. Inside the outer loop you should initialize an empty vector where you can save the estimated coefficients later on.
 
-    + Generate random samples from an Ar(1) for each sample size using the function <tt>arima.sim()</tt>.
+      2. Inside the inner loop generate random samples from an AR(1) for each sample size using the function <tt>arima.sim()</tt>.
 
-    + Estimate the coefficient using the function <tt>ar.ols()</tt>
+      3. Afterwards fit an AR(1) model without intercept to the simulated data using the function <tt>arima()</tt>.
+  
+      4. Extract the estimated coefficient and append it to the initialized vector created in the beginning.
+
+      5. Compute the mean over all estimates for a given sample size and append it to <tt>betas</tt>.
+
+  + Print out <tt>betas</tt>. What do you observe?
 
 <iframe src="DCL/ex14_2.html" frameborder="0" scrolling="no" style="width:100%;height:340px"></iframe>
 
 **Hints:**
+
+  + To simulate from an AR(1) model with <tt>arima.sim()</tt> you need to specify the length of the series and the model specification via the arguments <tt>n</tt> and <tt>model</tt>, respectively. For the latter note that a list with named entries is expected. See <tt>?arima.sim</tt> for further information.
+
+  + Fitting an AR(1) model without intercept to the simulated data requires the argument <tt>include.mean</tt> to be set to <tt>FALSE</tt>.
 
 </div>')
 }
@@ -2060,18 +2070,32 @@ if (my_output=="html") {
 
 #### 3. Lag Length Selection - F-Test Approach {-}
 
-The packages <tt>dynlm()</tt> and <tt>lmtest</tt> have been loaded.
+Your task in this exercise is to write a function that implements the F-test approach as a possibility to select the optimal lag length in an AR model. Besides a time series object the function expects a maximum lag length (<tt>max_lag</tt>) as well as a particular confidence level (<tt>conf_level</tt>).
+
+A time series object to test your function has already been created and is available as <tt>test_series</tt> in your working environment. The package <tt>lmtest</tt> has been loaded.
       
 **Instructions:**
 
-  + Implement
+  + Implement the function <tt>ft()</tt> expecting the arguments <tt>series</tt>, <tt>max_lag</tt> and <tt>conf_level</tt>. In particular do the following:
 
-  + Test your function 
+      1. For each lag (use a <tt>for()</tt> loop here) estimate the corresponding AR model using <tt>arima()</tt>.
+
+      2. Afterwards obtain a summary using <tt>coeftest()</tt> and extract the relevant p-value.
+
+      3. If the p-value is smaller than the specified confidence level (use <tt>if()</tt> here), print the lag length and stop the <tt>for()</tt> loop, otherwise repeat steps 1 and 2 for the next lag length.
+
+  + Test your function with the time series object <tt>test_series</tt> and set the arguments <tt>max_lag</tt> and <tt>conf_level</tt> to 10 and 0.05, respectively.
 
 
 <iframe src="DCL/ex14_3.html" frameborder="0" scrolling="no" style="width:100%;height:340px"></iframe>
 
 **Hints:**
+
+  + The <tt>for()</tt> loop inside the function body should start at the maximum lag <tt>max_lag</tt> and end at 1.
+
+  + To get a comprehensive overview of your model estimation (including p-values) simply apply <tt>coeftest()</tt> to the model object created by <tt>arima()</tt>. Afterwards use the structure of the resulting object to extract the relevant p-value.
+
+  + A <tt>for()</tt> loop is stopped using break.
 
 </div>')
 }
@@ -2082,18 +2106,31 @@ if (my_output=="html") {
   cat('
 <div  class = "DCexercise">
 
-#### 4. The ADL model {-}
+#### 4. The ADL model - Granger Causality {-}
 
+Consider the following ADL(1,1) model 
 
+$$consumption_t = \\beta_0 + \\beta_1 consumption_{t-1} + \\delta_1 dpi_{t-1} + u_t,$$
+
+where $consumption_t$ and $dpi_t$ are variables from the macroeconomic dataset <tt>USMacroG</tt> denoting the real consumption expenditures and real disposable personal income, respectively.
+
+The dataset <tt>USMacroG</tt> is available in your working environment. The packages <tt>dynlm</tt>, <tt>lmtest</tt> and <tt>AER</tt> have been loaded.
       
 **Instructions:**
 
+  + Estimate the above model ADL(1,1) model and assign the model object to the variable <tt>adl_model</tt>.
+
+  + Print out a robust summary (that is, use <tt>vcov.=sandwich</tt>) with the function <tt>coeftest()</tt>.
+
+  + Test with a logical comparison whether <tt>dpi</tt> Granger causes <tt>consumption</tt> at a 95% confidence level.
 
 <iframe src="DCL/ex14_4.html" frameborder="0" scrolling="no" style="width:100%;height:340px"></iframe>
 
 **Hints:**
 
-  + For only one lagged variable, the test on Granger causlality reduces to a simple t-test.
+  + ADL models can conveniently be estimated with the function <tt>dynlm()</tt>. Lags of a variable can be included using <tt>L()</tt> inside of <tt>dynlm()</tt>. 
+
+  + For only one lag of a variable, the test on Granger causality reduces to a simple t-test. So you use the output generated by <tt>coeftest()</tt>.
 
 </div>')
 }
@@ -2108,27 +2145,29 @@ if (my_output=="html") {
 
 We briefly mentioned the phenomenon of spurious regression, in this exercise you will further elaborate on this.
 
-To do so consider the two random walks
+To do so consider two random walks
 
-$$y_{it}=y_{i(t-1)}+\epsilon_{it},\qquad y_0=0,\qquad \epsilon_{it}\stackrel{i.i.d.}{\sim}\mathcal{N}(0, 1)$$
+$$y_{it}=y_{i(t-1)}+\\epsilon_{it},\\qquad y_0=0,\\qquad \\epsilon_{it}\\stackrel{i.i.d.}{\\sim}\\mathcal{N}(0, 1)$$
 
-with $i=1,2$, $t=0,\ldots,T$ and regress $y_{1t}$ onto a constant and $y_{2t}$. That is, consider the regression model
+with $i=1,2$, $t=0,\\ldots,T$ and regress $y_{1t}$ onto a constant and $y_{2t}$. That is, consider the regression model
 
-$$y_{1t}=\beta_0 + \beta_1 \times\y_{2t} + u_t, \\qquad .$$
+$$y_{1t}=\\beta_0 + \\beta_1 \\times y_{2t} + u_t,$$
 
-By construction we would expect that the null $\beta_1=0$ cannot be rejected in most of the cases. Unfortunately this does not hold as the upcoming simulation study will show. In fact for $T\to\infty$ the null gets rejected almost surely (that is, with probability 1).
+By construction we would expect that the null $\\beta_1=0$ cannot be rejected in most of the cases. Unfortunately this does not hold as the upcoming simulation study will show. In fact for $T\\to\\infty$ the null gets rejected almost surely (that is, with probability 1).
+
+To run the simulation, repeatedly (1000 times) proceed as outlined above and test whether the estimated coefficient $\\widehat{\\beta_1}$ is significantly different from zero assuming $\\alpha=0.05$. Afterwards repeat this procedure for different sample sizes. A corresponding vector of sample sizes has already been created and is available as <tt>n</tt> in your working environment.
       
 **Instructions:**
 
-  + Proceed as outlined above and save the value You are totally free  However we recommend the following approach:
+  + Run the simulation study, in particular do the following:
 
     1. Write an inner and outer <tt>for()</tt> loop which iterate over all sample sizes and repetitions, respectively.
 
-    2. Inside the inner loop generate two random walks and estimate the model using <tt>lm()</tt>.
+    2. Inside the inner loop generate two random walks and estimate the model from above using <tt>lm()</tt>.
 
     3. Apply <tt>summary()</tt> to the <tt>lm()</tt> object, extract the relevant t statistic and assign it to the predefined matrix <tt>tstats</tt>.
 
-  + For each sample size (that is, for each column in <tt>tstats</tt>) compute the fraction exceeding the absolute value of 1.96, the 5% critical value of the standard normal distribution. What do you observe?
+  + For each sample size (that is, for each column in <tt>tstats</tt>) compute the fraction exceeding the absolute value of 1.96. What do you observe?
 
 <iframe src="DCL/ex14_5.html" frameborder="0" scrolling="no" style="width:100%;height:340px"></iframe>
 
@@ -2136,7 +2175,7 @@ By construction we would expect that the null $\beta_1=0$ cannot be rejected in 
 
   + You may use <tt>cumsum()</tt> to generate the random walks.
 
-  + You can use <tt>apply</tt> to compute the fraction for each column. 
+  + With the help of the <tt>apply</tt> function you can compute the fraction for each column in a matrix. 
 
 </div>')
 }
@@ -2147,17 +2186,17 @@ if (my_output=="html") {
   cat('
 <div  class = "DCexercise">
 
-#### 6. Stochastic Trends - The ADF Test {-}
+#### 6. Stochastic Trends - The (Augmented) Dickey-Fuller Test {-}
 
-Consider the daily closing prices of the DAX for the time period 1991-1998 available in the dataset <tt>EuStockMarkets</tt>. Your task in this exercise is check 
+Consider the daily closing prices of the DAX for the time period 1991-1998 available as column <tt>DAX</tt> in the dataset <tt>EuStockMarkets</tt>. Your task in this exercise is to check whether the series is stationary around a deterministic linear trend or not.
 
 The packages <tt>dynlm</tt>, <tt>lmtest</tt> and <tt>urca</tt> have been loaded.
       
 **Instructions:**
 
-  + Estimate the model necessary to conduct the augmented Dickey-Fuller test.
+  + Estimate the model (assume a lag of 1) necessary to conduct the augmented Dickey-Fuller test using <tt>dynlm()</tt>. Assign it to <tt>adf_model</tt>.
 
-  + Test with the logical comparison whether the test rejects at the 1%, 5% and 10% level, respectively. The critical values for the ADF test are already available for you as <tt>cval</tt>.
+  + Test with a logical comparison whether the test rejects at the 1%, 5% and 10% level, respectively. The critical values for the ADF test are already available for you as <tt>cval</tt>.
 
   + Verify your results using the <tt>ur.df()</tt> function from the </tt>urca</tt> package.
 
@@ -2165,7 +2204,9 @@ The packages <tt>dynlm</tt>, <tt>lmtest</tt> and <tt>urca</tt> have been loaded.
 
 **Hints:**
 
-  + 
+  + Do not forget to include the deterministic time trend using <tt>trend()</tt> in conjunction with the argument <tt>scale</tt> inside of <tt>dynlm()</tt>. You may also recapitulate Key Concept 14.8.
+
+  + Inside <tt>ur.df()</tt> you should specify the argument <tt>type</tt>.
 
 </div>')
 }
@@ -2176,18 +2217,25 @@ if (my_output=="html") {
   cat('
 <div  class = "DCexercise">
 
-#### 7. Nonstationarity - Breaks {-}
+#### 7. Structural Breaks - Chow Test {-}
 
-Consider the 
+Consider the following monthly time series plot from 1990 to 2009 which can be seen once the session has been initialized.
+
+The respective time series object is available as <tt>series</tt> in your working environment. The packages <tt>car</tt>, <tt>sandwich</tt> and <tt>xts</tt> have been loaded.
       
 **Instructions:**
 
-  + Based on the plot do you ..? If so, where? 
+  + Based on the plot do you suggest a structural break in the time series? If so, where? Use the function <tt>time()</tt> to set up a corresponding dummy variable that takes the value 1 after the structural break and 0 otherwise. Assign it to the variable <tt>D</tt>. (Note that after applying <tt>time()</tt> on a time series object points in time are represented as floats, so e.g. January 1994 and July 1997 are represented as $1994.0$ and $1997+\\frac{6}{12}=1997.5$, respectively.)
 
+  + Use the dummy variable to estimate the model necessary to conduct a Chow test. In particular assume that the time series follows an AR(1) model. This task has already been done for you.
+
+  + Conduct the Chow test with the function <tt>linearHypothesis()</tt> and use the sandwich covariance matrix (that is, set <tt>vcov.=sandwich</tt>).
 
 <iframe src="DCL/ex14_7.html" frameborder="0" scrolling="no" style="width:100%;height:340px"></iframe>
 
 **Hints:**
+
+  + Inside of <tt>linearHypothesis()</tt> you should further specify the model object as well as the null hypothesis of no break.
 
 </div>')
 }
