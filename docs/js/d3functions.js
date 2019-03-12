@@ -140,7 +140,7 @@ svg.append("foreignObject")
      .attr("class", "cor draggable")
          .attr("x", w-225)
          .attr("y", 215)
-         .attr("width",100)
+         .attr("width",120)
          .attr("height",50)
          .attr("text-anchor", "left")
          .text("$\\text{Cor}(X,Y) = " + d3.round(cor(data),2) + "$");

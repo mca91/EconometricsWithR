@@ -8,7 +8,7 @@
   <script src="js/d3checkbox.js"></script>
 
 <script type="text/javascript" async
-  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML">
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
 </script>
 
  <script type="text/x-mathjax-config">
@@ -34,11 +34,13 @@ body {
   fill:white;
 }
 
-.axis path, .axis line {
-	fill: none;
-	stroke: white;
-	shape-rendering: crispEdges;
-}
+			.axis path,
+			.axis line,
+			.d3slider-axis line{
+				fill: none;
+				stroke: white;
+				shape-rendering: crispEdges;
+			}
 
 .sliders {
   width: 100%;
@@ -79,9 +81,9 @@ text, .sliders, p {
 <script>
 
 // margins
-var margin = {top: 20, right: 40, bottom: 30, left: 30},
+var margin = {top: 20, right: 40, bottom: 40, left: 30},
     width = 700 - margin.left - margin.right,
-    height = 460 - margin.top - margin.bottom;
+    height = 480 - margin.top - margin.bottom;
 
 // Initialize slider
 var sliderss = d3.slider().min(100).max(1000).ticks(10).showRange(true).value(100);
@@ -103,10 +105,10 @@ checkBox1.size(15)
          .ry(7)
          .markStrokeWidth(2.5)
          .boxStrokeWidth(2.5)
-         .boxStrokeColor("grey")
-         .text("$\\text{standardize as }\\frac{\\overline{Y}_i - 5}{25}$")
+         .boxStrokeColor("white")
          .checked(false)
          .clickEvent(updatebox1);
+
 
 var checkBox2 = new d3CheckBox();
 checkBox2.size(15)
@@ -116,8 +118,7 @@ checkBox2.size(15)
          .ry(7)
          .markStrokeWidth(2.5)
          .boxStrokeWidth(2.5)
-         .boxStrokeColor("grey")
-         .text("$\\text{also scale by }\\sqrt{n}$")
+         .boxStrokeColor("white")
          .checked(false)
          .clickEvent(updatebox2);
 
@@ -226,6 +227,21 @@ var svg = d3.select("body")
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+svg.append("foreignObject")
+   .attr("y", 1)
+   .attr("x", 40)
+   .attr("width", 120)
+   .attr("height", 50)
+   .attr("text-anchor", "right")
+   .text("$\\text{standardize: }\\frac{\\overline{Y}_i - 5}{25}$");
+
+svg.append("foreignObject")
+   .attr("y", 35)
+   .attr("x", 40)
+   .attr("width", 120)
+   .attr("height", 50)
+   .attr("text-anchor", "right")
+   .text("$\\text{scale by }\\sqrt{n}$");
 
 svg.append("foreignObject")
    .attr("y", 0)
@@ -248,7 +264,7 @@ svg.append("foreignObject")
    .attr("class", "mean")
    .attr("y", 40)
    .attr("x", width - 100)
-   .attr("width", 100)
+   .attr("width", 120)
    .attr("height", 50)
    .attr("text-anchor", "right")
    .text("$ \\frac{1}{N}\\sum_{i\\in N} \\overline{Y}_i = " + Math.round(d3.mean(values)*10000)/10000 + "$");
@@ -315,14 +331,14 @@ function refresh(values){
 
   var data = d3.layout.histogram().bins(11)(values);
 
-  if(standardize) {
-      x.domain([-4.5, 4.5])
+  if(standardize && !scaled) {
+      x.domain([-1, 1])
        .range([0, width])
        .nice();
 
       xAxis
       .scale(x)
-      .tickValues([-4,-3,-2,-1,0,1,2,3,4]);
+      .tickValues([-1,-0.5,0,0.5,1]);
 
       svg.select(".x.axis")
          .call(xAxis)
@@ -333,7 +349,41 @@ function refresh(values){
          .attr("x", 7)
          .attr("y", 3);
 
+  } else if(standardize && scaled) {
+     
+      x.domain([-4, 4])
+       .range([0, width])
+       .nice();
+
+      xAxis
+        .scale(x)
+        .tickValues([-4,-3,-2,-1,0,1,2,3,4]);
+
+      svg.select(".x.axis")
+         .call(xAxis)
+         .selectAll("text")
+         .attr("dy", ".35em")
+         .attr("x", 7)
+         .attr("y", 3)
+         .attr("transform", "rotate(55)")
+         .style("text-anchor", "start");
+
+      svg.select("circle")
+         .transition()
+        .duration(500)
+        .attr("cx", x(0));
+
+      svg.selectAll("line.trueval")
+         .transition()
+         .delay(50)
+         .duration(500)
+         .attr("x1", x(0))
+         .attr("x2", x(0))
+         .attr("y1", height)
+         .attr("y2", 0); 
+  
   } else {
+    
       x.domain([-5, 15])
        .range([0, width])
        .nice();

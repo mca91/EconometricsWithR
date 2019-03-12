@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html >
+
+<head>
+
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>2.2 Estimating the Coefficients of the Linear Regression Model | Introduction to Econometrics with R</title>
+  <meta name="description" content="Beginners with little background in statistics and econometrics often have a hard time understanding the benefits of having programming skills for learning and applying Econometrics. ‘Introduction to Econometrics with R’ is an interactive companion to the well-received textbook ‘Introduction to Econometrics’ by James H. Stock and Mark W. Watson (2015). It gives a gentle introduction to the essentials of R programming and guides students in implementing the empirical applications presented throughout the textbook using the newly aquired skills. This is supported by interactive programming exercises generated with DataCamp Light and integration of interactive visualizations of central concepts which are based on the flexible JavaScript library D3.js.">
+  <meta name="generator" content="bookdown  and GitBook 2.6.7">
+
+  <meta property="og:title" content="2.2 Estimating the Coefficients of the Linear Regression Model | Introduction to Econometrics with R" />
+  <meta property="og:type" content="book" />
+  <meta property="og:url" content="https://www.econometrics-with-r.org/" />
+  <meta property="og:image" content="https://www.econometrics-with-r.org/images/cover.png" />
+  <meta property="og:description" content="Beginners with little background in statistics and econometrics often have a hard time understanding the benefits of having programming skills for learning and applying Econometrics. ‘Introduction to Econometrics with R’ is an interactive companion to the well-received textbook ‘Introduction to Econometrics’ by James H. Stock and Mark W. Watson (2015). It gives a gentle introduction to the essentials of R programming and guides students in implementing the empirical applications presented throughout the textbook using the newly aquired skills. This is supported by interactive programming exercises generated with DataCamp Light and integration of interactive visualizations of central concepts which are based on the flexible JavaScript library D3.js." />
+  <meta name="github-repo" content="mca91/EconometricsWithR" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="2.2 Estimating the Coefficients of the Linear Regression Model | Introduction to Econometrics with R" />
+  
+  <meta name="twitter:description" content="Beginners with little background in statistics and econometrics often have a hard time understanding the benefits of having programming skills for learning and applying Econometrics. ‘Introduction to Econometrics with R’ is an interactive companion to the well-received textbook ‘Introduction to Econometrics’ by James H. Stock and Mark W. Watson (2015). It gives a gentle introduction to the essentials of R programming and guides students in implementing the empirical applications presented throughout the textbook using the newly aquired skills. This is supported by interactive programming exercises generated with DataCamp Light and integration of interactive visualizations of central concepts which are based on the flexible JavaScript library D3.js." />
+  <meta name="twitter:image" content="https://www.econometrics-with-r.org/images/cover.png" />
+
+<meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber and Martin Schmelzer">
+
+
+<meta name="date" content="2019-03-12">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  
+  
+<link rel="prev" href="2-1-simple-linear-regression.html">
+<link rel="next" href="2-3-measures-of-fit.html">
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+
+
+
+
+
+
+
+<!-- font families -->
+
+<link href="https://fonts.googleapis.com/css?family=PT+Sans|Pacifico|Source+Sans+Pro" rel="stylesheet">
+
+<script src="js/hideOutput.js"></script>
+
+<!-- Mathjax -->
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/default.js"></script>
+
+ <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        extensions: ["tex2jax.js", "TeX/AMSmath.js"],
+        tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+        jax: ["input/TeX","output/CommonHTML"]
+      });
+      MathJax.Hub.processSectionDelay = 0;
+  </script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-110299877-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-110299877-1');
+</script>
+
+<!-- open review block -->
+
+<script async defer src="https://hypothes.is/embed.js"></script>
+
+
+<style type="text/css">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(data-line-number);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  { background-color: #f8f8f8; }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ef2929; } /* Alert */
+code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #c4a000; } /* Attribute */
+code span.bn { color: #0000cf; } /* BaseN */
+code span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4e9a06; } /* Char */
+code span.cn { color: #000000; } /* Constant */
+code span.co { color: #8f5902; font-style: italic; } /* Comment */
+code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code span.dt { color: #204a87; } /* DataType */
+code span.dv { color: #0000cf; } /* DecVal */
+code span.er { color: #a40000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #0000cf; } /* Float */
+code span.fu { color: #000000; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code span.ot { color: #8f5902; } /* Other */
+code span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code span.sc { color: #000000; } /* SpecialChar */
+code span.ss { color: #4e9a06; } /* SpecialString */
+code span.st { color: #4e9a06; } /* String */
+code span.va { color: #000000; } /* Variable */
+code span.vs { color: #4e9a06; } /* VerbatimString */
+code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+<link rel="stylesheet" href="toc.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><center><img src="images/logo.png" alt="logo" width="50%" height="50%"style="margin: 15px 0 0 0"></center></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Preface</a></li>
+<li class="chapter" data-level="1" data-path="1-introduction.html"><a href="1-introduction.html"><i class="fa fa-check"></i><b>1</b> Introduction</a><ul>
+<li class="chapter" data-level="1.1" data-path="1-1-a-very-short-introduction-to-r-and-rstudio.html"><a href="1-1-a-very-short-introduction-to-r-and-rstudio.html"><i class="fa fa-check"></i><b>1.1</b> A Very Short Introduction to <tt>R</tt> and <em>RStudio</em></a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="2-lrwor.html"><a href="2-lrwor.html"><i class="fa fa-check"></i><b>2</b> Linear Regression with One Regressor</a><ul>
+<li class="chapter" data-level="2.1" data-path="2-1-simple-linear-regression.html"><a href="2-1-simple-linear-regression.html"><i class="fa fa-check"></i><b>2.1</b> Simple Linear Regression</a></li>
+<li class="chapter" data-level="2.2" data-path="2-2-estimating-the-coefficients-of-the-linear-regression-model.html"><a href="2-2-estimating-the-coefficients-of-the-linear-regression-model.html"><i class="fa fa-check"></i><b>2.2</b> Estimating the Coefficients of the Linear Regression Model</a><ul>
+<li class="chapter" data-level="" data-path="2-2-estimating-the-coefficients-of-the-linear-regression-model.html"><a href="2-2-estimating-the-coefficients-of-the-linear-regression-model.html#the-ordinary-least-squares-estimator"><i class="fa fa-check"></i>The Ordinary Least Squares Estimator</a></li>
+</ul></li>
+<li class="chapter" data-level="2.3" data-path="2-3-measures-of-fit.html"><a href="2-3-measures-of-fit.html"><i class="fa fa-check"></i><b>2.3</b> Measures of Fit</a><ul>
+<li class="chapter" data-level="" data-path="2-3-measures-of-fit.html"><a href="2-3-measures-of-fit.html#the-coefficient-of-determination"><i class="fa fa-check"></i>The Coefficient of Determination</a></li>
+<li class="chapter" data-level="" data-path="2-3-measures-of-fit.html"><a href="2-3-measures-of-fit.html#the-standard-error-of-the-regression"><i class="fa fa-check"></i>The Standard Error of the Regression</a></li>
+<li class="chapter" data-level="" data-path="2-3-measures-of-fit.html"><a href="2-3-measures-of-fit.html#application-to-the-test-score-data"><i class="fa fa-check"></i>Application to the Test Score Data</a></li>
+</ul></li>
+<li class="chapter" data-level="2.4" data-path="2-4-tlsa.html"><a href="2-4-tlsa.html"><i class="fa fa-check"></i><b>2.4</b> The Least Squares Assumptions</a><ul>
+<li class="chapter" data-level="" data-path="2-4-tlsa.html"><a href="2-4-tlsa.html#assumption-1-the-error-term-has-conditional-mean-of-zero"><i class="fa fa-check"></i>Assumption 1: The Error Term has Conditional Mean of Zero</a></li>
+<li class="chapter" data-level="" data-path="2-4-tlsa.html"><a href="2-4-tlsa.html#assumption-2-independently-and-identically-distributed-data"><i class="fa fa-check"></i>Assumption 2: Independently and Identically Distributed Data</a></li>
+<li class="chapter" data-level="" data-path="2-4-tlsa.html"><a href="2-4-tlsa.html#assumption-3-large-outliers-are-unlikely"><i class="fa fa-check"></i>Assumption 3: Large Outliers are Unlikely</a></li>
+</ul></li>
+<li class="chapter" data-level="2.5" data-path="2-5-tsdotoe.html"><a href="2-5-tsdotoe.html"><i class="fa fa-check"></i><b>2.5</b> The Sampling Distribution of the OLS Estimator</a><ul>
+<li class="chapter" data-level="" data-path="2-5-tsdotoe.html"><a href="2-5-tsdotoe.html#simulation-study-1"><i class="fa fa-check"></i>Simulation Study 1</a></li>
+<li class="chapter" data-level="" data-path="2-5-tsdotoe.html"><a href="2-5-tsdotoe.html#simulation-study-2"><i class="fa fa-check"></i>Simulation Study 2</a></li>
+<li class="chapter" data-level="" data-path="2-5-tsdotoe.html"><a href="2-5-tsdotoe.html#simulation-study-3"><i class="fa fa-check"></i>Simulation Study 3</a></li>
+</ul></li>
+<li class="chapter" data-level="2.6" data-path="2-6-exercises.html"><a href="2-6-exercises.html"><i class="fa fa-check"></i><b>2.6</b> Exercises</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Introduction to Econometrics with R</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div class = rmdreview>
+This book is in <b>Open Review</b>. We want your feedback to make the book better for you and other students. You may annotate some text by <span style="background-color: #3297FD; color: white">selecting it with the cursor</span> and then click the <i class="h-icon-annotate"></i> on the pop-up menu. You can also see the annotations of others: click the <i class="h-icon-chevron-left"></i> in the upper right hand corner of the page <i class="fa fa-arrow-circle-right  fa-rotate-315" aria-hidden="true"></i>
+</div>
+<div id="estimating-the-coefficients-of-the-linear-regression-model" class="section level2">
+<h2><span class="header-section-number">2.2</span> Estimating the Coefficients of the Linear Regression Model</h2>
+<p>In practice, the intercept <span class="math inline">\(\beta_0\)</span> and slope <span class="math inline">\(\beta_1\)</span> of the population regression line are unknown. Therefore, we must employ data to estimate both unknown parameters. In the following, a real world example will be used to demonstrate how this is achieved. We want to relate test scores to student-teacher ratios measured in Californian schools. The test score is the district-wide average of reading and math scores for fifth graders. Again, the class size is measured as the number of students divided by the number of teachers (the student-teacher ratio). As for the data, the California School data set (<tt>CASchools</tt>) comes with an <tt>R</tt> package called <tt>AER</tt>, an acronym for <a href="https://cran.r-project.org/web/packages/AER/AER.pdf">Applied Econometrics with R</a> <span class="citation">(<span class="citeproc-not-found" data-reference-id="R-AER"><strong>???</strong></span>)</span>. After installing the package with <tt>install.packages(“AER”)</tt> and attaching it with <tt>library(AER)</tt> the data set can be loaded using the function <tt>data()</tt>.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co">## # install the AER package (once)</span>
+<span class="co">## install.packages(&quot;AER&quot;)</span>
+<span class="co">## </span>
+<span class="co">## # load the AER package</span>
+<span class="kw">library</span>(AER)
+
+<span class="co"># load the the data set in the workspace</span>
+<span class="kw">data</span>(CASchools)</code></pre>
+<p>Once a package has been installed it is available for use at further occasions when invoked with <tt>library()</tt> — there is no need to run <tt>install.packages()</tt> again!</p>
+<p>It is interesting to know what kind of object we are dealing with.
+<tt>class()</tt> returns the class of an object. Depending on the class of an object some functions (for example <tt>plot()</tt> and <tt>summary()</tt>) behave differently.</p>
+<p>Let us check the class of the object <tt>CASchools</tt>.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">class</span>(CASchools)</code></pre>
+<pre><code>## [1] &quot;data.frame&quot;</code></pre>
+<p>It turns out that <tt>CASchools</tt> is of class <tt>data.frame</tt> which is a convenient format to work with, especially for performing regression analysis.</p>
+<p>With help of <tt>head()</tt> we get a first overview of our data. This function shows only the first 6 rows of the data set which prevents an overcrowded console output.</p>
+
+<div class="rmdnote">
+Press <tt>ctrl + L</tt> to clear the console. This command deletes any code that has been typed in and executed by you or printed to the console by <tt>R</tt> functions. The good news is that anything else is left untouched. You neither loose defined variables etc. nor the code history. It is still possible to recall previously executed <tt>R</tt> commands using the up and down keys. If you are working in <em>RStudio</em>, press <tt>ctrl + Up</tt> on your keyboard (<tt>CMD + Up</tt> on a Mac) to review a list of previously entered commands.
+</div>
+
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(CASchools)</code></pre>
+<pre><code>##   district                          school  county grades students
+## 1    75119              Sunol Glen Unified Alameda  KK-08      195
+## 2    61499            Manzanita Elementary   Butte  KK-08      240
+## 3    61549     Thermalito Union Elementary   Butte  KK-08     1550
+## 4    61457 Golden Feather Union Elementary   Butte  KK-08      243
+## 5    61523        Palermo Union Elementary   Butte  KK-08     1335
+## 6    62042         Burrel Union Elementary  Fresno  KK-08      137
+##   teachers calworks   lunch computer expenditure    income   english  read
+## 1    10.90   0.5102  2.0408       67    6384.911 22.690001  0.000000 691.6
+## 2    11.15  15.4167 47.9167      101    5099.381  9.824000  4.583333 660.5
+## 3    82.90  55.0323 76.3226      169    5501.955  8.978000 30.000002 636.3
+## 4    14.00  36.4754 77.0492       85    7101.831  8.978000  0.000000 651.9
+## 5    71.50  33.1086 78.4270      171    5235.988  9.080333 13.857677 641.8
+## 6     6.40  12.3188 86.9565       25    5580.147 10.415000 12.408759 605.7
+##    math
+## 1 690.0
+## 2 661.9
+## 3 650.9
+## 4 643.5
+## 5 639.9
+## 6 605.4</code></pre>
+<p>We find that the data set consists of plenty of variables and that most of them are numeric.</p>
+<p>By the way: an alternative to <tt>class()</tt> and <tt>head()</tt> is <tt>str()</tt> which is deduced from ‘structure’ and gives a comprehensive overview of the object. Try!</p>
+<p>Turning back to <tt>CASchools</tt>, the two variables we are interested in (i.e., average test score and the student-teacher ratio) are <em>not</em> included. However, it is possible to calculate both from the provided data. To obtain the student-teacher ratios, we simply divide the number of students by the number of teachers. The average test score is the arithmetic mean of the test score for reading and the score of the math test. The next code chunk shows how the two variables can be constructed as vectors and how they are appended to <tt>CASchools</tt>.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># compute STR and append it to CASchools</span>
+CASchools<span class="op">$</span>STR &lt;-<span class="st"> </span>CASchools<span class="op">$</span>students<span class="op">/</span>CASchools<span class="op">$</span>teachers 
+
+<span class="co"># compute TestScore and append it to CASchools</span>
+CASchools<span class="op">$</span>score &lt;-<span class="st"> </span>(CASchools<span class="op">$</span>read <span class="op">+</span><span class="st"> </span>CASchools<span class="op">$</span>math)<span class="op">/</span><span class="dv">2</span>     </code></pre>
+<p>If we ran <tt>head(CASchools)</tt> again we would find the two variables of interest as additional columns named <tt>STR</tt> and <tt>score</tt> (check this!).</p>
+<p>Table 4.1 from the textbook summarizes the distribution of test scores and student-teacher ratios. There are several functions which can be used to produce similar results, e.g.,</p>
+<ul>
+<li><p><tt>mean()</tt> (computes the arithmetic mean of the provided numbers),</p></li>
+<li><p><tt>sd()</tt> (computes the sample standard deviation),</p></li>
+<li><p><tt>quantile()</tt> (returns a vector of the specified sample quantiles for the data).</p></li>
+</ul>
+<p>The next code chunk shows how to achieve this. First, we compute summary statistics on the columns <tt>STR</tt> and <tt>score</tt> of <tt>CASchools</tt>. In order to get nice output we gather the measures in a <tt>data.frame</tt> named <tt>DistributionSummary</tt>.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># compute sample averages of STR and score</span>
+avg_STR &lt;-<span class="st"> </span><span class="kw">mean</span>(CASchools<span class="op">$</span>STR) 
+avg_score &lt;-<span class="st"> </span><span class="kw">mean</span>(CASchools<span class="op">$</span>score)
+
+<span class="co"># compute sample standard deviations of STR and score</span>
+sd_STR &lt;-<span class="st"> </span><span class="kw">sd</span>(CASchools<span class="op">$</span>STR) 
+sd_score &lt;-<span class="st"> </span><span class="kw">sd</span>(CASchools<span class="op">$</span>score)
+
+<span class="co"># set up a vector of percentiles and compute the quantiles </span>
+quantiles &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="fl">0.10</span>, <span class="fl">0.25</span>, <span class="fl">0.4</span>, <span class="fl">0.5</span>, <span class="fl">0.6</span>, <span class="fl">0.75</span>, <span class="fl">0.9</span>)
+quant_STR &lt;-<span class="st"> </span><span class="kw">quantile</span>(CASchools<span class="op">$</span>STR, quantiles)
+quant_score &lt;-<span class="st"> </span><span class="kw">quantile</span>(CASchools<span class="op">$</span>score, quantiles)
+
+<span class="co"># gather everything in a data.frame </span>
+DistributionSummary &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">Average =</span> <span class="kw">c</span>(avg_STR, avg_score), 
+                                  <span class="dt">StandardDeviation =</span> <span class="kw">c</span>(sd_STR, sd_score), 
+                                  <span class="dt">quantile =</span> <span class="kw">rbind</span>(quant_STR, quant_score))
+
+<span class="co"># print the summary to the console</span>
+DistributionSummary</code></pre>
+<pre><code>##               Average StandardDeviation quantile.10. quantile.25.
+## quant_STR    19.64043          1.891812      17.3486     18.58236
+## quant_score 654.15655         19.053347     630.3950    640.05000
+##             quantile.40. quantile.50. quantile.60. quantile.75.
+## quant_STR       19.26618     19.72321      20.0783     20.87181
+## quant_score    649.06999    654.45000     659.4000    666.66249
+##             quantile.90.
+## quant_STR       21.86741
+## quant_score    678.85999</code></pre>
+<p>As for the sample data, we use <tt>plot()</tt>. This allows us to detect characteristics of our data, such as outliers which are harder to discover by looking at mere numbers. This time we add some additional arguments to the call of <tt>plot()</tt>.</p>
+<p>The first argument in our call of <tt>plot()</tt>, <tt>score ~ STR</tt>, is again a formula that states variables on the y- and the x-axis. However, this time the two variables are not saved in separate vectors but are columns of <tt>CASchools</tt>. Therefore, <tt>R</tt> would not find them without the argument <tt>data</tt> being correctly specified. <tt>data</tt> must be in accordance with the name of the <tt>data.frame</tt> to which the variables belong to, in this case <tt>CASchools</tt>. Further arguments are used to change the appearance of the plot: while <tt>main</tt> adds a title, <tt>xlab</tt> and <tt>ylab</tt> add custom labels to both axes.</p>
+<div class="unfolded">
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(score <span class="op">~</span><span class="st"> </span>STR, 
+     <span class="dt">data =</span> CASchools,
+     <span class="dt">main =</span> <span class="st">&quot;Scatterplot of TestScore and STR&quot;</span>, 
+     <span class="dt">xlab =</span> <span class="st">&quot;STR (X)&quot;</span>,
+     <span class="dt">ylab =</span> <span class="st">&quot;Test Score (Y)&quot;</span>)</code></pre>
+<p><img src="ITER_files/figure-html/unnamed-chunk-23-1.png" width="80%" style="display: block; margin: auto;" /></p>
+</div>
+<p>The plot (Figure 4.2 in the book) shows the scatterplot of all observations on the student-teacher ratio and test score. We see that the points are strongly scattered, and that the variables are negatively correlated. That is, we expect to observe lower test scores in bigger classes.</p>
+<p>The function <tt>cor()</tt> (see <tt>?cor</tt> for further info) can be used to compute the correlation between two <em>numeric</em> vectors.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">cor</span>(CASchools<span class="op">$</span>STR, CASchools<span class="op">$</span>score)</code></pre>
+<pre><code>## [1] -0.2263627</code></pre>
+<p>As the scatterplot already suggests, the correlation is negative but rather weak.</p>
+<p>The task we are now facing is to find a line which best fits the data. Of course we could simply stick with graphical inspection and correlation analysis and then select the best fitting line by eyeballing. However, this would be rather subjective: different observers would draw different regression lines. On this account, we are interested in techniques that are less arbitrary. Such a technique is given by ordinary least squares (OLS) estimation.</p>
+<div id="the-ordinary-least-squares-estimator" class="section level3 unnumbered">
+<h3>The Ordinary Least Squares Estimator</h3>
+<p>The OLS estimator chooses the regression coefficients such that the estimated regression line is as “close” as possible to the observed data points. Here, closeness is measured by the sum of the squared mistakes made in predicting <span class="math inline">\(Y\)</span> given <span class="math inline">\(X\)</span>. Let <span class="math inline">\(b_0\)</span> and <span class="math inline">\(b_1\)</span> be some estimators of <span class="math inline">\(\beta_0\)</span> and <span class="math inline">\(\beta_1\)</span>. Then the sum of squared estimation mistakes can be expressed as</p>
+<p><span class="math display">\[ \sum^n_{i = 1} (Y_i - b_0 - b_1 X_i)^2. \]</span></p>
+<p>The OLS estimator in the simple regression model is the pair of estimators for intercept and slope which minimizes the expression above. The derivation of the OLS estimators for both parameters are presented in Appendix 4.1 of the book. The results are summarized in Key Concept 4.2.</p>
+<div id="KC4.2" class="keyconcept">
+<h3 class="right">
+Key Concept 4.2
+</h3>
+<h3 class="left">
+The OLS Estimator, Predicted Values, and Residuals
+</h3>
+<p>
+<p>The OLS estimators of the slope <span class="math inline">\(\beta_1\)</span> and the intercept <span class="math inline">\(\beta_0\)</span> in the simple linear regression model are
+<span class="math display">\[\begin{align}
+  \hat\beta_1 &amp; = \frac{ \sum_{i = 1}^n (X_i - \overline{X})(Y_i - \overline{Y}) } { \sum_{i=1}^n (X_i - \overline{X})^2},  \\
+  \\
+  \hat\beta_0 &amp; =  \overline{Y} - \hat\beta_1 \overline{X}. 
+\end{align}\]</span>
+The OLS predicted values <span class="math inline">\(\widehat{Y}_i\)</span> and residuals <span class="math inline">\(\hat{u}_i\)</span> are
+<span class="math display">\[\begin{align}
+  \widehat{Y}_i &amp; =  \hat\beta_0 + \hat\beta_1 X_i,\\
+  \\
+  \hat{u}_i &amp; =  Y_i - \widehat{Y}_i. 
+\end{align}\]</span></p>
+The estimated intercept <span class="math inline">\(\hat{\beta}_0\)</span>, the slope parameter <span class="math inline">\(\hat{\beta}_1\)</span> and the residuals <span class="math inline">\(\left(\hat{u}_i\right)\)</span> are computed from a sample of <span class="math inline">\(n\)</span> observations of <span class="math inline">\(X_i\)</span> and <span class="math inline">\(Y_i\)</span>, <span class="math inline">\(i\)</span>, <span class="math inline">\(...\)</span>, <span class="math inline">\(n\)</span>. These are <em>estimates</em> of the unknown population intercept <span class="math inline">\(\left(\beta_0 \right)\)</span>, slope <span class="math inline">\(\left(\beta_1\right)\)</span>, and error term <span class="math inline">\((u_i)\)</span>.
+</p>
+<p>The formulas presented above may not be very intuitive at first glance. The following interactive application aims to help you understand the mechanics of OLS. You can add observations by clicking into the coordinate system where the data are represented by points. Once two or more observations are available, the application computes a regression line using OLS and some statistics which are displayed in the right panel. The results are updated as you add further observations to the left panel. A double-click resets the application, i.e., all data are removed.</p>
+<iframe height="410" width="900" frameborder="0" scrolling="no" src="SimpleRegression.html">
+</iframe>
+</div>
+<p>There are many possible ways to compute <span class="math inline">\(\hat{\beta}_0\)</span> and <span class="math inline">\(\hat{\beta}_1\)</span> in <tt>R</tt>. For example, we could implement the formulas presented in Key Concept 4.2 with two of <tt>R</tt>’s most basic functions: <tt>mean()</tt> and <tt>sum()</tt>. Before doing so we <em>attach</em> the <tt>CASchools</tt> dataset.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">attach</span>(CASchools) <span class="co"># allows to use the variables contained in CASchools directly</span>
+
+<span class="co"># compute beta_1_hat</span>
+beta_<span class="dv">1</span> &lt;-<span class="st"> </span><span class="kw">sum</span>((STR <span class="op">-</span><span class="st"> </span><span class="kw">mean</span>(STR)) <span class="op">*</span><span class="st"> </span>(score <span class="op">-</span><span class="st"> </span><span class="kw">mean</span>(score))) <span class="op">/</span><span class="st"> </span><span class="kw">sum</span>((STR <span class="op">-</span><span class="st"> </span><span class="kw">mean</span>(STR))<span class="op">^</span><span class="dv">2</span>)
+
+<span class="co"># compute beta_0_hat</span>
+beta_<span class="dv">0</span> &lt;-<span class="st"> </span><span class="kw">mean</span>(score) <span class="op">-</span><span class="st"> </span>beta_<span class="dv">1</span> <span class="op">*</span><span class="st"> </span><span class="kw">mean</span>(STR)
+
+<span class="co"># print the results to the console</span>
+beta_<span class="dv">1</span></code></pre>
+<pre><code>## [1] -2.279808</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r">beta_<span class="dv">0</span></code></pre>
+<pre><code>## [1] 698.9329</code></pre>
+
+<div class="rmdknit">
+<p>Calling <tt>attach(CASchools)</tt> enables us to adress a variable contained in <tt>CASchools)</tt> by its name: it is no longer necessary to use the <tt>$</tt> operator in conjunction with the dataset: <tt>R</tt> may evaluate the variable name directly.</p>
+<tt>R</tt> uses the object in the user environment if this object shares the name of variable contained in an attached database. However, it is a better practice to always use distinctive names in order to avoid such (seemingly) ambivalences!
+</div>
+
+<p><br></p>
+<p><strong>Notice that we adress variables contained in the attached dataset <tt>CASchools</tt> directly for the rest of this chapter!</strong></p>
+<p>Of course, there are even more manual ways to perform these tasks. With OLS being one of the most widely-used estimation techniques, <tt>R</tt> of course already contains a built-in function named <tt>lm()</tt> (<strong>l</strong>inear <strong>m</strong>odel) which can be used to carry out regression analysis.</p>
+<p>The first argument of the function to be specified is, similar to <tt>plot()</tt>, the regression formula with the basic syntax <tt>y ~ x</tt> where <tt>y</tt> is the dependent variable and <tt>x</tt> the explanatory variable. The argument <tt>data</tt> determines the data set to be used in the regression. We now revisit the example from the book where the relationship between the test scores and the class sizes is analyzed. The following code uses <tt>lm()</tt> to replicate the results presented in figure 4.3 of the book.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># estimate the model and assign the result to linear_model</span>
+linear_model &lt;-<span class="st"> </span><span class="kw">lm</span>(score <span class="op">~</span><span class="st"> </span>STR, <span class="dt">data =</span> CASchools)
+
+<span class="co"># print the standard output of the estimated lm object to the console </span>
+linear_model</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = score ~ STR, data = CASchools)
+## 
+## Coefficients:
+## (Intercept)          STR  
+##      698.93        -2.28</code></pre>
+<p>Let us add the estimated regression line to the plot. This time we also enlarge the ranges of both axes by setting the arguments <tt>xlim</tt> and <tt>ylim</tt>.</p>
+<div class="unfolded">
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># plot the data</span>
+<span class="kw">plot</span>(score <span class="op">~</span><span class="st"> </span>STR, 
+     <span class="dt">data =</span> CASchools,
+     <span class="dt">main =</span> <span class="st">&quot;Scatterplot of TestScore and STR&quot;</span>, 
+     <span class="dt">xlab =</span> <span class="st">&quot;STR (X)&quot;</span>,
+     <span class="dt">ylab =</span> <span class="st">&quot;Test Score (Y)&quot;</span>,
+     <span class="dt">xlim =</span> <span class="kw">c</span>(<span class="dv">10</span>, <span class="dv">30</span>),
+     <span class="dt">ylim =</span> <span class="kw">c</span>(<span class="dv">600</span>, <span class="dv">720</span>))
+
+<span class="co"># add the regression line</span>
+<span class="kw">abline</span>(linear_model) </code></pre>
+<p><img src="ITER_files/figure-html/unnamed-chunk-29-1.png" width="80%" style="display: block; margin: auto;" /></p>
+</div>
+<p>Did you notice that this time, we did not pass the intercept and slope parameters to <tt>abline</tt>? If you call <tt>abline()</tt> on an object of class <tt>lm</tt> which only contains a single regressor, <tt>R</tt> draws the regression line automatically!</p>
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="2-1-simple-linear-regression.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="2-3-measures-of-fit.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": true,
+"facebook": true,
+"twitter": true,
+"google": false,
+"linkedin": true,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "google", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "serif",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/mca91/EconometricsWithR/edit/master/04-ch4.Rmd",
+"text": "Edit"
+},
+"history": {
+"link": null,
+"text": null
+},
+"download": ["ITER.pdf"],
+"toc": {
+"collapse": "subsection",
+"scroll_highlight": true
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:" && /^https?:/.test(src))
+      src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

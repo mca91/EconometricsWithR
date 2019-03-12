@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html >
+
+<head>
+
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>2.5 The Sampling Distribution of the OLS Estimator | Introduction to Econometrics with R</title>
+  <meta name="description" content="Beginners with little background in statistics and econometrics often have a hard time understanding the benefits of having programming skills for learning and applying Econometrics. ‘Introduction to Econometrics with R’ is an interactive companion to the well-received textbook ‘Introduction to Econometrics’ by James H. Stock and Mark W. Watson (2015). It gives a gentle introduction to the essentials of R programming and guides students in implementing the empirical applications presented throughout the textbook using the newly aquired skills. This is supported by interactive programming exercises generated with DataCamp Light and integration of interactive visualizations of central concepts which are based on the flexible JavaScript library D3.js.">
+  <meta name="generator" content="bookdown  and GitBook 2.6.7">
+
+  <meta property="og:title" content="2.5 The Sampling Distribution of the OLS Estimator | Introduction to Econometrics with R" />
+  <meta property="og:type" content="book" />
+  <meta property="og:url" content="https://www.econometrics-with-r.org/" />
+  <meta property="og:image" content="https://www.econometrics-with-r.org/images/cover.png" />
+  <meta property="og:description" content="Beginners with little background in statistics and econometrics often have a hard time understanding the benefits of having programming skills for learning and applying Econometrics. ‘Introduction to Econometrics with R’ is an interactive companion to the well-received textbook ‘Introduction to Econometrics’ by James H. Stock and Mark W. Watson (2015). It gives a gentle introduction to the essentials of R programming and guides students in implementing the empirical applications presented throughout the textbook using the newly aquired skills. This is supported by interactive programming exercises generated with DataCamp Light and integration of interactive visualizations of central concepts which are based on the flexible JavaScript library D3.js." />
+  <meta name="github-repo" content="mca91/EconometricsWithR" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="2.5 The Sampling Distribution of the OLS Estimator | Introduction to Econometrics with R" />
+  
+  <meta name="twitter:description" content="Beginners with little background in statistics and econometrics often have a hard time understanding the benefits of having programming skills for learning and applying Econometrics. ‘Introduction to Econometrics with R’ is an interactive companion to the well-received textbook ‘Introduction to Econometrics’ by James H. Stock and Mark W. Watson (2015). It gives a gentle introduction to the essentials of R programming and guides students in implementing the empirical applications presented throughout the textbook using the newly aquired skills. This is supported by interactive programming exercises generated with DataCamp Light and integration of interactive visualizations of central concepts which are based on the flexible JavaScript library D3.js." />
+  <meta name="twitter:image" content="https://www.econometrics-with-r.org/images/cover.png" />
+
+<meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber and Martin Schmelzer">
+
+
+<meta name="date" content="2019-03-12">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  
+  
+<link rel="prev" href="2-4-tlsa.html">
+<link rel="next" href="2-6-exercises.html">
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+
+
+
+
+
+
+
+<!-- font families -->
+
+<link href="https://fonts.googleapis.com/css?family=PT+Sans|Pacifico|Source+Sans+Pro" rel="stylesheet">
+
+<script src="js/hideOutput.js"></script>
+
+<!-- Mathjax -->
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/default.js"></script>
+
+ <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        extensions: ["tex2jax.js", "TeX/AMSmath.js"],
+        tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+        jax: ["input/TeX","output/CommonHTML"]
+      });
+      MathJax.Hub.processSectionDelay = 0;
+  </script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-110299877-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-110299877-1');
+</script>
+
+<!-- open review block -->
+
+<script async defer src="https://hypothes.is/embed.js"></script>
+
+
+<style type="text/css">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(data-line-number);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  { background-color: #f8f8f8; }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ef2929; } /* Alert */
+code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #c4a000; } /* Attribute */
+code span.bn { color: #0000cf; } /* BaseN */
+code span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4e9a06; } /* Char */
+code span.cn { color: #000000; } /* Constant */
+code span.co { color: #8f5902; font-style: italic; } /* Comment */
+code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code span.dt { color: #204a87; } /* DataType */
+code span.dv { color: #0000cf; } /* DecVal */
+code span.er { color: #a40000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #0000cf; } /* Float */
+code span.fu { color: #000000; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code span.ot { color: #8f5902; } /* Other */
+code span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code span.sc { color: #000000; } /* SpecialChar */
+code span.ss { color: #4e9a06; } /* SpecialString */
+code span.st { color: #4e9a06; } /* String */
+code span.va { color: #000000; } /* Variable */
+code span.vs { color: #4e9a06; } /* VerbatimString */
+code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+<link rel="stylesheet" href="toc.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><center><img src="images/logo.png" alt="logo" width="50%" height="50%"style="margin: 15px 0 0 0"></center></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Preface</a></li>
+<li class="chapter" data-level="1" data-path="1-introduction.html"><a href="1-introduction.html"><i class="fa fa-check"></i><b>1</b> Introduction</a><ul>
+<li class="chapter" data-level="1.1" data-path="1-1-a-very-short-introduction-to-r-and-rstudio.html"><a href="1-1-a-very-short-introduction-to-r-and-rstudio.html"><i class="fa fa-check"></i><b>1.1</b> A Very Short Introduction to <tt>R</tt> and <em>RStudio</em></a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="2-lrwor.html"><a href="2-lrwor.html"><i class="fa fa-check"></i><b>2</b> Linear Regression with One Regressor</a><ul>
+<li class="chapter" data-level="2.1" data-path="2-1-simple-linear-regression.html"><a href="2-1-simple-linear-regression.html"><i class="fa fa-check"></i><b>2.1</b> Simple Linear Regression</a></li>
+<li class="chapter" data-level="2.2" data-path="2-2-estimating-the-coefficients-of-the-linear-regression-model.html"><a href="2-2-estimating-the-coefficients-of-the-linear-regression-model.html"><i class="fa fa-check"></i><b>2.2</b> Estimating the Coefficients of the Linear Regression Model</a><ul>
+<li class="chapter" data-level="" data-path="2-2-estimating-the-coefficients-of-the-linear-regression-model.html"><a href="2-2-estimating-the-coefficients-of-the-linear-regression-model.html#the-ordinary-least-squares-estimator"><i class="fa fa-check"></i>The Ordinary Least Squares Estimator</a></li>
+</ul></li>
+<li class="chapter" data-level="2.3" data-path="2-3-measures-of-fit.html"><a href="2-3-measures-of-fit.html"><i class="fa fa-check"></i><b>2.3</b> Measures of Fit</a><ul>
+<li class="chapter" data-level="" data-path="2-3-measures-of-fit.html"><a href="2-3-measures-of-fit.html#the-coefficient-of-determination"><i class="fa fa-check"></i>The Coefficient of Determination</a></li>
+<li class="chapter" data-level="" data-path="2-3-measures-of-fit.html"><a href="2-3-measures-of-fit.html#the-standard-error-of-the-regression"><i class="fa fa-check"></i>The Standard Error of the Regression</a></li>
+<li class="chapter" data-level="" data-path="2-3-measures-of-fit.html"><a href="2-3-measures-of-fit.html#application-to-the-test-score-data"><i class="fa fa-check"></i>Application to the Test Score Data</a></li>
+</ul></li>
+<li class="chapter" data-level="2.4" data-path="2-4-tlsa.html"><a href="2-4-tlsa.html"><i class="fa fa-check"></i><b>2.4</b> The Least Squares Assumptions</a><ul>
+<li class="chapter" data-level="" data-path="2-4-tlsa.html"><a href="2-4-tlsa.html#assumption-1-the-error-term-has-conditional-mean-of-zero"><i class="fa fa-check"></i>Assumption 1: The Error Term has Conditional Mean of Zero</a></li>
+<li class="chapter" data-level="" data-path="2-4-tlsa.html"><a href="2-4-tlsa.html#assumption-2-independently-and-identically-distributed-data"><i class="fa fa-check"></i>Assumption 2: Independently and Identically Distributed Data</a></li>
+<li class="chapter" data-level="" data-path="2-4-tlsa.html"><a href="2-4-tlsa.html#assumption-3-large-outliers-are-unlikely"><i class="fa fa-check"></i>Assumption 3: Large Outliers are Unlikely</a></li>
+</ul></li>
+<li class="chapter" data-level="2.5" data-path="2-5-tsdotoe.html"><a href="2-5-tsdotoe.html"><i class="fa fa-check"></i><b>2.5</b> The Sampling Distribution of the OLS Estimator</a><ul>
+<li class="chapter" data-level="" data-path="2-5-tsdotoe.html"><a href="2-5-tsdotoe.html#simulation-study-1"><i class="fa fa-check"></i>Simulation Study 1</a></li>
+<li class="chapter" data-level="" data-path="2-5-tsdotoe.html"><a href="2-5-tsdotoe.html#simulation-study-2"><i class="fa fa-check"></i>Simulation Study 2</a></li>
+<li class="chapter" data-level="" data-path="2-5-tsdotoe.html"><a href="2-5-tsdotoe.html#simulation-study-3"><i class="fa fa-check"></i>Simulation Study 3</a></li>
+</ul></li>
+<li class="chapter" data-level="2.6" data-path="2-6-exercises.html"><a href="2-6-exercises.html"><i class="fa fa-check"></i><b>2.6</b> Exercises</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Introduction to Econometrics with R</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div class = rmdreview>
+This book is in <b>Open Review</b>. We want your feedback to make the book better for you and other students. You may annotate some text by <span style="background-color: #3297FD; color: white">selecting it with the cursor</span> and then click the <i class="h-icon-annotate"></i> on the pop-up menu. You can also see the annotations of others: click the <i class="h-icon-chevron-left"></i> in the upper right hand corner of the page <i class="fa fa-arrow-circle-right  fa-rotate-315" aria-hidden="true"></i>
+</div>
+<div id="tsdotoe" class="section level2">
+<h2><span class="header-section-number">2.5</span> The Sampling Distribution of the OLS Estimator</h2>
+<p>Because <span class="math inline">\(\hat{\beta}_0\)</span> and <span class="math inline">\(\hat{\beta}_1\)</span> are computed from a sample, the estimators themselves are random variables with a probability distribution — the so-called sampling distribution of the estimators — which describes the values they could take on over different samples. Although the sampling distribution of <span class="math inline">\(\hat\beta_0\)</span> and <span class="math inline">\(\hat\beta_1\)</span> can be complicated when the sample size is small and generally changes with the number of observations, <span class="math inline">\(n\)</span>, it is possible, provided the assumptions discussed in the book are valid, to make certain statements about it that hold for all <span class="math inline">\(n\)</span>. In particular
+<span class="math display">\[ E(\hat{\beta}_0) = \beta_0 \ \ \text{and} \ \  E(\hat{\beta}_1) = \beta_1,\]</span>
+that is, <span class="math inline">\(\hat\beta_0\)</span> and <span class="math inline">\(\hat\beta_1\)</span> are unbiased estimators of <span class="math inline">\(\beta_0\)</span> and <span class="math inline">\(\beta_1\)</span>, the true parameters. If the sample is sufficiently large, by the central limit theorem the <em>joint</em> sampling distribution of the estimators is well approximated by the bivariate normal distribution (<a href="#mjx-eqn-2.1">2.1</a>). This implies that the marginal distributions are also normal in large samples. Core facts on the large-sample distributions of <span class="math inline">\(\hat\beta_0\)</span> and <span class="math inline">\(\hat\beta_1\)</span> are presented in Key Concept 4.4.</p>
+<div id="KC4.4" class="keyconcept">
+<h3 class="right">
+Key Concept 4.4
+</h3>
+<h3 class="left">
+Large Sample Distribution of <span class="math inline">\(\hat\beta_0\)</span> and <span class="math inline">\(\hat\beta_1\)</span>
+</h3>
+<p>
+<p>If the least squares assumptions in Key Concept 4.3 hold, then in large samples <span class="math inline">\(\hat\beta_0\)</span> and <span class="math inline">\(\hat\beta_1\)</span> have a joint normal sampling distribution. The large sample normal distribution of <span class="math inline">\(\hat\beta_1\)</span> is <span class="math inline">\(\mathcal{N}(\beta_1, \sigma^2_{\hat\beta_1})\)</span>, where the variance of the distribution, <span class="math inline">\(\sigma^2_{\hat\beta_1}\)</span>, is</p>
+<p><span class="math display" id="eq:olsvar1">\[\begin{align}
+\sigma^2_{\hat\beta_1} = \frac{1}{n} \frac{Var \left[ \left(X_i - \mu_X \right) u_i  \right]}  {\left[  Var \left(X_i \right)  \right]^2}. \tag{2.1}
+\end{align}\]</span></p>
+<p>The large sample normal distribution of <span class="math inline">\(\hat\beta_0\)</span> is <span class="math inline">\(\mathcal{N}(\beta_0, \sigma^2_{\hat\beta_0})\)</span> with</p>
+<p><span class="math display" id="eq:olsvar2">\[\begin{align}
+\sigma^2_{\hat\beta_0} =  \frac{1}{n} \frac{Var \left( H_i u_i \right)}{ \left[  E \left(H_i^2  \right)  \right]^2 } \ , \ \text{where} \ \ H_i = 1 - \left[ \frac{\mu_X} {E \left( X_i^2\right)} \right] X_i. \tag{2.2}
+\end{align}\]</span></p>
+<p>The interactive simulation below continuously generates random samples <span class="math inline">\((X_i,Y_i)\)</span> of <span class="math inline">\(200\)</span> observations where <span class="math inline">\(E(Y\vert X) = 100 + 3X\)</span>, estimates a simple regression model, stores the estimate of the slope <span class="math inline">\(\beta_1\)</span> and visualizes the distribution of the <span class="math inline">\(\widehat{\beta}_1\)</span>s observed so far using a histogram. The idea here is that for a large number of <span class="math inline">\(\widehat{\beta}_1\)</span>s, the histogram gives a good approximation of the sampling distribution of the estimator. By decreasing the time between two sampling iterations, it becomes clear that the shape of the histogram approaches the characteristic bell shape of a normal distribution centered at the true slope of <span class="math inline">\(3\)</span>.</p>
+<iframe height="470" width="700" frameborder="0" scrolling="no" src="SmallSampleDIstReg.html">
+</iframe>
+</p>
+</div>
+<div id="simulation-study-1" class="section level3 unnumbered">
+<h3>Simulation Study 1</h3>
+<p>Whether the statements of Key Concept 4.4 really hold can also be verified using <tt>R</tt>. For this we first we build our own population of <span class="math inline">\(100000\)</span> observations in total. To do this we need values for the independent variable <span class="math inline">\(X\)</span>, for the error term <span class="math inline">\(u\)</span>, and for the parameters <span class="math inline">\(\beta_0\)</span> and <span class="math inline">\(\beta_1\)</span>. With these combined in a simple regression model, we compute the dependent variable <span class="math inline">\(Y\)</span>. <br> In our example we generate the numbers <span class="math inline">\(X_i\)</span>, <span class="math inline">\(i = 1\)</span>, … ,<span class="math inline">\(100000\)</span> by drawing a random sample from a uniform distribution on the interval <span class="math inline">\([0,20]\)</span>. The realizations of the error terms <span class="math inline">\(u_i\)</span> are drawn from a standard normal distribution with parameters <span class="math inline">\(\mu = 0\)</span> and <span class="math inline">\(\sigma^2 = 100\)</span> (note that <tt>rnorm()</tt> requires <span class="math inline">\(\sigma\)</span> as input for the argument <tt>sd</tt>, see <tt>?rnorm</tt>). Furthermore we chose <span class="math inline">\(\beta_0 = -2\)</span> and <span class="math inline">\(\beta_1 = 3.5\)</span> so the true model is</p>
+<p><span class="math display">\[ Y_i = -2 + 3.5 \cdot X_i. \]</span></p>
+<p>Finally, we store the results in a data.frame.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># simulate data</span>
+N &lt;-<span class="st"> </span><span class="dv">100000</span>
+X &lt;-<span class="st"> </span><span class="kw">runif</span>(N, <span class="dt">min =</span> <span class="dv">0</span>, <span class="dt">max =</span> <span class="dv">20</span>)
+u &lt;-<span class="st"> </span><span class="kw">rnorm</span>(N, <span class="dt">sd =</span> <span class="dv">10</span>)
+
+<span class="co"># population regression</span>
+Y &lt;-<span class="st"> </span><span class="dv">-2</span> <span class="op">+</span><span class="st"> </span><span class="fl">3.5</span> <span class="op">*</span><span class="st"> </span>X <span class="op">+</span><span class="st"> </span>u
+population &lt;-<span class="st"> </span><span class="kw">data.frame</span>(X, Y)</code></pre>
+<p>From now on we will consider the previously generated data as the true population (which of course would be <em>unknown</em> in a real world application, otherwise there would be no reason to draw a random sample in the first place). The knowledge about the true population and the true relationship between <span class="math inline">\(Y\)</span> and <span class="math inline">\(X\)</span> can be used to verify the statements made in Key Concept 4.4.</p>
+<p>First, let us calculate the true variances <span class="math inline">\(\sigma^2_{\hat{\beta}_0}\)</span> and <span class="math inline">\(\sigma^2_{\hat{\beta}_1}\)</span> for a randomly drawn sample of size <span class="math inline">\(n = 100\)</span>.</p>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># set sample size</span>
+n &lt;-<span class="st"> </span><span class="dv">100</span>
+
+<span class="co"># compute the variance of beta_hat_0</span>
+H_i &lt;-<span class="st"> </span><span class="dv">1</span> <span class="op">-</span><span class="st"> </span><span class="kw">mean</span>(X) <span class="op">/</span><span class="st"> </span><span class="kw">mean</span>(X<span class="op">^</span><span class="dv">2</span>) <span class="op">*</span><span class="st"> </span>X
+var_b0 &lt;-<span class="st"> </span><span class="kw">var</span>(H_i <span class="op">*</span><span class="st"> </span>u) <span class="op">/</span><span class="st"> </span>(n <span class="op">*</span><span class="st"> </span><span class="kw">mean</span>(H_i<span class="op">^</span><span class="dv">2</span>)<span class="op">^</span><span class="dv">2</span> )
+
+<span class="co"># compute the variance of hat_beta_1</span>
+var_b1 &lt;-<span class="st"> </span><span class="kw">var</span>( ( X <span class="op">-</span><span class="st"> </span><span class="kw">mean</span>(X) ) <span class="op">*</span><span class="st"> </span>u ) <span class="op">/</span><span class="st"> </span>(<span class="dv">100</span> <span class="op">*</span><span class="st"> </span><span class="kw">var</span>(X)<span class="op">^</span><span class="dv">2</span>)</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># print variances to the console</span>
+var_b0</code></pre>
+<pre><code>## [1] 4.045066</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r">var_b1</code></pre>
+<pre><code>## [1] 0.03018694</code></pre>
+<p>Now let us assume that we do not know the true values of <span class="math inline">\(\beta_0\)</span> and <span class="math inline">\(\beta_1\)</span> and that it is not possible to observe the whole population. However, we can observe a random sample of <span class="math inline">\(n\)</span> observations. Then, it would not be possible to compute the true parameters but we could obtain estimates of <span class="math inline">\(\beta_0\)</span> and <span class="math inline">\(\beta_1\)</span> from the sample data using OLS. However, we know that these estimates are outcomes of random variables themselves since the observations are randomly sampled from the population. Key Concept 4.4 describes their distributions for large <span class="math inline">\(n\)</span>. When drawing a single sample of size <span class="math inline">\(n\)</span> it is not possible to make any statement about these distributions. Things change if we repeat the sampling scheme many times and compute the estimates for each sample: using this procedure we simulate outcomes of the respective distributions.</p>
+<p>To achieve this in R, we employ the following approach:</p>
+<ul>
+<li>We assign the number of repetitions, say <span class="math inline">\(10000\)</span>, to <tt>reps</tt> and then initialize a matrix <tt>fit</tt> were the estimates obtained in each sampling iteration shall be stored row-wise. Thus <tt>fit</tt> has to be a matrix of dimensions <tt>reps</tt><span class="math inline">\(\times2\)</span>.</li>
+<li>In the next step we draw <tt>reps</tt> random samples of size <tt>n</tt> from the population and obtain the OLS estimates for each sample. The results are stored as row entries in the outcome matrix <tt>fit</tt>. This is done using a <tt>for()</tt> loop.</li>
+<li>At last, we estimate variances of both estimators using the sampled outcomes and plot histograms of the latter. We also add a plot of the density functions belonging to the distributions that follow from Key Concept 4.4. The function <tt>bquote()</tt> is used to obtain math expressions in the titles and labels of both plots. See <tt>?bquote</tt>.</li>
+</ul>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># set repetitions and sample size</span>
+n &lt;-<span class="st"> </span><span class="dv">100</span>
+reps &lt;-<span class="st"> </span><span class="dv">10000</span>
+
+<span class="co"># initialize the matrix of outcomes</span>
+fit &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="dt">ncol =</span> <span class="dv">2</span>, <span class="dt">nrow =</span> reps)
+
+<span class="co"># loop sampling and estimation of the coefficients</span>
+<span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>reps){
+  
+ sample &lt;-<span class="st"> </span>population[<span class="kw">sample</span>(<span class="dv">1</span><span class="op">:</span>N, n), ]
+ fit[i, ] &lt;-<span class="st"> </span><span class="kw">lm</span>(Y <span class="op">~</span><span class="st"> </span>X, <span class="dt">data =</span> sample)<span class="op">$</span>coefficients
+ 
+}
+
+<span class="co"># compute variance estimates using outcomes</span>
+<span class="kw">var</span>(fit[, <span class="dv">1</span>])</code></pre>
+<pre><code>## [1] 4.057089</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">var</span>(fit[, <span class="dv">2</span>])</code></pre>
+<pre><code>## [1] 0.03021784</code></pre>
+<div class="unfolded">
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># divide plotting area as 1-by-2 array</span>
+<span class="kw">par</span>(<span class="dt">mfrow =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))
+
+<span class="co"># plot histograms of beta_0 estimates</span>
+<span class="kw">hist</span>(fit[, <span class="dv">1</span>],
+     <span class="dt">cex.main =</span> <span class="dv">1</span>,
+     <span class="dt">main =</span> <span class="kw">bquote</span>(The <span class="op">~</span><span class="st"> </span>Distribution  <span class="op">~</span><span class="st"> </span>of <span class="op">~</span><span class="st"> </span><span class="dv">10000</span> <span class="op">~</span><span class="st"> </span>beta[<span class="dv">0</span>] <span class="op">~</span><span class="st"> </span>Estimates), 
+     <span class="dt">xlab =</span> <span class="kw">bquote</span>(<span class="kw">hat</span>(beta)[<span class="dv">0</span>]), 
+     <span class="dt">freq =</span> F)
+
+<span class="co"># add true distribution to plot</span>
+<span class="kw">curve</span>(<span class="kw">dnorm</span>(x, 
+            <span class="dv">-2</span>, 
+            <span class="kw">sqrt</span>(var_b0)), 
+      <span class="dt">add =</span> T, 
+      <span class="dt">col =</span> <span class="st">&quot;darkred&quot;</span>)
+
+<span class="co"># plot histograms of beta_hat_1 </span>
+<span class="kw">hist</span>(fit[, <span class="dv">2</span>],
+    <span class="dt">cex.main =</span> <span class="dv">1</span>,
+     <span class="dt">main =</span> <span class="kw">bquote</span>(The <span class="op">~</span><span class="st"> </span>Distribution  <span class="op">~</span><span class="st"> </span>of <span class="op">~</span><span class="st"> </span><span class="dv">10000</span> <span class="op">~</span><span class="st"> </span>beta[<span class="dv">1</span>] <span class="op">~</span><span class="st"> </span>Estimates), 
+     <span class="dt">xlab =</span> <span class="kw">bquote</span>(<span class="kw">hat</span>(beta)[<span class="dv">1</span>]), 
+     <span class="dt">freq =</span> F)
+
+<span class="co"># add true distribution to plot</span>
+<span class="kw">curve</span>(<span class="kw">dnorm</span>(x, 
+            <span class="fl">3.5</span>, 
+            <span class="kw">sqrt</span>(var_b1)), 
+      <span class="dt">add =</span> T, 
+      <span class="dt">col =</span> <span class="st">&quot;darkred&quot;</span>)</code></pre>
+<p><img src="ITER_files/figure-html/unnamed-chunk-43-1.png" width="80%" style="display: block; margin: auto;" /></p>
+</div>
+<p>Our variance estimates support the statements made in Key Concept 4.4, coming close to the theoretical values. The histograms suggest that the distributions of the estimators can be well approximated by the respective theoretical normal distributions stated in Key Concept 4.4.</p>
+</div>
+<div id="simulation-study-2" class="section level3 unnumbered">
+<h3>Simulation Study 2</h3>
+<p>A further result implied by Key Concept 4.4 is that both estimators are consistent, i.e., they converge in probability to the true parameters we are interested in. This is because they are asymptotically unbiased and their variances converge to <span class="math inline">\(0\)</span> as <span class="math inline">\(n\)</span> increases. We can check this by repeating the simulation above for a sequence of increasing sample sizes. This means we no longer assign the sample size but a <em>vector</em> of sample sizes: <tt>n &lt;- c(…)</tt>. <br>
+Let us look at the distributions of <span class="math inline">\(\beta_1\)</span>. The idea here is to add an additional call of <tt>for()</tt> to the code. This is done in order to loop over the vector of sample sizes <tt>n</tt>. For each of the sample sizes we carry out the same simulation as before but plot a density estimate for the outcomes of each iteration over <tt>n</tt>. Notice that we have to change <tt>n</tt> to <tt>n[j]</tt> in the inner loop to ensure that the <tt>j</tt><span class="math inline">\(^{th}\)</span> element of <tt>n</tt> is used. In the simulation, we use sample sizes of <span class="math inline">\(100, 250, 1000\)</span> and <span class="math inline">\(3000\)</span>. Consequently we have a total of four distinct simulations using different sample sizes.</p>
+<div class="unfolded">
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># set seed for reproducibility</span>
+<span class="kw">set.seed</span>(<span class="dv">1</span>)
+
+<span class="co"># set repetitions and the vector of sample sizes</span>
+reps &lt;-<span class="st"> </span><span class="dv">1000</span>
+n &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">100</span>, <span class="dv">250</span>, <span class="dv">1000</span>, <span class="dv">3000</span>)
+
+<span class="co"># initialize the matrix of outcomes</span>
+fit &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="dt">ncol =</span> <span class="dv">2</span>, <span class="dt">nrow =</span> reps)
+
+<span class="co"># divide the plot panel in a 2-by-2 array</span>
+<span class="kw">par</span>(<span class="dt">mfrow =</span> <span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">2</span>))
+
+<span class="co"># loop sampling and plotting</span>
+
+<span class="co"># outer loop over n</span>
+<span class="cf">for</span> (j <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="kw">length</span>(n)) {
+  
+  <span class="co"># inner loop: sampling and estimating of the coefficients</span>
+  <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>reps){
+    
+    sample &lt;-<span class="st"> </span>population[<span class="kw">sample</span>(<span class="dv">1</span><span class="op">:</span>N, n[j]), ]
+    fit[i, ] &lt;-<span class="st"> </span><span class="kw">lm</span>(Y <span class="op">~</span><span class="st"> </span>X, <span class="dt">data =</span> sample)<span class="op">$</span>coefficients
+    
+  }
+  
+  <span class="co"># draw density estimates</span>
+  <span class="kw">plot</span>(<span class="kw">density</span>(fit[ ,<span class="dv">2</span>]), <span class="dt">xlim=</span><span class="kw">c</span>(<span class="fl">2.5</span>, <span class="fl">4.5</span>), 
+       <span class="dt">col =</span> j, 
+       <span class="dt">main =</span> <span class="kw">paste</span>(<span class="st">&quot;n=&quot;</span>, n[j]), 
+       <span class="dt">xlab =</span> <span class="kw">bquote</span>(<span class="kw">hat</span>(beta)[<span class="dv">1</span>]))
+  
+}</code></pre>
+<p><img src="ITER_files/figure-html/unnamed-chunk-44-1.png" width="80%" style="display: block; margin: auto;" /></p>
+</div>
+<p>We find that, as <span class="math inline">\(n\)</span> increases, the distribution of <span class="math inline">\(\hat\beta_1\)</span> concentrates around its mean, i.e., its variance decreases. Put differently, the likelihood of observing estimates close to the true value of <span class="math inline">\(\beta_1 = 3.5\)</span> grows as we increase the sample size. The same behavior can be observed if we analyze the distribution of <span class="math inline">\(\hat\beta_0\)</span> instead.</p>
+</div>
+<div id="simulation-study-3" class="section level3 unnumbered">
+<h3>Simulation Study 3</h3>
+<p>Furthermore, (4.1) reveals that the variance of the OLS estimator for <span class="math inline">\(\beta_1\)</span> decreases as the variance of the <span class="math inline">\(X_i\)</span> increases. In other words, as we increase the amount of information provided by the regressor, that is, increasing <span class="math inline">\(Var(X)\)</span>, which is used to estimate <span class="math inline">\(\beta_1\)</span>, we become more confident that the estimate is close to the true value (i.e., <span class="math inline">\(Var(\hat\beta_1)\)</span> decreases).<br>
+We can visualize this by reproducing Figure 4.6 from the book. To do this, we sample observations <span class="math inline">\((X_i,Y_i)\)</span>, <span class="math inline">\(i=1,\dots,100\)</span> from a bivariate normal distribution with</p>
+<p><span class="math display">\[E(X)=E(Y)=5,\]</span>
+<span class="math display">\[Var(X)=Var(Y)=5\]</span>
+and
+<span class="math display">\[Cov(X,Y)=4.\]</span></p>
+<p>Formally, this is written down as</p>
+<p><span class="math display">\[\begin{align}
+  \begin{pmatrix}
+    X \\
+    Y \\
+  \end{pmatrix}
+  \overset{i.i.d.}{\sim} &amp; \ \mathcal{N} 
+  \left[
+    \begin{pmatrix}
+      5 \\
+      5 \\
+    \end{pmatrix}, \ 
+    \begin{pmatrix}
+      5 &amp; 4 \\
+      4 &amp; 5 \\
+    \end{pmatrix}
+  \right]. \tag{4.3}
+\end{align}\]</span></p>
+<p>To carry out the random sampling, we make use of the function <tt>mvrnorm()</tt> from the package <tt>MASS</tt> <span class="citation">(<span class="citeproc-not-found" data-reference-id="R-MASS"><strong>???</strong></span>)</span> which allows to draw random samples from multivariate normal distributions, see <code>?mvtnorm</code>. Next, we use <tt>subset()</tt> to split the sample into two subsets such that the first set, <tt>set1</tt>, consists of observations that fulfill the condition <span class="math inline">\(\lvert X - \overline{X} \rvert &gt; 1\)</span> and the second set, <tt>set2</tt>, includes the remainder of the sample. We then plot both sets and use different colors to distinguish the observations.</p>
+<div class="unfolded">
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># load the MASS package</span>
+<span class="kw">library</span>(MASS)
+
+<span class="co"># set seed for reproducibility</span>
+<span class="kw">set.seed</span>(<span class="dv">4</span>)
+
+<span class="co"># simulate bivarite normal data</span>
+bvndata &lt;-<span class="st"> </span><span class="kw">mvrnorm</span>(<span class="dv">100</span>, 
+                <span class="dt">mu =</span> <span class="kw">c</span>(<span class="dv">5</span>, <span class="dv">5</span>), 
+                <span class="dt">Sigma =</span> <span class="kw">cbind</span>(<span class="kw">c</span>(<span class="dv">5</span>, <span class="dv">4</span>), <span class="kw">c</span>(<span class="dv">4</span>, <span class="dv">5</span>))) 
+
+<span class="co"># assign column names / convert to data.frame</span>
+<span class="kw">colnames</span>(bvndata) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;X&quot;</span>, <span class="st">&quot;Y&quot;</span>)
+bvndata &lt;-<span class="st"> </span><span class="kw">as.data.frame</span>(bvndata)
+
+<span class="co"># subset the data</span>
+set1 &lt;-<span class="st"> </span><span class="kw">subset</span>(bvndata, <span class="kw">abs</span>(<span class="kw">mean</span>(X) <span class="op">-</span><span class="st"> </span>X) <span class="op">&gt;</span><span class="st"> </span><span class="dv">1</span>)
+set2 &lt;-<span class="st"> </span><span class="kw">subset</span>(bvndata, <span class="kw">abs</span>(<span class="kw">mean</span>(X) <span class="op">-</span><span class="st"> </span>X) <span class="op">&lt;=</span><span class="st"> </span><span class="dv">1</span>)
+
+<span class="co"># plot both data sets</span>
+<span class="kw">plot</span>(set1, 
+     <span class="dt">xlab =</span> <span class="st">&quot;X&quot;</span>, 
+     <span class="dt">ylab =</span> <span class="st">&quot;Y&quot;</span>, 
+     <span class="dt">pch =</span> <span class="dv">19</span>)
+
+<span class="kw">points</span>(set2, 
+       <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>, 
+       <span class="dt">pch =</span> <span class="dv">19</span>)</code></pre>
+<p><img src="ITER_files/figure-html/unnamed-chunk-45-1.png" width="80%" style="display: block; margin: auto;" /></p>
+</div>
+<p>It is clear that observations that are close to the sample average of the <span class="math inline">\(X_i\)</span> have less variance than those that are farther away. Now, if we were to draw a line as accurately as possible through either of the two sets it is intuitive that choosing the observations indicated by the black dots, i.e., using the set of observations which has larger variance than the blue ones, would result in a more precise line. Now, let us use OLS to estimate slope and intercept for both sets of observations. We then plot the observations along with both regression lines.</p>
+<div class="unfolded">
+<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># estimate both regression lines</span>
+lm.set1 &lt;-<span class="st"> </span><span class="kw">lm</span>(Y <span class="op">~</span><span class="st"> </span>X, <span class="dt">data =</span> set1)
+lm.set2 &lt;-<span class="st"> </span><span class="kw">lm</span>(Y <span class="op">~</span><span class="st"> </span>X, <span class="dt">data =</span> set2)
+
+<span class="co"># plot observations</span>
+<span class="kw">plot</span>(set1, <span class="dt">xlab =</span> <span class="st">&quot;X&quot;</span>, <span class="dt">ylab =</span> <span class="st">&quot;Y&quot;</span>, <span class="dt">pch =</span> <span class="dv">19</span>)
+<span class="kw">points</span>(set2, <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>, <span class="dt">pch =</span> <span class="dv">19</span>)
+
+<span class="co"># add both lines to the plot</span>
+<span class="kw">abline</span>(lm.set1, <span class="dt">col =</span> <span class="st">&quot;green&quot;</span>)
+<span class="kw">abline</span>(lm.set2, <span class="dt">col =</span> <span class="st">&quot;red&quot;</span>)</code></pre>
+<p><img src="ITER_files/figure-html/unnamed-chunk-46-1.png" width="80%" style="display: block; margin: auto;" /></p>
+</div>
+<p>Evidently, the green regression line does far better in describing data sampled from the bivariate normal distribution stated in (<a href="#mjx-eqn-4.3">4.3</a>) than the red line. This is a nice example for demonstrating why we are interested in a high variance of the regressor <span class="math inline">\(X\)</span>: more variance in the <span class="math inline">\(X_i\)</span> means more information from which the precision of the estimation benefits.</p>
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="2-4-tlsa.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="2-6-exercises.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": true,
+"facebook": true,
+"twitter": true,
+"google": false,
+"linkedin": true,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "google", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "serif",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/mca91/EconometricsWithR/edit/master/04-ch4.Rmd",
+"text": "Edit"
+},
+"history": {
+"link": null,
+"text": null
+},
+"download": ["ITER.pdf"],
+"toc": {
+"collapse": "subsection",
+"scroll_highlight": true
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:" && /^https?:/.test(src))
+      src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

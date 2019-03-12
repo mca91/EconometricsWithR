@@ -99,7 +99,7 @@ cat('
 
 <p> The linear regression model is 
 
-$$Y_i = \\beta_0 + \\beta_1 X_1 + u_i$$
+$$Y_i = \\beta_0 + \\beta_1 X_i + u_i$$
 
 where
 
@@ -297,9 +297,8 @@ The estimated intercept $\\hat{\\beta}_0$, the slope parameter $\\hat{\\beta}_1$
 ')
 ```
 
-There are many possible ways to compute $\hat{\beta}_0$ and $\hat{\beta}_1$ in `r ttcode("R")`. For example, we could implement the formulas presented in Key Concept 4.2 with two of `r ttcode("R")`'s most basic functions: `r ttcode("mean()")` and `r ttcode("sum()")`.
+There are many possible ways to compute $\hat{\beta}_0$ and $\hat{\beta}_1$ in `r ttcode("R")`. For example, we could implement the formulas presented in Key Concept 4.2 with two of `r ttcode("R")`'s most basic functions: `r ttcode("mean()")` and `r ttcode("sum()")`. Before doing so we *attach* the `r ttcode("CASchools")` dataset.
 
-<div class="unfolded">
 ```{r, echo=-1}
 rm(STR)
 attach(CASchools) # allows to use the variables contained in CASchools directly
@@ -314,7 +313,16 @@ beta_0 <- mean(score) - beta_1 * mean(STR)
 beta_1
 beta_0
 ```
-</div>
+
+```{block2, attach, type='rmdknit'}
+Calling <tt>attach(CASchools)</tt> enables us to adress a variable contained in <tt>CASchools)</tt> by its name: it is no longer necessary to use the <tt>$</tt> operator in conjunction with the dataset: <tt>R</tt> may evaluate the variable name directly.
+
+<tt>R</tt> uses the object in the user environment if this object shares the name of variable contained in an attached database. However, it is a better practice to always use distinctive names in order to avoid such (seemingly) ambivalences! 
+```
+
+<br>
+
+**Notice that we adress variables contained in the attached dataset <tt>CASchools</tt> directly for the rest of this chapter!**
 
 Of course, there are even more manual ways to perform these tasks. With OLS being one of the most widely-used estimation techniques, `r ttcode("R")` of course already contains a built-in function named `r ttcode("lm()")` (**l**inear **m**odel) which can be used to carry out regression analysis.
 
@@ -346,7 +354,7 @@ abline(linear_model)
 ```
 </div>
 
-Did you notice that this time, we did not pass the intercept and slope parameters to `r ttcode("abline")`? If you call `r ttcode("abline()")` on an object of class `r ttcode("lm")` that only contains a single regressor, `r ttcode("R")` draws the regression line automatically! 
+Did you notice that this time, we did not pass the intercept and slope parameters to `r ttcode("abline")`? If you call `r ttcode("abline()")` on an object of class `r ttcode("lm")` which only contains a single regressor, `r ttcode("R")` draws the regression line automatically! 
 
 ## Measures of Fit
 
@@ -414,7 +422,7 @@ SER <- sqrt(SSR / (n-2))
 SER
 ```
 
-We find that the results coincide. Note that the values provided by `r ttcode("summary()")` are rounded to two decimal places. Can you do so using `r ttcode("R")`?
+We find that the results coincide. Note that the values provided by `r ttcode("summary()")` are rounded to two decimal places.
 
 ## The Least Squares Assumptions {#tlsa}
 
@@ -466,7 +474,7 @@ We will use the following functions:
 
 We start by creating a vector containing values that are uniformly distributed on the interval $[-5,5]$. This can be done with the function `r ttcode("runif()")`. We also need to simulate the error term. For this we generate normally distributed random numbers with a mean equal to $0$ and a variance of $1$ using `r ttcode("rnorm()")`. The $Y$ values are obtained as a quadratic function of the $X$ values and the error.
 
-After generating the data we estimate both a simple regression model and a quadratic model that also includes the regressor $X^2$ (this is a multiple regression model, see Chapter \@ref(rmwmr)). Finally, we plot the simulated data and add a the estimated regression line of a simple regression model as well as the predictions made with a quadratic model to compare the fit graphically.
+After generating the data we estimate both a simple regression model and a quadratic model that also includes the regressor $X^2$ (this is a multiple regression model, see Chapter \@ref(rmwmr)). Finally, we plot the simulated data and add the estimated regression line of a simple regression model as well as the predictions made with a quadratic model to compare the fit graphically.
 
 <div class="unfolded">
 ```{r, fig.align='center'}
@@ -501,7 +509,7 @@ Using the quadratic model (represented by the black curve) we see that there are
 
 Most sampling schemes used when collecting data from populations produce i.i.d.-samples. For example, we could use `r ttcode("R")`'s random number generator to randomly select student IDs from a university's enrollment list and record age $X$ and earnings $Y$ of the corresponding students. This is a typical example of simple random sampling and ensures that all the $(X_i, Y_i)$ are drawn randomly from the same population.
 
-A prominent example where the i.i.d. assumption is not fulfilled is time series data where we have observations on the same unit over time. For example, take $X$ as the number of workers in a production company over time. Due to business transformations, the company cuts job periodically by a specific share but there are also some non-deterministic influences that relate to economics, politics etc. Using `r ttcode("R")` we can easily simulate such a process and plot it. 
+A prominent example where the i.i.d. assumption is not fulfilled is time series data where we have observations on the same unit over time. For example, take $X$ as the number of workers in a production company over time. Due to business transformations, the company cuts jobs periodically by a specific share but there are also some non-deterministic influences that relate to economics, politics etc. Using `r ttcode("R")` we can easily simulate such a process and plot it. 
 
 We start the series with a total of 5000 workers and simulate the reduction of employment with an autoregressive process that exhibits a downward movement in the long-run and has normally distributed errors:^[See Chapter \@ref(ittsraf) for more on autoregressive processes and time series analysis in general.]
 
@@ -542,7 +550,7 @@ It is easy to come up with situations where extreme observations, i.e., observat
 
 Common cases where we want to exclude or (if possible) correct such outliers is when they are apparently typos, conversion errors or measurement errors. Even if it seems like extreme observations have been recorded correctly, it is advisable to exclude them before estimating a model since OLS suffers from *sensitivity to outliers*.
 
-What does this mean? One can show that extreme observations receive heavy weighting in the estimation of the unknown regression coefficients when using OLS. Therefore, outliers can lead to strongly distorted estimates of regression coefficients. To get a better impression of this issue, consider the following application where we have placed some sample data on $X$ and $Y$ which are highly correlated. The relation between $X$ and $Y$ seems to be explained pretty good by the plotted regression line: all of the white data points lie close to the red regression line and we have $R^2=0.92$.
+What does this mean? One can show that extreme observations receive heavy weighting in the estimation of the unknown regression coefficients when using OLS. Therefore, outliers can lead to strongly distorted estimates of regression coefficients. To get a better impression of this issue, consider the following application where we have placed some sample data on $X$ and $Y$ which are highly correlated. The relation between $X$ and $Y$ seems to be explained pretty well by the plotted regression line: all of the white data points lie close to the red regression line and we have $R^2=0.92$.
 
 Now go ahead and add a further observation at, say, $(18,2)$. This observations clearly is an outlier. The result is quite striking: the estimated regression line differs greatly from the one we adjudged to fit the data well. The slope is heavily downward biased and $R^2$ decreased to a mere $29\%$! <br>
 Double-click inside the coordinate system to reset the app. Feel free to experiment. Choose different coordinates for the outlier or add additional ones.
@@ -1154,7 +1162,7 @@ $$\\widehat{TestScore_i} = \\underset{(23.96)}{567.4272} \\underset{(0.85)}{-7.1
 
 You are provided with the code line <tt>plot(cs, ts)</tt> which creates a scatterplot of <tt>ts</tt> and <tt>cs</tt>. Note that this line must be executed before calling <tt>abline()</tt>! You may color the regression lines by using, e.g., <tt>col = "red"</tt> or <tt>col = "blue"</tt> as an additional argument to <tt>abline()</tt> for better distinguishability.
 
-The vectors <tt>cs</tt> and <tt>ts</tt> as well as the list objects <tt>mod</tt> and <tt>mod_ni</tt> from previous exercises are availabe in your working environment.
+The vectors <tt>cs</tt> and <tt>ts</tt> as well as the list objects <tt>mod</tt> and <tt>mod_ni</tt> from previous exercises are available in your working environment.
 
 **Instructions:**
 

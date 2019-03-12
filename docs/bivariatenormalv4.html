@@ -27,20 +27,27 @@
 		<style type="text/css">
 
 			.axis path,
-			.axis line {
+			.axis line,
+			.d3slider-axis line{
 				fill: none;
-				stroke: black;
+				stroke: white;
 				shape-rendering: crispEdges;
 			}
 
 			text, #correlation, #means, .slider {
 				font-family: Century Gothic, CenturyGothic, AppleGothic, sans-serif;
 				font-size: 13px;
+				fill: white;
 			}
             
-            .distribution, .condexp, .xlab, .ylab  {
-            	font-size: 14px;
-            }
+      .distribution, .condexp, .xlab, .ylab  {
+        font-size: 14px;
+      }
+      
+      .d3slider-rect-value {
+        fill: white;
+        stroke: none;
+      }
 
 		</style>
 	</head>
@@ -68,8 +75,9 @@
 			  .attr("id", "parameters")
 			  .style("width",""+w+"px")
 			  .style("border-radius", "10px")
-    	      .style("margin","0 0 5px 0")
-    	      .style("background","rgba(211, 211, 211, 0.3)");
+    	  .style("margin","0 0 5px 0")
+    	  .style("background","#356185")
+    	  .style("color","white");
 
 
 		d3.select("#parameters")
@@ -145,7 +153,8 @@ d3.select("#means")
 
 		d3.select("#correlation")
 		  .append("p")
-		  .style("margin", "10px 0 0 20px")
+		  .style("margin", "10px 10px 0 30px")
+		  .style("padding", "15px 0 0 0")
 		  .append('foreignObject')
 		  .text('$\\rho$ (Coefficient of correlation between $X$ and $Y$)');
 
@@ -303,14 +312,12 @@ d3.select("#means")
 			    .attr("ry", 25)
 			    .attr("width", w)
 			    .attr("height", h)
-			    .attr("fill", "lightgrey")
-			    .style("opacity", 0.30);
+			    .attr("fill", "#356185");
 
 			// scatterplot
 			svg.append("g")
 			   .attr("id", "circles")
-			   .style("fill", "steelblue")
-			   .style("opacity", 0.85)
+			   .style("fill", "white")
 			   .selectAll("circle")
 			   .data(dataset)
 			   .enter()
@@ -351,16 +358,20 @@ d3.select("#means")
 			   .attr("class", "distribution")
 			   .attr("x", 20)
 			   .attr("y", 20)
+			   .attr("width",250)
+         .attr("height",50)
 			   .attr("text-anchor", "left")
-			   .style("color","steelblue")
+			   .style("color","white")
 			   .text("$\\begin{pmatrix} X \\\\ Y \\end{pmatrix} \\sim  \\mathcal{N} \\left[\\begin{pmatrix} "+mu[0]+ " \\\\ "+mu[1]+ " \\end{pmatrix}, \\begin{pmatrix} "+sig[0][0]+" & "+math.round(sig[0][1], 2)+" \\\\ "+math.round(sig[0][1], 2)+" & "+sig[1][1]+"\\end{pmatrix} \\right]$");
 
 			svg.append("foreignObject")
 					   .attr("class", "condexp")
 					   .attr("x", 20)
 					   .attr("y", 70)
+					   .attr("width",250)
+             .attr("height",50)
 					   .attr("text-anchor", "left")
-					   .style("color","green")
+					   .style("color","lime")
 					   .text("$E\\left[ Y \\vert X \\right] = "+pm(op=false, mu[1])+""+pm(op=1, sig[0][1])+" \\cdot \\left ( X "+pm(-1, mu[0])+" \\right)$");
 	
 
@@ -395,23 +406,23 @@ d3.select("#means")
 
         	svg.append("path")
 			   .attr("class", "trueline")
-        	   .style("stroke", "green")
-        	   .style("stroke-width", "1.5px")
+        	   .style("stroke", "lime")
+        	   .style("stroke-width", "1.75px")
         	   .attr("d", path(tl));
 
         	svg.append("path")
       		   .attr("class", "d1")
       		   .attr("d", line(array1))
-        	   .style("fill", "steelblue")
-      		   .style("stroke", "steelblue")
-      		   .style("opacity", "0.5");
+      		   .style("opacity", 0.25)
+        	   .style("fill", "white")
+      		   .style("stroke", "white");
 
       		svg.append("path")
       		   .attr("class", "d2")
       		   .attr("d", vline(array2))
-      		   .style("fill", "steelblue")
-      		   .style("opacity", "0.5")
-      		   .style("stroke", "steelblue");
+      		   .style("opacity", 0.25)
+      		   .style("fill", "white")
+      		   .style("stroke", "white");
 
 // Refresh
 
@@ -494,7 +505,7 @@ svg.selectAll(".axis").remove()
 						   d3.select(this)
 						     .transition()
 						     .duration(transdur * 1/3)
-						     .attr("fill", "steelblue")
+						     .attr("fill", "white")
 						     .attr("r", 2.5);
 					   });
 
