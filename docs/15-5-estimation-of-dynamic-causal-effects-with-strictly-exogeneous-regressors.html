@@ -1,13 +1,12 @@
 <!DOCTYPE html>
-<html >
-
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
 <head>
 
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>15.5 Estimation of Dynamic Causal Effects with Strictly Exogeneous Regressors | Introduction to Econometrics with R</title>
-  <meta name="description" content="Beginners with little background in statistics and econometrics often have a hard time understanding the benefits of having programming skills for learning and applying Econometrics. ‘Introduction to Econometrics with R’ is an interactive companion to the well-received textbook ‘Introduction to Econometrics’ by James H. Stock and Mark W. Watson (2015). It gives a gentle introduction to the essentials of R programming and guides students in implementing the empirical applications presented throughout the textbook using the newly aquired skills. This is supported by interactive programming exercises generated with DataCamp Light and integration of interactive visualizations of central concepts which are based on the flexible JavaScript library D3.js.">
-  <meta name="generator" content="bookdown  and GitBook 2.6.7">
+  <meta name="description" content="Beginners with little background in statistics and econometrics often have a hard time understanding the benefits of having programming skills for learning and applying Econometrics. ‘Introduction to Econometrics with R’ is an interactive companion to the well-received textbook ‘Introduction to Econometrics’ by James H. Stock and Mark W. Watson (2015). It gives a gentle introduction to the essentials of R programming and guides students in implementing the empirical applications presented throughout the textbook using the newly aquired skills. This is supported by interactive programming exercises generated with DataCamp Light and integration of interactive visualizations of central concepts which are based on the flexible JavaScript library D3.js." />
+  <meta name="generator" content="bookdown 0.12 and GitBook 2.6.7" />
 
   <meta property="og:title" content="15.5 Estimation of Dynamic Causal Effects with Strictly Exogeneous Regressors | Introduction to Econometrics with R" />
   <meta property="og:type" content="book" />
@@ -22,14 +21,14 @@
   <meta name="twitter:description" content="Beginners with little background in statistics and econometrics often have a hard time understanding the benefits of having programming skills for learning and applying Econometrics. ‘Introduction to Econometrics with R’ is an interactive companion to the well-received textbook ‘Introduction to Econometrics’ by James H. Stock and Mark W. Watson (2015). It gives a gentle introduction to the essentials of R programming and guides students in implementing the empirical applications presented throughout the textbook using the newly aquired skills. This is supported by interactive programming exercises generated with DataCamp Light and integration of interactive visualizations of central concepts which are based on the flexible JavaScript library D3.js." />
   <meta name="twitter:image" content="https://www.econometrics-with-r.org/images/cover.png" />
 
-<meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber and Martin Schmelzer">
+<meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber and Martin Schmelzer" />
 
 
-<meta name="date" content="2019-03-12">
+<meta name="date" content="2019-08-20" />
 
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
 <link rel="prev" href="15-4-hac-standard-errors.html">
@@ -49,17 +48,17 @@
 
 
 <script src="libs/htmlwidgets-1.3/htmlwidgets.js"></script>
-<script src="libs/plotly-binding-4.8.0/plotly.js"></script>
+<script src="libs/plotly-binding-4.9.0/plotly.js"></script>
 <script src="libs/typedarray-0.1/typedarray.min.js"></script>
 <link href="libs/crosstalk-1.0.0/css/crosstalk.css" rel="stylesheet" />
 <script src="libs/crosstalk-1.0.0/js/crosstalk.min.js"></script>
-<link href="libs/plotly-htmlwidgets-css-1.39.2/plotly-htmlwidgets.css" rel="stylesheet" />
-<script src="libs/plotly-main-1.39.2/plotly-latest.min.js"></script>
+<link href="libs/plotly-htmlwidgets-css-1.46.1/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="libs/plotly-main-1.46.1/plotly-latest.min.js"></script>
 <!-- font families -->
 
 <link href="https://fonts.googleapis.com/css?family=PT+Sans|Pacifico|Source+Sans+Pro" rel="stylesheet">
 
-<script src="js/hideOutput.js"></script>
+<!--<script src="js/hideOutput.js"></script>-->
 
 <!-- Mathjax -->
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/default.js"></script>
@@ -89,26 +88,27 @@
 
 
 <style type="text/css">
-a.sourceLine { display: inline-block; line-height: 1.25; }
-a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-a.sourceLine:empty { height: 1.2em; }
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode { white-space: pre; position: relative; }
-div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
 code.sourceCode { white-space: pre-wrap; }
-a.sourceLine { text-indent: -1em; padding-left: 1em; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
-pre.numberSource a.sourceLine
-  { position: relative; left: -4em; }
-pre.numberSource a.sourceLine::before
-  { content: attr(data-line-number);
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
     position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; pointer-events: all; display: inline-block;
+    border: none; display: inline-block;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -117,9 +117,9 @@ pre.numberSource a.sourceLine::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  { background-color: #f8f8f8; }
+  {  background-color: #f8f8f8; }
 @media screen {
-a.sourceLine::before { text-decoration: underline; }
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ef2929; } /* Alert */
 code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
@@ -440,25 +440,25 @@ see p. 657 of the book.</p>
 \end{align}\]</span>
 where <span class="math inline">\(\overset{\sim}{Y}_t = Y_t - \phi_1 Y_{t-1}\)</span> and <span class="math inline">\(\overset{\sim}{X}_t = X_t - \phi_1 X_{t-1}\)</span>. Notice that the error term <span class="math inline">\(\overset{\sim}{u}_t\)</span> is uncorrelated in both models and, as shown in Chapter 15.5 of the book, <span class="math display">\[E(u_t\vert X_{t+1}, X_t, X_{t-1}, \dots) = 0,\]</span> which is implied by the assumption of strict exogeneity.</p>
 <p>We continue by simulating a time series of <span class="math inline">\(500\)</span> observations using the model <a href="15-5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#eq:dldynamic">(15.9)</a> with <span class="math inline">\(\beta_1 = 0.1\)</span>, <span class="math inline">\(\beta_2 = 0.25\)</span>, <span class="math inline">\(\phi = 0.5\)</span> and <span class="math inline">\(\overset{\sim}{u}_t \sim \mathcal{N}(0,1)\)</span> and estimate the different representations, starting with the distributed lag model <a href="15-5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#eq:dldynamic">(15.9)</a>.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># set seed for reproducibility</span>
-<span class="kw">set.seed</span>(<span class="dv">1</span>)
-
-<span class="co"># simulate a time series with serially correlated errors</span>
-obs &lt;-<span class="st"> </span><span class="dv">501</span>
-eps &lt;-<span class="st"> </span><span class="kw">arima.sim</span>(<span class="dt">n =</span> obs<span class="dv">-1</span> , <span class="dt">model =</span> <span class="kw">list</span>(<span class="dt">ar =</span> <span class="fl">0.5</span>))
-X &lt;-<span class="st"> </span><span class="kw">arima.sim</span>(<span class="dt">n =</span> obs, <span class="dt">model =</span> <span class="kw">list</span>(<span class="dt">ar =</span> <span class="fl">0.25</span>))
-Y &lt;-<span class="st"> </span><span class="fl">0.1</span> <span class="op">*</span><span class="st"> </span>X[<span class="op">-</span><span class="dv">1</span>] <span class="op">+</span><span class="st"> </span><span class="fl">0.25</span> <span class="op">*</span><span class="st"> </span>X[<span class="op">-</span>obs] <span class="op">+</span><span class="st"> </span>eps
-X &lt;-<span class="st"> </span><span class="kw">ts</span>(X[<span class="op">-</span><span class="dv">1</span>])
-
-<span class="co"># estimate the distributed lag model</span>
-dlm &lt;-<span class="st"> </span><span class="kw">dynlm</span>(Y <span class="op">~</span><span class="st"> </span>X <span class="op">+</span><span class="st"> </span><span class="kw">L</span>(X))</code></pre>
+<div class="sourceCode" id="cb821"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb821-1"><a href="15-5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb821-1"></a><span class="co"># set seed for reproducibility</span></span>
+<span id="cb821-2"><a href="15-5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb821-2"></a><span class="kw">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb821-3"><a href="15-5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb821-3"></a></span>
+<span id="cb821-4"><a href="15-5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb821-4"></a><span class="co"># simulate a time series with serially correlated errors</span></span>
+<span id="cb821-5"><a href="15-5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb821-5"></a>obs &lt;-<span class="st"> </span><span class="dv">501</span></span>
+<span id="cb821-6"><a href="15-5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb821-6"></a>eps &lt;-<span class="st"> </span><span class="kw">arima.sim</span>(<span class="dt">n =</span> obs<span class="dv">-1</span> , <span class="dt">model =</span> <span class="kw">list</span>(<span class="dt">ar =</span> <span class="fl">0.5</span>))</span>
+<span id="cb821-7"><a href="15-5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb821-7"></a>X &lt;-<span class="st"> </span><span class="kw">arima.sim</span>(<span class="dt">n =</span> obs, <span class="dt">model =</span> <span class="kw">list</span>(<span class="dt">ar =</span> <span class="fl">0.25</span>))</span>
+<span id="cb821-8"><a href="15-5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb821-8"></a>Y &lt;-<span class="st"> </span><span class="fl">0.1</span> <span class="op">*</span><span class="st"> </span>X[<span class="op">-</span><span class="dv">1</span>] <span class="op">+</span><span class="st"> </span><span class="fl">0.25</span> <span class="op">*</span><span class="st"> </span>X[<span class="op">-</span>obs] <span class="op">+</span><span class="st"> </span>eps</span>
+<span id="cb821-9"><a href="15-5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb821-9"></a>X &lt;-<span class="st"> </span><span class="kw">ts</span>(X[<span class="op">-</span><span class="dv">1</span>])</span>
+<span id="cb821-10"><a href="15-5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb821-10"></a></span>
+<span id="cb821-11"><a href="15-5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb821-11"></a><span class="co"># estimate the distributed lag model</span></span>
+<span id="cb821-12"><a href="15-5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb821-12"></a>dlm &lt;-<span class="st"> </span><span class="kw">dynlm</span>(Y <span class="op">~</span><span class="st"> </span>X <span class="op">+</span><span class="st"> </span><span class="kw">L</span>(X))</span></code></pre></div>
 <p>Let us check that the residuals of this model exhibit autocorrelation using <tt>acf()</tt>.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># check that the residuals are serially correlated</span>
-<span class="kw">acf</span>(<span class="kw">residuals</span>(dlm))</code></pre>
+<div class="sourceCode" id="cb822"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb822-1"><a href="15-5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb822-1"></a><span class="co"># check that the residuals are serially correlated</span></span>
+<span id="cb822-2"><a href="15-5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb822-2"></a><span class="kw">acf</span>(<span class="kw">residuals</span>(dlm))</span></code></pre></div>
 <p><img src="ITER_files/figure-html/unnamed-chunk-687-1.png" width="80%" style="display: block; margin: auto;" /></p>
 <p>In particular, the pattern reveals that the residuals follow an autoregressive process, as the sample autocorrelation function decays quickly for the first few lags and is probably zero for higher lag orders. In any case, HAC standard errors should be used.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># coefficient summary using the Newey-West SE estimates</span>
-<span class="kw">coeftest</span>(dlm, <span class="dt">vcov =</span> NeweyWest, <span class="dt">prewhite =</span> F, <span class="dt">adjust =</span> T)</code></pre>
+<div class="sourceCode" id="cb823"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb823-1"><a href="15-5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb823-1"></a><span class="co"># coefficient summary using the Newey-West SE estimates</span></span>
+<span id="cb823-2"><a href="15-5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb823-2"></a><span class="kw">coeftest</span>(dlm, <span class="dt">vcov =</span> NeweyWest, <span class="dt">prewhite =</span> F, <span class="dt">adjust =</span> T)</span></code></pre></div>
 <pre><code>## 
 ## t test of coefficients:
 ## 
@@ -472,19 +472,19 @@ dlm &lt;-<span class="st"> </span><span class="kw">dynlm</span>(Y <span class="o
 <div id="ols-estimation-of-the-adl-model" class="section level4 unnumbered">
 <h4>OLS Estimation of the ADL Model</h4>
 <p>Next, we estimate the ADL(<span class="math inline">\(1\)</span>,<span class="math inline">\(2\)</span>) model <a href="15-5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#eq:adl21dynamic">(15.10)</a> using OLS. The errors are uncorrelated in this representation of the model. This statement is supported by a plot of the sample autocorrelation function of the residual series.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># estimate the ADL(2,1) representation of the distributed lag model</span>
-adl21_dynamic &lt;-<span class="st"> </span><span class="kw">dynlm</span>(Y <span class="op">~</span><span class="st"> </span><span class="kw">L</span>(Y) <span class="op">+</span><span class="st"> </span>X <span class="op">+</span><span class="st"> </span><span class="kw">L</span>(X, <span class="dv">1</span><span class="op">:</span><span class="dv">2</span>))
-
-<span class="co"># plot the sample autocorrelaltions of residuals</span>
-<span class="kw">acf</span>(adl21_dynamic<span class="op">$</span>residuals)</code></pre>
+<div class="sourceCode" id="cb825"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb825-1"><a href="15-5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb825-1"></a><span class="co"># estimate the ADL(2,1) representation of the distributed lag model</span></span>
+<span id="cb825-2"><a href="15-5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb825-2"></a>adl21_dynamic &lt;-<span class="st"> </span><span class="kw">dynlm</span>(Y <span class="op">~</span><span class="st"> </span><span class="kw">L</span>(Y) <span class="op">+</span><span class="st"> </span>X <span class="op">+</span><span class="st"> </span><span class="kw">L</span>(X, <span class="dv">1</span><span class="op">:</span><span class="dv">2</span>))</span>
+<span id="cb825-3"><a href="15-5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb825-3"></a></span>
+<span id="cb825-4"><a href="15-5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb825-4"></a><span class="co"># plot the sample autocorrelaltions of residuals</span></span>
+<span id="cb825-5"><a href="15-5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb825-5"></a><span class="kw">acf</span>(adl21_dynamic<span class="op">$</span>residuals)</span></code></pre></div>
 <p><img src="ITER_files/figure-html/unnamed-chunk-689-1.png" width="80%" style="display: block; margin: auto;" /></p>
 <p>The estimated coefficients of <code>adl21_dynamic$coefficients</code> are <em>not</em> the dynamic multipliers we are interested in, but instead can be computed according to the restrictions in <a href="15-5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#eq:adl21dynamic">(15.10)</a>, where the true coefficients are replaced by the OLS estimates.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># compute estimated dynamic effects using coefficient restrictions</span>
-<span class="co"># in the ADL(2,1) representation</span>
-t &lt;-<span class="st"> </span>adl21_dynamic<span class="op">$</span>coefficients
-
-<span class="kw">c</span>(<span class="st">&quot;hat_beta_1&quot;</span> =<span class="st"> </span>t[<span class="dv">3</span>],
-  <span class="st">&quot;hat_beta_2&quot;</span> =<span class="st"> </span>t[<span class="dv">4</span>] <span class="op">+</span><span class="st"> </span>t[<span class="dv">3</span>] <span class="op">*</span><span class="st"> </span>t[<span class="dv">2</span>])</code></pre>
+<div class="sourceCode" id="cb826"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb826-1"><a href="15-5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb826-1"></a><span class="co"># compute estimated dynamic effects using coefficient restrictions</span></span>
+<span id="cb826-2"><a href="15-5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb826-2"></a><span class="co"># in the ADL(2,1) representation</span></span>
+<span id="cb826-3"><a href="15-5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb826-3"></a>t &lt;-<span class="st"> </span>adl21_dynamic<span class="op">$</span>coefficients</span>
+<span id="cb826-4"><a href="15-5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb826-4"></a></span>
+<span id="cb826-5"><a href="15-5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb826-5"></a><span class="kw">c</span>(<span class="st">&quot;hat_beta_1&quot;</span> =<span class="st"> </span>t[<span class="dv">3</span>],</span>
+<span id="cb826-6"><a href="15-5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb826-6"></a>  <span class="st">&quot;hat_beta_2&quot;</span> =<span class="st"> </span>t[<span class="dv">4</span>] <span class="op">+</span><span class="st"> </span>t[<span class="dv">3</span>] <span class="op">*</span><span class="st"> </span>t[<span class="dv">2</span>])</span></code></pre></div>
 <pre><code>##          hat_beta_1.X hat_beta_2.L(X, 1:2)1 
 ##             0.1176425             0.2478484</code></pre>
 </div>
@@ -493,10 +493,10 @@ t &lt;-<span class="st"> </span>adl21_dynamic<span class="op">$</span>coefficien
 <p>Strict exogeneity allows for OLS estimation of the quasi-difference model <a href="15-5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#eq:qdm">(15.11)</a>. The idea of applying the OLS estimator to a model where the variables are linearly transformed, such that the model errors are uncorrelated and homoskedastic, is called <em>generalized least squares</em> (GLS).</p>
 <p>The OLS estimator in <a href="15-5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#eq:qdm">(15.11)</a> is called the <em>infeasible GLS</em> estimator because <span class="math inline">\(\overset{\sim}{Y}\)</span> and <span class="math inline">\(\overset{\sim}{X}\)</span> cannot be computed without knowing <span class="math inline">\(\phi_1\)</span>, the autoregressive coefficient in the error AR(<span class="math inline">\(1\)</span>) model, which is generally unknown in practice.</p>
 <p>Assume we knew that <span class="math inline">\(\phi = 0.5\)</span>. We then may obtain the infeasible GLS estimates of the dynamic multipliers in <a href="15-5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#eq:dldynamic">(15.9)</a> by applying OLS to the transformed data.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># GLS: estimate quasi-differenced specification by OLS</span>
-iGLS_dynamic &lt;-<span class="st"> </span><span class="kw">dynlm</span>(<span class="kw">I</span>(Y<span class="op">-</span><span class="st"> </span><span class="fl">0.5</span> <span class="op">*</span><span class="st"> </span><span class="kw">L</span>(Y)) <span class="op">~</span><span class="st"> </span><span class="kw">I</span>(X <span class="op">-</span><span class="st"> </span><span class="fl">0.5</span> <span class="op">*</span><span class="st"> </span><span class="kw">L</span>(X)) <span class="op">+</span><span class="st"> </span><span class="kw">I</span>(<span class="kw">L</span>(X) <span class="op">-</span><span class="st"> </span><span class="fl">0.5</span> <span class="op">*</span><span class="st"> </span><span class="kw">L</span>(X, <span class="dv">2</span>)))
-
-<span class="kw">summary</span>(iGLS_dynamic)</code></pre>
+<div class="sourceCode" id="cb828"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb828-1"><a href="15-5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb828-1"></a><span class="co"># GLS: estimate quasi-differenced specification by OLS</span></span>
+<span id="cb828-2"><a href="15-5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb828-2"></a>iGLS_dynamic &lt;-<span class="st"> </span><span class="kw">dynlm</span>(<span class="kw">I</span>(Y<span class="op">-</span><span class="st"> </span><span class="fl">0.5</span> <span class="op">*</span><span class="st"> </span><span class="kw">L</span>(Y)) <span class="op">~</span><span class="st"> </span><span class="kw">I</span>(X <span class="op">-</span><span class="st"> </span><span class="fl">0.5</span> <span class="op">*</span><span class="st"> </span><span class="kw">L</span>(X)) <span class="op">+</span><span class="st"> </span><span class="kw">I</span>(<span class="kw">L</span>(X) <span class="op">-</span><span class="st"> </span><span class="fl">0.5</span> <span class="op">*</span><span class="st"> </span><span class="kw">L</span>(X, <span class="dv">2</span>)))</span>
+<span id="cb828-3"><a href="15-5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb828-3"></a></span>
+<span id="cb828-4"><a href="15-5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb828-4"></a><span class="kw">summary</span>(iGLS_dynamic)</span></code></pre></div>
 <pre><code>## 
 ## Time series regression with &quot;ts&quot; data:
 ## Start = 3, End = 500
@@ -520,14 +520,14 @@ iGLS_dynamic &lt;-<span class="st"> </span><span class="kw">dynlm</span>(<span c
 ## Residual standard error: 1.017 on 495 degrees of freedom
 ## Multiple R-squared:  0.07035,    Adjusted R-squared:  0.0666 
 ## F-statistic: 18.73 on 2 and 495 DF,  p-value: 1.442e-08</code></pre>
-<p>The <em>feasible GLS</em> estimator uses preliminary estimation of the coefficients in the presumed error term model, computes the quasi-differenced data and then estimates the model using OLS. This idea was introduced by <span class="citation">Cochrane &amp; Orcutt (<a href="#ref-cochrane1949">1949</a>)</span> and can be extended by continuing this process iteratively. Such a procedure is implemented in the function <tt>cochrane.orcutt()</tt> from the package <tt>orcutt</tt>.</p>
-<pre class="sourceCode r"><code class="sourceCode r">X_t &lt;-<span class="st"> </span><span class="kw">c</span>(X[<span class="op">-</span><span class="dv">1</span>])
-<span class="co"># create first lag</span>
-X_l1 &lt;-<span class="st"> </span><span class="kw">c</span>(X[<span class="op">-</span><span class="dv">500</span>])
-Y_t &lt;-<span class="st"> </span><span class="kw">c</span>(Y[<span class="op">-</span><span class="dv">1</span>])
-
-<span class="co"># iterated cochrane-orcutt procedure</span>
-<span class="kw">summary</span>(<span class="kw">cochrane.orcutt</span>(<span class="kw">lm</span>(Y_t <span class="op">~</span><span class="st"> </span>X_t <span class="op">+</span><span class="st"> </span>X_l1)))</code></pre>
+<p>The <em>feasible GLS</em> estimator uses preliminary estimation of the coefficients in the presumed error term model, computes the quasi-differenced data and then estimates the model using OLS. This idea was introduced by <span class="citation">Cochrane &amp; Orcutt (<a href="#ref-cochrane1949" role="doc-biblioref">1949</a>)</span> and can be extended by continuing this process iteratively. Such a procedure is implemented in the function <tt>cochrane.orcutt()</tt> from the package <tt>orcutt</tt>.</p>
+<div class="sourceCode" id="cb830"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb830-1"><a href="15-5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb830-1"></a>X_t &lt;-<span class="st"> </span><span class="kw">c</span>(X[<span class="op">-</span><span class="dv">1</span>])</span>
+<span id="cb830-2"><a href="15-5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb830-2"></a><span class="co"># create first lag</span></span>
+<span id="cb830-3"><a href="15-5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb830-3"></a>X_l1 &lt;-<span class="st"> </span><span class="kw">c</span>(X[<span class="op">-</span><span class="dv">500</span>])</span>
+<span id="cb830-4"><a href="15-5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb830-4"></a>Y_t &lt;-<span class="st"> </span><span class="kw">c</span>(Y[<span class="op">-</span><span class="dv">1</span>])</span>
+<span id="cb830-5"><a href="15-5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb830-5"></a></span>
+<span id="cb830-6"><a href="15-5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb830-6"></a><span class="co"># iterated cochrane-orcutt procedure</span></span>
+<span id="cb830-7"><a href="15-5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb830-7"></a><span class="kw">summary</span>(<span class="kw">cochrane.orcutt</span>(<span class="kw">lm</span>(Y_t <span class="op">~</span><span class="st"> </span>X_t <span class="op">+</span><span class="st"> </span>X_l1)))</span></code></pre></div>
 <pre><code>## Call:
 ## lm(formula = Y_t ~ X_t + X_l1)
 ## 
@@ -546,8 +546,8 @@ Y_t &lt;-<span class="st"> </span><span class="kw">c</span>(Y[<span class="op">-
 ## (original):    1.06907 , p-value: 1.05e-25
 ## (transformed): 1.98192 , p-value: 4.246e-01</code></pre>
 <p>Some more sophisticated methods for GLS estimation are provided with the package <tt>nlme</tt>. The function <tt>gls()</tt> can be used to fit linear models by maximum likelihood estimation algorithms and allows to specify a correlation structure for the error term.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># feasible GLS maximum likelihood estimation procedure</span>
-<span class="kw">summary</span>(<span class="kw">gls</span>(Y_t <span class="op">~</span><span class="st"> </span>X_t <span class="op">+</span><span class="st"> </span>X_l1, <span class="dt">correlation =</span> <span class="kw">corAR1</span>()))</code></pre>
+<div class="sourceCode" id="cb832"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb832-1"><a href="15-5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb832-1"></a><span class="co"># feasible GLS maximum likelihood estimation procedure</span></span>
+<span id="cb832-2"><a href="15-5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb832-2"></a><span class="kw">summary</span>(<span class="kw">gls</span>(Y_t <span class="op">~</span><span class="st"> </span>X_t <span class="op">+</span><span class="st"> </span>X_l1, <span class="dt">correlation =</span> <span class="kw">corAR1</span>()))</span></code></pre></div>
 <pre><code>## Generalized least squares fit by REML
 ##   Model: Y_t ~ X_t + X_l1 
 ##   Data: NULL 

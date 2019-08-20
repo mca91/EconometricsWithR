@@ -1,13 +1,12 @@
 <!DOCTYPE html>
-<html >
-
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
 <head>
 
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>12.2 The General IV Regression Model | Introduction to Econometrics with R</title>
-  <meta name="description" content="Beginners with little background in statistics and econometrics often have a hard time understanding the benefits of having programming skills for learning and applying Econometrics. ‘Introduction to Econometrics with R’ is an interactive companion to the well-received textbook ‘Introduction to Econometrics’ by James H. Stock and Mark W. Watson (2015). It gives a gentle introduction to the essentials of R programming and guides students in implementing the empirical applications presented throughout the textbook using the newly aquired skills. This is supported by interactive programming exercises generated with DataCamp Light and integration of interactive visualizations of central concepts which are based on the flexible JavaScript library D3.js.">
-  <meta name="generator" content="bookdown  and GitBook 2.6.7">
+  <meta name="description" content="Beginners with little background in statistics and econometrics often have a hard time understanding the benefits of having programming skills for learning and applying Econometrics. ‘Introduction to Econometrics with R’ is an interactive companion to the well-received textbook ‘Introduction to Econometrics’ by James H. Stock and Mark W. Watson (2015). It gives a gentle introduction to the essentials of R programming and guides students in implementing the empirical applications presented throughout the textbook using the newly aquired skills. This is supported by interactive programming exercises generated with DataCamp Light and integration of interactive visualizations of central concepts which are based on the flexible JavaScript library D3.js." />
+  <meta name="generator" content="bookdown 0.12 and GitBook 2.6.7" />
 
   <meta property="og:title" content="12.2 The General IV Regression Model | Introduction to Econometrics with R" />
   <meta property="og:type" content="book" />
@@ -22,14 +21,14 @@
   <meta name="twitter:description" content="Beginners with little background in statistics and econometrics often have a hard time understanding the benefits of having programming skills for learning and applying Econometrics. ‘Introduction to Econometrics with R’ is an interactive companion to the well-received textbook ‘Introduction to Econometrics’ by James H. Stock and Mark W. Watson (2015). It gives a gentle introduction to the essentials of R programming and guides students in implementing the empirical applications presented throughout the textbook using the newly aquired skills. This is supported by interactive programming exercises generated with DataCamp Light and integration of interactive visualizations of central concepts which are based on the flexible JavaScript library D3.js." />
   <meta name="twitter:image" content="https://www.econometrics-with-r.org/images/cover.png" />
 
-<meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber and Martin Schmelzer">
+<meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber and Martin Schmelzer" />
 
 
-<meta name="date" content="2019-03-12">
+<meta name="date" content="2019-08-20" />
 
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
 <link rel="prev" href="12-1-TIVEWASRAASI.html">
@@ -49,17 +48,17 @@
 
 
 <script src="libs/htmlwidgets-1.3/htmlwidgets.js"></script>
-<script src="libs/plotly-binding-4.8.0/plotly.js"></script>
+<script src="libs/plotly-binding-4.9.0/plotly.js"></script>
 <script src="libs/typedarray-0.1/typedarray.min.js"></script>
 <link href="libs/crosstalk-1.0.0/css/crosstalk.css" rel="stylesheet" />
 <script src="libs/crosstalk-1.0.0/js/crosstalk.min.js"></script>
-<link href="libs/plotly-htmlwidgets-css-1.39.2/plotly-htmlwidgets.css" rel="stylesheet" />
-<script src="libs/plotly-main-1.39.2/plotly-latest.min.js"></script>
+<link href="libs/plotly-htmlwidgets-css-1.46.1/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="libs/plotly-main-1.46.1/plotly-latest.min.js"></script>
 <!-- font families -->
 
 <link href="https://fonts.googleapis.com/css?family=PT+Sans|Pacifico|Source+Sans+Pro" rel="stylesheet">
 
-<script src="js/hideOutput.js"></script>
+<!--<script src="js/hideOutput.js"></script>-->
 
 <!-- Mathjax -->
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/default.js"></script>
@@ -89,26 +88,27 @@
 
 
 <style type="text/css">
-a.sourceLine { display: inline-block; line-height: 1.25; }
-a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-a.sourceLine:empty { height: 1.2em; }
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode { white-space: pre; position: relative; }
-div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
 code.sourceCode { white-space: pre-wrap; }
-a.sourceLine { text-indent: -1em; padding-left: 1em; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
-pre.numberSource a.sourceLine
-  { position: relative; left: -4em; }
-pre.numberSource a.sourceLine::before
-  { content: attr(data-line-number);
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
     position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; pointer-events: all; display: inline-block;
+    border: none; display: inline-block;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -117,9 +117,9 @@ pre.numberSource a.sourceLine::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  { background-color: #f8f8f8; }
+  {  background-color: #f8f8f8; }
 @media screen {
-a.sourceLine::before { text-decoration: underline; }
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ef2929; } /* Alert */
 code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
@@ -430,7 +430,7 @@ Two-Stage Least Squares
 <li><p><strong>First-stage regression(s)</strong></p>
 <p>Run an OLS regression for each of the endogenous variables (<span class="math inline">\(X_{1i},\dots,X_{ki}\)</span>) on all instrumental variables (<span class="math inline">\(Z_{1i},\dots,Z_{mi}\)</span>), all exogenous variables (<span class="math inline">\(W_{1i},\dots,W_{ri}\)</span>) and an intercept. Compute the fitted values (<span class="math inline">\(\widehat{X}_{1i},\dots,\widehat{X}_{ki}\)</span>).</p></li>
 <li><p><strong>Second-stage regression</strong></p>
-Regress the dependent variable on the predicted values of all endogenous regressors, all exogenous variables and an intercept using OLS. This gives <span class="math inline">\(\widehat{\beta}_{0}^{TSLS},\dots,\widehat{\beta}_{k+r}^{TSLS}\)</span>, the TSLS estimates of the model coefficients.</li>
+<p>Regress the dependent variable on the predicted values of all endogenous regressors, all exogenous variables and an intercept using OLS. This gives <span class="math inline">\(\widehat{\beta}_{0}^{TSLS},\dots,\widehat{\beta}_{k+r}^{TSLS}\)</span>, the TSLS estimates of the model coefficients.</p></li>
 </ol>
 </div>
 <p>In the general IV regression model, the instrument relevance and instrument exogeneity assumptions are the same as in the simple regression model with a single endogenous regressor and only one instrument. See Key Concept 12.3 for a recap using the terminology of general IV regression.</p>
@@ -475,15 +475,15 @@ The IV Regression Assumptions
   \log(Q_i^{cigarettes}) = \beta_0 + \beta_1 \log(P_i^{cigarettes}) + \beta_2 \log(income_i) + u_i \tag{12.6}
 \end{align}\]</span></p>
 <p>Before estimating <a href="12-2-TGIVRM.html#eq:mcigstsls1">(12.6)</a> using <tt>ivreg()</tt> we define <span class="math inline">\(income\)</span> as real per capita income <tt>rincome</tt> and append it to the data set <tt>CigarettesSW</tt>.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># add rincome to the dataset</span>
-CigarettesSW<span class="op">$</span>rincome &lt;-<span class="st"> </span><span class="kw">with</span>(CigarettesSW, income <span class="op">/</span><span class="st"> </span>population <span class="op">/</span><span class="st"> </span>cpi)
-
-c1995 &lt;-<span class="st"> </span><span class="kw">subset</span>(CigarettesSW, year <span class="op">==</span><span class="st"> &quot;1995&quot;</span>)</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># estimate the model</span>
-cig_ivreg2 &lt;-<span class="st"> </span><span class="kw">ivreg</span>(<span class="kw">log</span>(packs) <span class="op">~</span><span class="st"> </span><span class="kw">log</span>(rprice) <span class="op">+</span><span class="st"> </span><span class="kw">log</span>(rincome) <span class="op">|</span><span class="st"> </span><span class="kw">log</span>(rincome) <span class="op">+</span><span class="st"> </span>
-<span class="st">                    </span>salestax, <span class="dt">data =</span> c1995)
-
-<span class="kw">coeftest</span>(cig_ivreg2, <span class="dt">vcov =</span> vcovHC, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>)</code></pre>
+<div class="sourceCode" id="cb595"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb595-1"><a href="12-2-TGIVRM.html#cb595-1"></a><span class="co"># add rincome to the dataset</span></span>
+<span id="cb595-2"><a href="12-2-TGIVRM.html#cb595-2"></a>CigarettesSW<span class="op">$</span>rincome &lt;-<span class="st"> </span><span class="kw">with</span>(CigarettesSW, income <span class="op">/</span><span class="st"> </span>population <span class="op">/</span><span class="st"> </span>cpi)</span>
+<span id="cb595-3"><a href="12-2-TGIVRM.html#cb595-3"></a></span>
+<span id="cb595-4"><a href="12-2-TGIVRM.html#cb595-4"></a>c1995 &lt;-<span class="st"> </span><span class="kw">subset</span>(CigarettesSW, year <span class="op">==</span><span class="st"> &quot;1995&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb596"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb596-1"><a href="12-2-TGIVRM.html#cb596-1"></a><span class="co"># estimate the model</span></span>
+<span id="cb596-2"><a href="12-2-TGIVRM.html#cb596-2"></a>cig_ivreg2 &lt;-<span class="st"> </span><span class="kw">ivreg</span>(<span class="kw">log</span>(packs) <span class="op">~</span><span class="st"> </span><span class="kw">log</span>(rprice) <span class="op">+</span><span class="st"> </span><span class="kw">log</span>(rincome) <span class="op">|</span><span class="st"> </span><span class="kw">log</span>(rincome) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb596-3"><a href="12-2-TGIVRM.html#cb596-3"></a><span class="st">                    </span>salestax, <span class="dt">data =</span> c1995)</span>
+<span id="cb596-4"><a href="12-2-TGIVRM.html#cb596-4"></a></span>
+<span id="cb596-5"><a href="12-2-TGIVRM.html#cb596-5"></a><span class="kw">coeftest</span>(cig_ivreg2, <span class="dt">vcov =</span> vcovHC, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>)</span></code></pre></div>
 <pre><code>## 
 ## t test of coefficients:
 ## 
@@ -498,15 +498,15 @@ cig_ivreg2 &lt;-<span class="st"> </span><span class="kw">ivreg</span>(<span cla
   \widehat{\log(Q_i^{cigarettes})} = \underset{(1.26)}{9.42} - \underset{(0.37)}{1.14} \log(P_i^{cigarettes}) + \underset{(0.31)}{0.21} \log(income_i). \tag{12.7}
 \end{align}\]</span></p>
 <p>Following the book we add the cigarette-specific taxes (<span class="math inline">\(cigtax_i\)</span>) as a further instrumental variable and estimate again using TSLS.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># add cigtax to the data set</span>
-CigarettesSW<span class="op">$</span>cigtax &lt;-<span class="st"> </span><span class="kw">with</span>(CigarettesSW, tax<span class="op">/</span>cpi)
-
-c1995 &lt;-<span class="st"> </span><span class="kw">subset</span>(CigarettesSW, year <span class="op">==</span><span class="st"> &quot;1995&quot;</span>)</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># estimate the model</span>
-cig_ivreg3 &lt;-<span class="st"> </span><span class="kw">ivreg</span>(<span class="kw">log</span>(packs) <span class="op">~</span><span class="st"> </span><span class="kw">log</span>(rprice) <span class="op">+</span><span class="st"> </span><span class="kw">log</span>(rincome) <span class="op">|</span><span class="st"> </span>
-<span class="st">                    </span><span class="kw">log</span>(rincome) <span class="op">+</span><span class="st"> </span>salestax <span class="op">+</span><span class="st"> </span>cigtax, <span class="dt">data =</span> c1995)
-
-<span class="kw">coeftest</span>(cig_ivreg3, <span class="dt">vcov =</span> vcovHC, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>)</code></pre>
+<div class="sourceCode" id="cb598"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb598-1"><a href="12-2-TGIVRM.html#cb598-1"></a><span class="co"># add cigtax to the data set</span></span>
+<span id="cb598-2"><a href="12-2-TGIVRM.html#cb598-2"></a>CigarettesSW<span class="op">$</span>cigtax &lt;-<span class="st"> </span><span class="kw">with</span>(CigarettesSW, tax<span class="op">/</span>cpi)</span>
+<span id="cb598-3"><a href="12-2-TGIVRM.html#cb598-3"></a></span>
+<span id="cb598-4"><a href="12-2-TGIVRM.html#cb598-4"></a>c1995 &lt;-<span class="st"> </span><span class="kw">subset</span>(CigarettesSW, year <span class="op">==</span><span class="st"> &quot;1995&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb599"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb599-1"><a href="12-2-TGIVRM.html#cb599-1"></a><span class="co"># estimate the model</span></span>
+<span id="cb599-2"><a href="12-2-TGIVRM.html#cb599-2"></a>cig_ivreg3 &lt;-<span class="st"> </span><span class="kw">ivreg</span>(<span class="kw">log</span>(packs) <span class="op">~</span><span class="st"> </span><span class="kw">log</span>(rprice) <span class="op">+</span><span class="st"> </span><span class="kw">log</span>(rincome) <span class="op">|</span><span class="st"> </span></span>
+<span id="cb599-3"><a href="12-2-TGIVRM.html#cb599-3"></a><span class="st">                    </span><span class="kw">log</span>(rincome) <span class="op">+</span><span class="st"> </span>salestax <span class="op">+</span><span class="st"> </span>cigtax, <span class="dt">data =</span> c1995)</span>
+<span id="cb599-4"><a href="12-2-TGIVRM.html#cb599-4"></a></span>
+<span id="cb599-5"><a href="12-2-TGIVRM.html#cb599-5"></a><span class="kw">coeftest</span>(cig_ivreg3, <span class="dt">vcov =</span> vcovHC, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>)</span></code></pre></div>
 <pre><code>## 
 ## t test of coefficients:
 ## 

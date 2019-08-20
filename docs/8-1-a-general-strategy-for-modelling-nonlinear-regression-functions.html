@@ -1,13 +1,12 @@
 <!DOCTYPE html>
-<html >
-
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
 <head>
 
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>8.1 A General Strategy for Modelling Nonlinear Regression Functions | Introduction to Econometrics with R</title>
-  <meta name="description" content="Beginners with little background in statistics and econometrics often have a hard time understanding the benefits of having programming skills for learning and applying Econometrics. ‘Introduction to Econometrics with R’ is an interactive companion to the well-received textbook ‘Introduction to Econometrics’ by James H. Stock and Mark W. Watson (2015). It gives a gentle introduction to the essentials of R programming and guides students in implementing the empirical applications presented throughout the textbook using the newly aquired skills. This is supported by interactive programming exercises generated with DataCamp Light and integration of interactive visualizations of central concepts which are based on the flexible JavaScript library D3.js.">
-  <meta name="generator" content="bookdown  and GitBook 2.6.7">
+  <meta name="description" content="Beginners with little background in statistics and econometrics often have a hard time understanding the benefits of having programming skills for learning and applying Econometrics. ‘Introduction to Econometrics with R’ is an interactive companion to the well-received textbook ‘Introduction to Econometrics’ by James H. Stock and Mark W. Watson (2015). It gives a gentle introduction to the essentials of R programming and guides students in implementing the empirical applications presented throughout the textbook using the newly aquired skills. This is supported by interactive programming exercises generated with DataCamp Light and integration of interactive visualizations of central concepts which are based on the flexible JavaScript library D3.js." />
+  <meta name="generator" content="bookdown 0.12 and GitBook 2.6.7" />
 
   <meta property="og:title" content="8.1 A General Strategy for Modelling Nonlinear Regression Functions | Introduction to Econometrics with R" />
   <meta property="og:type" content="book" />
@@ -22,14 +21,14 @@
   <meta name="twitter:description" content="Beginners with little background in statistics and econometrics often have a hard time understanding the benefits of having programming skills for learning and applying Econometrics. ‘Introduction to Econometrics with R’ is an interactive companion to the well-received textbook ‘Introduction to Econometrics’ by James H. Stock and Mark W. Watson (2015). It gives a gentle introduction to the essentials of R programming and guides students in implementing the empirical applications presented throughout the textbook using the newly aquired skills. This is supported by interactive programming exercises generated with DataCamp Light and integration of interactive visualizations of central concepts which are based on the flexible JavaScript library D3.js." />
   <meta name="twitter:image" content="https://www.econometrics-with-r.org/images/cover.png" />
 
-<meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber and Martin Schmelzer">
+<meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber and Martin Schmelzer" />
 
 
-<meta name="date" content="2019-03-12">
+<meta name="date" content="2019-08-20" />
 
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
 <link rel="prev" href="8-nrf.html">
@@ -49,17 +48,17 @@
 
 
 <script src="libs/htmlwidgets-1.3/htmlwidgets.js"></script>
-<script src="libs/plotly-binding-4.8.0/plotly.js"></script>
+<script src="libs/plotly-binding-4.9.0/plotly.js"></script>
 <script src="libs/typedarray-0.1/typedarray.min.js"></script>
 <link href="libs/crosstalk-1.0.0/css/crosstalk.css" rel="stylesheet" />
 <script src="libs/crosstalk-1.0.0/js/crosstalk.min.js"></script>
-<link href="libs/plotly-htmlwidgets-css-1.39.2/plotly-htmlwidgets.css" rel="stylesheet" />
-<script src="libs/plotly-main-1.39.2/plotly-latest.min.js"></script>
+<link href="libs/plotly-htmlwidgets-css-1.46.1/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="libs/plotly-main-1.46.1/plotly-latest.min.js"></script>
 <!-- font families -->
 
 <link href="https://fonts.googleapis.com/css?family=PT+Sans|Pacifico|Source+Sans+Pro" rel="stylesheet">
 
-<script src="js/hideOutput.js"></script>
+<!--<script src="js/hideOutput.js"></script>-->
 
 <!-- Mathjax -->
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/default.js"></script>
@@ -89,26 +88,27 @@
 
 
 <style type="text/css">
-a.sourceLine { display: inline-block; line-height: 1.25; }
-a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-a.sourceLine:empty { height: 1.2em; }
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode { white-space: pre; position: relative; }
-div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
 code.sourceCode { white-space: pre-wrap; }
-a.sourceLine { text-indent: -1em; padding-left: 1em; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
-pre.numberSource a.sourceLine
-  { position: relative; left: -4em; }
-pre.numberSource a.sourceLine::before
-  { content: attr(data-line-number);
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
     position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; pointer-events: all; display: inline-block;
+    border: none; display: inline-block;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -117,9 +117,9 @@ pre.numberSource a.sourceLine::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  { background-color: #f8f8f8; }
+  {  background-color: #f8f8f8; }
 @media screen {
-a.sourceLine::before { text-decoration: underline; }
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ef2929; } /* Alert */
 code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
@@ -393,42 +393,42 @@ This book is in <b>Open Review</b>. We want your feedback to make the book bette
 <div id="a-general-strategy-for-modelling-nonlinear-regression-functions" class="section level2">
 <h2><span class="header-section-number">8.1</span> A General Strategy for Modelling Nonlinear Regression Functions</h2>
 <p>Let us have a look at an example where using a nonlinear regression function is better suited for estimating the population relationship between the regressor, <span class="math inline">\(X\)</span>, and the regressand, <span class="math inline">\(Y\)</span>: the relationship between the income of schooling districts and their test scores.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># prepare the data</span>
-<span class="kw">library</span>(AER)                                                     
-<span class="kw">data</span>(CASchools)
-CASchools<span class="op">$</span>size &lt;-<span class="st"> </span>CASchools<span class="op">$</span>students<span class="op">/</span>CASchools<span class="op">$</span>teachers
-CASchools<span class="op">$</span>score &lt;-<span class="st"> </span>(CASchools<span class="op">$</span>read <span class="op">+</span><span class="st"> </span>CASchools<span class="op">$</span>math) <span class="op">/</span><span class="st"> </span><span class="dv">2</span>       </code></pre>
+<div class="sourceCode" id="cb326"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb326-1"><a href="8-1-a-general-strategy-for-modelling-nonlinear-regression-functions.html#cb326-1"></a><span class="co"># prepare the data</span></span>
+<span id="cb326-2"><a href="8-1-a-general-strategy-for-modelling-nonlinear-regression-functions.html#cb326-2"></a><span class="kw">library</span>(AER)                                                     </span>
+<span id="cb326-3"><a href="8-1-a-general-strategy-for-modelling-nonlinear-regression-functions.html#cb326-3"></a><span class="kw">data</span>(CASchools)</span>
+<span id="cb326-4"><a href="8-1-a-general-strategy-for-modelling-nonlinear-regression-functions.html#cb326-4"></a>CASchools<span class="op">$</span>size &lt;-<span class="st"> </span>CASchools<span class="op">$</span>students<span class="op">/</span>CASchools<span class="op">$</span>teachers</span>
+<span id="cb326-5"><a href="8-1-a-general-strategy-for-modelling-nonlinear-regression-functions.html#cb326-5"></a>CASchools<span class="op">$</span>score &lt;-<span class="st"> </span>(CASchools<span class="op">$</span>read <span class="op">+</span><span class="st"> </span>CASchools<span class="op">$</span>math) <span class="op">/</span><span class="st"> </span><span class="dv">2</span>       </span></code></pre></div>
 <p>We start our analysis by computing the correlation between both variables.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">cor</span>(CASchools<span class="op">$</span>income, CASchools<span class="op">$</span>score)</code></pre>
+<div class="sourceCode" id="cb327"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb327-1"><a href="8-1-a-general-strategy-for-modelling-nonlinear-regression-functions.html#cb327-1"></a><span class="kw">cor</span>(CASchools<span class="op">$</span>income, CASchools<span class="op">$</span>score)</span></code></pre></div>
 <pre><code>## [1] 0.7124308</code></pre>
 <p>Here, income and test scores are positively related: school districts with above average income tend to achieve above average test scores. Does a linear regression function model the data adequately? Let us plot the data and add a linear regression line.</p>
 <div class="unfolded">
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># fit a simple linear model</span>
-linear_model&lt;-<span class="st"> </span><span class="kw">lm</span>(score <span class="op">~</span><span class="st"> </span>income, <span class="dt">data =</span> CASchools)
-
-<span class="co"># plot the observations</span>
-<span class="kw">plot</span>(CASchools<span class="op">$</span>income, CASchools<span class="op">$</span>score,
-     <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>,
-     <span class="dt">pch =</span> <span class="dv">20</span>,
-     <span class="dt">xlab =</span> <span class="st">&quot;District Income (thousands of dollars)&quot;</span>, 
-     <span class="dt">ylab =</span> <span class="st">&quot;Test Score&quot;</span>,
-     <span class="dt">cex.main =</span> <span class="fl">0.9</span>,
-     <span class="dt">main =</span> <span class="st">&quot;Test Score vs. District Income and a Linear OLS Regression Function&quot;</span>)
-
-<span class="co"># add the regression line to the plot</span>
-<span class="kw">abline</span>(linear_model, 
-       <span class="dt">col =</span> <span class="st">&quot;red&quot;</span>, 
-       <span class="dt">lwd =</span> <span class="dv">2</span>)</code></pre>
+<div class="sourceCode" id="cb329"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb329-1"><a href="8-1-a-general-strategy-for-modelling-nonlinear-regression-functions.html#cb329-1"></a><span class="co"># fit a simple linear model</span></span>
+<span id="cb329-2"><a href="8-1-a-general-strategy-for-modelling-nonlinear-regression-functions.html#cb329-2"></a>linear_model&lt;-<span class="st"> </span><span class="kw">lm</span>(score <span class="op">~</span><span class="st"> </span>income, <span class="dt">data =</span> CASchools)</span>
+<span id="cb329-3"><a href="8-1-a-general-strategy-for-modelling-nonlinear-regression-functions.html#cb329-3"></a></span>
+<span id="cb329-4"><a href="8-1-a-general-strategy-for-modelling-nonlinear-regression-functions.html#cb329-4"></a><span class="co"># plot the observations</span></span>
+<span id="cb329-5"><a href="8-1-a-general-strategy-for-modelling-nonlinear-regression-functions.html#cb329-5"></a><span class="kw">plot</span>(CASchools<span class="op">$</span>income, CASchools<span class="op">$</span>score,</span>
+<span id="cb329-6"><a href="8-1-a-general-strategy-for-modelling-nonlinear-regression-functions.html#cb329-6"></a>     <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>,</span>
+<span id="cb329-7"><a href="8-1-a-general-strategy-for-modelling-nonlinear-regression-functions.html#cb329-7"></a>     <span class="dt">pch =</span> <span class="dv">20</span>,</span>
+<span id="cb329-8"><a href="8-1-a-general-strategy-for-modelling-nonlinear-regression-functions.html#cb329-8"></a>     <span class="dt">xlab =</span> <span class="st">&quot;District Income (thousands of dollars)&quot;</span>, </span>
+<span id="cb329-9"><a href="8-1-a-general-strategy-for-modelling-nonlinear-regression-functions.html#cb329-9"></a>     <span class="dt">ylab =</span> <span class="st">&quot;Test Score&quot;</span>,</span>
+<span id="cb329-10"><a href="8-1-a-general-strategy-for-modelling-nonlinear-regression-functions.html#cb329-10"></a>     <span class="dt">cex.main =</span> <span class="fl">0.9</span>,</span>
+<span id="cb329-11"><a href="8-1-a-general-strategy-for-modelling-nonlinear-regression-functions.html#cb329-11"></a>     <span class="dt">main =</span> <span class="st">&quot;Test Score vs. District Income and a Linear OLS Regression Function&quot;</span>)</span>
+<span id="cb329-12"><a href="8-1-a-general-strategy-for-modelling-nonlinear-regression-functions.html#cb329-12"></a></span>
+<span id="cb329-13"><a href="8-1-a-general-strategy-for-modelling-nonlinear-regression-functions.html#cb329-13"></a><span class="co"># add the regression line to the plot</span></span>
+<span id="cb329-14"><a href="8-1-a-general-strategy-for-modelling-nonlinear-regression-functions.html#cb329-14"></a><span class="kw">abline</span>(linear_model, </span>
+<span id="cb329-15"><a href="8-1-a-general-strategy-for-modelling-nonlinear-regression-functions.html#cb329-15"></a>       <span class="dt">col =</span> <span class="st">&quot;red&quot;</span>, </span>
+<span id="cb329-16"><a href="8-1-a-general-strategy-for-modelling-nonlinear-regression-functions.html#cb329-16"></a>       <span class="dt">lwd =</span> <span class="dv">2</span>)</span></code></pre></div>
 <p><img src="ITER_files/figure-html/unnamed-chunk-316-1.png" width="80%" style="display: block; margin: auto;" /></p>
 </div>
 <p>As pointed out in the book, the linear regression line seems to overestimate the true relationship when income is very high or very low and underestimates it for the middle income group.</p>
 <p>Fortunately, OLS does not only handle linear functions of the regressors. We can for example model test scores as a function of income and the square of income. The corresponding regression model is</p>
 <p><span class="math display">\[TestScore_i = \beta_0 + \beta_1 \times income_i + \beta_2 \times income_i^2 + u_i,\]</span> called a <em>quadratic regression model</em>. That is, <span class="math inline">\(income^2\)</span> is treated as an additional explanatory variable. Hence, the quadratic model is a special case of a multivariate regression model. When fitting the model with <tt>lm()</tt> we have to use the <tt>^</tt> operator in conjunction with the function <tt>I()</tt> to add the quadratic term as an additional regressor to the argument <tt>formula</tt>. This is because the regression formula we pass to <tt>formula</tt> is converted to an object of the class <tt>formula</tt>. For objects of this class, the operators <tt>+</tt>, <tt>-</tt>, <tt>*</tt> and <tt>^</tt> have a nonarithmetic interpretation. <tt>I()</tt> ensures that they are used as arithmetical operators, see <tt>?I</tt>,</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># fit the quadratic Model</span>
-quadratic_model &lt;-<span class="st"> </span><span class="kw">lm</span>(score <span class="op">~</span><span class="st"> </span>income <span class="op">+</span><span class="st"> </span><span class="kw">I</span>(income<span class="op">^</span><span class="dv">2</span>), <span class="dt">data =</span> CASchools)
-
-<span class="co"># obtain the model summary</span>
-<span class="kw">coeftest</span>(quadratic_model, <span class="dt">vcov. =</span> vcovHC, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>)</code></pre>
+<div class="sourceCode" id="cb330"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb330-1"><a href="8-1-a-general-strategy-for-modelling-nonlinear-regression-functions.html#cb330-1"></a><span class="co"># fit the quadratic Model</span></span>
+<span id="cb330-2"><a href="8-1-a-general-strategy-for-modelling-nonlinear-regression-functions.html#cb330-2"></a>quadratic_model &lt;-<span class="st"> </span><span class="kw">lm</span>(score <span class="op">~</span><span class="st"> </span>income <span class="op">+</span><span class="st"> </span><span class="kw">I</span>(income<span class="op">^</span><span class="dv">2</span>), <span class="dt">data =</span> CASchools)</span>
+<span id="cb330-3"><a href="8-1-a-general-strategy-for-modelling-nonlinear-regression-functions.html#cb330-3"></a></span>
+<span id="cb330-4"><a href="8-1-a-general-strategy-for-modelling-nonlinear-regression-functions.html#cb330-4"></a><span class="co"># obtain the model summary</span></span>
+<span id="cb330-5"><a href="8-1-a-general-strategy-for-modelling-nonlinear-regression-functions.html#cb330-5"></a><span class="kw">coeftest</span>(quadratic_model, <span class="dt">vcov. =</span> vcovHC, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>)</span></code></pre></div>
 <pre><code>## 
 ## t test of coefficients:
 ## 
@@ -445,24 +445,24 @@ quadratic_model &lt;-<span class="st"> </span><span class="kw">lm</span>(score <
 <p>since <span class="math inline">\(\beta_2=0\)</span> corresponds to a simple linear equation and <span class="math inline">\(\beta_2\neq0\)</span> implies a quadratic relationship. We find that <span class="math inline">\(t=(\hat\beta_2 - 0)/SE(\hat\beta_2) = -0.0423/0.0048 = -8.81\)</span> so the null is rejected at any common level of significance and we conclude that the relationship is nonlinear. This is consistent with the impression gained from the plot.</p>
 <p>We now draw the same scatter plot as for the linear model and add the regression line for the quadratic model. Because <tt>abline()</tt> can only draw straight lines, it cannot be used here. <tt>lines()</tt> is a function which allows to draw nonstraight lines, see <code>?lines</code>. The most basic call of <tt>lines()</tt> is <tt>lines(x_values, y_values)</tt> where <tt>x_values</tt> and <tt>y_values</tt> are vectors of the same length that provide coordinates of the points to be <em>sequentially</em> connected by a line. This makes it necessary to sort the coordinate pairs according to the X-values. Here we use the function <tt>order()</tt> to sort the fitted values of <tt>score</tt> according to the observations of <tt>income</tt>.</p>
 <div class="unfolded">
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># draw a scatterplot of the observations for income and test score</span>
-<span class="kw">plot</span>(CASchools<span class="op">$</span>income, CASchools<span class="op">$</span>score,
-     <span class="dt">col  =</span> <span class="st">&quot;steelblue&quot;</span>,
-     <span class="dt">pch =</span> <span class="dv">20</span>,
-     <span class="dt">xlab =</span> <span class="st">&quot;District Income (thousands of dollars)&quot;</span>,
-     <span class="dt">ylab =</span> <span class="st">&quot;Test Score&quot;</span>,
-     <span class="dt">main =</span> <span class="st">&quot;Estimated Linear and Quadratic Regression Functions&quot;</span>)
-
-<span class="co"># add a linear function to the plot</span>
-<span class="kw">abline</span>(linear_model, <span class="dt">col =</span> <span class="st">&quot;black&quot;</span>, <span class="dt">lwd =</span> <span class="dv">2</span>)
-
-<span class="co"># add quatratic function to the plot</span>
-order_id &lt;-<span class="st"> </span><span class="kw">order</span>(CASchools<span class="op">$</span>income)
-
-<span class="kw">lines</span>(<span class="dt">x =</span> CASchools<span class="op">$</span>income[order_id], 
-      <span class="dt">y =</span> <span class="kw">fitted</span>(quadratic_model)[order_id],
-      <span class="dt">col =</span> <span class="st">&quot;red&quot;</span>, 
-      <span class="dt">lwd =</span> <span class="dv">2</span>) </code></pre>
+<div class="sourceCode" id="cb332"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb332-1"><a href="8-1-a-general-strategy-for-modelling-nonlinear-regression-functions.html#cb332-1"></a><span class="co"># draw a scatterplot of the observations for income and test score</span></span>
+<span id="cb332-2"><a href="8-1-a-general-strategy-for-modelling-nonlinear-regression-functions.html#cb332-2"></a><span class="kw">plot</span>(CASchools<span class="op">$</span>income, CASchools<span class="op">$</span>score,</span>
+<span id="cb332-3"><a href="8-1-a-general-strategy-for-modelling-nonlinear-regression-functions.html#cb332-3"></a>     <span class="dt">col  =</span> <span class="st">&quot;steelblue&quot;</span>,</span>
+<span id="cb332-4"><a href="8-1-a-general-strategy-for-modelling-nonlinear-regression-functions.html#cb332-4"></a>     <span class="dt">pch =</span> <span class="dv">20</span>,</span>
+<span id="cb332-5"><a href="8-1-a-general-strategy-for-modelling-nonlinear-regression-functions.html#cb332-5"></a>     <span class="dt">xlab =</span> <span class="st">&quot;District Income (thousands of dollars)&quot;</span>,</span>
+<span id="cb332-6"><a href="8-1-a-general-strategy-for-modelling-nonlinear-regression-functions.html#cb332-6"></a>     <span class="dt">ylab =</span> <span class="st">&quot;Test Score&quot;</span>,</span>
+<span id="cb332-7"><a href="8-1-a-general-strategy-for-modelling-nonlinear-regression-functions.html#cb332-7"></a>     <span class="dt">main =</span> <span class="st">&quot;Estimated Linear and Quadratic Regression Functions&quot;</span>)</span>
+<span id="cb332-8"><a href="8-1-a-general-strategy-for-modelling-nonlinear-regression-functions.html#cb332-8"></a></span>
+<span id="cb332-9"><a href="8-1-a-general-strategy-for-modelling-nonlinear-regression-functions.html#cb332-9"></a><span class="co"># add a linear function to the plot</span></span>
+<span id="cb332-10"><a href="8-1-a-general-strategy-for-modelling-nonlinear-regression-functions.html#cb332-10"></a><span class="kw">abline</span>(linear_model, <span class="dt">col =</span> <span class="st">&quot;black&quot;</span>, <span class="dt">lwd =</span> <span class="dv">2</span>)</span>
+<span id="cb332-11"><a href="8-1-a-general-strategy-for-modelling-nonlinear-regression-functions.html#cb332-11"></a></span>
+<span id="cb332-12"><a href="8-1-a-general-strategy-for-modelling-nonlinear-regression-functions.html#cb332-12"></a><span class="co"># add quatratic function to the plot</span></span>
+<span id="cb332-13"><a href="8-1-a-general-strategy-for-modelling-nonlinear-regression-functions.html#cb332-13"></a>order_id &lt;-<span class="st"> </span><span class="kw">order</span>(CASchools<span class="op">$</span>income)</span>
+<span id="cb332-14"><a href="8-1-a-general-strategy-for-modelling-nonlinear-regression-functions.html#cb332-14"></a></span>
+<span id="cb332-15"><a href="8-1-a-general-strategy-for-modelling-nonlinear-regression-functions.html#cb332-15"></a><span class="kw">lines</span>(<span class="dt">x =</span> CASchools<span class="op">$</span>income[order_id], </span>
+<span id="cb332-16"><a href="8-1-a-general-strategy-for-modelling-nonlinear-regression-functions.html#cb332-16"></a>      <span class="dt">y =</span> <span class="kw">fitted</span>(quadratic_model)[order_id],</span>
+<span id="cb332-17"><a href="8-1-a-general-strategy-for-modelling-nonlinear-regression-functions.html#cb332-17"></a>      <span class="dt">col =</span> <span class="st">&quot;red&quot;</span>, </span>
+<span id="cb332-18"><a href="8-1-a-general-strategy-for-modelling-nonlinear-regression-functions.html#cb332-18"></a>      <span class="dt">lwd =</span> <span class="dv">2</span>) </span></code></pre></div>
 <p><img src="ITER_files/figure-html/unnamed-chunk-318-1.png" width="80%" style="display: block; margin: auto;" /></p>
 </div>
 <p>We see that the quadratic function does fit the data much better than the linear function.</p>

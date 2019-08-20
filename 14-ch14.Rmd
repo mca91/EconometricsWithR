@@ -84,7 +84,7 @@ USMacroSWQ <- read_xlsx("Data/us_macro_quarterly.xlsx",
                          col_types = c("text", rep("numeric", 9)))
 
 # format date column
-USMacroSWQ$X__1 <- as.yearqtr(USMacroSWQ$X__1, format = "%Y:0%q")
+USMacroSWQ$...1 <- as.yearqtr(USMacroSWQ$...1, format = "%Y:0%q")
 
 # adjust column names
 colnames(USMacroSWQ) <- c("Date", "GDPC96", "JAPAN_IP", "PCECTPI", 
@@ -1285,7 +1285,7 @@ A formal test for a stochastic trend has been proposed by @dickey1979 which thus
 \end{align*}
 The null hypothesis is that the AR($1$) model has a unit root and the alternative hypothesis is that it is stationary. One often rewrites the AR($1$) model by subtracting $Y_{t-1}$ on both sides:
 \begin{align*}
-  Y_t = \beta_0 + \beta_1 Y_{t-1} + u_t \ \ \Leftrightarrow \ \ \Delta Y_t = \beta_0 + \delta Y_{t-1} + u_i
+  Y_t = \beta_0 + \beta_1 Y_{t-1} + u_t \ \ \Leftrightarrow \ \ \Delta Y_t = \beta_0 + \delta Y_{t-1} + u_t
 \end{align*}
 where $\delta = \beta_1 - 1$. The testing problem then becomes
 \begin{align*}
@@ -1352,28 +1352,28 @@ First, consider an AR($1$) model with drift. The procedure is as follows:
 
 + Simulate $N$ random walks with $n$ observations using the data generating process 
 \begin{align*}
-  Y_t =& \, \beta_0 + \beta_1 Y_{t-1} + u_t,
+  Y_t =& \, (\rho - 1)c + \rho Y_{t-1} + u_t,
 \end{align*}
-$t=1,\dots,n$ where $N$ and $n$ are large numbers.
+$t=1,\dots,n$ where $N$ and $n$ are large numbers, $c$ is a constant and $u$ is a zero mean error term. Notice that we obtain a random walk without drift under the null of $\rho=1$.
 
 + For each random walk, estimate the regression
 \begin{align*}
-  \Delta Y_t =& \, \beta_0 + \beta_1 Y_{t-1} + u_t
+  \Delta Y_t =& \, \beta_0 + \delta Y_{t-1} + u_t
 \end{align*}
-and compute ADF test statistic. Save all $N$ test statistics.
+and compute the ADF test statistic. Save all $N$ test statistics.
 
 + Estimate quantiles of the distribution of the ADF test statistic using the $N$ test statistics obtained from the simulation. 
 
 For the case with drift and linear time trend we replace the data generating process by
 \begin{align*}
-  Y_t =& \, \beta_0 + \alpha (\beta_1-1) t + \beta_1 Y_{t-1} + u_t
+  Y_t =& \, c + b (\rho-1) t + \rho Y_{t-1} + u_t
 \end{align*}
 and estimate
 \begin{align*}
-  \Delta Y_t =& \, \beta_0 + \alpha t + \delta_1 Y_{t-1} + u_t.
+  \Delta Y_t =& \, \beta_0 + \alpha t + \delta Y_{t-1} + u_t.
 \end{align*}
 
-Loosely speaking, the precision of the estimated quantiles depends on two factors: $n$, the length of the underlying series and $N$, the number of test statistics used. Since we are interested in estimating quantiles of the *asymptotic* distribution (the Dickey-Fuller distribution) of the ADF test statistic so both using many observations and large number of simulated test statistics will increase the precision of the estimated quantiles. We choose $n=N=1000$ as the computational burden grows quickly with $n$ and $N$.
+Loosely speaking, the precision of the estimated quantiles depends on two factors: $n$, the length of the underlying series and $N$, the number of test statistics used. Since we are interested in estimating quantiles of the *asymptotic* distribution (the Dickey-Fuller distribution) of the ADF test statistic both using many observations and large number of simulated test statistics will increase the precision of the estimated quantiles. We choose $n=N=1000$ as the computational burden grows quickly with $n$ and $N$.
 
 ```{r}
 # repetitions
@@ -1382,14 +1382,22 @@ N <- 1000
 # observations
 n <- 1000
 
-# define drift and trend 
+# define drift, trend and rho
 drift <- 0.5
 trend <- 1:n
+rho <- 1
+
+# function which simulates an AR(1) process
+AR1 <- function(rho) {
+  out <- numeric(N)
+  for(i in 2:N) {
+    out[i] <- rho * out[i-1] + rnorm(1)
+  }
+  return(out)
+}
 
 # simulate N random walks with drift 
-RWD <- ts(replicate(n = N, 
-            (n-1) * drift + arima.sim(model = list(order = c(0, 1, 0)),
-                                      n = n - 1)))
+RWD <- ts(replicate(n = N, (rho-1) * drift + AR1(rho)))
 
 # compute ADF test statistics and store them in 'ADFD'
 ADFD <- numeric(N)
@@ -1400,9 +1408,7 @@ for(i in 1:ncol(RWD)) {
 }
 
 # simulate N random walks with drift + trend
-RWDT <- ts(replicate(n = N, 
-                    trend + drift + arima.sim(model = list(order = c(0, 1, 0)), 
-                                              n = n - 1)))
+RWDT <- ts(replicate(n = N, drift + (rho-1) * trend + AR1(rho)))
 
 # compute ADF test statistics and store them in 'ADFDT'
 ADFDT <- numeric(N)
@@ -1419,7 +1425,7 @@ for(i in 1:ncol(RWDT)) {
 round(quantile(ADFD, c(0.1, 0.05, 0.01)), 2)
 
 # estimate quantiles for ADF regression with drift and trend
-round(quantile(ADFDT, c(0.1,0.05,0.01)),2)
+round(quantile(ADFDT, c(0.1, 0.05, 0.01)), 2)
 ```
 
 The estimated quantiles are close to the large-sample critical values of the ADF test statistic reported in Table 14.4 of the book.

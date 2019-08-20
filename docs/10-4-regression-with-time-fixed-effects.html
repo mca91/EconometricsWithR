@@ -1,13 +1,12 @@
 <!DOCTYPE html>
-<html >
-
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
 <head>
 
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>10.4 Regression with Time Fixed Effects | Introduction to Econometrics with R</title>
-  <meta name="description" content="Beginners with little background in statistics and econometrics often have a hard time understanding the benefits of having programming skills for learning and applying Econometrics. ‘Introduction to Econometrics with R’ is an interactive companion to the well-received textbook ‘Introduction to Econometrics’ by James H. Stock and Mark W. Watson (2015). It gives a gentle introduction to the essentials of R programming and guides students in implementing the empirical applications presented throughout the textbook using the newly aquired skills. This is supported by interactive programming exercises generated with DataCamp Light and integration of interactive visualizations of central concepts which are based on the flexible JavaScript library D3.js.">
-  <meta name="generator" content="bookdown  and GitBook 2.6.7">
+  <meta name="description" content="Beginners with little background in statistics and econometrics often have a hard time understanding the benefits of having programming skills for learning and applying Econometrics. ‘Introduction to Econometrics with R’ is an interactive companion to the well-received textbook ‘Introduction to Econometrics’ by James H. Stock and Mark W. Watson (2015). It gives a gentle introduction to the essentials of R programming and guides students in implementing the empirical applications presented throughout the textbook using the newly aquired skills. This is supported by interactive programming exercises generated with DataCamp Light and integration of interactive visualizations of central concepts which are based on the flexible JavaScript library D3.js." />
+  <meta name="generator" content="bookdown 0.12 and GitBook 2.6.7" />
 
   <meta property="og:title" content="10.4 Regression with Time Fixed Effects | Introduction to Econometrics with R" />
   <meta property="og:type" content="book" />
@@ -22,14 +21,14 @@
   <meta name="twitter:description" content="Beginners with little background in statistics and econometrics often have a hard time understanding the benefits of having programming skills for learning and applying Econometrics. ‘Introduction to Econometrics with R’ is an interactive companion to the well-received textbook ‘Introduction to Econometrics’ by James H. Stock and Mark W. Watson (2015). It gives a gentle introduction to the essentials of R programming and guides students in implementing the empirical applications presented throughout the textbook using the newly aquired skills. This is supported by interactive programming exercises generated with DataCamp Light and integration of interactive visualizations of central concepts which are based on the flexible JavaScript library D3.js." />
   <meta name="twitter:image" content="https://www.econometrics-with-r.org/images/cover.png" />
 
-<meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber and Martin Schmelzer">
+<meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber and Martin Schmelzer" />
 
 
-<meta name="date" content="2019-03-12">
+<meta name="date" content="2019-08-20" />
 
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
 <link rel="prev" href="10-3-fixed-effects-regression.html">
@@ -49,17 +48,17 @@
 
 
 <script src="libs/htmlwidgets-1.3/htmlwidgets.js"></script>
-<script src="libs/plotly-binding-4.8.0/plotly.js"></script>
+<script src="libs/plotly-binding-4.9.0/plotly.js"></script>
 <script src="libs/typedarray-0.1/typedarray.min.js"></script>
 <link href="libs/crosstalk-1.0.0/css/crosstalk.css" rel="stylesheet" />
 <script src="libs/crosstalk-1.0.0/js/crosstalk.min.js"></script>
-<link href="libs/plotly-htmlwidgets-css-1.39.2/plotly-htmlwidgets.css" rel="stylesheet" />
-<script src="libs/plotly-main-1.39.2/plotly-latest.min.js"></script>
+<link href="libs/plotly-htmlwidgets-css-1.46.1/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="libs/plotly-main-1.46.1/plotly-latest.min.js"></script>
 <!-- font families -->
 
 <link href="https://fonts.googleapis.com/css?family=PT+Sans|Pacifico|Source+Sans+Pro" rel="stylesheet">
 
-<script src="js/hideOutput.js"></script>
+<!--<script src="js/hideOutput.js"></script>-->
 
 <!-- Mathjax -->
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/default.js"></script>
@@ -89,26 +88,27 @@
 
 
 <style type="text/css">
-a.sourceLine { display: inline-block; line-height: 1.25; }
-a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-a.sourceLine:empty { height: 1.2em; }
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode { white-space: pre; position: relative; }
-div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
 code.sourceCode { white-space: pre-wrap; }
-a.sourceLine { text-indent: -1em; padding-left: 1em; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
-pre.numberSource a.sourceLine
-  { position: relative; left: -4em; }
-pre.numberSource a.sourceLine::before
-  { content: attr(data-line-number);
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
     position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; pointer-events: all; display: inline-block;
+    border: none; display: inline-block;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -117,9 +117,9 @@ pre.numberSource a.sourceLine::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  { background-color: #f8f8f8; }
+  {  background-color: #f8f8f8; }
 @media screen {
-a.sourceLine::before { text-decoration: underline; }
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ef2929; } /* Alert */
 code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
@@ -395,11 +395,11 @@ This book is in <b>Open Review</b>. We want your feedback to make the book bette
 <p>Controlling for variables that are constant across entities but vary over time can be done by including time fixed effects. If there are <em>only</em> time fixed effects, the fixed effects regression model becomes <span class="math display">\[Y_{it} = \beta_0 + \beta_1 X_{it} + \delta_2 B2_t + \cdots + \delta_T BT_t + u_{it},\]</span> where only <span class="math inline">\(T-1\)</span> dummies are included (<span class="math inline">\(B1\)</span> is omitted) since the model includes an intercept. This model eliminates omitted variable bias caused by excluding unobserved variables that evolve over time but are constant across entities.</p>
 <p>In some applications it is meaningful to include both entity and time fixed effects. The <em>entity and time fixed effects model</em> is <span class="math display">\[Y_{it} = \beta_0 + \beta_1 X_{it} + \gamma_2 D2_i + \cdots + \gamma_n DT_i + \delta_2 B2_t + \cdots + \delta_T BT_t + u_{it} .\]</span> The combined model allows to eliminate bias from unobservables that change over time but are constant over entities and it controls for factors that differ across entities but are constant over time. Such models can be estimated using the OLS algorithm that is implemented in <tt>R</tt>.</p>
 <p>The following code chunk shows how to estimate the combined entity and time fixed effects model of the relation between fatalities and beer tax, <span class="math display">\[FatalityRate_{it} = \beta_1 BeerTax_{it} + StateEffects + TimeFixedEffects + u_{it}\]</span> using both <tt>lm()</tt> and <tt>plm()</tt>. It is straightforward to estimate this regression with <tt>lm()</tt> since it is just an extension of <a href="10-3-fixed-effects-regression.html#eq:fatsemod">(10.6)</a> so we only have to adjust the <tt>formula</tt> argument by adding the additional regressor <tt>year</tt> for time fixed effects. In our call of <tt>plm()</tt> we set another argument <tt>effect = “twoways”</tt> for inclusion of entity <em>and</em> time dummies.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># estimate a combined time and entity fixed effects regression model</span>
-
-<span class="co"># via lm()</span>
-fatal_tefe_lm_mod &lt;-<span class="st"> </span><span class="kw">lm</span>(fatal_rate <span class="op">~</span><span class="st"> </span>beertax <span class="op">+</span><span class="st"> </span>state <span class="op">+</span><span class="st"> </span>year <span class="op">-</span><span class="st"> </span><span class="dv">1</span>, <span class="dt">data =</span> Fatalities)
-fatal_tefe_lm_mod</code></pre>
+<div class="sourceCode" id="cb475"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb475-1"><a href="10-4-regression-with-time-fixed-effects.html#cb475-1"></a><span class="co"># estimate a combined time and entity fixed effects regression model</span></span>
+<span id="cb475-2"><a href="10-4-regression-with-time-fixed-effects.html#cb475-2"></a></span>
+<span id="cb475-3"><a href="10-4-regression-with-time-fixed-effects.html#cb475-3"></a><span class="co"># via lm()</span></span>
+<span id="cb475-4"><a href="10-4-regression-with-time-fixed-effects.html#cb475-4"></a>fatal_tefe_lm_mod &lt;-<span class="st"> </span><span class="kw">lm</span>(fatal_rate <span class="op">~</span><span class="st"> </span>beertax <span class="op">+</span><span class="st"> </span>state <span class="op">+</span><span class="st"> </span>year <span class="op">-</span><span class="st"> </span><span class="dv">1</span>, <span class="dt">data =</span> Fatalities)</span>
+<span id="cb475-5"><a href="10-4-regression-with-time-fixed-effects.html#cb475-5"></a>fatal_tefe_lm_mod</span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## lm(formula = fatal_rate ~ beertax + state + year - 1, data = Fatalities)
@@ -421,14 +421,14 @@ fatal_tefe_lm_mod</code></pre>
 ##  2.36165   2.56100   2.23618   1.87424   2.63364   1.77545   3.30791  
 ## year1983  year1984  year1985  year1986  year1987  year1988  
 ## -0.07990  -0.07242  -0.12398  -0.03786  -0.05090  -0.05180</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># via plm()</span>
-fatal_tefe_mod &lt;-<span class="st"> </span><span class="kw">plm</span>(fatal_rate <span class="op">~</span><span class="st"> </span>beertax, 
-                      <span class="dt">data =</span> Fatalities,
-                      <span class="dt">index =</span> <span class="kw">c</span>(<span class="st">&quot;state&quot;</span>, <span class="st">&quot;year&quot;</span>), 
-                      <span class="dt">model =</span> <span class="st">&quot;within&quot;</span>, 
-                      <span class="dt">effect =</span> <span class="st">&quot;twoways&quot;</span>)
-
-<span class="kw">coeftest</span>(fatal_tefe_mod, <span class="dt">vcov =</span> vcovHC, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>)</code></pre>
+<div class="sourceCode" id="cb477"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb477-1"><a href="10-4-regression-with-time-fixed-effects.html#cb477-1"></a><span class="co"># via plm()</span></span>
+<span id="cb477-2"><a href="10-4-regression-with-time-fixed-effects.html#cb477-2"></a>fatal_tefe_mod &lt;-<span class="st"> </span><span class="kw">plm</span>(fatal_rate <span class="op">~</span><span class="st"> </span>beertax, </span>
+<span id="cb477-3"><a href="10-4-regression-with-time-fixed-effects.html#cb477-3"></a>                      <span class="dt">data =</span> Fatalities,</span>
+<span id="cb477-4"><a href="10-4-regression-with-time-fixed-effects.html#cb477-4"></a>                      <span class="dt">index =</span> <span class="kw">c</span>(<span class="st">&quot;state&quot;</span>, <span class="st">&quot;year&quot;</span>), </span>
+<span id="cb477-5"><a href="10-4-regression-with-time-fixed-effects.html#cb477-5"></a>                      <span class="dt">model =</span> <span class="st">&quot;within&quot;</span>, </span>
+<span id="cb477-6"><a href="10-4-regression-with-time-fixed-effects.html#cb477-6"></a>                      <span class="dt">effect =</span> <span class="st">&quot;twoways&quot;</span>)</span>
+<span id="cb477-7"><a href="10-4-regression-with-time-fixed-effects.html#cb477-7"></a></span>
+<span id="cb477-8"><a href="10-4-regression-with-time-fixed-effects.html#cb477-8"></a><span class="kw">coeftest</span>(fatal_tefe_mod, <span class="dt">vcov =</span> vcovHC, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>)</span></code></pre></div>
 <pre><code>## 
 ## t test of coefficients:
 ## 
@@ -437,10 +437,10 @@ fatal_tefe_mod &lt;-<span class="st"> </span><span class="kw">plm</span>(fatal_r
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <p>Before discussing the outcomes we convince ourselves that <tt>state</tt> and <tt>year</tt> are of the class <tt>factor</tt> .</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># check the class of &#39;state&#39; and &#39;year&#39;</span>
-<span class="kw">class</span>(Fatalities<span class="op">$</span>state)</code></pre>
+<div class="sourceCode" id="cb479"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb479-1"><a href="10-4-regression-with-time-fixed-effects.html#cb479-1"></a><span class="co"># check the class of &#39;state&#39; and &#39;year&#39;</span></span>
+<span id="cb479-2"><a href="10-4-regression-with-time-fixed-effects.html#cb479-2"></a><span class="kw">class</span>(Fatalities<span class="op">$</span>state)</span></code></pre></div>
 <pre><code>## [1] &quot;factor&quot;</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">class</span>(Fatalities<span class="op">$</span>year)</code></pre>
+<div class="sourceCode" id="cb481"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb481-1"><a href="10-4-regression-with-time-fixed-effects.html#cb481-1"></a><span class="kw">class</span>(Fatalities<span class="op">$</span>year)</span></code></pre></div>
 <pre><code>## [1] &quot;factor&quot;</code></pre>
 <p>The <tt>lm()</tt> functions converts factors into dummies automatically. Since we exclude the intercept by adding <tt>-1</tt> to the right-hand side of the regression formula, <tt>lm()</tt> estimates coefficients for <span class="math inline">\(n + (T-1) = 48 + 6 = 54\)</span> binary variables (6 year dummies and 48 state dummies). Again, <tt>plm()</tt> only reports the estimated coefficient on <span class="math inline">\(BeerTax\)</span>.</p>
 <p>The estimated regression function is

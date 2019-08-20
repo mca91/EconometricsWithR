@@ -1,13 +1,12 @@
 <!DOCTYPE html>
-<html >
-
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
 <head>
 
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>12.1 The IV Estimator with a Single Regressor and a Single Instrument | Introduction to Econometrics with R</title>
-  <meta name="description" content="Beginners with little background in statistics and econometrics often have a hard time understanding the benefits of having programming skills for learning and applying Econometrics. ‘Introduction to Econometrics with R’ is an interactive companion to the well-received textbook ‘Introduction to Econometrics’ by James H. Stock and Mark W. Watson (2015). It gives a gentle introduction to the essentials of R programming and guides students in implementing the empirical applications presented throughout the textbook using the newly aquired skills. This is supported by interactive programming exercises generated with DataCamp Light and integration of interactive visualizations of central concepts which are based on the flexible JavaScript library D3.js.">
-  <meta name="generator" content="bookdown  and GitBook 2.6.7">
+  <meta name="description" content="Beginners with little background in statistics and econometrics often have a hard time understanding the benefits of having programming skills for learning and applying Econometrics. ‘Introduction to Econometrics with R’ is an interactive companion to the well-received textbook ‘Introduction to Econometrics’ by James H. Stock and Mark W. Watson (2015). It gives a gentle introduction to the essentials of R programming and guides students in implementing the empirical applications presented throughout the textbook using the newly aquired skills. This is supported by interactive programming exercises generated with DataCamp Light and integration of interactive visualizations of central concepts which are based on the flexible JavaScript library D3.js." />
+  <meta name="generator" content="bookdown 0.12 and GitBook 2.6.7" />
 
   <meta property="og:title" content="12.1 The IV Estimator with a Single Regressor and a Single Instrument | Introduction to Econometrics with R" />
   <meta property="og:type" content="book" />
@@ -22,14 +21,14 @@
   <meta name="twitter:description" content="Beginners with little background in statistics and econometrics often have a hard time understanding the benefits of having programming skills for learning and applying Econometrics. ‘Introduction to Econometrics with R’ is an interactive companion to the well-received textbook ‘Introduction to Econometrics’ by James H. Stock and Mark W. Watson (2015). It gives a gentle introduction to the essentials of R programming and guides students in implementing the empirical applications presented throughout the textbook using the newly aquired skills. This is supported by interactive programming exercises generated with DataCamp Light and integration of interactive visualizations of central concepts which are based on the flexible JavaScript library D3.js." />
   <meta name="twitter:image" content="https://www.econometrics-with-r.org/images/cover.png" />
 
-<meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber and Martin Schmelzer">
+<meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber and Martin Schmelzer" />
 
 
-<meta name="date" content="2019-03-12">
+<meta name="date" content="2019-08-20" />
 
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
 <link rel="prev" href="12-ivr.html">
@@ -49,17 +48,17 @@
 
 
 <script src="libs/htmlwidgets-1.3/htmlwidgets.js"></script>
-<script src="libs/plotly-binding-4.8.0/plotly.js"></script>
+<script src="libs/plotly-binding-4.9.0/plotly.js"></script>
 <script src="libs/typedarray-0.1/typedarray.min.js"></script>
 <link href="libs/crosstalk-1.0.0/css/crosstalk.css" rel="stylesheet" />
 <script src="libs/crosstalk-1.0.0/js/crosstalk.min.js"></script>
-<link href="libs/plotly-htmlwidgets-css-1.39.2/plotly-htmlwidgets.css" rel="stylesheet" />
-<script src="libs/plotly-main-1.39.2/plotly-latest.min.js"></script>
+<link href="libs/plotly-htmlwidgets-css-1.46.1/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="libs/plotly-main-1.46.1/plotly-latest.min.js"></script>
 <!-- font families -->
 
 <link href="https://fonts.googleapis.com/css?family=PT+Sans|Pacifico|Source+Sans+Pro" rel="stylesheet">
 
-<script src="js/hideOutput.js"></script>
+<!--<script src="js/hideOutput.js"></script>-->
 
 <!-- Mathjax -->
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/default.js"></script>
@@ -89,26 +88,27 @@
 
 
 <style type="text/css">
-a.sourceLine { display: inline-block; line-height: 1.25; }
-a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-a.sourceLine:empty { height: 1.2em; }
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode { white-space: pre; position: relative; }
-div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
 code.sourceCode { white-space: pre-wrap; }
-a.sourceLine { text-indent: -1em; padding-left: 1em; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
-pre.numberSource a.sourceLine
-  { position: relative; left: -4em; }
-pre.numberSource a.sourceLine::before
-  { content: attr(data-line-number);
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
     position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; pointer-events: all; display: inline-block;
+    border: none; display: inline-block;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -117,9 +117,9 @@ pre.numberSource a.sourceLine::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  { background-color: #f8f8f8; }
+  {  background-color: #f8f8f8; }
 @media screen {
-a.sourceLine::before { text-decoration: underline; }
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ef2929; } /* Alert */
 code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
@@ -424,10 +424,10 @@ The instrument <span class="math inline">\(Z\)</span> <em>must not be</em> corre
 <p>It is plausible that cigarette consumption can be reduced by taxing cigarettes more heavily. The question is by <em>how much</em> taxes must be increased to reach a certain reduction in cigarette consumption. Economists use elasticities to answer this kind of question. Since the price elasticity for the demand of cigarettes is unknown, it must be estimated. As discussed in the box <em>Who Invented Instrumental Variables Regression</em> presented in Chapter 12.1 of the book, an OLS regression of log quantity on log price cannot be used to estimate the effect of interest since there is simultaneous causality between demand and supply. Instead, IV regression can be used.</p>
 <p>We use the data set <tt>CigarettesSW</tt> which comes with the package <tt>AER</tt>. It is a panel data set that contains observations on cigarette consumption and several economic indicators for all 48 continental federal states of the U.S. from 1985 to 1995. Following the book we consider data for the cross section of states in 1995 only.</p>
 <p>We start by loading the package, attaching the data set and getting an overview.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># load the data set and get an overview</span>
-<span class="kw">library</span>(AER)
-<span class="kw">data</span>(<span class="st">&quot;CigarettesSW&quot;</span>)
-<span class="kw">summary</span>(CigarettesSW)</code></pre>
+<div class="sourceCode" id="cb581"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb581-1"><a href="12-1-TIVEWASRAASI.html#cb581-1"></a><span class="co"># load the data set and get an overview</span></span>
+<span id="cb581-2"><a href="12-1-TIVEWASRAASI.html#cb581-2"></a><span class="kw">library</span>(AER)</span>
+<span id="cb581-3"><a href="12-1-TIVEWASRAASI.html#cb581-3"></a><span class="kw">data</span>(<span class="st">&quot;CigarettesSW&quot;</span>)</span>
+<span id="cb581-4"><a href="12-1-TIVEWASRAASI.html#cb581-4"></a><span class="kw">summary</span>(CigarettesSW)</span></code></pre></div>
 <pre><code>##      state      year         cpi          population      
 ##  AL     : 2   1985:48   Min.   :1.076   Min.   :  478447  
 ##  AR     : 2   1995:48   1st Qu.:1.076   1st Qu.: 1622606  
@@ -461,22 +461,22 @@ The instrument <span class="math inline">\(Z\)</span> <em>must not be</em> corre
 <p>The instrumental variable we are going to use for instrumenting the endogenous regressor <span class="math inline">\(\log(P_i^{cigarettes})\)</span> is <span class="math inline">\(SalesTax\)</span>, the portion of taxes on cigarettes arising from the general sales tax. <span class="math inline">\(SalesTax\)</span> is measured in dollars per pack. The idea is that <span class="math inline">\(SalesTax\)</span> is a relevant instrument as it is included in the after-tax average price per pack. Also, it is plausible that <span class="math inline">\(SalesTax\)</span> is exogenous since the sales tax does not influence quantity sold directly but indirectly through the price.</p>
 <p>We perform some transformations in order to obtain deflated cross section data for the year 1995.</p>
 <p>We also compute the sample correlation between the sales tax and price per pack. The sample correlation is a consistent estimator of the population correlation. The estimate of approximately <span class="math inline">\(0.614\)</span> indicates that <span class="math inline">\(SalesTax\)</span> and <span class="math inline">\(P_i^{cigarettes}\)</span> exhibit positive correlation which meets our expectations: higher sales taxes lead to higher prices. However, a correlation analysis like this is not sufficient for checking whether the instrument is relevant. We will later come back to the issue of checking whether an instrument is relevant and exogenous.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># compute real per capita prices</span>
-CigarettesSW<span class="op">$</span>rprice &lt;-<span class="st"> </span><span class="kw">with</span>(CigarettesSW, price <span class="op">/</span><span class="st"> </span>cpi)
-
-<span class="co">#  compute the sales tax</span>
-CigarettesSW<span class="op">$</span>salestax &lt;-<span class="st"> </span><span class="kw">with</span>(CigarettesSW, (taxs <span class="op">-</span><span class="st"> </span>tax) <span class="op">/</span><span class="st"> </span>cpi)
-
-<span class="co"># check the correlation between sales tax and price</span>
-<span class="kw">cor</span>(CigarettesSW<span class="op">$</span>salestax, CigarettesSW<span class="op">$</span>price)</code></pre>
+<div class="sourceCode" id="cb583"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb583-1"><a href="12-1-TIVEWASRAASI.html#cb583-1"></a><span class="co"># compute real per capita prices</span></span>
+<span id="cb583-2"><a href="12-1-TIVEWASRAASI.html#cb583-2"></a>CigarettesSW<span class="op">$</span>rprice &lt;-<span class="st"> </span><span class="kw">with</span>(CigarettesSW, price <span class="op">/</span><span class="st"> </span>cpi)</span>
+<span id="cb583-3"><a href="12-1-TIVEWASRAASI.html#cb583-3"></a></span>
+<span id="cb583-4"><a href="12-1-TIVEWASRAASI.html#cb583-4"></a><span class="co">#  compute the sales tax</span></span>
+<span id="cb583-5"><a href="12-1-TIVEWASRAASI.html#cb583-5"></a>CigarettesSW<span class="op">$</span>salestax &lt;-<span class="st"> </span><span class="kw">with</span>(CigarettesSW, (taxs <span class="op">-</span><span class="st"> </span>tax) <span class="op">/</span><span class="st"> </span>cpi)</span>
+<span id="cb583-6"><a href="12-1-TIVEWASRAASI.html#cb583-6"></a></span>
+<span id="cb583-7"><a href="12-1-TIVEWASRAASI.html#cb583-7"></a><span class="co"># check the correlation between sales tax and price</span></span>
+<span id="cb583-8"><a href="12-1-TIVEWASRAASI.html#cb583-8"></a><span class="kw">cor</span>(CigarettesSW<span class="op">$</span>salestax, CigarettesSW<span class="op">$</span>price)</span></code></pre></div>
 <pre><code>## [1] 0.6141228</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># generate a subset for the year 1995</span>
-c1995 &lt;-<span class="st"> </span><span class="kw">subset</span>(CigarettesSW, year <span class="op">==</span><span class="st"> &quot;1995&quot;</span>)</code></pre>
+<div class="sourceCode" id="cb585"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb585-1"><a href="12-1-TIVEWASRAASI.html#cb585-1"></a><span class="co"># generate a subset for the year 1995</span></span>
+<span id="cb585-2"><a href="12-1-TIVEWASRAASI.html#cb585-2"></a>c1995 &lt;-<span class="st"> </span><span class="kw">subset</span>(CigarettesSW, year <span class="op">==</span><span class="st"> &quot;1995&quot;</span>)</span></code></pre></div>
 <p>The first stage regression is <span class="math display">\[\log(P_i^{cigarettes}) = \pi_0 + \pi_1 SalesTax_i + \nu_i.\]</span> We estimate this model in <tt>R</tt> using <tt>lm()</tt>. In the second stage we run a regression of <span class="math inline">\(\log(Q_i^{cigarettes})\)</span> on <span class="math inline">\(\widehat{\log(P_i^{cigarettes})}\)</span> to obtain <span class="math inline">\(\widehat{\beta}_0^{TSLS}\)</span> and <span class="math inline">\(\widehat{\beta}_1^{TSLS}\)</span>.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># perform the first stage regression</span>
-cig_s1 &lt;-<span class="st"> </span><span class="kw">lm</span>(<span class="kw">log</span>(rprice) <span class="op">~</span><span class="st"> </span>salestax, <span class="dt">data =</span> c1995)
-
-<span class="kw">coeftest</span>(cig_s1, <span class="dt">vcov =</span> vcovHC, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>)</code></pre>
+<div class="sourceCode" id="cb586"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb586-1"><a href="12-1-TIVEWASRAASI.html#cb586-1"></a><span class="co"># perform the first stage regression</span></span>
+<span id="cb586-2"><a href="12-1-TIVEWASRAASI.html#cb586-2"></a>cig_s1 &lt;-<span class="st"> </span><span class="kw">lm</span>(<span class="kw">log</span>(rprice) <span class="op">~</span><span class="st"> </span>salestax, <span class="dt">data =</span> c1995)</span>
+<span id="cb586-3"><a href="12-1-TIVEWASRAASI.html#cb586-3"></a></span>
+<span id="cb586-4"><a href="12-1-TIVEWASRAASI.html#cb586-4"></a><span class="kw">coeftest</span>(cig_s1, <span class="dt">vcov =</span> vcovHC, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>)</span></code></pre></div>
 <pre><code>## 
 ## t test of coefficients:
 ## 
@@ -486,16 +486,16 @@ cig_s1 &lt;-<span class="st"> </span><span class="kw">lm</span>(<span class="kw"
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <p>The first stage regression is <span class="math display">\[\widehat{\log(P_i^{cigarettes})} = \underset{(0.03)}{4.62} + \underset{(0.005)}{0.031} SalesTax_i\]</span> which predicts the relation between sales tax price per cigarettes to be positive. How much of the observed variation in <span class="math inline">\(\log(P^{cigarettes})\)</span> is explained by the instrument <span class="math inline">\(SalesTax\)</span>? This can be answered by looking at the regression’s <span class="math inline">\(R^2\)</span> which states that about <span class="math inline">\(47\%\)</span> of the variation in after tax prices is explained by the variation of the sales tax across states.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># inspect the R^2 of the first stage regression</span>
-<span class="kw">summary</span>(cig_s1)<span class="op">$</span>r.squared</code></pre>
+<div class="sourceCode" id="cb588"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb588-1"><a href="12-1-TIVEWASRAASI.html#cb588-1"></a><span class="co"># inspect the R^2 of the first stage regression</span></span>
+<span id="cb588-2"><a href="12-1-TIVEWASRAASI.html#cb588-2"></a><span class="kw">summary</span>(cig_s1)<span class="op">$</span>r.squared</span></code></pre></div>
 <pre><code>## [1] 0.4709961</code></pre>
 <p>We next store <span class="math inline">\(\widehat{\log(P_i^{cigarettes})}\)</span>, the fitted values obtained by the first stage regression <tt>cig_s1</tt>, in the variable <tt>lcigp_pred</tt>.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># store the predicted values</span>
-lcigp_pred &lt;-<span class="st"> </span>cig_s1<span class="op">$</span>fitted.values</code></pre>
+<div class="sourceCode" id="cb590"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb590-1"><a href="12-1-TIVEWASRAASI.html#cb590-1"></a><span class="co"># store the predicted values</span></span>
+<span id="cb590-2"><a href="12-1-TIVEWASRAASI.html#cb590-2"></a>lcigp_pred &lt;-<span class="st"> </span>cig_s1<span class="op">$</span>fitted.values</span></code></pre></div>
 <p>Next, we run the second stage regression which gives us the TSLS estimates we seek.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># run the stage 2 regression</span>
-cig_s2 &lt;-<span class="st"> </span><span class="kw">lm</span>(<span class="kw">log</span>(c1995<span class="op">$</span>packs) <span class="op">~</span><span class="st"> </span>lcigp_pred)
-<span class="kw">coeftest</span>(cig_s2, <span class="dt">vcov =</span> vcovHC)</code></pre>
+<div class="sourceCode" id="cb591"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb591-1"><a href="12-1-TIVEWASRAASI.html#cb591-1"></a><span class="co"># run the stage 2 regression</span></span>
+<span id="cb591-2"><a href="12-1-TIVEWASRAASI.html#cb591-2"></a>cig_s2 &lt;-<span class="st"> </span><span class="kw">lm</span>(<span class="kw">log</span>(c1995<span class="op">$</span>packs) <span class="op">~</span><span class="st"> </span>lcigp_pred)</span>
+<span id="cb591-3"><a href="12-1-TIVEWASRAASI.html#cb591-3"></a><span class="kw">coeftest</span>(cig_s2, <span class="dt">vcov =</span> vcovHC)</span></code></pre></div>
 <pre><code>## 
 ## t test of coefficients:
 ## 
@@ -510,10 +510,10 @@ cig_s2 &lt;-<span class="st"> </span><span class="kw">lm</span>(<span class="kw"
 \end{align}\]</span></p>
 <p>where we write <span class="math inline">\(\log(P_i^{cigarettes})\)</span> instead of <span class="math inline">\(\widehat{\log(P_i^{cigarettes})}\)</span> for consistency with the book.</p>
 <p>The function <tt>ivreg()</tt> from the package <tt>AER</tt> carries out TSLS procedure automatically. It is used similarly as <tt>lm()</tt>. Instruments can be added to the usual specification of the regression formula using a vertical bar separating the model equation from the instruments. Thus, for the regression at hand the correct formula is <tt>log(packs) ~ log(rprice) | salestax</tt>.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># perform TSLS using &#39;ivreg()&#39;</span>
-cig_ivreg &lt;-<span class="st"> </span><span class="kw">ivreg</span>(<span class="kw">log</span>(packs) <span class="op">~</span><span class="st"> </span><span class="kw">log</span>(rprice) <span class="op">|</span><span class="st"> </span>salestax, <span class="dt">data =</span> c1995)
-
-<span class="kw">coeftest</span>(cig_ivreg, <span class="dt">vcov =</span> vcovHC, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>)</code></pre>
+<div class="sourceCode" id="cb593"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb593-1"><a href="12-1-TIVEWASRAASI.html#cb593-1"></a><span class="co"># perform TSLS using &#39;ivreg()&#39;</span></span>
+<span id="cb593-2"><a href="12-1-TIVEWASRAASI.html#cb593-2"></a>cig_ivreg &lt;-<span class="st"> </span><span class="kw">ivreg</span>(<span class="kw">log</span>(packs) <span class="op">~</span><span class="st"> </span><span class="kw">log</span>(rprice) <span class="op">|</span><span class="st"> </span>salestax, <span class="dt">data =</span> c1995)</span>
+<span id="cb593-3"><a href="12-1-TIVEWASRAASI.html#cb593-3"></a></span>
+<span id="cb593-4"><a href="12-1-TIVEWASRAASI.html#cb593-4"></a><span class="kw">coeftest</span>(cig_ivreg, <span class="dt">vcov =</span> vcovHC, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>)</span></code></pre></div>
 <pre><code>## 
 ## t test of coefficients:
 ## 

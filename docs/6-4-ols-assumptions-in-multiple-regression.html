@@ -1,13 +1,12 @@
 <!DOCTYPE html>
-<html >
-
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
 <head>
 
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>6.4 OLS Assumptions in Multiple Regression | Introduction to Econometrics with R</title>
-  <meta name="description" content="Beginners with little background in statistics and econometrics often have a hard time understanding the benefits of having programming skills for learning and applying Econometrics. ‘Introduction to Econometrics with R’ is an interactive companion to the well-received textbook ‘Introduction to Econometrics’ by James H. Stock and Mark W. Watson (2015). It gives a gentle introduction to the essentials of R programming and guides students in implementing the empirical applications presented throughout the textbook using the newly aquired skills. This is supported by interactive programming exercises generated with DataCamp Light and integration of interactive visualizations of central concepts which are based on the flexible JavaScript library D3.js.">
-  <meta name="generator" content="bookdown  and GitBook 2.6.7">
+  <meta name="description" content="Beginners with little background in statistics and econometrics often have a hard time understanding the benefits of having programming skills for learning and applying Econometrics. ‘Introduction to Econometrics with R’ is an interactive companion to the well-received textbook ‘Introduction to Econometrics’ by James H. Stock and Mark W. Watson (2015). It gives a gentle introduction to the essentials of R programming and guides students in implementing the empirical applications presented throughout the textbook using the newly aquired skills. This is supported by interactive programming exercises generated with DataCamp Light and integration of interactive visualizations of central concepts which are based on the flexible JavaScript library D3.js." />
+  <meta name="generator" content="bookdown 0.12 and GitBook 2.6.7" />
 
   <meta property="og:title" content="6.4 OLS Assumptions in Multiple Regression | Introduction to Econometrics with R" />
   <meta property="og:type" content="book" />
@@ -22,14 +21,14 @@
   <meta name="twitter:description" content="Beginners with little background in statistics and econometrics often have a hard time understanding the benefits of having programming skills for learning and applying Econometrics. ‘Introduction to Econometrics with R’ is an interactive companion to the well-received textbook ‘Introduction to Econometrics’ by James H. Stock and Mark W. Watson (2015). It gives a gentle introduction to the essentials of R programming and guides students in implementing the empirical applications presented throughout the textbook using the newly aquired skills. This is supported by interactive programming exercises generated with DataCamp Light and integration of interactive visualizations of central concepts which are based on the flexible JavaScript library D3.js." />
   <meta name="twitter:image" content="https://www.econometrics-with-r.org/images/cover.png" />
 
-<meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber and Martin Schmelzer">
+<meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber and Martin Schmelzer" />
 
 
-<meta name="date" content="2019-03-12">
+<meta name="date" content="2019-08-20" />
 
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
 <link rel="prev" href="6-3-mofimr.html">
@@ -49,17 +48,17 @@
 
 
 <script src="libs/htmlwidgets-1.3/htmlwidgets.js"></script>
-<script src="libs/plotly-binding-4.8.0/plotly.js"></script>
+<script src="libs/plotly-binding-4.9.0/plotly.js"></script>
 <script src="libs/typedarray-0.1/typedarray.min.js"></script>
 <link href="libs/crosstalk-1.0.0/css/crosstalk.css" rel="stylesheet" />
 <script src="libs/crosstalk-1.0.0/js/crosstalk.min.js"></script>
-<link href="libs/plotly-htmlwidgets-css-1.39.2/plotly-htmlwidgets.css" rel="stylesheet" />
-<script src="libs/plotly-main-1.39.2/plotly-latest.min.js"></script>
+<link href="libs/plotly-htmlwidgets-css-1.46.1/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="libs/plotly-main-1.46.1/plotly-latest.min.js"></script>
 <!-- font families -->
 
 <link href="https://fonts.googleapis.com/css?family=PT+Sans|Pacifico|Source+Sans+Pro" rel="stylesheet">
 
-<script src="js/hideOutput.js"></script>
+<!--<script src="js/hideOutput.js"></script>-->
 
 <!-- Mathjax -->
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/default.js"></script>
@@ -89,26 +88,27 @@
 
 
 <style type="text/css">
-a.sourceLine { display: inline-block; line-height: 1.25; }
-a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-a.sourceLine:empty { height: 1.2em; }
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode { white-space: pre; position: relative; }
-div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
 code.sourceCode { white-space: pre-wrap; }
-a.sourceLine { text-indent: -1em; padding-left: 1em; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
-pre.numberSource a.sourceLine
-  { position: relative; left: -4em; }
-pre.numberSource a.sourceLine::before
-  { content: attr(data-line-number);
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
     position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; pointer-events: all; display: inline-block;
+    border: none; display: inline-block;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -117,9 +117,9 @@ pre.numberSource a.sourceLine::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  { background-color: #f8f8f8; }
+  {  background-color: #f8f8f8; }
 @media screen {
-a.sourceLine::before { text-decoration: underline; }
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ef2929; } /* Alert */
 code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
@@ -419,14 +419,14 @@ The Least Squares Assumptions in the Multiple Regression Model
 <h4>Examples of Perfect Multicollinearity</h4>
 <p>How does <tt>R</tt> react if we try to estimate a model with perfectly correlated regressors?</p>
 <p><tt>lm</tt> will produce a warning in the first line of the coefficient section of the output (<tt>1 not defined because of singularities</tt>) and ignore the regressor(s) which is (are) assumed to be a linear combination of the other(s). Consider the following example where we add another variable <tt>FracEL</tt>, the fraction of English learners, to <tt>CASchools</tt> where observations are scaled values of the observations for <tt>english</tt> and use it as a regressor together with <tt>STR</tt> and <tt>english</tt> in a multiple regression model. In this example <tt>english</tt> and <tt>FracEL</tt> are perfectly collinear. The <tt>R</tt> code is as follows.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># define the fraction of English learners        </span>
-CASchools<span class="op">$</span>FracEL &lt;-<span class="st"> </span>CASchools<span class="op">$</span>english <span class="op">/</span><span class="st"> </span><span class="dv">100</span>
-
-<span class="co"># estimate the model</span>
-mult.mod &lt;-<span class="st"> </span><span class="kw">lm</span>(score <span class="op">~</span><span class="st"> </span>STR <span class="op">+</span><span class="st"> </span>english <span class="op">+</span><span class="st"> </span>FracEL, <span class="dt">data =</span> CASchools) 
-
-<span class="co"># obtain a summary of the model</span>
-<span class="kw">summary</span>(mult.mod)                                                 </code></pre>
+<div class="sourceCode" id="cb265"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb265-1"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb265-1"></a><span class="co"># define the fraction of English learners        </span></span>
+<span id="cb265-2"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb265-2"></a>CASchools<span class="op">$</span>FracEL &lt;-<span class="st"> </span>CASchools<span class="op">$</span>english <span class="op">/</span><span class="st"> </span><span class="dv">100</span></span>
+<span id="cb265-3"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb265-3"></a></span>
+<span id="cb265-4"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb265-4"></a><span class="co"># estimate the model</span></span>
+<span id="cb265-5"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb265-5"></a>mult.mod &lt;-<span class="st"> </span><span class="kw">lm</span>(score <span class="op">~</span><span class="st"> </span>STR <span class="op">+</span><span class="st"> </span>english <span class="op">+</span><span class="st"> </span>FracEL, <span class="dt">data =</span> CASchools) </span>
+<span id="cb265-6"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb265-6"></a></span>
+<span id="cb265-7"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb265-7"></a><span class="co"># obtain a summary of the model</span></span>
+<span id="cb265-8"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb265-8"></a><span class="kw">summary</span>(mult.mod)                                                 </span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## lm(formula = score ~ STR + english + FracEL, data = CASchools)
@@ -456,14 +456,14 @@ mult.mod &lt;-<span class="st"> </span><span class="kw">lm</span>(score <span cl
 <p>Let us consider two further examples where our selection of regressors induces perfect multicollinearity. First, assume that we intend to analyze the effect of class size on test score by using a dummy variable that identifies classes which are not small (<span class="math inline">\(NS\)</span>). We define that a school has the <span class="math inline">\(NS\)</span> attribute when the school’s average student-teacher ratio is at least <span class="math inline">\(12\)</span>,</p>
 <p><span class="math display">\[ NS = \begin{cases} 0, \ \ \ \text{if STR &lt; 12} \\ 1 \ \ \ \text{otherwise.} \end{cases} \]</span></p>
 <p>We add the corresponding column to <tt>CASchools</tt> and estimate a multiple regression model with covariates <tt>computer</tt> and <tt>english</tt>.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># if STR smaller 12, NS = 0, else NS = 1</span>
-CASchools<span class="op">$</span>NS &lt;-<span class="st"> </span><span class="kw">ifelse</span>(CASchools<span class="op">$</span>STR <span class="op">&lt;</span><span class="st"> </span><span class="dv">12</span>, <span class="dv">0</span>, <span class="dv">1</span>)
-
-<span class="co"># estimate the model</span>
-mult.mod &lt;-<span class="st"> </span><span class="kw">lm</span>(score <span class="op">~</span><span class="st"> </span>computer <span class="op">+</span><span class="st"> </span>english <span class="op">+</span><span class="st"> </span>NS, <span class="dt">data =</span> CASchools)
-
-<span class="co"># obtain a model summary</span>
-<span class="kw">summary</span>(mult.mod)                                                  </code></pre>
+<div class="sourceCode" id="cb267"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb267-1"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb267-1"></a><span class="co"># if STR smaller 12, NS = 0, else NS = 1</span></span>
+<span id="cb267-2"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb267-2"></a>CASchools<span class="op">$</span>NS &lt;-<span class="st"> </span><span class="kw">ifelse</span>(CASchools<span class="op">$</span>STR <span class="op">&lt;</span><span class="st"> </span><span class="dv">12</span>, <span class="dv">0</span>, <span class="dv">1</span>)</span>
+<span id="cb267-3"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb267-3"></a></span>
+<span id="cb267-4"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb267-4"></a><span class="co"># estimate the model</span></span>
+<span id="cb267-5"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb267-5"></a>mult.mod &lt;-<span class="st"> </span><span class="kw">lm</span>(score <span class="op">~</span><span class="st"> </span>computer <span class="op">+</span><span class="st"> </span>english <span class="op">+</span><span class="st"> </span>NS, <span class="dt">data =</span> CASchools)</span>
+<span id="cb267-6"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb267-6"></a></span>
+<span id="cb267-7"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb267-7"></a><span class="co"># obtain a model summary</span></span>
+<span id="cb267-8"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb267-8"></a><span class="kw">summary</span>(mult.mod)                                                  </span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## lm(formula = score ~ computer + english + NS, data = CASchools)
@@ -485,7 +485,7 @@ mult.mod &lt;-<span class="st"> </span><span class="kw">lm</span>(score <span cl
 ## Multiple R-squared:  0.4291, Adjusted R-squared:  0.4263 
 ## F-statistic: 156.7 on 2 and 417 DF,  p-value: &lt; 2.2e-16</code></pre>
 <p>Again, the output of <tt>summary(mult.mod)</tt> tells us that inclusion of <tt>NS</tt> in the regression would render the estimation infeasible. What happened here? This is an example where we made a logical mistake when defining the regressor <tt>NS</tt>: taking a closer look at <span class="math inline">\(NS\)</span>, the redefined measure for class size, reveals that there is not a single school with <span class="math inline">\(STR&lt;12\)</span> hence <span class="math inline">\(NS\)</span> equals one for all observations. We can check this by printing the contents of <tt>CASchools$NS</tt> or by using the function <tt>table()</tt>, see <code>?table</code>.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">table</span>(CASchools<span class="op">$</span>NS)</code></pre>
+<div class="sourceCode" id="cb269"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb269-1"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb269-1"></a><span class="kw">table</span>(CASchools<span class="op">$</span>NS)</span></code></pre></div>
 <pre><code>## 
 ##   1 
 ## 420</code></pre>
@@ -535,19 +535,19 @@ since then for all observations <span class="math inline">\(i=1,\dots,n\)</span>
 \end{align}\]</span></p>
 <p>and we have perfect multicollinearity. Thus the “dummy variable trap” means not paying attention and falsely including exhaustive dummies <em>and</em> a constant in a regression model.</p>
 <p>How does <tt>lm()</tt> handle a regression like (<a href="#mjx-eqn-6.8">6.8</a>)? Let us first generate some artificial categorical data and append a new column named <tt>directions</tt> to <tt>CASchools</tt> and see how <tt>lm()</tt> behaves when asked to estimate the model.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># set seed for reproducibility</span>
-<span class="kw">set.seed</span>(<span class="dv">1</span>)
-
-<span class="co"># generate artificial data on location</span>
-CASchools<span class="op">$</span>direction &lt;-<span class="st"> </span><span class="kw">sample</span>(<span class="kw">c</span>(<span class="st">&quot;West&quot;</span>, <span class="st">&quot;North&quot;</span>, <span class="st">&quot;South&quot;</span>, <span class="st">&quot;East&quot;</span>), 
-                              <span class="dv">420</span>, 
-                              <span class="dt">replace =</span> T)
-
-<span class="co"># estimate the model</span>
-mult.mod &lt;-<span class="st"> </span><span class="kw">lm</span>(score <span class="op">~</span><span class="st"> </span>STR <span class="op">+</span><span class="st"> </span>english <span class="op">+</span><span class="st"> </span>direction, <span class="dt">data =</span> CASchools)
-
-<span class="co"># obtain a model summary</span>
-<span class="kw">summary</span>(mult.mod)                                                 </code></pre>
+<div class="sourceCode" id="cb271"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb271-1"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb271-1"></a><span class="co"># set seed for reproducibility</span></span>
+<span id="cb271-2"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb271-2"></a><span class="kw">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb271-3"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb271-3"></a></span>
+<span id="cb271-4"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb271-4"></a><span class="co"># generate artificial data on location</span></span>
+<span id="cb271-5"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb271-5"></a>CASchools<span class="op">$</span>direction &lt;-<span class="st"> </span><span class="kw">sample</span>(<span class="kw">c</span>(<span class="st">&quot;West&quot;</span>, <span class="st">&quot;North&quot;</span>, <span class="st">&quot;South&quot;</span>, <span class="st">&quot;East&quot;</span>), </span>
+<span id="cb271-6"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb271-6"></a>                              <span class="dv">420</span>, </span>
+<span id="cb271-7"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb271-7"></a>                              <span class="dt">replace =</span> T)</span>
+<span id="cb271-8"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb271-8"></a></span>
+<span id="cb271-9"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb271-9"></a><span class="co"># estimate the model</span></span>
+<span id="cb271-10"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb271-10"></a>mult.mod &lt;-<span class="st"> </span><span class="kw">lm</span>(score <span class="op">~</span><span class="st"> </span>STR <span class="op">+</span><span class="st"> </span>english <span class="op">+</span><span class="st"> </span>direction, <span class="dt">data =</span> CASchools)</span>
+<span id="cb271-11"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb271-11"></a></span>
+<span id="cb271-12"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb271-12"></a><span class="co"># obtain a model summary</span></span>
+<span id="cb271-13"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb271-13"></a><span class="kw">summary</span>(mult.mod)                                                 </span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## lm(formula = score ~ STR + english + direction, data = CASchools)
@@ -576,14 +576,14 @@ mult.mod &lt;-<span class="st"> </span><span class="kw">lm</span>(score <span cl
 <p><span class="math display">\[ PctES = 100 -  PctEL\]</span></p>
 <p>and both <span class="math inline">\(PctES\)</span> and <span class="math inline">\(PctEL\)</span> are included in a regression model. One regressor is redundant since the other one conveys the same information. Since this obviously is a case where the regressors can be written as linear combination, we end up with perfect multicollinearity, again.</p>
 <p>Let us do this in <tt>R</tt>.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Percentage of english speakers </span>
-CASchools<span class="op">$</span>PctES &lt;-<span class="st"> </span><span class="dv">100</span> <span class="op">-</span><span class="st"> </span>CASchools<span class="op">$</span>english
-
-<span class="co"># estimate the model</span>
-mult.mod &lt;-<span class="st"> </span><span class="kw">lm</span>(score <span class="op">~</span><span class="st"> </span>STR <span class="op">+</span><span class="st"> </span>english <span class="op">+</span><span class="st"> </span>PctES, <span class="dt">data =</span> CASchools)
-
-<span class="co"># obtain a model summary</span>
-<span class="kw">summary</span>(mult.mod)                                                 </code></pre>
+<div class="sourceCode" id="cb273"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb273-1"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb273-1"></a><span class="co"># Percentage of english speakers </span></span>
+<span id="cb273-2"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb273-2"></a>CASchools<span class="op">$</span>PctES &lt;-<span class="st"> </span><span class="dv">100</span> <span class="op">-</span><span class="st"> </span>CASchools<span class="op">$</span>english</span>
+<span id="cb273-3"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb273-3"></a></span>
+<span id="cb273-4"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb273-4"></a><span class="co"># estimate the model</span></span>
+<span id="cb273-5"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb273-5"></a>mult.mod &lt;-<span class="st"> </span><span class="kw">lm</span>(score <span class="op">~</span><span class="st"> </span>STR <span class="op">+</span><span class="st"> </span>english <span class="op">+</span><span class="st"> </span>PctES, <span class="dt">data =</span> CASchools)</span>
+<span id="cb273-6"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb273-6"></a></span>
+<span id="cb273-7"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb273-7"></a><span class="co"># obtain a model summary</span></span>
+<span id="cb273-8"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb273-8"></a><span class="kw">summary</span>(mult.mod)                                                 </span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## lm(formula = score ~ STR + english + PctES, data = CASchools)
@@ -630,41 +630,41 @@ mult.mod &lt;-<span class="st"> </span><span class="kw">lm</span>(score <span cl
 <li><p>We repeat steps 1 and 2 but increase the covariance between <span class="math inline">\(X_1\)</span> and <span class="math inline">\(X_2\)</span> from <span class="math inline">\(2.5\)</span> to <span class="math inline">\(8.5\)</span> such that the correlation between the regressors is high: <span class="math display">\[ \rho_{X_1,X_2} = \frac{Cov(X_1,X_2)}{\sqrt{Var(X_1)}\sqrt{Var{(X_2)}}} = \frac{8.5}{10} = 0.85 \]</span></p></li>
 <li><p>In order to assess the effect on the precision of the estimators of increasing the collinearity between <span class="math inline">\(X_1\)</span> and <span class="math inline">\(X_2\)</span> we estimate the variances of <span class="math inline">\(\hat\beta_1\)</span> and <span class="math inline">\(\hat\beta_2\)</span> and compare.</p></li>
 </ol>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># load packages</span>
-<span class="kw">library</span>(MASS)
-<span class="kw">library</span>(mvtnorm)
-
-<span class="co"># set number of observations</span>
-n &lt;-<span class="st"> </span><span class="dv">50</span>
-
-<span class="co"># initialize vectors of coefficients</span>
-coefs1 &lt;-<span class="st"> </span><span class="kw">cbind</span>(<span class="st">&quot;hat_beta_1&quot;</span> =<span class="st"> </span><span class="kw">numeric</span>(<span class="dv">10000</span>), <span class="st">&quot;hat_beta_2&quot;</span> =<span class="st"> </span><span class="kw">numeric</span>(<span class="dv">10000</span>))
-coefs2 &lt;-<span class="st"> </span>coefs1
-
-<span class="co"># set seed</span>
-<span class="kw">set.seed</span>(<span class="dv">1</span>)
-
-<span class="co"># loop sampling and estimation</span>
-<span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">10000</span>) {
-  
-  <span class="co"># for cov(X_1,X_2) = 0.25</span>
-  X &lt;-<span class="st"> </span><span class="kw">rmvnorm</span>(n, <span class="kw">c</span>(<span class="dv">50</span>, <span class="dv">100</span>), <span class="dt">sigma =</span> <span class="kw">cbind</span>(<span class="kw">c</span>(<span class="dv">10</span>, <span class="fl">2.5</span>), <span class="kw">c</span>(<span class="fl">2.5</span>, <span class="dv">10</span>)))
-  u &lt;-<span class="st"> </span><span class="kw">rnorm</span>(n, <span class="dt">sd =</span> <span class="dv">5</span>)
-  Y &lt;-<span class="st"> </span><span class="dv">5</span> <span class="op">+</span><span class="st"> </span><span class="fl">2.5</span> <span class="op">*</span><span class="st"> </span>X[, <span class="dv">1</span>] <span class="op">+</span><span class="st"> </span><span class="dv">3</span> <span class="op">*</span><span class="st"> </span>X[, <span class="dv">2</span>] <span class="op">+</span><span class="st"> </span>u
-  coefs1[i, ] &lt;-<span class="st"> </span><span class="kw">lm</span>(Y <span class="op">~</span><span class="st"> </span>X[, <span class="dv">1</span>] <span class="op">+</span><span class="st"> </span>X[, <span class="dv">2</span>])<span class="op">$</span>coefficients[<span class="op">-</span><span class="dv">1</span>]
-  
-  <span class="co"># for cov(X_1,X_2) = 0.85</span>
-  X &lt;-<span class="st"> </span><span class="kw">rmvnorm</span>(n, <span class="kw">c</span>(<span class="dv">50</span>, <span class="dv">100</span>), <span class="dt">sigma =</span> <span class="kw">cbind</span>(<span class="kw">c</span>(<span class="dv">10</span>, <span class="fl">8.5</span>), <span class="kw">c</span>(<span class="fl">8.5</span>, <span class="dv">10</span>)))
-  Y &lt;-<span class="st"> </span><span class="dv">5</span> <span class="op">+</span><span class="st"> </span><span class="fl">2.5</span> <span class="op">*</span><span class="st"> </span>X[, <span class="dv">1</span>] <span class="op">+</span><span class="st"> </span><span class="dv">3</span> <span class="op">*</span><span class="st"> </span>X[, <span class="dv">2</span>] <span class="op">+</span><span class="st"> </span>u
-  coefs2[i, ] &lt;-<span class="st"> </span><span class="kw">lm</span>(Y <span class="op">~</span><span class="st"> </span>X[, <span class="dv">1</span>] <span class="op">+</span><span class="st"> </span>X[, <span class="dv">2</span>])<span class="op">$</span>coefficients[<span class="op">-</span><span class="dv">1</span>]
-  
-}
-
-<span class="co"># obtain variance estimates</span>
-<span class="kw">diag</span>(<span class="kw">var</span>(coefs1))</code></pre>
+<div class="sourceCode" id="cb275"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb275-1"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb275-1"></a><span class="co"># load packages</span></span>
+<span id="cb275-2"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb275-2"></a><span class="kw">library</span>(MASS)</span>
+<span id="cb275-3"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb275-3"></a><span class="kw">library</span>(mvtnorm)</span>
+<span id="cb275-4"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb275-4"></a></span>
+<span id="cb275-5"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb275-5"></a><span class="co"># set number of observations</span></span>
+<span id="cb275-6"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb275-6"></a>n &lt;-<span class="st"> </span><span class="dv">50</span></span>
+<span id="cb275-7"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb275-7"></a></span>
+<span id="cb275-8"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb275-8"></a><span class="co"># initialize vectors of coefficients</span></span>
+<span id="cb275-9"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb275-9"></a>coefs1 &lt;-<span class="st"> </span><span class="kw">cbind</span>(<span class="st">&quot;hat_beta_1&quot;</span> =<span class="st"> </span><span class="kw">numeric</span>(<span class="dv">10000</span>), <span class="st">&quot;hat_beta_2&quot;</span> =<span class="st"> </span><span class="kw">numeric</span>(<span class="dv">10000</span>))</span>
+<span id="cb275-10"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb275-10"></a>coefs2 &lt;-<span class="st"> </span>coefs1</span>
+<span id="cb275-11"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb275-11"></a></span>
+<span id="cb275-12"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb275-12"></a><span class="co"># set seed</span></span>
+<span id="cb275-13"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb275-13"></a><span class="kw">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb275-14"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb275-14"></a></span>
+<span id="cb275-15"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb275-15"></a><span class="co"># loop sampling and estimation</span></span>
+<span id="cb275-16"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb275-16"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">10000</span>) {</span>
+<span id="cb275-17"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb275-17"></a>  </span>
+<span id="cb275-18"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb275-18"></a>  <span class="co"># for cov(X_1,X_2) = 0.25</span></span>
+<span id="cb275-19"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb275-19"></a>  X &lt;-<span class="st"> </span><span class="kw">rmvnorm</span>(n, <span class="kw">c</span>(<span class="dv">50</span>, <span class="dv">100</span>), <span class="dt">sigma =</span> <span class="kw">cbind</span>(<span class="kw">c</span>(<span class="dv">10</span>, <span class="fl">2.5</span>), <span class="kw">c</span>(<span class="fl">2.5</span>, <span class="dv">10</span>)))</span>
+<span id="cb275-20"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb275-20"></a>  u &lt;-<span class="st"> </span><span class="kw">rnorm</span>(n, <span class="dt">sd =</span> <span class="dv">5</span>)</span>
+<span id="cb275-21"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb275-21"></a>  Y &lt;-<span class="st"> </span><span class="dv">5</span> <span class="op">+</span><span class="st"> </span><span class="fl">2.5</span> <span class="op">*</span><span class="st"> </span>X[, <span class="dv">1</span>] <span class="op">+</span><span class="st"> </span><span class="dv">3</span> <span class="op">*</span><span class="st"> </span>X[, <span class="dv">2</span>] <span class="op">+</span><span class="st"> </span>u</span>
+<span id="cb275-22"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb275-22"></a>  coefs1[i, ] &lt;-<span class="st"> </span><span class="kw">lm</span>(Y <span class="op">~</span><span class="st"> </span>X[, <span class="dv">1</span>] <span class="op">+</span><span class="st"> </span>X[, <span class="dv">2</span>])<span class="op">$</span>coefficients[<span class="op">-</span><span class="dv">1</span>]</span>
+<span id="cb275-23"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb275-23"></a>  </span>
+<span id="cb275-24"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb275-24"></a>  <span class="co"># for cov(X_1,X_2) = 0.85</span></span>
+<span id="cb275-25"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb275-25"></a>  X &lt;-<span class="st"> </span><span class="kw">rmvnorm</span>(n, <span class="kw">c</span>(<span class="dv">50</span>, <span class="dv">100</span>), <span class="dt">sigma =</span> <span class="kw">cbind</span>(<span class="kw">c</span>(<span class="dv">10</span>, <span class="fl">8.5</span>), <span class="kw">c</span>(<span class="fl">8.5</span>, <span class="dv">10</span>)))</span>
+<span id="cb275-26"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb275-26"></a>  Y &lt;-<span class="st"> </span><span class="dv">5</span> <span class="op">+</span><span class="st"> </span><span class="fl">2.5</span> <span class="op">*</span><span class="st"> </span>X[, <span class="dv">1</span>] <span class="op">+</span><span class="st"> </span><span class="dv">3</span> <span class="op">*</span><span class="st"> </span>X[, <span class="dv">2</span>] <span class="op">+</span><span class="st"> </span>u</span>
+<span id="cb275-27"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb275-27"></a>  coefs2[i, ] &lt;-<span class="st"> </span><span class="kw">lm</span>(Y <span class="op">~</span><span class="st"> </span>X[, <span class="dv">1</span>] <span class="op">+</span><span class="st"> </span>X[, <span class="dv">2</span>])<span class="op">$</span>coefficients[<span class="op">-</span><span class="dv">1</span>]</span>
+<span id="cb275-28"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb275-28"></a>  </span>
+<span id="cb275-29"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb275-29"></a>}</span>
+<span id="cb275-30"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb275-30"></a></span>
+<span id="cb275-31"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb275-31"></a><span class="co"># obtain variance estimates</span></span>
+<span id="cb275-32"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb275-32"></a><span class="kw">diag</span>(<span class="kw">var</span>(coefs1))</span></code></pre></div>
 <pre><code>## hat_beta_1 hat_beta_2 
 ## 0.05674375 0.05712459</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">diag</span>(<span class="kw">var</span>(coefs2))</code></pre>
+<div class="sourceCode" id="cb277"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb277-1"><a href="6-4-ols-assumptions-in-multiple-regression.html#cb277-1"></a><span class="kw">diag</span>(<span class="kw">var</span>(coefs2))</span></code></pre></div>
 <pre><code>## hat_beta_1 hat_beta_2 
 ##  0.1904949  0.1909056</code></pre>
 <p>We are interested in the variances which are the diagonal elements. We see that due to the high collinearity, the variances of <span class="math inline">\(\hat\beta_1\)</span> and <span class="math inline">\(\hat\beta_2\)</span> have more than tripled, meaning it is more difficult to precisely estimate the true coefficients.</p>

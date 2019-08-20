@@ -1,13 +1,12 @@
 <!DOCTYPE html>
-<html >
-
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
 <head>
 
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>11.1 Binary Dependent Variables and the Linear Probability Model | Introduction to Econometrics with R</title>
-  <meta name="description" content="Beginners with little background in statistics and econometrics often have a hard time understanding the benefits of having programming skills for learning and applying Econometrics. ‘Introduction to Econometrics with R’ is an interactive companion to the well-received textbook ‘Introduction to Econometrics’ by James H. Stock and Mark W. Watson (2015). It gives a gentle introduction to the essentials of R programming and guides students in implementing the empirical applications presented throughout the textbook using the newly aquired skills. This is supported by interactive programming exercises generated with DataCamp Light and integration of interactive visualizations of central concepts which are based on the flexible JavaScript library D3.js.">
-  <meta name="generator" content="bookdown  and GitBook 2.6.7">
+  <meta name="description" content="Beginners with little background in statistics and econometrics often have a hard time understanding the benefits of having programming skills for learning and applying Econometrics. ‘Introduction to Econometrics with R’ is an interactive companion to the well-received textbook ‘Introduction to Econometrics’ by James H. Stock and Mark W. Watson (2015). It gives a gentle introduction to the essentials of R programming and guides students in implementing the empirical applications presented throughout the textbook using the newly aquired skills. This is supported by interactive programming exercises generated with DataCamp Light and integration of interactive visualizations of central concepts which are based on the flexible JavaScript library D3.js." />
+  <meta name="generator" content="bookdown 0.12 and GitBook 2.6.7" />
 
   <meta property="og:title" content="11.1 Binary Dependent Variables and the Linear Probability Model | Introduction to Econometrics with R" />
   <meta property="og:type" content="book" />
@@ -22,14 +21,14 @@
   <meta name="twitter:description" content="Beginners with little background in statistics and econometrics often have a hard time understanding the benefits of having programming skills for learning and applying Econometrics. ‘Introduction to Econometrics with R’ is an interactive companion to the well-received textbook ‘Introduction to Econometrics’ by James H. Stock and Mark W. Watson (2015). It gives a gentle introduction to the essentials of R programming and guides students in implementing the empirical applications presented throughout the textbook using the newly aquired skills. This is supported by interactive programming exercises generated with DataCamp Light and integration of interactive visualizations of central concepts which are based on the flexible JavaScript library D3.js." />
   <meta name="twitter:image" content="https://www.econometrics-with-r.org/images/cover.png" />
 
-<meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber and Martin Schmelzer">
+<meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber and Martin Schmelzer" />
 
 
-<meta name="date" content="2019-03-12">
+<meta name="date" content="2019-08-20" />
 
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
 <link rel="prev" href="11-rwabdv.html">
@@ -49,17 +48,17 @@
 
 
 <script src="libs/htmlwidgets-1.3/htmlwidgets.js"></script>
-<script src="libs/plotly-binding-4.8.0/plotly.js"></script>
+<script src="libs/plotly-binding-4.9.0/plotly.js"></script>
 <script src="libs/typedarray-0.1/typedarray.min.js"></script>
 <link href="libs/crosstalk-1.0.0/css/crosstalk.css" rel="stylesheet" />
 <script src="libs/crosstalk-1.0.0/js/crosstalk.min.js"></script>
-<link href="libs/plotly-htmlwidgets-css-1.39.2/plotly-htmlwidgets.css" rel="stylesheet" />
-<script src="libs/plotly-main-1.39.2/plotly-latest.min.js"></script>
+<link href="libs/plotly-htmlwidgets-css-1.46.1/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="libs/plotly-main-1.46.1/plotly-latest.min.js"></script>
 <!-- font families -->
 
 <link href="https://fonts.googleapis.com/css?family=PT+Sans|Pacifico|Source+Sans+Pro" rel="stylesheet">
 
-<script src="js/hideOutput.js"></script>
+<!--<script src="js/hideOutput.js"></script>-->
 
 <!-- Mathjax -->
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/default.js"></script>
@@ -89,26 +88,27 @@
 
 
 <style type="text/css">
-a.sourceLine { display: inline-block; line-height: 1.25; }
-a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-a.sourceLine:empty { height: 1.2em; }
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode { white-space: pre; position: relative; }
-div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
 code.sourceCode { white-space: pre-wrap; }
-a.sourceLine { text-indent: -1em; padding-left: 1em; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
-pre.numberSource a.sourceLine
-  { position: relative; left: -4em; }
-pre.numberSource a.sourceLine::before
-  { content: attr(data-line-number);
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
     position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; pointer-events: all; display: inline-block;
+    border: none; display: inline-block;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -117,9 +117,9 @@ pre.numberSource a.sourceLine::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  { background-color: #f8f8f8; }
+  {  background-color: #f8f8f8; }
 @media screen {
-a.sourceLine::before { text-decoration: underline; }
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ef2929; } /* Alert */
 code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
@@ -410,12 +410,12 @@ with a binary dependent variable <span class="math inline">\(Y_i\)</span> is cal
 <div id="mortgage-data" class="section level4 unnumbered">
 <h4>Mortgage Data</h4>
 <p>Following the book, we start by loading the data set <tt>HMDA</tt> which provides data that relate to mortgage applications filed in Boston in the year of 1990.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># load `AER` package and attach the HMDA data</span>
-<span class="kw">library</span>(AER)
-<span class="kw">data</span>(HMDA)</code></pre>
+<div class="sourceCode" id="cb499"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb499-1"><a href="11-1-binary-dependent-variables-and-the-linear-probability-model.html#cb499-1"></a><span class="co"># load `AER` package and attach the HMDA data</span></span>
+<span id="cb499-2"><a href="11-1-binary-dependent-variables-and-the-linear-probability-model.html#cb499-2"></a><span class="kw">library</span>(AER)</span>
+<span id="cb499-3"><a href="11-1-binary-dependent-variables-and-the-linear-probability-model.html#cb499-3"></a><span class="kw">data</span>(HMDA)</span></code></pre></div>
 <p>We continue by inspecting the first few observations and compute summary statistics afterwards.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># inspect the data</span>
-<span class="kw">head</span>(HMDA)</code></pre>
+<div class="sourceCode" id="cb500"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb500-1"><a href="11-1-binary-dependent-variables-and-the-linear-probability-model.html#cb500-1"></a><span class="co"># inspect the data</span></span>
+<span id="cb500-2"><a href="11-1-binary-dependent-variables-and-the-linear-probability-model.html#cb500-2"></a><span class="kw">head</span>(HMDA)</span></code></pre></div>
 <pre><code>##   deny pirat hirat     lvrat chist mhist phist unemp selfemp insurance
 ## 1   no 0.221 0.221 0.8000000     5     2    no   3.9      no        no
 ## 2   no 0.265 0.265 0.9218750     2     2    no   3.2      no        no
@@ -430,7 +430,7 @@ with a binary dependent variable <span class="math inline">\(Y_i\)</span> is cal
 ## 4       no   no     no     yes
 ## 5       no   no     no     yes
 ## 6       no   no     no     yes</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(HMDA)</code></pre>
+<div class="sourceCode" id="cb502"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb502-1"><a href="11-1-binary-dependent-variables-and-the-linear-probability-model.html#cb502-1"></a><span class="kw">summary</span>(HMDA)</span></code></pre></div>
 <pre><code>##   deny          pirat            hirat            lvrat        chist   
 ##  no :2095   Min.   :0.0000   Min.   :0.0000   Min.   :0.0200   1:1353  
 ##  yes: 285   1st Qu.:0.2800   1st Qu.:0.2140   1st Qu.:0.6527   2: 441  
@@ -457,12 +457,12 @@ with a binary dependent variable <span class="math inline">\(Y_i\)</span> is cal
   deny = \beta_0 + \beta_1 \times P/I\ ratio + u. \tag{11.1}
 \end{align}\]</span></p>
 <p>We estimate this model just as any other linear regression model using <tt>lm()</tt>. Before we do so, the variable <tt>deny</tt> must be converted to a numeric variable using <tt>as.numeric()</tt> as <tt>lm()</tt> does not accepts the <em>dependent variable</em> to be of class <tt>factor</tt>. Note that <code>as.numeric(HMDA$deny)</code> will turn <tt>deny = no</tt> into <tt>deny = 1</tt> and <tt>deny = yes</tt> into <tt>deny = 2</tt>, so using <tt>as.numeric(HMDA$deny)-1</tt> we obtain the values <tt>0</tt> and <tt>1</tt>.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># convert &#39;deny&#39; to numeric</span>
-HMDA<span class="op">$</span>deny &lt;-<span class="st"> </span><span class="kw">as.numeric</span>(HMDA<span class="op">$</span>deny) <span class="op">-</span><span class="st"> </span><span class="dv">1</span>
-
-<span class="co"># estimate a simple linear probabilty model</span>
-denymod1 &lt;-<span class="st"> </span><span class="kw">lm</span>(deny <span class="op">~</span><span class="st"> </span>pirat, <span class="dt">data =</span> HMDA)
-denymod1</code></pre>
+<div class="sourceCode" id="cb504"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb504-1"><a href="11-1-binary-dependent-variables-and-the-linear-probability-model.html#cb504-1"></a><span class="co"># convert &#39;deny&#39; to numeric</span></span>
+<span id="cb504-2"><a href="11-1-binary-dependent-variables-and-the-linear-probability-model.html#cb504-2"></a>HMDA<span class="op">$</span>deny &lt;-<span class="st"> </span><span class="kw">as.numeric</span>(HMDA<span class="op">$</span>deny) <span class="op">-</span><span class="st"> </span><span class="dv">1</span></span>
+<span id="cb504-3"><a href="11-1-binary-dependent-variables-and-the-linear-probability-model.html#cb504-3"></a></span>
+<span id="cb504-4"><a href="11-1-binary-dependent-variables-and-the-linear-probability-model.html#cb504-4"></a><span class="co"># estimate a simple linear probabilty model</span></span>
+<span id="cb504-5"><a href="11-1-binary-dependent-variables-and-the-linear-probability-model.html#cb504-5"></a>denymod1 &lt;-<span class="st"> </span><span class="kw">lm</span>(deny <span class="op">~</span><span class="st"> </span>pirat, <span class="dt">data =</span> HMDA)</span>
+<span id="cb504-6"><a href="11-1-binary-dependent-variables-and-the-linear-probability-model.html#cb504-6"></a>denymod1</span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## lm(formula = deny ~ pirat, data = HMDA)
@@ -471,31 +471,31 @@ denymod1</code></pre>
 ## (Intercept)        pirat  
 ##    -0.07991      0.60353</code></pre>
 <p>Next, we plot the data and the regression line to reproduce Figure 11.1 of the book.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># plot the data</span>
-<span class="kw">plot</span>(<span class="dt">x =</span> HMDA<span class="op">$</span>pirat, 
-     <span class="dt">y =</span> HMDA<span class="op">$</span>deny,
-     <span class="dt">main =</span> <span class="st">&quot;Scatterplot Mortgage Application Denial and the Payment-to-Income Ratio&quot;</span>,
-     <span class="dt">xlab =</span> <span class="st">&quot;P/I ratio&quot;</span>,
-     <span class="dt">ylab =</span> <span class="st">&quot;Deny&quot;</span>,
-     <span class="dt">pch =</span> <span class="dv">20</span>,
-     <span class="dt">ylim =</span> <span class="kw">c</span>(<span class="op">-</span><span class="fl">0.4</span>, <span class="fl">1.4</span>),
-     <span class="dt">cex.main =</span> <span class="fl">0.8</span>)
-
-<span class="co"># add horizontal dashed lines and text</span>
-<span class="kw">abline</span>(<span class="dt">h =</span> <span class="dv">1</span>, <span class="dt">lty =</span> <span class="dv">2</span>, <span class="dt">col =</span> <span class="st">&quot;darkred&quot;</span>)
-<span class="kw">abline</span>(<span class="dt">h =</span> <span class="dv">0</span>, <span class="dt">lty =</span> <span class="dv">2</span>, <span class="dt">col =</span> <span class="st">&quot;darkred&quot;</span>)
-<span class="kw">text</span>(<span class="fl">2.5</span>, <span class="fl">0.9</span>, <span class="dt">cex =</span> <span class="fl">0.8</span>, <span class="st">&quot;Mortgage denied&quot;</span>)
-<span class="kw">text</span>(<span class="fl">2.5</span>, <span class="fl">-0.1</span>, <span class="dt">cex=</span> <span class="fl">0.8</span>, <span class="st">&quot;Mortgage approved&quot;</span>)
-
-<span class="co"># add the estimated regression line</span>
-<span class="kw">abline</span>(denymod1, 
-       <span class="dt">lwd =</span> <span class="fl">1.8</span>, 
-       <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>)</code></pre>
+<div class="sourceCode" id="cb506"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb506-1"><a href="11-1-binary-dependent-variables-and-the-linear-probability-model.html#cb506-1"></a><span class="co"># plot the data</span></span>
+<span id="cb506-2"><a href="11-1-binary-dependent-variables-and-the-linear-probability-model.html#cb506-2"></a><span class="kw">plot</span>(<span class="dt">x =</span> HMDA<span class="op">$</span>pirat, </span>
+<span id="cb506-3"><a href="11-1-binary-dependent-variables-and-the-linear-probability-model.html#cb506-3"></a>     <span class="dt">y =</span> HMDA<span class="op">$</span>deny,</span>
+<span id="cb506-4"><a href="11-1-binary-dependent-variables-and-the-linear-probability-model.html#cb506-4"></a>     <span class="dt">main =</span> <span class="st">&quot;Scatterplot Mortgage Application Denial and the Payment-to-Income Ratio&quot;</span>,</span>
+<span id="cb506-5"><a href="11-1-binary-dependent-variables-and-the-linear-probability-model.html#cb506-5"></a>     <span class="dt">xlab =</span> <span class="st">&quot;P/I ratio&quot;</span>,</span>
+<span id="cb506-6"><a href="11-1-binary-dependent-variables-and-the-linear-probability-model.html#cb506-6"></a>     <span class="dt">ylab =</span> <span class="st">&quot;Deny&quot;</span>,</span>
+<span id="cb506-7"><a href="11-1-binary-dependent-variables-and-the-linear-probability-model.html#cb506-7"></a>     <span class="dt">pch =</span> <span class="dv">20</span>,</span>
+<span id="cb506-8"><a href="11-1-binary-dependent-variables-and-the-linear-probability-model.html#cb506-8"></a>     <span class="dt">ylim =</span> <span class="kw">c</span>(<span class="op">-</span><span class="fl">0.4</span>, <span class="fl">1.4</span>),</span>
+<span id="cb506-9"><a href="11-1-binary-dependent-variables-and-the-linear-probability-model.html#cb506-9"></a>     <span class="dt">cex.main =</span> <span class="fl">0.8</span>)</span>
+<span id="cb506-10"><a href="11-1-binary-dependent-variables-and-the-linear-probability-model.html#cb506-10"></a></span>
+<span id="cb506-11"><a href="11-1-binary-dependent-variables-and-the-linear-probability-model.html#cb506-11"></a><span class="co"># add horizontal dashed lines and text</span></span>
+<span id="cb506-12"><a href="11-1-binary-dependent-variables-and-the-linear-probability-model.html#cb506-12"></a><span class="kw">abline</span>(<span class="dt">h =</span> <span class="dv">1</span>, <span class="dt">lty =</span> <span class="dv">2</span>, <span class="dt">col =</span> <span class="st">&quot;darkred&quot;</span>)</span>
+<span id="cb506-13"><a href="11-1-binary-dependent-variables-and-the-linear-probability-model.html#cb506-13"></a><span class="kw">abline</span>(<span class="dt">h =</span> <span class="dv">0</span>, <span class="dt">lty =</span> <span class="dv">2</span>, <span class="dt">col =</span> <span class="st">&quot;darkred&quot;</span>)</span>
+<span id="cb506-14"><a href="11-1-binary-dependent-variables-and-the-linear-probability-model.html#cb506-14"></a><span class="kw">text</span>(<span class="fl">2.5</span>, <span class="fl">0.9</span>, <span class="dt">cex =</span> <span class="fl">0.8</span>, <span class="st">&quot;Mortgage denied&quot;</span>)</span>
+<span id="cb506-15"><a href="11-1-binary-dependent-variables-and-the-linear-probability-model.html#cb506-15"></a><span class="kw">text</span>(<span class="fl">2.5</span>, <span class="fl">-0.1</span>, <span class="dt">cex=</span> <span class="fl">0.8</span>, <span class="st">&quot;Mortgage approved&quot;</span>)</span>
+<span id="cb506-16"><a href="11-1-binary-dependent-variables-and-the-linear-probability-model.html#cb506-16"></a></span>
+<span id="cb506-17"><a href="11-1-binary-dependent-variables-and-the-linear-probability-model.html#cb506-17"></a><span class="co"># add the estimated regression line</span></span>
+<span id="cb506-18"><a href="11-1-binary-dependent-variables-and-the-linear-probability-model.html#cb506-18"></a><span class="kw">abline</span>(denymod1, </span>
+<span id="cb506-19"><a href="11-1-binary-dependent-variables-and-the-linear-probability-model.html#cb506-19"></a>       <span class="dt">lwd =</span> <span class="fl">1.8</span>, </span>
+<span id="cb506-20"><a href="11-1-binary-dependent-variables-and-the-linear-probability-model.html#cb506-20"></a>       <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>)</span></code></pre></div>
 <p><img src="ITER_files/figure-html/unnamed-chunk-452-1.png" width="80%" style="display: block; margin: auto;" /></p>
 <p>According to the estimated model, a payment-to-income ratio of <span class="math inline">\(1\)</span> is associated with an expected probability of mortgage application denial of roughly <span class="math inline">\(50\%\)</span>. The model indicates that there is a positive relation between the payment-to-income ratio and the probability of a denied mortgage application so individuals with a high ratio of loan payments to income are more likely to be rejected.</p>
 <p>We may use <tt>coeftest()</tt> to obtain robust standard errors for both coefficient estimates.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># print robust coefficient summary</span>
-<span class="kw">coeftest</span>(denymod1, <span class="dt">vcov. =</span> vcovHC, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>)</code></pre>
+<div class="sourceCode" id="cb507"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb507-1"><a href="11-1-binary-dependent-variables-and-the-linear-probability-model.html#cb507-1"></a><span class="co"># print robust coefficient summary</span></span>
+<span id="cb507-2"><a href="11-1-binary-dependent-variables-and-the-linear-probability-model.html#cb507-2"></a><span class="kw">coeftest</span>(denymod1, <span class="dt">vcov. =</span> vcovHC, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>)</span></code></pre></div>
 <pre><code>## 
 ## t test of coefficients:
 ## 
@@ -510,12 +510,12 @@ denymod1</code></pre>
 \end{align}\]</span>
 The true coefficient on <span class="math inline">\(P/I \ ratio\)</span> is statistically different from <span class="math inline">\(0\)</span> at the <span class="math inline">\(1\%\)</span> level. Its estimate can be interpreted as follows: a 1 percentage point increase in <span class="math inline">\(P/I \ ratio\)</span> leads to an increase in the probability of a loan denial by <span class="math inline">\(0.604 \cdot 0.01 = 0.00604 \approx 0.6\%\)</span>.</p>
 <p>Following the book we augment the simple model <a href="11-1-binary-dependent-variables-and-the-linear-probability-model.html#eq:denymod1">(11.1)</a> by an additional regressor <span class="math inline">\(black\)</span> which equals <span class="math inline">\(1\)</span> if the applicant is an African American and equals <span class="math inline">\(0\)</span> otherwise. Such a specification is the baseline for investigating if there is racial discrimination in the mortgage market: if being black has a significant (positive) influence on the probability of a loan denial when we control for factors that allow for an objective assessment of an applicants credit worthiness, this is an indicator for discrimination.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># rename the variable &#39;afam&#39; for consistency</span>
-<span class="kw">colnames</span>(HMDA)[<span class="kw">colnames</span>(HMDA) <span class="op">==</span><span class="st"> &quot;afam&quot;</span>] &lt;-<span class="st"> &quot;black&quot;</span>
-
-<span class="co"># estimate the model</span>
-denymod2 &lt;-<span class="st"> </span><span class="kw">lm</span>(deny <span class="op">~</span><span class="st"> </span>pirat <span class="op">+</span><span class="st"> </span>black, <span class="dt">data =</span> HMDA)
-<span class="kw">coeftest</span>(denymod2, <span class="dt">vcov. =</span> vcovHC)</code></pre>
+<div class="sourceCode" id="cb509"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb509-1"><a href="11-1-binary-dependent-variables-and-the-linear-probability-model.html#cb509-1"></a><span class="co"># rename the variable &#39;afam&#39; for consistency</span></span>
+<span id="cb509-2"><a href="11-1-binary-dependent-variables-and-the-linear-probability-model.html#cb509-2"></a><span class="kw">colnames</span>(HMDA)[<span class="kw">colnames</span>(HMDA) <span class="op">==</span><span class="st"> &quot;afam&quot;</span>] &lt;-<span class="st"> &quot;black&quot;</span></span>
+<span id="cb509-3"><a href="11-1-binary-dependent-variables-and-the-linear-probability-model.html#cb509-3"></a></span>
+<span id="cb509-4"><a href="11-1-binary-dependent-variables-and-the-linear-probability-model.html#cb509-4"></a><span class="co"># estimate the model</span></span>
+<span id="cb509-5"><a href="11-1-binary-dependent-variables-and-the-linear-probability-model.html#cb509-5"></a>denymod2 &lt;-<span class="st"> </span><span class="kw">lm</span>(deny <span class="op">~</span><span class="st"> </span>pirat <span class="op">+</span><span class="st"> </span>black, <span class="dt">data =</span> HMDA)</span>
+<span id="cb509-6"><a href="11-1-binary-dependent-variables-and-the-linear-probability-model.html#cb509-6"></a><span class="kw">coeftest</span>(denymod2, <span class="dt">vcov. =</span> vcovHC)</span></code></pre></div>
 <pre><code>## 
 ## t test of coefficients:
 ## 

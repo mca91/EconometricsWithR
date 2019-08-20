@@ -1,13 +1,12 @@
 <!DOCTYPE html>
-<html >
-
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
 <head>
 
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>14.2 Time Series Data and Serial Correlation | Introduction to Econometrics with R</title>
-  <meta name="description" content="Beginners with little background in statistics and econometrics often have a hard time understanding the benefits of having programming skills for learning and applying Econometrics. ‘Introduction to Econometrics with R’ is an interactive companion to the well-received textbook ‘Introduction to Econometrics’ by James H. Stock and Mark W. Watson (2015). It gives a gentle introduction to the essentials of R programming and guides students in implementing the empirical applications presented throughout the textbook using the newly aquired skills. This is supported by interactive programming exercises generated with DataCamp Light and integration of interactive visualizations of central concepts which are based on the flexible JavaScript library D3.js.">
-  <meta name="generator" content="bookdown  and GitBook 2.6.7">
+  <meta name="description" content="Beginners with little background in statistics and econometrics often have a hard time understanding the benefits of having programming skills for learning and applying Econometrics. ‘Introduction to Econometrics with R’ is an interactive companion to the well-received textbook ‘Introduction to Econometrics’ by James H. Stock and Mark W. Watson (2015). It gives a gentle introduction to the essentials of R programming and guides students in implementing the empirical applications presented throughout the textbook using the newly aquired skills. This is supported by interactive programming exercises generated with DataCamp Light and integration of interactive visualizations of central concepts which are based on the flexible JavaScript library D3.js." />
+  <meta name="generator" content="bookdown 0.12 and GitBook 2.6.7" />
 
   <meta property="og:title" content="14.2 Time Series Data and Serial Correlation | Introduction to Econometrics with R" />
   <meta property="og:type" content="book" />
@@ -22,14 +21,14 @@
   <meta name="twitter:description" content="Beginners with little background in statistics and econometrics often have a hard time understanding the benefits of having programming skills for learning and applying Econometrics. ‘Introduction to Econometrics with R’ is an interactive companion to the well-received textbook ‘Introduction to Econometrics’ by James H. Stock and Mark W. Watson (2015). It gives a gentle introduction to the essentials of R programming and guides students in implementing the empirical applications presented throughout the textbook using the newly aquired skills. This is supported by interactive programming exercises generated with DataCamp Light and integration of interactive visualizations of central concepts which are based on the flexible JavaScript library D3.js." />
   <meta name="twitter:image" content="https://www.econometrics-with-r.org/images/cover.png" />
 
-<meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber and Martin Schmelzer">
+<meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber and Martin Schmelzer" />
 
 
-<meta name="date" content="2019-03-12">
+<meta name="date" content="2019-08-20" />
 
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
 <link rel="prev" href="14-1-using-regression-models-for-forecasting.html">
@@ -49,17 +48,17 @@
 
 
 <script src="libs/htmlwidgets-1.3/htmlwidgets.js"></script>
-<script src="libs/plotly-binding-4.8.0/plotly.js"></script>
+<script src="libs/plotly-binding-4.9.0/plotly.js"></script>
 <script src="libs/typedarray-0.1/typedarray.min.js"></script>
 <link href="libs/crosstalk-1.0.0/css/crosstalk.css" rel="stylesheet" />
 <script src="libs/crosstalk-1.0.0/js/crosstalk.min.js"></script>
-<link href="libs/plotly-htmlwidgets-css-1.39.2/plotly-htmlwidgets.css" rel="stylesheet" />
-<script src="libs/plotly-main-1.39.2/plotly-latest.min.js"></script>
+<link href="libs/plotly-htmlwidgets-css-1.46.1/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="libs/plotly-main-1.46.1/plotly-latest.min.js"></script>
 <!-- font families -->
 
 <link href="https://fonts.googleapis.com/css?family=PT+Sans|Pacifico|Source+Sans+Pro" rel="stylesheet">
 
-<script src="js/hideOutput.js"></script>
+<!--<script src="js/hideOutput.js"></script>-->
 
 <!-- Mathjax -->
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/default.js"></script>
@@ -89,26 +88,27 @@
 
 
 <style type="text/css">
-a.sourceLine { display: inline-block; line-height: 1.25; }
-a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-a.sourceLine:empty { height: 1.2em; }
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode { white-space: pre; position: relative; }
-div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
 code.sourceCode { white-space: pre-wrap; }
-a.sourceLine { text-indent: -1em; padding-left: 1em; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
-pre.numberSource a.sourceLine
-  { position: relative; left: -4em; }
-pre.numberSource a.sourceLine::before
-  { content: attr(data-line-number);
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
     position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; pointer-events: all; display: inline-block;
+    border: none; display: inline-block;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -117,9 +117,9 @@ pre.numberSource a.sourceLine::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  { background-color: #f8f8f8; }
+  {  background-color: #f8f8f8; }
 @media screen {
-a.sourceLine::before { text-decoration: underline; }
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ef2929; } /* Alert */
 code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
@@ -394,46 +394,46 @@ This book is in <b>Open Review</b>. We want your feedback to make the book bette
 <h2><span class="header-section-number">14.2</span> Time Series Data and Serial Correlation</h2>
 <p>GDP is commonly defined as the value of goods and services produced over a given time period. The data set <tt>us_macro_quarterly.xlsx</tt> is provided by the authors and can be downloaded <a href="http://wps.pearsoned.co.uk/wps/media/objects/16103/16489878/data3eu/us_macro_quarterly.xlsx">here</a>. It provides quarterly data on U.S. real (i.e. inflation adjusted) GDP from 1947 to 2004.</p>
 <p>As before, a good starting point is to plot the data. The package <tt>quantmod</tt> provides some convenient functions for plotting and computing with time series data. We also load the package <tt>readxl</tt> to read the data into <tt>R</tt>.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># attach the package &#39;quantmod&#39;</span>
-<span class="kw">library</span>(quantmod)</code></pre>
+<div class="sourceCode" id="cb680"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb680-1"><a href="14-2-tsdasc.html#cb680-1"></a><span class="co"># attach the package &#39;quantmod&#39;</span></span>
+<span id="cb680-2"><a href="14-2-tsdasc.html#cb680-2"></a><span class="kw">library</span>(quantmod)</span></code></pre></div>
 <p>We begin by importing the data set.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># load US macroeconomic data</span>
-USMacroSWQ &lt;-<span class="st"> </span><span class="kw">read_xlsx</span>(<span class="st">&quot;Data/us_macro_quarterly.xlsx&quot;</span>,
-                         <span class="dt">sheet =</span> <span class="dv">1</span>,
-                         <span class="dt">col_types =</span> <span class="kw">c</span>(<span class="st">&quot;text&quot;</span>, <span class="kw">rep</span>(<span class="st">&quot;numeric&quot;</span>, <span class="dv">9</span>)))
-
-<span class="co"># format date column</span>
-USMacroSWQ<span class="op">$</span>X__<span class="dv">1</span> &lt;-<span class="st"> </span><span class="kw">as.yearqtr</span>(USMacroSWQ<span class="op">$</span>X__<span class="dv">1</span>, <span class="dt">format =</span> <span class="st">&quot;%Y:0%q&quot;</span>)
-
-<span class="co"># adjust column names</span>
-<span class="kw">colnames</span>(USMacroSWQ) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Date&quot;</span>, <span class="st">&quot;GDPC96&quot;</span>, <span class="st">&quot;JAPAN_IP&quot;</span>, <span class="st">&quot;PCECTPI&quot;</span>, 
-                          <span class="st">&quot;GS10&quot;</span>, <span class="st">&quot;GS1&quot;</span>, <span class="st">&quot;TB3MS&quot;</span>, <span class="st">&quot;UNRATE&quot;</span>, <span class="st">&quot;EXUSUK&quot;</span>, <span class="st">&quot;CPIAUCSL&quot;</span>)</code></pre>
+<div class="sourceCode" id="cb681"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb681-1"><a href="14-2-tsdasc.html#cb681-1"></a><span class="co"># load US macroeconomic data</span></span>
+<span id="cb681-2"><a href="14-2-tsdasc.html#cb681-2"></a>USMacroSWQ &lt;-<span class="st"> </span><span class="kw">read_xlsx</span>(<span class="st">&quot;Data/us_macro_quarterly.xlsx&quot;</span>,</span>
+<span id="cb681-3"><a href="14-2-tsdasc.html#cb681-3"></a>                         <span class="dt">sheet =</span> <span class="dv">1</span>,</span>
+<span id="cb681-4"><a href="14-2-tsdasc.html#cb681-4"></a>                         <span class="dt">col_types =</span> <span class="kw">c</span>(<span class="st">&quot;text&quot;</span>, <span class="kw">rep</span>(<span class="st">&quot;numeric&quot;</span>, <span class="dv">9</span>)))</span>
+<span id="cb681-5"><a href="14-2-tsdasc.html#cb681-5"></a></span>
+<span id="cb681-6"><a href="14-2-tsdasc.html#cb681-6"></a><span class="co"># format date column</span></span>
+<span id="cb681-7"><a href="14-2-tsdasc.html#cb681-7"></a>USMacroSWQ<span class="op">$</span>...<span class="dv">1</span> &lt;-<span class="st"> </span><span class="kw">as.yearqtr</span>(USMacroSWQ<span class="op">$</span>...<span class="dv">1</span>, <span class="dt">format =</span> <span class="st">&quot;%Y:0%q&quot;</span>)</span>
+<span id="cb681-8"><a href="14-2-tsdasc.html#cb681-8"></a></span>
+<span id="cb681-9"><a href="14-2-tsdasc.html#cb681-9"></a><span class="co"># adjust column names</span></span>
+<span id="cb681-10"><a href="14-2-tsdasc.html#cb681-10"></a><span class="kw">colnames</span>(USMacroSWQ) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Date&quot;</span>, <span class="st">&quot;GDPC96&quot;</span>, <span class="st">&quot;JAPAN_IP&quot;</span>, <span class="st">&quot;PCECTPI&quot;</span>, </span>
+<span id="cb681-11"><a href="14-2-tsdasc.html#cb681-11"></a>                          <span class="st">&quot;GS10&quot;</span>, <span class="st">&quot;GS1&quot;</span>, <span class="st">&quot;TB3MS&quot;</span>, <span class="st">&quot;UNRATE&quot;</span>, <span class="st">&quot;EXUSUK&quot;</span>, <span class="st">&quot;CPIAUCSL&quot;</span>)</span></code></pre></div>
 <p>We the first column of <tt>us_macro_quarterly.xlsx</tt> contains text and the remaining ones are numeric. Using <tt>col_types = c(“text”, rep(“numeric”, 9))</tt> we tell <tt>read_xlsx()</tt> take this into account when importing the data.</p>
 <p>It is useful to work with time-series objects that keep track of the frequency of the data and are extensible. In what follows we will use objects of the class <tt>xts</tt>, see <code>?xts</code>. Since the data in <tt>USMacroSWQ</tt> are in quarterly frequency we convert the first column to <tt>yearqtr</tt> format before generating the <tt>xts</tt> object <tt>GDP</tt>.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># GDP series as xts object</span>
-GDP &lt;-<span class="st"> </span><span class="kw">xts</span>(USMacroSWQ<span class="op">$</span>GDPC96, USMacroSWQ<span class="op">$</span>Date)[<span class="st">&quot;1960::2013&quot;</span>]
-
-<span class="co"># GDP growth series as xts object</span>
-GDPGrowth &lt;-<span class="st"> </span><span class="kw">xts</span>(<span class="dv">400</span> <span class="op">*</span><span class="st"> </span><span class="kw">log</span>(GDP<span class="op">/</span><span class="kw">lag</span>(GDP)))</code></pre>
+<div class="sourceCode" id="cb682"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb682-1"><a href="14-2-tsdasc.html#cb682-1"></a><span class="co"># GDP series as xts object</span></span>
+<span id="cb682-2"><a href="14-2-tsdasc.html#cb682-2"></a>GDP &lt;-<span class="st"> </span><span class="kw">xts</span>(USMacroSWQ<span class="op">$</span>GDPC96, USMacroSWQ<span class="op">$</span>Date)[<span class="st">&quot;1960::2013&quot;</span>]</span>
+<span id="cb682-3"><a href="14-2-tsdasc.html#cb682-3"></a></span>
+<span id="cb682-4"><a href="14-2-tsdasc.html#cb682-4"></a><span class="co"># GDP growth series as xts object</span></span>
+<span id="cb682-5"><a href="14-2-tsdasc.html#cb682-5"></a>GDPGrowth &lt;-<span class="st"> </span><span class="kw">xts</span>(<span class="dv">400</span> <span class="op">*</span><span class="st"> </span><span class="kw">log</span>(GDP<span class="op">/</span><span class="kw">lag</span>(GDP)))</span></code></pre></div>
 <p>The following code chunks reproduce Figure 14.1 of the book.</p>
 <div class="unfolded">
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># reproduce Figure 14.1 (a) of the book</span>
-<span class="kw">plot</span>(<span class="kw">log</span>(<span class="kw">as.zoo</span>(GDP)),
-     <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>,
-     <span class="dt">lwd =</span> <span class="dv">2</span>,
-     <span class="dt">ylab =</span> <span class="st">&quot;Logarithm&quot;</span>,
-     <span class="dt">xlab =</span> <span class="st">&quot;Date&quot;</span>,
-     <span class="dt">main =</span> <span class="st">&quot;U.S. Quarterly Real GDP&quot;</span>)</code></pre>
+<div class="sourceCode" id="cb683"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb683-1"><a href="14-2-tsdasc.html#cb683-1"></a><span class="co"># reproduce Figure 14.1 (a) of the book</span></span>
+<span id="cb683-2"><a href="14-2-tsdasc.html#cb683-2"></a><span class="kw">plot</span>(<span class="kw">log</span>(<span class="kw">as.zoo</span>(GDP)),</span>
+<span id="cb683-3"><a href="14-2-tsdasc.html#cb683-3"></a>     <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>,</span>
+<span id="cb683-4"><a href="14-2-tsdasc.html#cb683-4"></a>     <span class="dt">lwd =</span> <span class="dv">2</span>,</span>
+<span id="cb683-5"><a href="14-2-tsdasc.html#cb683-5"></a>     <span class="dt">ylab =</span> <span class="st">&quot;Logarithm&quot;</span>,</span>
+<span id="cb683-6"><a href="14-2-tsdasc.html#cb683-6"></a>     <span class="dt">xlab =</span> <span class="st">&quot;Date&quot;</span>,</span>
+<span id="cb683-7"><a href="14-2-tsdasc.html#cb683-7"></a>     <span class="dt">main =</span> <span class="st">&quot;U.S. Quarterly Real GDP&quot;</span>)</span></code></pre></div>
 <p><img src="ITER_files/figure-html/unnamed-chunk-578-1.png" width="80%" style="display: block; margin: auto;" /></p>
 </div>
 <div class="unfolded">
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># reproduce Figure 14.1 (b) of the book</span>
-<span class="kw">plot</span>(<span class="kw">as.zoo</span>(GDPGrowth),
-     <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>,
-     <span class="dt">lwd =</span> <span class="dv">2</span>,
-     <span class="dt">ylab =</span> <span class="st">&quot;Logarithm&quot;</span>,
-     <span class="dt">xlab =</span> <span class="st">&quot;Date&quot;</span>,
-     <span class="dt">main =</span> <span class="st">&quot;U.S. Real GDP Growth Rates&quot;</span>)</code></pre>
+<div class="sourceCode" id="cb684"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb684-1"><a href="14-2-tsdasc.html#cb684-1"></a><span class="co"># reproduce Figure 14.1 (b) of the book</span></span>
+<span id="cb684-2"><a href="14-2-tsdasc.html#cb684-2"></a><span class="kw">plot</span>(<span class="kw">as.zoo</span>(GDPGrowth),</span>
+<span id="cb684-3"><a href="14-2-tsdasc.html#cb684-3"></a>     <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>,</span>
+<span id="cb684-4"><a href="14-2-tsdasc.html#cb684-4"></a>     <span class="dt">lwd =</span> <span class="dv">2</span>,</span>
+<span id="cb684-5"><a href="14-2-tsdasc.html#cb684-5"></a>     <span class="dt">ylab =</span> <span class="st">&quot;Logarithm&quot;</span>,</span>
+<span id="cb684-6"><a href="14-2-tsdasc.html#cb684-6"></a>     <span class="dt">xlab =</span> <span class="st">&quot;Date&quot;</span>,</span>
+<span id="cb684-7"><a href="14-2-tsdasc.html#cb684-7"></a>     <span class="dt">main =</span> <span class="st">&quot;U.S. Real GDP Growth Rates&quot;</span>)</span></code></pre></div>
 <p><img src="ITER_files/figure-html/unnamed-chunk-579-1.png" width="80%" style="display: block; margin: auto;" /></p>
 </div>
 <div id="notation-lags-differences-logarithms-and-growth-rates" class="section level3 unnumbered">
@@ -460,20 +460,20 @@ Lags, First Differences, Logarithms and Growth Rates
 </ul>
 <p>Furthermore, it is common to report growth rates in macroeconomic series which is why <span class="math inline">\(\log\)</span>-differences are often used.</p>
 <p>Table 14.1 of the book presents the quarterly U.S. GDP time series, its logarithm, the annualized growth rate and the first lag of the annualized growth rate series for the period 2012:Q1 - 2013:Q1. The following simple function can be used to compute these quantities for a quarterly time series <tt>series</tt>.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># compute logarithms, annual growth rates and 1st lag of growth rates</span>
-quants &lt;-<span class="st"> </span><span class="cf">function</span>(series) {
-  s &lt;-<span class="st"> </span>series
-  <span class="kw">return</span>(
-    <span class="kw">data.frame</span>(<span class="st">&quot;Level&quot;</span> =<span class="st"> </span>s,
-               <span class="st">&quot;Logarithm&quot;</span> =<span class="st"> </span><span class="kw">log</span>(s),
-               <span class="st">&quot;AnnualGrowthRate&quot;</span> =<span class="st"> </span><span class="dv">400</span> <span class="op">*</span><span class="st"> </span><span class="kw">log</span>(s <span class="op">/</span><span class="st"> </span><span class="kw">lag</span>(s)),
-               <span class="st">&quot;1stLagAnnualGrowthRate&quot;</span> =<span class="st"> </span><span class="kw">lag</span>(<span class="dv">400</span> <span class="op">*</span><span class="st"> </span><span class="kw">log</span>(s <span class="op">/</span><span class="st"> </span><span class="kw">lag</span>(s))))
-    )
-}</code></pre>
+<div class="sourceCode" id="cb685"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb685-1"><a href="14-2-tsdasc.html#cb685-1"></a><span class="co"># compute logarithms, annual growth rates and 1st lag of growth rates</span></span>
+<span id="cb685-2"><a href="14-2-tsdasc.html#cb685-2"></a>quants &lt;-<span class="st"> </span><span class="cf">function</span>(series) {</span>
+<span id="cb685-3"><a href="14-2-tsdasc.html#cb685-3"></a>  s &lt;-<span class="st"> </span>series</span>
+<span id="cb685-4"><a href="14-2-tsdasc.html#cb685-4"></a>  <span class="kw">return</span>(</span>
+<span id="cb685-5"><a href="14-2-tsdasc.html#cb685-5"></a>    <span class="kw">data.frame</span>(<span class="st">&quot;Level&quot;</span> =<span class="st"> </span>s,</span>
+<span id="cb685-6"><a href="14-2-tsdasc.html#cb685-6"></a>               <span class="st">&quot;Logarithm&quot;</span> =<span class="st"> </span><span class="kw">log</span>(s),</span>
+<span id="cb685-7"><a href="14-2-tsdasc.html#cb685-7"></a>               <span class="st">&quot;AnnualGrowthRate&quot;</span> =<span class="st"> </span><span class="dv">400</span> <span class="op">*</span><span class="st"> </span><span class="kw">log</span>(s <span class="op">/</span><span class="st"> </span><span class="kw">lag</span>(s)),</span>
+<span id="cb685-8"><a href="14-2-tsdasc.html#cb685-8"></a>               <span class="st">&quot;1stLagAnnualGrowthRate&quot;</span> =<span class="st"> </span><span class="kw">lag</span>(<span class="dv">400</span> <span class="op">*</span><span class="st"> </span><span class="kw">log</span>(s <span class="op">/</span><span class="st"> </span><span class="kw">lag</span>(s))))</span>
+<span id="cb685-9"><a href="14-2-tsdasc.html#cb685-9"></a>    )</span>
+<span id="cb685-10"><a href="14-2-tsdasc.html#cb685-10"></a>}</span></code></pre></div>
 <p>The annual growth rate is computed using the approximation <span class="math display">\[Annual Growth Y_t = 400 \cdot\Delta\log(Y_t)\]</span> since <span class="math inline">\(100\cdot\Delta\log(Y_t)\)</span> is an approximation of the quarterly percentage changes, see Key Concept 14.1.</p>
 <p>We call <tt>quants()</tt> on observations for the period 2011:Q3 - 2013:Q1.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># obtain a data.frame with level, logarithm, annual growth rate and its 1st lag of GDP</span>
-<span class="kw">quants</span>(GDP[<span class="st">&quot;2011-07::2013-01&quot;</span>])</code></pre>
+<div class="sourceCode" id="cb686"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb686-1"><a href="14-2-tsdasc.html#cb686-1"></a><span class="co"># obtain a data.frame with level, logarithm, annual growth rate and its 1st lag of GDP</span></span>
+<span id="cb686-2"><a href="14-2-tsdasc.html#cb686-2"></a><span class="kw">quants</span>(GDP[<span class="st">&quot;2011-07::2013-01&quot;</span>])</span></code></pre></div>
 <pre><code>##            Level Logarithm AnnualGrowthRate X1stLagAnnualGrowthRate
 ## 2011 Q3 15062.14  9.619940               NA                      NA
 ## 2011 Q4 15242.14  9.631819        4.7518062                      NA
@@ -507,7 +507,7 @@ Autocorrelation and Autocovariance
 <p>In <tt>R</tt> the function <tt>acf()</tt> from the package <tt>stats</tt> computes the sample autocovariance or the sample autocorrelation function.</p>
 </div>
 <p>Using <tt>acf()</tt> it is straightforward to compute the first four sample autocorrelations of the series <tt>GDPGrowth</tt>.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">acf</span>(<span class="kw">na.omit</span>(GDPGrowth), <span class="dt">lag.max =</span> <span class="dv">4</span>, <span class="dt">plot =</span> F)</code></pre>
+<div class="sourceCode" id="cb688"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb688-1"><a href="14-2-tsdasc.html#cb688-1"></a><span class="kw">acf</span>(<span class="kw">na.omit</span>(GDPGrowth), <span class="dt">lag.max =</span> <span class="dv">4</span>, <span class="dt">plot =</span> F)</span></code></pre></div>
 <pre><code>## 
 ## Autocorrelations of series &#39;na.omit(GDPGrowth)&#39;, by lag
 ## 
@@ -518,57 +518,57 @@ Autocorrelation and Autocovariance
 <div id="other-examples-of-economic-time-series" class="section level4 unnumbered">
 <h4>Other Examples of Economic Time Series</h4>
 <p>Figure 14.2 of the book presents four plots: the U.S. unemployment rate, the U.S. Dollar / British Pound exchange rate, the logarithm of the Japanese industrial production index as well as daily changes in the Wilshire 5000 stock price index, a financial time series. The next code chunk reproduces the plots of the three macroeconomic series and adds percentage changes in the daily values of the New York Stock Exchange Composite index as a fourth one (the data set <tt>NYSESW</tt> comes with the <tt>AER</tt> package).</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># define series as xts objects</span>
-USUnemp &lt;-<span class="st"> </span><span class="kw">xts</span>(USMacroSWQ<span class="op">$</span>UNRATE, USMacroSWQ<span class="op">$</span>Date)[<span class="st">&quot;1960::2013&quot;</span>]
-
-DollarPoundFX &lt;-<span class="st"> </span><span class="kw">xts</span>(USMacroSWQ<span class="op">$</span>EXUSUK, USMacroSWQ<span class="op">$</span>Date)[<span class="st">&quot;1960::2013&quot;</span>]
-  
-JPIndProd &lt;-<span class="st"> </span><span class="kw">xts</span>(<span class="kw">log</span>(USMacroSWQ<span class="op">$</span>JAPAN_IP), USMacroSWQ<span class="op">$</span>Date)[<span class="st">&quot;1960::2013&quot;</span>]
-
-<span class="co"># attach NYSESW data</span>
-<span class="kw">data</span>(<span class="st">&quot;NYSESW&quot;</span>)  
-NYSESW &lt;-<span class="st"> </span><span class="kw">xts</span>(<span class="kw">Delt</span>(NYSESW))</code></pre>
+<div class="sourceCode" id="cb690"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb690-1"><a href="14-2-tsdasc.html#cb690-1"></a><span class="co"># define series as xts objects</span></span>
+<span id="cb690-2"><a href="14-2-tsdasc.html#cb690-2"></a>USUnemp &lt;-<span class="st"> </span><span class="kw">xts</span>(USMacroSWQ<span class="op">$</span>UNRATE, USMacroSWQ<span class="op">$</span>Date)[<span class="st">&quot;1960::2013&quot;</span>]</span>
+<span id="cb690-3"><a href="14-2-tsdasc.html#cb690-3"></a></span>
+<span id="cb690-4"><a href="14-2-tsdasc.html#cb690-4"></a>DollarPoundFX &lt;-<span class="st"> </span><span class="kw">xts</span>(USMacroSWQ<span class="op">$</span>EXUSUK, USMacroSWQ<span class="op">$</span>Date)[<span class="st">&quot;1960::2013&quot;</span>]</span>
+<span id="cb690-5"><a href="14-2-tsdasc.html#cb690-5"></a>  </span>
+<span id="cb690-6"><a href="14-2-tsdasc.html#cb690-6"></a>JPIndProd &lt;-<span class="st"> </span><span class="kw">xts</span>(<span class="kw">log</span>(USMacroSWQ<span class="op">$</span>JAPAN_IP), USMacroSWQ<span class="op">$</span>Date)[<span class="st">&quot;1960::2013&quot;</span>]</span>
+<span id="cb690-7"><a href="14-2-tsdasc.html#cb690-7"></a></span>
+<span id="cb690-8"><a href="14-2-tsdasc.html#cb690-8"></a><span class="co"># attach NYSESW data</span></span>
+<span id="cb690-9"><a href="14-2-tsdasc.html#cb690-9"></a><span class="kw">data</span>(<span class="st">&quot;NYSESW&quot;</span>)  </span>
+<span id="cb690-10"><a href="14-2-tsdasc.html#cb690-10"></a>NYSESW &lt;-<span class="st"> </span><span class="kw">xts</span>(<span class="kw">Delt</span>(NYSESW))</span></code></pre></div>
 <div class="unfolded">
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># divide plotting area into 2x2 matrix</span>
-<span class="kw">par</span>(<span class="dt">mfrow =</span> <span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">2</span>))
-
-<span class="co"># plot the series</span>
-<span class="kw">plot</span>(<span class="kw">as.zoo</span>(USUnemp),
-     <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>,
-     <span class="dt">lwd =</span> <span class="dv">2</span>,
-     <span class="dt">ylab =</span> <span class="st">&quot;Percent&quot;</span>,
-     <span class="dt">xlab =</span> <span class="st">&quot;Date&quot;</span>,
-     <span class="dt">main =</span> <span class="st">&quot;US Unemployment Rate&quot;</span>,
-     <span class="dt">cex.main =</span> <span class="dv">1</span>)
-
-<span class="kw">plot</span>(<span class="kw">as.zoo</span>(DollarPoundFX),
-     <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>,
-     <span class="dt">lwd =</span> <span class="dv">2</span>,
-     <span class="dt">ylab =</span> <span class="st">&quot;Dollar per pound&quot;</span>,
-     <span class="dt">xlab =</span> <span class="st">&quot;Date&quot;</span>,
-     <span class="dt">main =</span> <span class="st">&quot;U.S. Dollar / B. Pound Exchange Rate&quot;</span>,
-     <span class="dt">cex.main =</span> <span class="dv">1</span>)
-
-<span class="kw">plot</span>(<span class="kw">as.zoo</span>(JPIndProd),
-     <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>,
-     <span class="dt">lwd =</span> <span class="dv">2</span>,
-     <span class="dt">ylab =</span> <span class="st">&quot;Logarithm&quot;</span>,
-     <span class="dt">xlab =</span> <span class="st">&quot;Date&quot;</span>,
-     <span class="dt">main =</span> <span class="st">&quot;Japanese Industrial Production&quot;</span>,
-     <span class="dt">cex.main =</span> <span class="dv">1</span>)
-
-<span class="kw">plot</span>(<span class="kw">as.zoo</span>(NYSESW),
-     <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>,
-     <span class="dt">lwd =</span> <span class="dv">2</span>,
-     <span class="dt">ylab =</span> <span class="st">&quot;Percent per Day&quot;</span>,
-     <span class="dt">xlab =</span> <span class="st">&quot;Date&quot;</span>,
-     <span class="dt">main =</span> <span class="st">&quot;New York Stock Exchange Composite Index&quot;</span>,
-     <span class="dt">cex.main =</span> <span class="dv">1</span>)</code></pre>
+<div class="sourceCode" id="cb691"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb691-1"><a href="14-2-tsdasc.html#cb691-1"></a><span class="co"># divide plotting area into 2x2 matrix</span></span>
+<span id="cb691-2"><a href="14-2-tsdasc.html#cb691-2"></a><span class="kw">par</span>(<span class="dt">mfrow =</span> <span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">2</span>))</span>
+<span id="cb691-3"><a href="14-2-tsdasc.html#cb691-3"></a></span>
+<span id="cb691-4"><a href="14-2-tsdasc.html#cb691-4"></a><span class="co"># plot the series</span></span>
+<span id="cb691-5"><a href="14-2-tsdasc.html#cb691-5"></a><span class="kw">plot</span>(<span class="kw">as.zoo</span>(USUnemp),</span>
+<span id="cb691-6"><a href="14-2-tsdasc.html#cb691-6"></a>     <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>,</span>
+<span id="cb691-7"><a href="14-2-tsdasc.html#cb691-7"></a>     <span class="dt">lwd =</span> <span class="dv">2</span>,</span>
+<span id="cb691-8"><a href="14-2-tsdasc.html#cb691-8"></a>     <span class="dt">ylab =</span> <span class="st">&quot;Percent&quot;</span>,</span>
+<span id="cb691-9"><a href="14-2-tsdasc.html#cb691-9"></a>     <span class="dt">xlab =</span> <span class="st">&quot;Date&quot;</span>,</span>
+<span id="cb691-10"><a href="14-2-tsdasc.html#cb691-10"></a>     <span class="dt">main =</span> <span class="st">&quot;US Unemployment Rate&quot;</span>,</span>
+<span id="cb691-11"><a href="14-2-tsdasc.html#cb691-11"></a>     <span class="dt">cex.main =</span> <span class="dv">1</span>)</span>
+<span id="cb691-12"><a href="14-2-tsdasc.html#cb691-12"></a></span>
+<span id="cb691-13"><a href="14-2-tsdasc.html#cb691-13"></a><span class="kw">plot</span>(<span class="kw">as.zoo</span>(DollarPoundFX),</span>
+<span id="cb691-14"><a href="14-2-tsdasc.html#cb691-14"></a>     <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>,</span>
+<span id="cb691-15"><a href="14-2-tsdasc.html#cb691-15"></a>     <span class="dt">lwd =</span> <span class="dv">2</span>,</span>
+<span id="cb691-16"><a href="14-2-tsdasc.html#cb691-16"></a>     <span class="dt">ylab =</span> <span class="st">&quot;Dollar per pound&quot;</span>,</span>
+<span id="cb691-17"><a href="14-2-tsdasc.html#cb691-17"></a>     <span class="dt">xlab =</span> <span class="st">&quot;Date&quot;</span>,</span>
+<span id="cb691-18"><a href="14-2-tsdasc.html#cb691-18"></a>     <span class="dt">main =</span> <span class="st">&quot;U.S. Dollar / B. Pound Exchange Rate&quot;</span>,</span>
+<span id="cb691-19"><a href="14-2-tsdasc.html#cb691-19"></a>     <span class="dt">cex.main =</span> <span class="dv">1</span>)</span>
+<span id="cb691-20"><a href="14-2-tsdasc.html#cb691-20"></a></span>
+<span id="cb691-21"><a href="14-2-tsdasc.html#cb691-21"></a><span class="kw">plot</span>(<span class="kw">as.zoo</span>(JPIndProd),</span>
+<span id="cb691-22"><a href="14-2-tsdasc.html#cb691-22"></a>     <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>,</span>
+<span id="cb691-23"><a href="14-2-tsdasc.html#cb691-23"></a>     <span class="dt">lwd =</span> <span class="dv">2</span>,</span>
+<span id="cb691-24"><a href="14-2-tsdasc.html#cb691-24"></a>     <span class="dt">ylab =</span> <span class="st">&quot;Logarithm&quot;</span>,</span>
+<span id="cb691-25"><a href="14-2-tsdasc.html#cb691-25"></a>     <span class="dt">xlab =</span> <span class="st">&quot;Date&quot;</span>,</span>
+<span id="cb691-26"><a href="14-2-tsdasc.html#cb691-26"></a>     <span class="dt">main =</span> <span class="st">&quot;Japanese Industrial Production&quot;</span>,</span>
+<span id="cb691-27"><a href="14-2-tsdasc.html#cb691-27"></a>     <span class="dt">cex.main =</span> <span class="dv">1</span>)</span>
+<span id="cb691-28"><a href="14-2-tsdasc.html#cb691-28"></a></span>
+<span id="cb691-29"><a href="14-2-tsdasc.html#cb691-29"></a><span class="kw">plot</span>(<span class="kw">as.zoo</span>(NYSESW),</span>
+<span id="cb691-30"><a href="14-2-tsdasc.html#cb691-30"></a>     <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>,</span>
+<span id="cb691-31"><a href="14-2-tsdasc.html#cb691-31"></a>     <span class="dt">lwd =</span> <span class="dv">2</span>,</span>
+<span id="cb691-32"><a href="14-2-tsdasc.html#cb691-32"></a>     <span class="dt">ylab =</span> <span class="st">&quot;Percent per Day&quot;</span>,</span>
+<span id="cb691-33"><a href="14-2-tsdasc.html#cb691-33"></a>     <span class="dt">xlab =</span> <span class="st">&quot;Date&quot;</span>,</span>
+<span id="cb691-34"><a href="14-2-tsdasc.html#cb691-34"></a>     <span class="dt">main =</span> <span class="st">&quot;New York Stock Exchange Composite Index&quot;</span>,</span>
+<span id="cb691-35"><a href="14-2-tsdasc.html#cb691-35"></a>     <span class="dt">cex.main =</span> <span class="dv">1</span>)</span></code></pre></div>
 <p><img src="ITER_files/figure-html/unnamed-chunk-588-1.png" width="80%" style="display: block; margin: auto;" /></p>
 </div>
 <p>The series show quite different characteristics. The unemployment rate increases during recessions and declines during economic recoveries and growth. The Dollar/Pound exchange rates shows a deterministic pattern until the end of the Bretton Woods system. Japan’s industrial production exhibits an upward trend and decreasing growth. Daily changes in the New York Stock Exchange composite index seem to fluctuate randomly around the zero line. The sample autocorrelations support this conjecture.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># compute sample autocorrelation for the NYSESW series</span>
-<span class="kw">acf</span>(<span class="kw">na.omit</span>(NYSESW), <span class="dt">plot =</span> F, <span class="dt">lag.max =</span> <span class="dv">10</span>)</code></pre>
+<div class="sourceCode" id="cb692"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb692-1"><a href="14-2-tsdasc.html#cb692-1"></a><span class="co"># compute sample autocorrelation for the NYSESW series</span></span>
+<span id="cb692-2"><a href="14-2-tsdasc.html#cb692-2"></a><span class="kw">acf</span>(<span class="kw">na.omit</span>(NYSESW), <span class="dt">plot =</span> F, <span class="dt">lag.max =</span> <span class="dv">10</span>)</span></code></pre></div>
 <pre><code>## 
 ## Autocorrelations of series &#39;na.omit(NYSESW)&#39;, by lag
 ## 
@@ -577,8 +577,8 @@ NYSESW &lt;-<span class="st"> </span><span class="kw">xts</span>(<span class="kw
 ##     10 
 ##  0.004</code></pre>
 <p>The first 10 sample autocorrelation coefficients are very close to zero. The default plot generated by <code>acf()</code> provides further evidence.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># plot sample autocorrelation for the NYSESW series</span>
-<span class="kw">acf</span>(<span class="kw">na.omit</span>(NYSESW), <span class="dt">main =</span> <span class="st">&quot;Sample Autocorrelation for NYSESW Data&quot;</span>)</code></pre>
+<div class="sourceCode" id="cb694"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb694-1"><a href="14-2-tsdasc.html#cb694-1"></a><span class="co"># plot sample autocorrelation for the NYSESW series</span></span>
+<span id="cb694-2"><a href="14-2-tsdasc.html#cb694-2"></a><span class="kw">acf</span>(<span class="kw">na.omit</span>(NYSESW), <span class="dt">main =</span> <span class="st">&quot;Sample Autocorrelation for NYSESW Data&quot;</span>)</span></code></pre></div>
 <p><img src="ITER_files/figure-html/unnamed-chunk-590-1.png" width="80%" style="display: block; margin: auto;" /></p>
 <p>The blue dashed bands represent values beyond which the autocorrelations are significantly different from zero at <span class="math inline">\(5\%\)</span> level. Even when the true autocorrelations are zero, we need to expect a few exceedences — recall the definition of a type-I-error from Key Concept 3.5.
 For most lags we see that the sample autocorrelation does not exceed the bands and there are only a few cases that lie marginally beyond the limits.</p>

@@ -1,13 +1,12 @@
 <!DOCTYPE html>
-<html >
-
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
 <head>
 
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>16.3 Cointegration | Introduction to Econometrics with R</title>
-  <meta name="description" content="Beginners with little background in statistics and econometrics often have a hard time understanding the benefits of having programming skills for learning and applying Econometrics. ‘Introduction to Econometrics with R’ is an interactive companion to the well-received textbook ‘Introduction to Econometrics’ by James H. Stock and Mark W. Watson (2015). It gives a gentle introduction to the essentials of R programming and guides students in implementing the empirical applications presented throughout the textbook using the newly aquired skills. This is supported by interactive programming exercises generated with DataCamp Light and integration of interactive visualizations of central concepts which are based on the flexible JavaScript library D3.js.">
-  <meta name="generator" content="bookdown  and GitBook 2.6.7">
+  <meta name="description" content="Beginners with little background in statistics and econometrics often have a hard time understanding the benefits of having programming skills for learning and applying Econometrics. ‘Introduction to Econometrics with R’ is an interactive companion to the well-received textbook ‘Introduction to Econometrics’ by James H. Stock and Mark W. Watson (2015). It gives a gentle introduction to the essentials of R programming and guides students in implementing the empirical applications presented throughout the textbook using the newly aquired skills. This is supported by interactive programming exercises generated with DataCamp Light and integration of interactive visualizations of central concepts which are based on the flexible JavaScript library D3.js." />
+  <meta name="generator" content="bookdown 0.12 and GitBook 2.6.7" />
 
   <meta property="og:title" content="16.3 Cointegration | Introduction to Econometrics with R" />
   <meta property="og:type" content="book" />
@@ -22,14 +21,14 @@
   <meta name="twitter:description" content="Beginners with little background in statistics and econometrics often have a hard time understanding the benefits of having programming skills for learning and applying Econometrics. ‘Introduction to Econometrics with R’ is an interactive companion to the well-received textbook ‘Introduction to Econometrics’ by James H. Stock and Mark W. Watson (2015). It gives a gentle introduction to the essentials of R programming and guides students in implementing the empirical applications presented throughout the textbook using the newly aquired skills. This is supported by interactive programming exercises generated with DataCamp Light and integration of interactive visualizations of central concepts which are based on the flexible JavaScript library D3.js." />
   <meta name="twitter:image" content="https://www.econometrics-with-r.org/images/cover.png" />
 
-<meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber and Martin Schmelzer">
+<meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber and Martin Schmelzer" />
 
 
-<meta name="date" content="2019-03-12">
+<meta name="date" content="2019-08-20" />
 
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
 <link rel="prev" href="16-2-ooiatdfglsurt.html">
@@ -49,17 +48,17 @@
 
 
 <script src="libs/htmlwidgets-1.3/htmlwidgets.js"></script>
-<script src="libs/plotly-binding-4.8.0/plotly.js"></script>
+<script src="libs/plotly-binding-4.9.0/plotly.js"></script>
 <script src="libs/typedarray-0.1/typedarray.min.js"></script>
 <link href="libs/crosstalk-1.0.0/css/crosstalk.css" rel="stylesheet" />
 <script src="libs/crosstalk-1.0.0/js/crosstalk.min.js"></script>
-<link href="libs/plotly-htmlwidgets-css-1.39.2/plotly-htmlwidgets.css" rel="stylesheet" />
-<script src="libs/plotly-main-1.39.2/plotly-latest.min.js"></script>
+<link href="libs/plotly-htmlwidgets-css-1.46.1/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="libs/plotly-main-1.46.1/plotly-latest.min.js"></script>
 <!-- font families -->
 
 <link href="https://fonts.googleapis.com/css?family=PT+Sans|Pacifico|Source+Sans+Pro" rel="stylesheet">
 
-<script src="js/hideOutput.js"></script>
+<!--<script src="js/hideOutput.js"></script>-->
 
 <!-- Mathjax -->
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/default.js"></script>
@@ -89,26 +88,27 @@
 
 
 <style type="text/css">
-a.sourceLine { display: inline-block; line-height: 1.25; }
-a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-a.sourceLine:empty { height: 1.2em; }
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode { white-space: pre; position: relative; }
-div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
 code.sourceCode { white-space: pre-wrap; }
-a.sourceLine { text-indent: -1em; padding-left: 1em; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
-pre.numberSource a.sourceLine
-  { position: relative; left: -4em; }
-pre.numberSource a.sourceLine::before
-  { content: attr(data-line-number);
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
     position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; pointer-events: all; display: inline-block;
+    border: none; display: inline-block;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -117,9 +117,9 @@ pre.numberSource a.sourceLine::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  { background-color: #f8f8f8; }
+  {  background-color: #f8f8f8; }
 @media screen {
-a.sourceLine::before { text-decoration: underline; }
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ef2929; } /* Alert */
 code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
@@ -405,41 +405,41 @@ Cointegration
 </p>
 </div>
 <p>As an example, reconsider the the relation between short- and long-term interest rates by the example of U.S. 3-month treasury bills, U.S. 10-years treasury bonds and the spread in their interest rates which have been introduced in Chapter <a href="14-4-cybtmpi.html#cybtmpi">14.4</a>. The next code chunk shows how to reproduce Figure 16.2 of the book.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># reproduce Figure 16.2 of the book</span>
-
-<span class="co"># plot both interest series</span>
-<span class="kw">plot</span>(<span class="kw">merge</span>(<span class="kw">as.zoo</span>(TB3MS), <span class="kw">as.zoo</span>(TB10YS)), 
-     <span class="dt">plot.type =</span> <span class="st">&quot;single&quot;</span>, 
-     <span class="dt">lty =</span> <span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">1</span>),
-     <span class="dt">lwd =</span> <span class="dv">2</span>,
-     <span class="dt">xlab =</span> <span class="st">&quot;Date&quot;</span>,
-     <span class="dt">ylab =</span> <span class="st">&quot;Percent per annum&quot;</span>,
-     <span class="dt">ylim =</span> <span class="kw">c</span>(<span class="op">-</span><span class="dv">5</span>, <span class="dv">17</span>),
-     <span class="dt">main =</span> <span class="st">&quot;Interest Rates&quot;</span>)
-
-<span class="co"># add the term spread series</span>
-<span class="kw">lines</span>(<span class="kw">as.zoo</span>(TSpread), 
-     <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>,
-     <span class="dt">lwd =</span> <span class="dv">2</span>,
-     <span class="dt">xlab =</span> <span class="st">&quot;Date&quot;</span>,
-     <span class="dt">ylab =</span> <span class="st">&quot;Percent per annum&quot;</span>,
-     <span class="dt">main =</span> <span class="st">&quot;Term Spread&quot;</span>)
-
-<span class="co"># shade the term spread</span>
-<span class="kw">polygon</span>(<span class="kw">c</span>(<span class="kw">time</span>(TB3MS), <span class="kw">rev</span>(<span class="kw">time</span>(TB3MS))), 
-        <span class="kw">c</span>(TB10YS, <span class="kw">rev</span>(TB3MS)),
-        <span class="dt">col =</span> <span class="kw">alpha</span>(<span class="st">&quot;steelblue&quot;</span>, <span class="dt">alpha =</span> <span class="fl">0.3</span>),
-        <span class="dt">border =</span> <span class="ot">NA</span>)
-
-<span class="co"># add horizontal line add 0</span>
-<span class="kw">abline</span>(<span class="dv">0</span>, <span class="dv">0</span>)
-
-<span class="co"># add a legend</span>
-<span class="kw">legend</span>(<span class="st">&quot;topright&quot;</span>, 
-       <span class="dt">legend =</span> <span class="kw">c</span>(<span class="st">&quot;TB3MS&quot;</span>, <span class="st">&quot;TB10YS&quot;</span>, <span class="st">&quot;Term Spread&quot;</span>),
-       <span class="dt">col =</span> <span class="kw">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;black&quot;</span>, <span class="st">&quot;steelblue&quot;</span>),
-       <span class="dt">lwd =</span> <span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">2</span>),
-       <span class="dt">lty =</span> <span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">1</span>))</code></pre>
+<div class="sourceCode" id="cb878"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb878-1"><a href="16-3-cointegration.html#cb878-1"></a><span class="co"># reproduce Figure 16.2 of the book</span></span>
+<span id="cb878-2"><a href="16-3-cointegration.html#cb878-2"></a></span>
+<span id="cb878-3"><a href="16-3-cointegration.html#cb878-3"></a><span class="co"># plot both interest series</span></span>
+<span id="cb878-4"><a href="16-3-cointegration.html#cb878-4"></a><span class="kw">plot</span>(<span class="kw">merge</span>(<span class="kw">as.zoo</span>(TB3MS), <span class="kw">as.zoo</span>(TB10YS)), </span>
+<span id="cb878-5"><a href="16-3-cointegration.html#cb878-5"></a>     <span class="dt">plot.type =</span> <span class="st">&quot;single&quot;</span>, </span>
+<span id="cb878-6"><a href="16-3-cointegration.html#cb878-6"></a>     <span class="dt">lty =</span> <span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">1</span>),</span>
+<span id="cb878-7"><a href="16-3-cointegration.html#cb878-7"></a>     <span class="dt">lwd =</span> <span class="dv">2</span>,</span>
+<span id="cb878-8"><a href="16-3-cointegration.html#cb878-8"></a>     <span class="dt">xlab =</span> <span class="st">&quot;Date&quot;</span>,</span>
+<span id="cb878-9"><a href="16-3-cointegration.html#cb878-9"></a>     <span class="dt">ylab =</span> <span class="st">&quot;Percent per annum&quot;</span>,</span>
+<span id="cb878-10"><a href="16-3-cointegration.html#cb878-10"></a>     <span class="dt">ylim =</span> <span class="kw">c</span>(<span class="op">-</span><span class="dv">5</span>, <span class="dv">17</span>),</span>
+<span id="cb878-11"><a href="16-3-cointegration.html#cb878-11"></a>     <span class="dt">main =</span> <span class="st">&quot;Interest Rates&quot;</span>)</span>
+<span id="cb878-12"><a href="16-3-cointegration.html#cb878-12"></a></span>
+<span id="cb878-13"><a href="16-3-cointegration.html#cb878-13"></a><span class="co"># add the term spread series</span></span>
+<span id="cb878-14"><a href="16-3-cointegration.html#cb878-14"></a><span class="kw">lines</span>(<span class="kw">as.zoo</span>(TSpread), </span>
+<span id="cb878-15"><a href="16-3-cointegration.html#cb878-15"></a>     <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>,</span>
+<span id="cb878-16"><a href="16-3-cointegration.html#cb878-16"></a>     <span class="dt">lwd =</span> <span class="dv">2</span>,</span>
+<span id="cb878-17"><a href="16-3-cointegration.html#cb878-17"></a>     <span class="dt">xlab =</span> <span class="st">&quot;Date&quot;</span>,</span>
+<span id="cb878-18"><a href="16-3-cointegration.html#cb878-18"></a>     <span class="dt">ylab =</span> <span class="st">&quot;Percent per annum&quot;</span>,</span>
+<span id="cb878-19"><a href="16-3-cointegration.html#cb878-19"></a>     <span class="dt">main =</span> <span class="st">&quot;Term Spread&quot;</span>)</span>
+<span id="cb878-20"><a href="16-3-cointegration.html#cb878-20"></a></span>
+<span id="cb878-21"><a href="16-3-cointegration.html#cb878-21"></a><span class="co"># shade the term spread</span></span>
+<span id="cb878-22"><a href="16-3-cointegration.html#cb878-22"></a><span class="kw">polygon</span>(<span class="kw">c</span>(<span class="kw">time</span>(TB3MS), <span class="kw">rev</span>(<span class="kw">time</span>(TB3MS))), </span>
+<span id="cb878-23"><a href="16-3-cointegration.html#cb878-23"></a>        <span class="kw">c</span>(TB10YS, <span class="kw">rev</span>(TB3MS)),</span>
+<span id="cb878-24"><a href="16-3-cointegration.html#cb878-24"></a>        <span class="dt">col =</span> <span class="kw">alpha</span>(<span class="st">&quot;steelblue&quot;</span>, <span class="dt">alpha =</span> <span class="fl">0.3</span>),</span>
+<span id="cb878-25"><a href="16-3-cointegration.html#cb878-25"></a>        <span class="dt">border =</span> <span class="ot">NA</span>)</span>
+<span id="cb878-26"><a href="16-3-cointegration.html#cb878-26"></a></span>
+<span id="cb878-27"><a href="16-3-cointegration.html#cb878-27"></a><span class="co"># add horizontal line add 0</span></span>
+<span id="cb878-28"><a href="16-3-cointegration.html#cb878-28"></a><span class="kw">abline</span>(<span class="dv">0</span>, <span class="dv">0</span>)</span>
+<span id="cb878-29"><a href="16-3-cointegration.html#cb878-29"></a></span>
+<span id="cb878-30"><a href="16-3-cointegration.html#cb878-30"></a><span class="co"># add a legend</span></span>
+<span id="cb878-31"><a href="16-3-cointegration.html#cb878-31"></a><span class="kw">legend</span>(<span class="st">&quot;topright&quot;</span>, </span>
+<span id="cb878-32"><a href="16-3-cointegration.html#cb878-32"></a>       <span class="dt">legend =</span> <span class="kw">c</span>(<span class="st">&quot;TB3MS&quot;</span>, <span class="st">&quot;TB10YS&quot;</span>, <span class="st">&quot;Term Spread&quot;</span>),</span>
+<span id="cb878-33"><a href="16-3-cointegration.html#cb878-33"></a>       <span class="dt">col =</span> <span class="kw">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;black&quot;</span>, <span class="st">&quot;steelblue&quot;</span>),</span>
+<span id="cb878-34"><a href="16-3-cointegration.html#cb878-34"></a>       <span class="dt">lwd =</span> <span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">2</span>),</span>
+<span id="cb878-35"><a href="16-3-cointegration.html#cb878-35"></a>       <span class="dt">lty =</span> <span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">1</span>))</span></code></pre></div>
 <p><img src="ITER_files/figure-html/unnamed-chunk-730-1.png" width="80%" style="display: block; margin: auto;" /></p>
 <p>The plot suggests that long-term and short-term interest rates are cointegrated: both interest series seem to have the same long-run behavior. They share a common stochastic trend. The term spread, which is obtained by taking the difference between long-term and short-term interest rates, seems to be stationary. In fact, the expectations theory of the term structure suggests the cointegrating coefficient <span class="math inline">\(\theta\)</span> to be 1. This is consistent with the visual result.</p>
 <div id="testing-for-cointegration" class="section level4 unnumbered">
@@ -449,72 +449,72 @@ Cointegration
 <li><p><strong><span class="math inline">\(\theta\)</span> is known.</strong></p>
 <p>Knowledge of <span class="math inline">\(\theta\)</span> enables us to compute differences <span class="math inline">\(z_t = Y_t - \theta X_t\)</span> so that Dickey-Fuller and DF-GLS unit root tests can be applied to <span class="math inline">\(z_t\)</span>. For these tests, the critical values are the critical values of the ADF or DF-GLS test.</p></li>
 <li><p><strong><span class="math inline">\(\theta\)</span> is unknown.</strong></p>
-<p>If <span class="math inline">\(\theta\)</span> is unknown, it must be estimated before the unit root test can be applied. This is done by estimating the regression <span class="math display">\[Y_t = \alpha + \theta X_t + z_t\]</span> using OLS (this is refered to as the first-stage regression). Then, a Dickey-Fuller test is used for testing the hypothesis that <span class="math inline">\(z_t\)</span> is a nonstationary series. This is known as the Engle-Granger Augmented Dickey-Fuller test for cointegration (or <em>EG-ADF test</em>) after <span class="citation">Engle &amp; Granger (<a href="#ref-engle1987">1987</a>)</span>. The critical values for this test are special as the associated null distribution is nonnormal and depends on the number of <span class="math inline">\(I(1)\)</span> variables used as regressors in the first stage regression. You may look them up in Table 16.2 of the book. When there are only two presumably cointegrated variables (and thus a single <span class="math inline">\(I(1)\)</span> variable is used in the first stage OLS regression) the critical values for the levels <span class="math inline">\(10\%\)</span>, <span class="math inline">\(5\%\)</span> and <span class="math inline">\(1\%\)</span> are <span class="math inline">\(-3.12\)</span>, <span class="math inline">\(-3.41\)</span> and <span class="math inline">\(-3.96\)</span>.</p></li>
+<p>If <span class="math inline">\(\theta\)</span> is unknown, it must be estimated before the unit root test can be applied. This is done by estimating the regression <span class="math display">\[Y_t = \alpha + \theta X_t + z_t\]</span> using OLS (this is refered to as the first-stage regression). Then, a Dickey-Fuller test is used for testing the hypothesis that <span class="math inline">\(z_t\)</span> is a nonstationary series. This is known as the Engle-Granger Augmented Dickey-Fuller test for cointegration (or <em>EG-ADF test</em>) after <span class="citation">Engle &amp; Granger (<a href="#ref-engle1987" role="doc-biblioref">1987</a>)</span>. The critical values for this test are special as the associated null distribution is nonnormal and depends on the number of <span class="math inline">\(I(1)\)</span> variables used as regressors in the first stage regression. You may look them up in Table 16.2 of the book. When there are only two presumably cointegrated variables (and thus a single <span class="math inline">\(I(1)\)</span> variable is used in the first stage OLS regression) the critical values for the levels <span class="math inline">\(10\%\)</span>, <span class="math inline">\(5\%\)</span> and <span class="math inline">\(1\%\)</span> are <span class="math inline">\(-3.12\)</span>, <span class="math inline">\(-3.41\)</span> and <span class="math inline">\(-3.96\)</span>.</p></li>
 </ol>
 </div>
 <div id="application-to-interest-rates" class="section level4 unnumbered">
 <h4>Application to Interest Rates</h4>
 <p>As has been mentioned above, the theory of the term structure suggests that long-term and short-term interest rates are cointegrated with a cointegration coefficient of <span class="math inline">\(\theta = 1\)</span>. In the previous section we have seen that there is visual evidence for this conjecture since the spread of 10-year and 3-month interest rates looks stationary.</p>
 <p>We continue by using formal tests (the ADF and the DF-GLS test) to see whether the individual interest rate series are integrated and if their difference is stationary (for now, we assume that <span class="math inline">\(\theta = 1\)</span> is known). Both is conveniently done by using the functions <tt>ur.df()</tt> for computation of the ADF test and <tt>ur.ers</tt> for conducting the DF-GLS test. Following the book we use data from 1962:Q1 to 2012:Q4 and employ models that include a drift term. We set the maximum lag order to <span class="math inline">\(6\)</span> and use the <span class="math inline">\(AIC\)</span> for selection of the optimal lag length.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># test for nonstationarity of 3-month treasury bills using ADF test</span>
-<span class="kw">ur.df</span>(<span class="kw">window</span>(TB3MS, <span class="kw">c</span>(<span class="dv">1962</span>, <span class="dv">1</span>), <span class="kw">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>)), 
-      <span class="dt">lags =</span> <span class="dv">6</span>, 
-      <span class="dt">selectlags =</span> <span class="st">&quot;AIC&quot;</span>, 
-      <span class="dt">type =</span> <span class="st">&quot;drift&quot;</span>)</code></pre>
+<div class="sourceCode" id="cb879"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb879-1"><a href="16-3-cointegration.html#cb879-1"></a><span class="co"># test for nonstationarity of 3-month treasury bills using ADF test</span></span>
+<span id="cb879-2"><a href="16-3-cointegration.html#cb879-2"></a><span class="kw">ur.df</span>(<span class="kw">window</span>(TB3MS, <span class="kw">c</span>(<span class="dv">1962</span>, <span class="dv">1</span>), <span class="kw">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>)), </span>
+<span id="cb879-3"><a href="16-3-cointegration.html#cb879-3"></a>      <span class="dt">lags =</span> <span class="dv">6</span>, </span>
+<span id="cb879-4"><a href="16-3-cointegration.html#cb879-4"></a>      <span class="dt">selectlags =</span> <span class="st">&quot;AIC&quot;</span>, </span>
+<span id="cb879-5"><a href="16-3-cointegration.html#cb879-5"></a>      <span class="dt">type =</span> <span class="st">&quot;drift&quot;</span>)</span></code></pre></div>
 <pre><code>## 
 ## ############################################################### 
 ## # Augmented Dickey-Fuller Test Unit Root / Cointegration Test # 
 ## ############################################################### 
 ## 
 ## The value of the test statistic is: -2.1004 2.2385</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># test for nonstationarity of 10-years treasury bonds using ADF test</span>
-<span class="kw">ur.df</span>(<span class="kw">window</span>(TB10YS, <span class="kw">c</span>(<span class="dv">1962</span>, <span class="dv">1</span>), <span class="kw">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>)), 
-      <span class="dt">lags =</span> <span class="dv">6</span>, 
-      <span class="dt">selectlags =</span> <span class="st">&quot;AIC&quot;</span>, 
-      <span class="dt">type =</span> <span class="st">&quot;drift&quot;</span>)</code></pre>
+<div class="sourceCode" id="cb881"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb881-1"><a href="16-3-cointegration.html#cb881-1"></a><span class="co"># test for nonstationarity of 10-years treasury bonds using ADF test</span></span>
+<span id="cb881-2"><a href="16-3-cointegration.html#cb881-2"></a><span class="kw">ur.df</span>(<span class="kw">window</span>(TB10YS, <span class="kw">c</span>(<span class="dv">1962</span>, <span class="dv">1</span>), <span class="kw">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>)), </span>
+<span id="cb881-3"><a href="16-3-cointegration.html#cb881-3"></a>      <span class="dt">lags =</span> <span class="dv">6</span>, </span>
+<span id="cb881-4"><a href="16-3-cointegration.html#cb881-4"></a>      <span class="dt">selectlags =</span> <span class="st">&quot;AIC&quot;</span>, </span>
+<span id="cb881-5"><a href="16-3-cointegration.html#cb881-5"></a>      <span class="dt">type =</span> <span class="st">&quot;drift&quot;</span>)</span></code></pre></div>
 <pre><code>## 
 ## ############################################################### 
 ## # Augmented Dickey-Fuller Test Unit Root / Cointegration Test # 
 ## ############################################################### 
 ## 
 ## The value of the test statistic is: -1.0079 0.5501</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># test for nonstationarity of 3-month treasury bills using DF-GLS test</span>
-<span class="kw">ur.ers</span>(<span class="kw">window</span>(TB3MS, <span class="kw">c</span>(<span class="dv">1962</span>, <span class="dv">1</span>), <span class="kw">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>)),
-       <span class="dt">model =</span> <span class="st">&quot;constant&quot;</span>, 
-       <span class="dt">lag.max =</span> <span class="dv">6</span>)</code></pre>
+<div class="sourceCode" id="cb883"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb883-1"><a href="16-3-cointegration.html#cb883-1"></a><span class="co"># test for nonstationarity of 3-month treasury bills using DF-GLS test</span></span>
+<span id="cb883-2"><a href="16-3-cointegration.html#cb883-2"></a><span class="kw">ur.ers</span>(<span class="kw">window</span>(TB3MS, <span class="kw">c</span>(<span class="dv">1962</span>, <span class="dv">1</span>), <span class="kw">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>)),</span>
+<span id="cb883-3"><a href="16-3-cointegration.html#cb883-3"></a>       <span class="dt">model =</span> <span class="st">&quot;constant&quot;</span>, </span>
+<span id="cb883-4"><a href="16-3-cointegration.html#cb883-4"></a>       <span class="dt">lag.max =</span> <span class="dv">6</span>)</span></code></pre></div>
 <pre><code>## 
 ## ############################################################### 
 ## # Elliot, Rothenberg and Stock Unit Root / Cointegration Test # 
 ## ############################################################### 
 ## 
 ## The value of the test statistic is: -1.8042</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># test for nonstationarity of 10-years treasury bonds using DF-GLS test</span>
-<span class="kw">ur.ers</span>(<span class="kw">window</span>(TB10YS, <span class="kw">c</span>(<span class="dv">1962</span>, <span class="dv">1</span>), <span class="kw">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>)),
-       <span class="dt">model =</span> <span class="st">&quot;constant&quot;</span>, 
-       <span class="dt">lag.max =</span> <span class="dv">6</span>)</code></pre>
+<div class="sourceCode" id="cb885"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb885-1"><a href="16-3-cointegration.html#cb885-1"></a><span class="co"># test for nonstationarity of 10-years treasury bonds using DF-GLS test</span></span>
+<span id="cb885-2"><a href="16-3-cointegration.html#cb885-2"></a><span class="kw">ur.ers</span>(<span class="kw">window</span>(TB10YS, <span class="kw">c</span>(<span class="dv">1962</span>, <span class="dv">1</span>), <span class="kw">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>)),</span>
+<span id="cb885-3"><a href="16-3-cointegration.html#cb885-3"></a>       <span class="dt">model =</span> <span class="st">&quot;constant&quot;</span>, </span>
+<span id="cb885-4"><a href="16-3-cointegration.html#cb885-4"></a>       <span class="dt">lag.max =</span> <span class="dv">6</span>)</span></code></pre></div>
 <pre><code>## 
 ## ############################################################### 
 ## # Elliot, Rothenberg and Stock Unit Root / Cointegration Test # 
 ## ############################################################### 
 ## 
 ## The value of the test statistic is: -0.942</code></pre>
-<p>The corresponding <span class="math inline">\(10\%\)</span> critical value for both tests is <span class="math inline">\(-2.57\)</span> so we cannot reject the null hypotheses of nonstationary for either series, even at the <span class="math inline">\(10\%\)</span> level of significance.<a href="#fn12" class="footnote-ref" id="fnref12"><sup>12</sup></a> We conclude that it is plausible to model both interest rate series as <span class="math inline">\(I(1)\)</span>.</p>
+<p>The corresponding <span class="math inline">\(10\%\)</span> critical value for both tests is <span class="math inline">\(-2.57\)</span> so we cannot reject the null hypotheses of nonstationary for either series, even at the <span class="math inline">\(10\%\)</span> level of significance.<a href="references.html#fn12" class="footnote-ref" id="fnref12"><sup>12</sup></a> We conclude that it is plausible to model both interest rate series as <span class="math inline">\(I(1)\)</span>.</p>
 <p>Next, we apply the ADF and the DF-GLS test to test for nonstationarity of the term spread series, which means we test for non-cointegration of long- and short-term interest rates.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># test if term spread is stationairy (cointegration of interest rates) using ADF</span>
-<span class="kw">ur.df</span>(<span class="kw">window</span>(TB10YS, <span class="kw">c</span>(<span class="dv">1962</span>, <span class="dv">1</span>), <span class="kw">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>)) <span class="op">-</span><span class="st"> </span><span class="kw">window</span>(TB3MS, <span class="kw">c</span>(<span class="dv">1962</span>, <span class="dv">1</span>), <span class="kw">c</span>(<span class="dv">2012</span> ,<span class="dv">4</span>)), 
-      <span class="dt">lags =</span> <span class="dv">6</span>, 
-      <span class="dt">selectlags =</span> <span class="st">&quot;AIC&quot;</span>, 
-      <span class="dt">type =</span> <span class="st">&quot;drift&quot;</span>)</code></pre>
+<div class="sourceCode" id="cb887"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb887-1"><a href="16-3-cointegration.html#cb887-1"></a><span class="co"># test if term spread is stationairy (cointegration of interest rates) using ADF</span></span>
+<span id="cb887-2"><a href="16-3-cointegration.html#cb887-2"></a><span class="kw">ur.df</span>(<span class="kw">window</span>(TB10YS, <span class="kw">c</span>(<span class="dv">1962</span>, <span class="dv">1</span>), <span class="kw">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>)) <span class="op">-</span><span class="st"> </span><span class="kw">window</span>(TB3MS, <span class="kw">c</span>(<span class="dv">1962</span>, <span class="dv">1</span>), <span class="kw">c</span>(<span class="dv">2012</span> ,<span class="dv">4</span>)), </span>
+<span id="cb887-3"><a href="16-3-cointegration.html#cb887-3"></a>      <span class="dt">lags =</span> <span class="dv">6</span>, </span>
+<span id="cb887-4"><a href="16-3-cointegration.html#cb887-4"></a>      <span class="dt">selectlags =</span> <span class="st">&quot;AIC&quot;</span>, </span>
+<span id="cb887-5"><a href="16-3-cointegration.html#cb887-5"></a>      <span class="dt">type =</span> <span class="st">&quot;drift&quot;</span>)</span></code></pre></div>
 <pre><code>## 
 ## ############################################################### 
 ## # Augmented Dickey-Fuller Test Unit Root / Cointegration Test # 
 ## ############################################################### 
 ## 
 ## The value of the test statistic is: -3.9308 7.7362</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># test if term spread is stationairy (cointegration of interest rates) using DF-GLS test</span>
-<span class="kw">ur.ers</span>(<span class="kw">window</span>(TB10YS, <span class="kw">c</span>(<span class="dv">1962</span>, <span class="dv">1</span>), <span class="kw">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>)) <span class="op">-</span><span class="st"> </span><span class="kw">window</span>(TB3MS, <span class="kw">c</span>(<span class="dv">1962</span>, <span class="dv">1</span>), <span class="kw">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>)),
-       <span class="dt">model =</span> <span class="st">&quot;constant&quot;</span>, 
-       <span class="dt">lag.max =</span> <span class="dv">6</span>)</code></pre>
+<div class="sourceCode" id="cb889"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb889-1"><a href="16-3-cointegration.html#cb889-1"></a><span class="co"># test if term spread is stationairy (cointegration of interest rates) using DF-GLS test</span></span>
+<span id="cb889-2"><a href="16-3-cointegration.html#cb889-2"></a><span class="kw">ur.ers</span>(<span class="kw">window</span>(TB10YS, <span class="kw">c</span>(<span class="dv">1962</span>, <span class="dv">1</span>), <span class="kw">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>)) <span class="op">-</span><span class="st"> </span><span class="kw">window</span>(TB3MS, <span class="kw">c</span>(<span class="dv">1962</span>, <span class="dv">1</span>), <span class="kw">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>)),</span>
+<span id="cb889-3"><a href="16-3-cointegration.html#cb889-3"></a>       <span class="dt">model =</span> <span class="st">&quot;constant&quot;</span>, </span>
+<span id="cb889-4"><a href="16-3-cointegration.html#cb889-4"></a>       <span class="dt">lag.max =</span> <span class="dv">6</span>)</span></code></pre></div>
 <pre><code>## 
 ## ############################################################### 
 ## # Elliot, Rothenberg and Stock Unit Root / Cointegration Test # 
@@ -551,9 +551,9 @@ Cointegration
 </table>
 <p>Both tests reject the hypothesis of nonstationarity of the term spread series at the <span class="math inline">\(1\%\)</span> level of significance, which is strong evidence in favor of the hypothesis that the term spread is stationary, implying cointegration of long- and short-term interest rates.</p>
 <p>Since theory suggests that <span class="math inline">\(\theta=1\)</span>, there is no need to estimate <span class="math inline">\(\theta\)</span> so it is not necessary to use the EG-ADF test which allows <span class="math inline">\(\theta\)</span> to be unknown. However, since it is instructive to do so, we follow the book and compute this test statistic. The first-stage OLS regression is <span class="math display">\[TB10YS_t = \beta_0 + \beta_1 TB3MS_t + z_t.\]</span></p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># estimate first-stage regression of EG-ADF test</span>
-FS_EGADF &lt;-<span class="st"> </span><span class="kw">dynlm</span>(<span class="kw">window</span>(TB10YS, <span class="kw">c</span>(<span class="dv">1962</span>, <span class="dv">1</span>), <span class="kw">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>)) <span class="op">~</span><span class="st"> </span><span class="kw">window</span>(TB3MS, <span class="kw">c</span>(<span class="dv">1962</span>, <span class="dv">1</span>), <span class="kw">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>)))
-FS_EGADF</code></pre>
+<div class="sourceCode" id="cb891"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb891-1"><a href="16-3-cointegration.html#cb891-1"></a><span class="co"># estimate first-stage regression of EG-ADF test</span></span>
+<span id="cb891-2"><a href="16-3-cointegration.html#cb891-2"></a>FS_EGADF &lt;-<span class="st"> </span><span class="kw">dynlm</span>(<span class="kw">window</span>(TB10YS, <span class="kw">c</span>(<span class="dv">1962</span>, <span class="dv">1</span>), <span class="kw">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>)) <span class="op">~</span><span class="st"> </span><span class="kw">window</span>(TB3MS, <span class="kw">c</span>(<span class="dv">1962</span>, <span class="dv">1</span>), <span class="kw">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>)))</span>
+<span id="cb891-3"><a href="16-3-cointegration.html#cb891-3"></a>FS_EGADF</span></code></pre></div>
 <pre><code>## 
 ## Time series regression with &quot;ts&quot; data:
 ## Start = 1962(1), End = 2012(4)
@@ -572,11 +572,11 @@ FS_EGADF</code></pre>
   \widehat{TB10YS}_t = 2.46 + 0.81 \cdot TB3MS_t,
 \end{align*}\]</span>
 where <span class="math inline">\(\widehat{\theta} = 0.81\)</span>. Next, we take the residual series <span class="math inline">\(\{\widehat{z_t}\}\)</span> and compute the ADF test statistic.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># compute the residuals</span>
-z_hat &lt;-<span class="st"> </span><span class="kw">resid</span>(FS_EGADF)
-
-<span class="co"># compute the ADF test statistic</span>
-<span class="kw">ur.df</span>(z_hat, <span class="dt">lags =</span> <span class="dv">6</span>, <span class="dt">type =</span> <span class="st">&quot;none&quot;</span>, <span class="dt">selectlags =</span> <span class="st">&quot;AIC&quot;</span>)</code></pre>
+<div class="sourceCode" id="cb893"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb893-1"><a href="16-3-cointegration.html#cb893-1"></a><span class="co"># compute the residuals</span></span>
+<span id="cb893-2"><a href="16-3-cointegration.html#cb893-2"></a>z_hat &lt;-<span class="st"> </span><span class="kw">resid</span>(FS_EGADF)</span>
+<span id="cb893-3"><a href="16-3-cointegration.html#cb893-3"></a></span>
+<span id="cb893-4"><a href="16-3-cointegration.html#cb893-4"></a><span class="co"># compute the ADF test statistic</span></span>
+<span id="cb893-5"><a href="16-3-cointegration.html#cb893-5"></a><span class="kw">ur.df</span>(z_hat, <span class="dt">lags =</span> <span class="dv">6</span>, <span class="dt">type =</span> <span class="st">&quot;none&quot;</span>, <span class="dt">selectlags =</span> <span class="st">&quot;AIC&quot;</span>)</span></code></pre></div>
 <pre><code>## 
 ## ############################################################### 
 ## # Augmented Dickey-Fuller Test Unit Root / Cointegration Test # 
@@ -588,23 +588,23 @@ z_hat &lt;-<span class="st"> </span><span class="kw">resid</span>(FS_EGADF)
 <h5>A Vector Error Correction Model for <span class="math inline">\(TB10YS_t\)</span> and <span class="math inline">\(TB3MS\)</span></h5>
 <p>If two <span class="math inline">\(I(1)\)</span> time series <span class="math inline">\(X_t\)</span> and <span class="math inline">\(Y_t\)</span> are cointegrated, their differences are stationary and can be modeled in a VAR which is augmented by the regressor <span class="math inline">\(Y_{t-1} - \theta X_{t-1}\)</span>. This is called a <em>vector error correction model</em> (VECM) and <span class="math inline">\(Y_{t} - \theta X_{t}\)</span> is called the <em>error correction term</em>. Lagged values of the error correction term are useful for predicting <span class="math inline">\(\Delta X_t\)</span> and/or <span class="math inline">\(\Delta Y_t\)</span>.</p>
 <p>A VECM can be used to model the two interest rates considered in the previous sections. Following the book we specify the VECM to include two lags of both series as regressors and choose <span class="math inline">\(\theta = 1\)</span>, as theory suggests (see above).</p>
-<pre class="sourceCode r"><code class="sourceCode r">TB10YS &lt;-<span class="st"> </span><span class="kw">window</span>(TB10YS, <span class="kw">c</span>(<span class="dv">1962</span>, <span class="dv">1</span>), <span class="kw">c</span>(<span class="dv">2012</span> ,<span class="dv">4</span>))
-TB3MS &lt;-<span class="st"> </span><span class="kw">window</span>(TB3MS, <span class="kw">c</span>(<span class="dv">1962</span>, <span class="dv">1</span>), <span class="kw">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>))
-
-<span class="co"># set up error correction term</span>
-VECM_ECT &lt;-<span class="st"> </span>TB10YS <span class="op">-</span><span class="st"> </span>TB3MS
-
-<span class="co"># estimate both equations of the VECM using &#39;dynlm()&#39;</span>
-VECM_EQ1 &lt;-<span class="st"> </span><span class="kw">dynlm</span>(<span class="kw">d</span>(TB10YS) <span class="op">~</span><span class="st"> </span><span class="kw">L</span>(<span class="kw">d</span>(TB3MS), <span class="dv">1</span><span class="op">:</span><span class="dv">2</span>) <span class="op">+</span><span class="st"> </span><span class="kw">L</span>(<span class="kw">d</span>(TB10YS), <span class="dv">1</span><span class="op">:</span><span class="dv">2</span>) <span class="op">+</span><span class="st"> </span><span class="kw">L</span>(VECM_ECT))
-VECM_EQ2 &lt;-<span class="st"> </span><span class="kw">dynlm</span>(<span class="kw">d</span>(TB3MS) <span class="op">~</span><span class="st"> </span><span class="kw">L</span>(<span class="kw">d</span>(TB3MS), <span class="dv">1</span><span class="op">:</span><span class="dv">2</span>) <span class="op">+</span><span class="st"> </span><span class="kw">L</span>(<span class="kw">d</span>(TB10YS), <span class="dv">1</span><span class="op">:</span><span class="dv">2</span>) <span class="op">+</span><span class="st"> </span><span class="kw">L</span>(VECM_ECT))
-
-<span class="co"># rename regressors for better readability</span>
-<span class="kw">names</span>(VECM_EQ1<span class="op">$</span>coefficients) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Intercept&quot;</span>, <span class="st">&quot;D_TB3MS_l1&quot;</span>, <span class="st">&quot;D_TB3MS_l2&quot;</span>,
-                                  <span class="st">&quot;D_TB10YS_l1&quot;</span>, <span class="st">&quot;D_TB10YS_l2&quot;</span>, <span class="st">&quot;ect_l1&quot;</span>)
-<span class="kw">names</span>(VECM_EQ2<span class="op">$</span>coefficients) &lt;-<span class="st"> </span><span class="kw">names</span>(VECM_EQ1<span class="op">$</span>coefficients)
-
-<span class="co"># coefficient summaries using HAC standard errors</span>
-<span class="kw">coeftest</span>(VECM_EQ1, <span class="dt">vcov. =</span> <span class="kw">NeweyWest</span>(VECM_EQ1, <span class="dt">prewhite =</span> F, <span class="dt">adjust =</span> T))</code></pre>
+<div class="sourceCode" id="cb895"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb895-1"><a href="16-3-cointegration.html#cb895-1"></a>TB10YS &lt;-<span class="st"> </span><span class="kw">window</span>(TB10YS, <span class="kw">c</span>(<span class="dv">1962</span>, <span class="dv">1</span>), <span class="kw">c</span>(<span class="dv">2012</span> ,<span class="dv">4</span>))</span>
+<span id="cb895-2"><a href="16-3-cointegration.html#cb895-2"></a>TB3MS &lt;-<span class="st"> </span><span class="kw">window</span>(TB3MS, <span class="kw">c</span>(<span class="dv">1962</span>, <span class="dv">1</span>), <span class="kw">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>))</span>
+<span id="cb895-3"><a href="16-3-cointegration.html#cb895-3"></a></span>
+<span id="cb895-4"><a href="16-3-cointegration.html#cb895-4"></a><span class="co"># set up error correction term</span></span>
+<span id="cb895-5"><a href="16-3-cointegration.html#cb895-5"></a>VECM_ECT &lt;-<span class="st"> </span>TB10YS <span class="op">-</span><span class="st"> </span>TB3MS</span>
+<span id="cb895-6"><a href="16-3-cointegration.html#cb895-6"></a></span>
+<span id="cb895-7"><a href="16-3-cointegration.html#cb895-7"></a><span class="co"># estimate both equations of the VECM using &#39;dynlm()&#39;</span></span>
+<span id="cb895-8"><a href="16-3-cointegration.html#cb895-8"></a>VECM_EQ1 &lt;-<span class="st"> </span><span class="kw">dynlm</span>(<span class="kw">d</span>(TB10YS) <span class="op">~</span><span class="st"> </span><span class="kw">L</span>(<span class="kw">d</span>(TB3MS), <span class="dv">1</span><span class="op">:</span><span class="dv">2</span>) <span class="op">+</span><span class="st"> </span><span class="kw">L</span>(<span class="kw">d</span>(TB10YS), <span class="dv">1</span><span class="op">:</span><span class="dv">2</span>) <span class="op">+</span><span class="st"> </span><span class="kw">L</span>(VECM_ECT))</span>
+<span id="cb895-9"><a href="16-3-cointegration.html#cb895-9"></a>VECM_EQ2 &lt;-<span class="st"> </span><span class="kw">dynlm</span>(<span class="kw">d</span>(TB3MS) <span class="op">~</span><span class="st"> </span><span class="kw">L</span>(<span class="kw">d</span>(TB3MS), <span class="dv">1</span><span class="op">:</span><span class="dv">2</span>) <span class="op">+</span><span class="st"> </span><span class="kw">L</span>(<span class="kw">d</span>(TB10YS), <span class="dv">1</span><span class="op">:</span><span class="dv">2</span>) <span class="op">+</span><span class="st"> </span><span class="kw">L</span>(VECM_ECT))</span>
+<span id="cb895-10"><a href="16-3-cointegration.html#cb895-10"></a></span>
+<span id="cb895-11"><a href="16-3-cointegration.html#cb895-11"></a><span class="co"># rename regressors for better readability</span></span>
+<span id="cb895-12"><a href="16-3-cointegration.html#cb895-12"></a><span class="kw">names</span>(VECM_EQ1<span class="op">$</span>coefficients) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Intercept&quot;</span>, <span class="st">&quot;D_TB3MS_l1&quot;</span>, <span class="st">&quot;D_TB3MS_l2&quot;</span>,</span>
+<span id="cb895-13"><a href="16-3-cointegration.html#cb895-13"></a>                                  <span class="st">&quot;D_TB10YS_l1&quot;</span>, <span class="st">&quot;D_TB10YS_l2&quot;</span>, <span class="st">&quot;ect_l1&quot;</span>)</span>
+<span id="cb895-14"><a href="16-3-cointegration.html#cb895-14"></a><span class="kw">names</span>(VECM_EQ2<span class="op">$</span>coefficients) &lt;-<span class="st"> </span><span class="kw">names</span>(VECM_EQ1<span class="op">$</span>coefficients)</span>
+<span id="cb895-15"><a href="16-3-cointegration.html#cb895-15"></a></span>
+<span id="cb895-16"><a href="16-3-cointegration.html#cb895-16"></a><span class="co"># coefficient summaries using HAC standard errors</span></span>
+<span id="cb895-17"><a href="16-3-cointegration.html#cb895-17"></a><span class="kw">coeftest</span>(VECM_EQ1, <span class="dt">vcov. =</span> <span class="kw">NeweyWest</span>(VECM_EQ1, <span class="dt">prewhite =</span> F, <span class="dt">adjust =</span> T))</span></code></pre></div>
 <pre><code>## 
 ## t test of coefficients:
 ## 
@@ -617,7 +617,7 @@ VECM_EQ2 &lt;-<span class="st"> </span><span class="kw">dynlm</span>(<span class
 ## ect_l1      -0.0878871  0.0285644 -3.0768 0.002393 **
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">coeftest</span>(VECM_EQ2, <span class="dt">vcov. =</span> <span class="kw">NeweyWest</span>(VECM_EQ2, <span class="dt">prewhite =</span> F, <span class="dt">adjust =</span> T))</code></pre>
+<div class="sourceCode" id="cb897"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb897-1"><a href="16-3-cointegration.html#cb897-1"></a><span class="kw">coeftest</span>(VECM_EQ2, <span class="dt">vcov. =</span> <span class="kw">NeweyWest</span>(VECM_EQ2, <span class="dt">prewhite =</span> F, <span class="dt">adjust =</span> T))</span></code></pre></div>
 <pre><code>## 
 ## t test of coefficients:
 ## 
@@ -644,12 +644,6 @@ VECM_EQ2 &lt;-<span class="st"> </span><span class="kw">dynlm</span>(<span class
 <div id="ref-engle1987">
 <p>Engle, R., &amp; Granger, C. (1987). Co-integration and Error Correction: Representation, Estimation and Testing. <em>Econometrica</em>, <em>55</em>(2), 251–76.</p>
 </div>
-</div>
-<div class="footnotes">
-<hr />
-<ol start="12">
-<li id="fn12"><p>Note: <tt>ur.df()</tt> reports two test statistics when there is a drift in the ADF regression. The first of which (the one we are interested in here) is the <span class="math inline">\(t\)</span>-statistic for the test that the coefficient on the first lag of the series is 0. The second one is the <span class="math inline">\(t\)</span>-statistic for the hypothesis test that the drift term equals <span class="math inline">\(0\)</span>.<a href="16-3-cointegration.html#fnref12" class="footnote-back">↩</a></p></li>
-</ol>
 </div>
             </section>
 

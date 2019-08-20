@@ -1,13 +1,12 @@
 <!DOCTYPE html>
-<html >
-
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
 <head>
 
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>5.4 Heteroskedasticity and Homoskedasticity | Introduction to Econometrics with R</title>
-  <meta name="description" content="Beginners with little background in statistics and econometrics often have a hard time understanding the benefits of having programming skills for learning and applying Econometrics. ‘Introduction to Econometrics with R’ is an interactive companion to the well-received textbook ‘Introduction to Econometrics’ by James H. Stock and Mark W. Watson (2015). It gives a gentle introduction to the essentials of R programming and guides students in implementing the empirical applications presented throughout the textbook using the newly aquired skills. This is supported by interactive programming exercises generated with DataCamp Light and integration of interactive visualizations of central concepts which are based on the flexible JavaScript library D3.js.">
-  <meta name="generator" content="bookdown  and GitBook 2.6.7">
+  <meta name="description" content="Beginners with little background in statistics and econometrics often have a hard time understanding the benefits of having programming skills for learning and applying Econometrics. ‘Introduction to Econometrics with R’ is an interactive companion to the well-received textbook ‘Introduction to Econometrics’ by James H. Stock and Mark W. Watson (2015). It gives a gentle introduction to the essentials of R programming and guides students in implementing the empirical applications presented throughout the textbook using the newly aquired skills. This is supported by interactive programming exercises generated with DataCamp Light and integration of interactive visualizations of central concepts which are based on the flexible JavaScript library D3.js." />
+  <meta name="generator" content="bookdown 0.12 and GitBook 2.6.7" />
 
   <meta property="og:title" content="5.4 Heteroskedasticity and Homoskedasticity | Introduction to Econometrics with R" />
   <meta property="og:type" content="book" />
@@ -22,14 +21,14 @@
   <meta name="twitter:description" content="Beginners with little background in statistics and econometrics often have a hard time understanding the benefits of having programming skills for learning and applying Econometrics. ‘Introduction to Econometrics with R’ is an interactive companion to the well-received textbook ‘Introduction to Econometrics’ by James H. Stock and Mark W. Watson (2015). It gives a gentle introduction to the essentials of R programming and guides students in implementing the empirical applications presented throughout the textbook using the newly aquired skills. This is supported by interactive programming exercises generated with DataCamp Light and integration of interactive visualizations of central concepts which are based on the flexible JavaScript library D3.js." />
   <meta name="twitter:image" content="https://www.econometrics-with-r.org/images/cover.png" />
 
-<meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber and Martin Schmelzer">
+<meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber and Martin Schmelzer" />
 
 
-<meta name="date" content="2019-03-12">
+<meta name="date" content="2019-08-20" />
 
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
 <link rel="prev" href="5-3-rwxiabv.html">
@@ -49,17 +48,17 @@
 
 
 <script src="libs/htmlwidgets-1.3/htmlwidgets.js"></script>
-<script src="libs/plotly-binding-4.8.0/plotly.js"></script>
+<script src="libs/plotly-binding-4.9.0/plotly.js"></script>
 <script src="libs/typedarray-0.1/typedarray.min.js"></script>
 <link href="libs/crosstalk-1.0.0/css/crosstalk.css" rel="stylesheet" />
 <script src="libs/crosstalk-1.0.0/js/crosstalk.min.js"></script>
-<link href="libs/plotly-htmlwidgets-css-1.39.2/plotly-htmlwidgets.css" rel="stylesheet" />
-<script src="libs/plotly-main-1.39.2/plotly-latest.min.js"></script>
+<link href="libs/plotly-htmlwidgets-css-1.46.1/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="libs/plotly-main-1.46.1/plotly-latest.min.js"></script>
 <!-- font families -->
 
 <link href="https://fonts.googleapis.com/css?family=PT+Sans|Pacifico|Source+Sans+Pro" rel="stylesheet">
 
-<script src="js/hideOutput.js"></script>
+<!--<script src="js/hideOutput.js"></script>-->
 
 <!-- Mathjax -->
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/default.js"></script>
@@ -89,26 +88,27 @@
 
 
 <style type="text/css">
-a.sourceLine { display: inline-block; line-height: 1.25; }
-a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-a.sourceLine:empty { height: 1.2em; }
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode { white-space: pre; position: relative; }
-div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
 code.sourceCode { white-space: pre-wrap; }
-a.sourceLine { text-indent: -1em; padding-left: 1em; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
-pre.numberSource a.sourceLine
-  { position: relative; left: -4em; }
-pre.numberSource a.sourceLine::before
-  { content: attr(data-line-number);
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
     position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; pointer-events: all; display: inline-block;
+    border: none; display: inline-block;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -117,9 +117,9 @@ pre.numberSource a.sourceLine::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  { background-color: #f8f8f8; }
+  {  background-color: #f8f8f8; }
 @media screen {
-a.sourceLine::before { text-decoration: underline; }
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ef2929; } /* Alert */
 code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
@@ -405,57 +405,57 @@ Heteroskedasticity and Homoskedasticity
 <span class="math display">\[ \text{Var}(u_i|X_i=x) = \sigma^2 \ \forall \ i=1,\dots,n. \]</span></p></li>
 <li><p>If instead there is dependence of the conditional variance of <span class="math inline">\(u_i\)</span> on <span class="math inline">\(X_i\)</span>, the error term is said to be heteroskedastic. We then write
 <span class="math display">\[ \text{Var}(u_i|X_i=x) = \sigma_i^2 \ \forall \ i=1,\dots,n. \]</span></p></li>
-<li>Homoskedasticity is a <em>special case</em> of heteroskedasticity.</li>
+<li><p>Homoskedasticity is a <em>special case</em> of heteroskedasticity.</p></li>
 </ul>
 </div>
 <p>For a better understanding of heteroskedasticity, we generate some bivariate heteroskedastic data, estimate a linear regression model and then use box plots to depict the conditional distributions of the residuals.</p>
 <div class="unfolded">
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># load scales package for adjusting color opacities</span>
-<span class="kw">library</span>(scales)
-
-<span class="co"># generate some heteroskedastic data:</span>
-
-<span class="co"># set seed for reproducibility</span>
-<span class="kw">set.seed</span>(<span class="dv">123</span>) 
-
-<span class="co"># set up vector of x coordinates</span>
-x &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="kw">c</span>(<span class="dv">10</span>, <span class="dv">15</span>, <span class="dv">20</span>, <span class="dv">25</span>), <span class="dt">each =</span> <span class="dv">25</span>)
-
-<span class="co"># initialize vector of errors</span>
-e &lt;-<span class="st"> </span><span class="kw">c</span>()
-
-<span class="co"># sample 100 errors such that the variance increases with x</span>
-e[<span class="dv">1</span><span class="op">:</span><span class="dv">25</span>] &lt;-<span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">25</span>, <span class="dt">sd =</span> <span class="dv">10</span>)
-e[<span class="dv">26</span><span class="op">:</span><span class="dv">50</span>] &lt;-<span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">25</span>, <span class="dt">sd =</span> <span class="dv">15</span>)
-e[<span class="dv">51</span><span class="op">:</span><span class="dv">75</span>] &lt;-<span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">25</span>, <span class="dt">sd =</span> <span class="dv">20</span>)
-e[<span class="dv">76</span><span class="op">:</span><span class="dv">100</span>] &lt;-<span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">25</span>, <span class="dt">sd =</span> <span class="dv">25</span>)
-
-<span class="co"># set up y</span>
-y &lt;-<span class="st"> </span><span class="dv">720</span> <span class="op">-</span><span class="st"> </span><span class="fl">3.3</span> <span class="op">*</span><span class="st"> </span>x <span class="op">+</span><span class="st"> </span>e
-
-<span class="co"># Estimate the model </span>
-mod &lt;-<span class="st"> </span><span class="kw">lm</span>(y <span class="op">~</span><span class="st"> </span>x)
-
-<span class="co"># Plot the data</span>
-<span class="kw">plot</span>(<span class="dt">x =</span> x, 
-     <span class="dt">y =</span> y, 
-     <span class="dt">main =</span> <span class="st">&quot;An Example of Heteroskedasticity&quot;</span>,
-     <span class="dt">xlab =</span> <span class="st">&quot;Student-Teacher Ratio&quot;</span>,
-     <span class="dt">ylab =</span> <span class="st">&quot;Test Score&quot;</span>,
-     <span class="dt">cex =</span> <span class="fl">0.5</span>, 
-     <span class="dt">pch =</span> <span class="dv">19</span>, 
-     <span class="dt">xlim =</span> <span class="kw">c</span>(<span class="dv">8</span>, <span class="dv">27</span>), 
-     <span class="dt">ylim =</span> <span class="kw">c</span>(<span class="dv">600</span>, <span class="dv">710</span>))
-
-<span class="co"># Add the regression line to the plot</span>
-<span class="kw">abline</span>(mod, <span class="dt">col =</span> <span class="st">&quot;darkred&quot;</span>)
-
-<span class="co"># Add boxplots to the plot</span>
-<span class="kw">boxplot</span>(<span class="dt">formula =</span> y <span class="op">~</span><span class="st"> </span>x, 
-        <span class="dt">add =</span> <span class="ot">TRUE</span>, 
-        <span class="dt">at =</span> <span class="kw">c</span>(<span class="dv">10</span>, <span class="dv">15</span>, <span class="dv">20</span>, <span class="dv">25</span>), 
-        <span class="dt">col =</span> <span class="kw">alpha</span>(<span class="st">&quot;gray&quot;</span>, <span class="fl">0.4</span>), 
-        <span class="dt">border =</span> <span class="st">&quot;black&quot;</span>)</code></pre>
+<div class="sourceCode" id="cb222"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb222-1"><a href="5-4-hah.html#cb222-1"></a><span class="co"># load scales package for adjusting color opacities</span></span>
+<span id="cb222-2"><a href="5-4-hah.html#cb222-2"></a><span class="kw">library</span>(scales)</span>
+<span id="cb222-3"><a href="5-4-hah.html#cb222-3"></a></span>
+<span id="cb222-4"><a href="5-4-hah.html#cb222-4"></a><span class="co"># generate some heteroskedastic data:</span></span>
+<span id="cb222-5"><a href="5-4-hah.html#cb222-5"></a></span>
+<span id="cb222-6"><a href="5-4-hah.html#cb222-6"></a><span class="co"># set seed for reproducibility</span></span>
+<span id="cb222-7"><a href="5-4-hah.html#cb222-7"></a><span class="kw">set.seed</span>(<span class="dv">123</span>) </span>
+<span id="cb222-8"><a href="5-4-hah.html#cb222-8"></a></span>
+<span id="cb222-9"><a href="5-4-hah.html#cb222-9"></a><span class="co"># set up vector of x coordinates</span></span>
+<span id="cb222-10"><a href="5-4-hah.html#cb222-10"></a>x &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="kw">c</span>(<span class="dv">10</span>, <span class="dv">15</span>, <span class="dv">20</span>, <span class="dv">25</span>), <span class="dt">each =</span> <span class="dv">25</span>)</span>
+<span id="cb222-11"><a href="5-4-hah.html#cb222-11"></a></span>
+<span id="cb222-12"><a href="5-4-hah.html#cb222-12"></a><span class="co"># initialize vector of errors</span></span>
+<span id="cb222-13"><a href="5-4-hah.html#cb222-13"></a>e &lt;-<span class="st"> </span><span class="kw">c</span>()</span>
+<span id="cb222-14"><a href="5-4-hah.html#cb222-14"></a></span>
+<span id="cb222-15"><a href="5-4-hah.html#cb222-15"></a><span class="co"># sample 100 errors such that the variance increases with x</span></span>
+<span id="cb222-16"><a href="5-4-hah.html#cb222-16"></a>e[<span class="dv">1</span><span class="op">:</span><span class="dv">25</span>] &lt;-<span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">25</span>, <span class="dt">sd =</span> <span class="dv">10</span>)</span>
+<span id="cb222-17"><a href="5-4-hah.html#cb222-17"></a>e[<span class="dv">26</span><span class="op">:</span><span class="dv">50</span>] &lt;-<span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">25</span>, <span class="dt">sd =</span> <span class="dv">15</span>)</span>
+<span id="cb222-18"><a href="5-4-hah.html#cb222-18"></a>e[<span class="dv">51</span><span class="op">:</span><span class="dv">75</span>] &lt;-<span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">25</span>, <span class="dt">sd =</span> <span class="dv">20</span>)</span>
+<span id="cb222-19"><a href="5-4-hah.html#cb222-19"></a>e[<span class="dv">76</span><span class="op">:</span><span class="dv">100</span>] &lt;-<span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">25</span>, <span class="dt">sd =</span> <span class="dv">25</span>)</span>
+<span id="cb222-20"><a href="5-4-hah.html#cb222-20"></a></span>
+<span id="cb222-21"><a href="5-4-hah.html#cb222-21"></a><span class="co"># set up y</span></span>
+<span id="cb222-22"><a href="5-4-hah.html#cb222-22"></a>y &lt;-<span class="st"> </span><span class="dv">720</span> <span class="op">-</span><span class="st"> </span><span class="fl">3.3</span> <span class="op">*</span><span class="st"> </span>x <span class="op">+</span><span class="st"> </span>e</span>
+<span id="cb222-23"><a href="5-4-hah.html#cb222-23"></a></span>
+<span id="cb222-24"><a href="5-4-hah.html#cb222-24"></a><span class="co"># Estimate the model </span></span>
+<span id="cb222-25"><a href="5-4-hah.html#cb222-25"></a>mod &lt;-<span class="st"> </span><span class="kw">lm</span>(y <span class="op">~</span><span class="st"> </span>x)</span>
+<span id="cb222-26"><a href="5-4-hah.html#cb222-26"></a></span>
+<span id="cb222-27"><a href="5-4-hah.html#cb222-27"></a><span class="co"># Plot the data</span></span>
+<span id="cb222-28"><a href="5-4-hah.html#cb222-28"></a><span class="kw">plot</span>(<span class="dt">x =</span> x, </span>
+<span id="cb222-29"><a href="5-4-hah.html#cb222-29"></a>     <span class="dt">y =</span> y, </span>
+<span id="cb222-30"><a href="5-4-hah.html#cb222-30"></a>     <span class="dt">main =</span> <span class="st">&quot;An Example of Heteroskedasticity&quot;</span>,</span>
+<span id="cb222-31"><a href="5-4-hah.html#cb222-31"></a>     <span class="dt">xlab =</span> <span class="st">&quot;Student-Teacher Ratio&quot;</span>,</span>
+<span id="cb222-32"><a href="5-4-hah.html#cb222-32"></a>     <span class="dt">ylab =</span> <span class="st">&quot;Test Score&quot;</span>,</span>
+<span id="cb222-33"><a href="5-4-hah.html#cb222-33"></a>     <span class="dt">cex =</span> <span class="fl">0.5</span>, </span>
+<span id="cb222-34"><a href="5-4-hah.html#cb222-34"></a>     <span class="dt">pch =</span> <span class="dv">19</span>, </span>
+<span id="cb222-35"><a href="5-4-hah.html#cb222-35"></a>     <span class="dt">xlim =</span> <span class="kw">c</span>(<span class="dv">8</span>, <span class="dv">27</span>), </span>
+<span id="cb222-36"><a href="5-4-hah.html#cb222-36"></a>     <span class="dt">ylim =</span> <span class="kw">c</span>(<span class="dv">600</span>, <span class="dv">710</span>))</span>
+<span id="cb222-37"><a href="5-4-hah.html#cb222-37"></a></span>
+<span id="cb222-38"><a href="5-4-hah.html#cb222-38"></a><span class="co"># Add the regression line to the plot</span></span>
+<span id="cb222-39"><a href="5-4-hah.html#cb222-39"></a><span class="kw">abline</span>(mod, <span class="dt">col =</span> <span class="st">&quot;darkred&quot;</span>)</span>
+<span id="cb222-40"><a href="5-4-hah.html#cb222-40"></a></span>
+<span id="cb222-41"><a href="5-4-hah.html#cb222-41"></a><span class="co"># Add boxplots to the plot</span></span>
+<span id="cb222-42"><a href="5-4-hah.html#cb222-42"></a><span class="kw">boxplot</span>(<span class="dt">formula =</span> y <span class="op">~</span><span class="st"> </span>x, </span>
+<span id="cb222-43"><a href="5-4-hah.html#cb222-43"></a>        <span class="dt">add =</span> <span class="ot">TRUE</span>, </span>
+<span id="cb222-44"><a href="5-4-hah.html#cb222-44"></a>        <span class="dt">at =</span> <span class="kw">c</span>(<span class="dv">10</span>, <span class="dv">15</span>, <span class="dv">20</span>, <span class="dv">25</span>), </span>
+<span id="cb222-45"><a href="5-4-hah.html#cb222-45"></a>        <span class="dt">col =</span> <span class="kw">alpha</span>(<span class="st">&quot;gray&quot;</span>, <span class="fl">0.4</span>), </span>
+<span id="cb222-46"><a href="5-4-hah.html#cb222-46"></a>        <span class="dt">border =</span> <span class="st">&quot;black&quot;</span>)</span></code></pre></div>
 <p><img src="ITER_files/figure-html/unnamed-chunk-216-1.png" width="80%" style="display: block; margin: auto;" /></p>
 </div>
 <p>We have used the <tt>formula</tt> argument <tt>y ~ x</tt> in <tt>boxplot()</tt> to specify that we want to split up the vector <tt>y</tt> into groups according to <tt>x</tt>. <tt>boxplot(y ~ x)</tt> generates a boxplot for each of the groups in <tt>y</tt> defined by <tt>x</tt>.</p>
@@ -467,13 +467,13 @@ mod &lt;-<span class="st"> </span><span class="kw">lm</span>(y <span class="op">
 <p>What can be presumed about this relation? It is likely that, on average, higher educated workers earn more than workers with less education, so we expect to estimate an upward sloping regression line. Also, it seems plausible that earnings of better educated workers have a higher dispersion then those of low-skilled workers: solid education is not a guarantee for a high salary so even highly qualified workers take on low-income jobs. However, they are more likely to meet the requirements for the well-paid jobs than workers with less education for whom opportunities in the labor market are much more limited.</p>
 <p>To verify this empirically we may use real data on hourly earnings and the number of years of education of employees. Such data can be found in <tt>CPSSWEducation</tt>. This data set is part of the package <tt>AER</tt> and comes from the Current Population Survey (CPS) which is conducted periodically by the <a href="http://www.bls.gov/">Bureau of Labor Statistics</a> in the United States.</p>
 <p>The subsequent code chunks demonstrate how to import the data into <tt>R</tt> and how to produce a plot in the fashion of Figure 5.3 in the book.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># load package and attach data</span>
-<span class="kw">library</span>(AER)
-<span class="kw">data</span>(<span class="st">&quot;CPSSWEducation&quot;</span>)
-<span class="kw">attach</span>(CPSSWEducation)
-
-<span class="co"># get an overview</span>
-<span class="kw">summary</span>(CPSSWEducation)</code></pre>
+<div class="sourceCode" id="cb223"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb223-1"><a href="5-4-hah.html#cb223-1"></a><span class="co"># load package and attach data</span></span>
+<span id="cb223-2"><a href="5-4-hah.html#cb223-2"></a><span class="kw">library</span>(AER)</span>
+<span id="cb223-3"><a href="5-4-hah.html#cb223-3"></a><span class="kw">data</span>(<span class="st">&quot;CPSSWEducation&quot;</span>)</span>
+<span id="cb223-4"><a href="5-4-hah.html#cb223-4"></a><span class="kw">attach</span>(CPSSWEducation)</span>
+<span id="cb223-5"><a href="5-4-hah.html#cb223-5"></a></span>
+<span id="cb223-6"><a href="5-4-hah.html#cb223-6"></a><span class="co"># get an overview</span></span>
+<span id="cb223-7"><a href="5-4-hah.html#cb223-7"></a><span class="kw">summary</span>(CPSSWEducation)</span></code></pre></div>
 <pre><code>##       age          gender        earnings        education    
 ##  Min.   :29.0   female:1202   Min.   : 2.137   Min.   : 6.00  
 ##  1st Qu.:29.0   male  :1748   1st Qu.:10.577   1st Qu.:12.00  
@@ -481,21 +481,21 @@ mod &lt;-<span class="st"> </span><span class="kw">lm</span>(y <span class="op">
 ##  Mean   :29.5                 Mean   :16.743   Mean   :13.55  
 ##  3rd Qu.:30.0                 3rd Qu.:20.192   3rd Qu.:16.00  
 ##  Max.   :30.0                 Max.   :97.500   Max.   :18.00</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># estimate a simple regression model</span>
-labor_model &lt;-<span class="st"> </span><span class="kw">lm</span>(earnings <span class="op">~</span><span class="st"> </span>education)
-
-<span class="co"># plot observations and add the regression line</span>
-<span class="kw">plot</span>(education, 
-     earnings, 
-     <span class="dt">ylim =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">150</span>))
-
-<span class="kw">abline</span>(labor_model, 
-       <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>, 
-       <span class="dt">lwd =</span> <span class="dv">2</span>)</code></pre>
+<div class="sourceCode" id="cb225"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb225-1"><a href="5-4-hah.html#cb225-1"></a><span class="co"># estimate a simple regression model</span></span>
+<span id="cb225-2"><a href="5-4-hah.html#cb225-2"></a>labor_model &lt;-<span class="st"> </span><span class="kw">lm</span>(earnings <span class="op">~</span><span class="st"> </span>education)</span>
+<span id="cb225-3"><a href="5-4-hah.html#cb225-3"></a></span>
+<span id="cb225-4"><a href="5-4-hah.html#cb225-4"></a><span class="co"># plot observations and add the regression line</span></span>
+<span id="cb225-5"><a href="5-4-hah.html#cb225-5"></a><span class="kw">plot</span>(education, </span>
+<span id="cb225-6"><a href="5-4-hah.html#cb225-6"></a>     earnings, </span>
+<span id="cb225-7"><a href="5-4-hah.html#cb225-7"></a>     <span class="dt">ylim =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">150</span>))</span>
+<span id="cb225-8"><a href="5-4-hah.html#cb225-8"></a></span>
+<span id="cb225-9"><a href="5-4-hah.html#cb225-9"></a><span class="kw">abline</span>(labor_model, </span>
+<span id="cb225-10"><a href="5-4-hah.html#cb225-10"></a>       <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>, </span>
+<span id="cb225-11"><a href="5-4-hah.html#cb225-11"></a>       <span class="dt">lwd =</span> <span class="dv">2</span>)</span></code></pre></div>
 <p><img src="ITER_files/figure-html/unnamed-chunk-217-1.png" width="80%" style="display: block; margin: auto;" /></p>
 <p>The plot reveals that the mean of the distribution of earnings increases with the level of education. This is also supported by a formal analysis: the estimated regression model stored in <tt>labor_mod</tt> shows that there is a positive relation between years of education and earnings.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># print the contents of labor_model to the console</span>
-labor_model</code></pre>
+<div class="sourceCode" id="cb226"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb226-1"><a href="5-4-hah.html#cb226-1"></a><span class="co"># print the contents of labor_model to the console</span></span>
+<span id="cb226-2"><a href="5-4-hah.html#cb226-2"></a>labor_model</span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## lm(formula = earnings ~ education)
@@ -504,8 +504,8 @@ labor_model</code></pre>
 ## (Intercept)    education  
 ##      -3.134        1.467</code></pre>
 <p>The estimated regression equation states that, on average, an additional year of education increases a worker’s hourly earnings by about <span class="math inline">\(\$ 1.47\)</span>. Once more we use <tt>confint()</tt> to obtain a <span class="math inline">\(95\%\)</span> confidence interval for both regression coefficients.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># compute a 95% confidence interval for the coefficients in the model</span>
-<span class="kw">confint</span>(labor_model)</code></pre>
+<div class="sourceCode" id="cb228"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb228-1"><a href="5-4-hah.html#cb228-1"></a><span class="co"># compute a 95% confidence interval for the coefficients in the model</span></span>
+<span id="cb228-2"><a href="5-4-hah.html#cb228-2"></a><span class="kw">confint</span>(labor_model)</span></code></pre></div>
 <pre><code>##                 2.5 %    97.5 %
 ## (Intercept) -5.015248 -1.253495
 ## education    1.330098  1.603753</code></pre>
@@ -523,22 +523,22 @@ labor_model</code></pre>
 <p><span class="math display">\[ \sqrt{ \overset{\sim}{\sigma}^2_{\hat\beta_1} } = \sqrt{ \frac{SER^2}{\sum_{i=1}^n(X_i - \overline{X})^2} }. \]</span></p>
 <p>This is in fact an estimator for the standard deviation of the estimator <span class="math inline">\(\hat{\beta}_1\)</span> that is <em>inconsistent</em> for the true value <span class="math inline">\(\sigma^2_{\hat\beta_1}\)</span> when there is heteroskedasticity. The implication is that <span class="math inline">\(t\)</span>-statistics computed in the manner of Key Concept 5.1 do not follow a standard normal distribution, even in large samples. This issue may invalidate inference when using the previously treated tools for hypothesis testing: we should be cautious when making statements about the significance of regression coefficients on the basis of <span class="math inline">\(t\)</span>-statistics as computed by <tt>summary()</tt> or confidence intervals produced by <tt>confint()</tt> if it is doubtful for the assumption of homoskedasticity to hold!</p>
 <p>We will now use <tt>R</tt> to compute the homoskedasticity-only standard error for <span class="math inline">\(\hat{\beta}_1\)</span> in the test score regression model <tt>linear_model</tt> by hand and see that it matches the value produced by <tt>summary()</tt>.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Store model summary in &#39;model&#39;</span>
-model &lt;-<span class="st"> </span><span class="kw">summary</span>(linear_model)
-
-<span class="co"># Extract the standard error of the regression from model summary</span>
-SER &lt;-<span class="st"> </span>model<span class="op">$</span>sigma
-
-<span class="co"># Compute the variation in &#39;size&#39;</span>
-V &lt;-<span class="st"> </span>(<span class="kw">nrow</span>(CASchools)<span class="op">-</span><span class="dv">1</span>) <span class="op">*</span><span class="st"> </span><span class="kw">var</span>(CASchools<span class="op">$</span>STR)
-
-<span class="co"># Compute the standard error of the slope parameter&#39;s estimator and print it</span>
-SE.beta_<span class="fl">1.</span>hat &lt;-<span class="st"> </span><span class="kw">sqrt</span>(SER<span class="op">^</span><span class="dv">2</span><span class="op">/</span>V)
-SE.beta_<span class="fl">1.</span>hat</code></pre>
+<div class="sourceCode" id="cb230"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb230-1"><a href="5-4-hah.html#cb230-1"></a><span class="co"># Store model summary in &#39;model&#39;</span></span>
+<span id="cb230-2"><a href="5-4-hah.html#cb230-2"></a>model &lt;-<span class="st"> </span><span class="kw">summary</span>(linear_model)</span>
+<span id="cb230-3"><a href="5-4-hah.html#cb230-3"></a></span>
+<span id="cb230-4"><a href="5-4-hah.html#cb230-4"></a><span class="co"># Extract the standard error of the regression from model summary</span></span>
+<span id="cb230-5"><a href="5-4-hah.html#cb230-5"></a>SER &lt;-<span class="st"> </span>model<span class="op">$</span>sigma</span>
+<span id="cb230-6"><a href="5-4-hah.html#cb230-6"></a></span>
+<span id="cb230-7"><a href="5-4-hah.html#cb230-7"></a><span class="co"># Compute the variation in &#39;size&#39;</span></span>
+<span id="cb230-8"><a href="5-4-hah.html#cb230-8"></a>V &lt;-<span class="st"> </span>(<span class="kw">nrow</span>(CASchools)<span class="op">-</span><span class="dv">1</span>) <span class="op">*</span><span class="st"> </span><span class="kw">var</span>(CASchools<span class="op">$</span>STR)</span>
+<span id="cb230-9"><a href="5-4-hah.html#cb230-9"></a></span>
+<span id="cb230-10"><a href="5-4-hah.html#cb230-10"></a><span class="co"># Compute the standard error of the slope parameter&#39;s estimator and print it</span></span>
+<span id="cb230-11"><a href="5-4-hah.html#cb230-11"></a>SE.beta_<span class="fl">1.</span>hat &lt;-<span class="st"> </span><span class="kw">sqrt</span>(SER<span class="op">^</span><span class="dv">2</span><span class="op">/</span>V)</span>
+<span id="cb230-12"><a href="5-4-hah.html#cb230-12"></a>SE.beta_<span class="fl">1.</span>hat</span></code></pre></div>
 <pre><code>## [1] 0.4798255</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Use logical operators to see if the value computed by hand matches the one provided </span>
-<span class="co"># in mod$coefficients. Round estimates to four decimal places</span>
-<span class="kw">round</span>(model<span class="op">$</span>coefficients[<span class="dv">2</span>, <span class="dv">2</span>], <span class="dv">4</span>) <span class="op">==</span><span class="st"> </span><span class="kw">round</span>(SE.beta_<span class="fl">1.</span>hat, <span class="dv">4</span>)</code></pre>
+<div class="sourceCode" id="cb232"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb232-1"><a href="5-4-hah.html#cb232-1"></a><span class="co"># Use logical operators to see if the value computed by hand matches the one provided </span></span>
+<span id="cb232-2"><a href="5-4-hah.html#cb232-2"></a><span class="co"># in mod$coefficients. Round estimates to four decimal places</span></span>
+<span id="cb232-3"><a href="5-4-hah.html#cb232-3"></a><span class="kw">round</span>(model<span class="op">$</span>coefficients[<span class="dv">2</span>, <span class="dv">2</span>], <span class="dv">4</span>) <span class="op">==</span><span class="st"> </span><span class="kw">round</span>(SE.beta_<span class="fl">1.</span>hat, <span class="dv">4</span>)</span></code></pre></div>
 <pre><code>## [1] TRUE</code></pre>
 <p>Indeed, the estimated values are equal.</p>
 </div>
@@ -546,16 +546,16 @@ SE.beta_<span class="fl">1.</span>hat</code></pre>
 <h3>Computation of Heteroskedasticity-Robust Standard Errors</h3>
 <p>Consistent estimation of <span class="math inline">\(\sigma_{\hat{\beta}_1}\)</span> under heteroskedasticity is granted when the following <em>robust</em> estimator is used.</p>
 <p><span class="math display">\[ SE(\hat{\beta}_1) = \sqrt{ \frac{1}{n} \cdot \frac{ \frac{1}{n} \sum_{i=1}^n (X_i - \overline{X})^2 \hat{u}_i^2 }{ \left[ \frac{1}{n} \sum_{i=1}^n (X_i - \overline{X})^2  \right]^2} } \tag{5.6} \]</span></p>
-<p>Standard error estimates computed this way are also referred to as <a href="https://en.wikipedia.org/wiki/Heteroscedasticity-consistent_standard_errors">Eicker-Huber-White standard errors</a>, the most frequently cited paper on this is <span class="citation">White (<a href="#ref-white1980">1980</a>)</span>.</p>
-<p>It can be quite cumbersome to do this calculation by hand. Luckily, there are <tt>R</tt> function for that purpose. A convenient one named <tt>vcovHC()</tt> is part of the package <tt>sandwich</tt>.<a href="#fn6" class="footnote-ref" id="fnref6"><sup>6</sup></a> This function can compute a variety of standard errors. The one brought forward in (<a href="#mjx-eqn-5.6">5.6</a>) is computed when the argument <tt>type</tt> is set to <tt>“HC0”</tt>. Most of the examples presented in the book rely on a slightly different formula which is the default in the statistics package <em>STATA</em>:</p>
+<p>Standard error estimates computed this way are also referred to as <a href="https://en.wikipedia.org/wiki/Heteroscedasticity-consistent_standard_errors">Eicker-Huber-White standard errors</a>, the most frequently cited paper on this is <span class="citation">White (<a href="#ref-white1980" role="doc-biblioref">1980</a>)</span>.</p>
+<p>It can be quite cumbersome to do this calculation by hand. Luckily, there are <tt>R</tt> function for that purpose. A convenient one named <tt>vcovHC()</tt> is part of the package <tt>sandwich</tt>.<a href="references.html#fn6" class="footnote-ref" id="fnref6"><sup>6</sup></a> This function can compute a variety of standard errors. The one brought forward in (<a href="#mjx-eqn-5.6">5.6</a>) is computed when the argument <tt>type</tt> is set to <tt>“HC0”</tt>. Most of the examples presented in the book rely on a slightly different formula which is the default in the statistics package <em>STATA</em>:</p>
 <p><span class="math display" id="eq:hc1">\[\begin{align}
 SE(\hat{\beta}_1)_{HC1} = \sqrt{ \frac{1}{n} \cdot \frac{ \frac{1}{n-2} \sum_{i=1}^n (X_i - \overline{X})^2 \hat{u}_i^2 }{ \left[ \frac{1}{n} \sum_{i=1}^n (X_i - \overline{X})^2  \right]^2}} \tag{5.2}
 \end{align}\]</span></p>
-<p>The difference is that we multiply by <span class="math inline">\(\frac{1}{n-2}\)</span> in the numerator of <a href="5-4-hah.html#eq:hc1">(5.2)</a>. This is a degrees of freedom correction and was considered by <span class="citation">MacKinnon &amp; White (<a href="#ref-mackinnon1985">1985</a>)</span>. To get <tt>vcovHC()</tt> to use <a href="5-4-hah.html#eq:hc1">(5.2)</a>, we have to set <tt>type = “HC1”</tt>.</p>
+<p>The difference is that we multiply by <span class="math inline">\(\frac{1}{n-2}\)</span> in the numerator of <a href="5-4-hah.html#eq:hc1">(5.2)</a>. This is a degrees of freedom correction and was considered by <span class="citation">MacKinnon &amp; White (<a href="#ref-mackinnon1985" role="doc-biblioref">1985</a>)</span>. To get <tt>vcovHC()</tt> to use <a href="5-4-hah.html#eq:hc1">(5.2)</a>, we have to set <tt>type = “HC1”</tt>.</p>
 <p>Let us now compute robust standard error estimates for the coefficients in <tt>linear_model</tt>.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># compute heteroskedasticity-robust standard errors</span>
-vcov &lt;-<span class="st"> </span><span class="kw">vcovHC</span>(linear_model, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>)
-vcov</code></pre>
+<div class="sourceCode" id="cb234"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb234-1"><a href="5-4-hah.html#cb234-1"></a><span class="co"># compute heteroskedasticity-robust standard errors</span></span>
+<span id="cb234-2"><a href="5-4-hah.html#cb234-2"></a>vcov &lt;-<span class="st"> </span><span class="kw">vcovHC</span>(linear_model, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>)</span>
+<span id="cb234-3"><a href="5-4-hah.html#cb234-3"></a>vcov</span></code></pre></div>
 <pre><code>##             (Intercept)        STR
 ## (Intercept)  107.419993 -5.3639114
 ## STR           -5.363911  0.2698692</code></pre>
@@ -577,14 +577,14 @@ vcov</code></pre>
 <p>so <tt>vcovHC()</tt> gives us <span class="math inline">\(\widehat{\text{Var}}(\hat\beta_0)\)</span>, <span class="math inline">\(\widehat{\text{Var}}(\hat\beta_1)\)</span> and <span class="math inline">\(\widehat{\text{Cov}}(\hat\beta_0,\hat\beta_1)\)</span>, but most of the time we are interested in the diagonal elements of the estimated matrix.</p>
 </div>
 
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># compute the square root of the diagonal elements in vcov</span>
-robust_se &lt;-<span class="st"> </span><span class="kw">sqrt</span>(<span class="kw">diag</span>(vcov))
-robust_se</code></pre>
+<div class="sourceCode" id="cb236"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb236-1"><a href="5-4-hah.html#cb236-1"></a><span class="co"># compute the square root of the diagonal elements in vcov</span></span>
+<span id="cb236-2"><a href="5-4-hah.html#cb236-2"></a>robust_se &lt;-<span class="st"> </span><span class="kw">sqrt</span>(<span class="kw">diag</span>(vcov))</span>
+<span id="cb236-3"><a href="5-4-hah.html#cb236-3"></a>robust_se</span></code></pre></div>
 <pre><code>## (Intercept)         STR 
 ##  10.3643617   0.5194893</code></pre>
 <p>Now assume we want to generate a coefficient summary as provided by <tt>summary()</tt> but with <em>robust</em> standard errors of the coefficient estimators, robust <span class="math inline">\(t\)</span>-statistics and corresponding <span class="math inline">\(p\)</span>-values for the regression model <tt>linear_model</tt>. This can be done using <tt>coeftest()</tt> from the package <tt>lmtest</tt>, see <code>?coeftest</code>. Further we specify in the argument <tt>vcov.</tt> that <tt>vcov</tt>, the Eicker-Huber-White estimate of the variance matrix we have computed before, should be used.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># we invoke the function `coeftest()` on our model</span>
-<span class="kw">coeftest</span>(linear_model, <span class="dt">vcov. =</span> vcov)</code></pre>
+<div class="sourceCode" id="cb238"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb238-1"><a href="5-4-hah.html#cb238-1"></a><span class="co"># we invoke the function `coeftest()` on our model</span></span>
+<span id="cb238-2"><a href="5-4-hah.html#cb238-2"></a><span class="kw">coeftest</span>(linear_model, <span class="dt">vcov. =</span> vcov)</span></code></pre></div>
 <pre><code>## 
 ## t test of coefficients:
 ## 
@@ -597,24 +597,24 @@ robust_se</code></pre>
 <p>How severe are the implications of using homoskedasticity-only standard errors in the presence of heteroskedasticity? The answer is: it depends. As mentioned above we face the risk of drawing wrong conclusions when conducting significance tests. <br> Let us illustrate this by generating another example of a heteroskedastic data set and using it to estimate a simple regression model. We take</p>
 <p><span class="math display">\[ Y_i = \beta_1 \cdot X_i + u_i \ \ , \ \ u_i \overset{i.i.d.}{\sim} \mathcal{N}(0,0.36 \cdot X_i^2)  \]</span></p>
 <p>with <span class="math inline">\(\beta_1=1\)</span> as the data generating process. Clearly, the assumption of homoskedasticity is violated here since the variance of the errors is a nonlinear, increasing function of <span class="math inline">\(X_i\)</span> but the errors have zero mean and are i.i.d. such that the assumptions made in Key Concept 4.3 are not violated. As before, we are interested in estimating <span class="math inline">\(\beta_1\)</span>.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># generate heteroskedastic data </span>
-X &lt;-<span class="st"> </span><span class="dv">1</span><span class="op">:</span><span class="dv">500</span>
-Y &lt;-<span class="st"> </span><span class="kw">rnorm</span>(<span class="dt">n =</span> <span class="dv">500</span>, <span class="dt">mean =</span> X, <span class="dt">sd =</span> <span class="fl">0.6</span> <span class="op">*</span><span class="st"> </span>X)
-
-<span class="co"># estimate a simple regression model</span>
-reg &lt;-<span class="st"> </span><span class="kw">lm</span>(Y <span class="op">~</span><span class="st"> </span>X)</code></pre>
+<div class="sourceCode" id="cb240"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb240-1"><a href="5-4-hah.html#cb240-1"></a><span class="co"># generate heteroskedastic data </span></span>
+<span id="cb240-2"><a href="5-4-hah.html#cb240-2"></a>X &lt;-<span class="st"> </span><span class="dv">1</span><span class="op">:</span><span class="dv">500</span></span>
+<span id="cb240-3"><a href="5-4-hah.html#cb240-3"></a>Y &lt;-<span class="st"> </span><span class="kw">rnorm</span>(<span class="dt">n =</span> <span class="dv">500</span>, <span class="dt">mean =</span> X, <span class="dt">sd =</span> <span class="fl">0.6</span> <span class="op">*</span><span class="st"> </span>X)</span>
+<span id="cb240-4"><a href="5-4-hah.html#cb240-4"></a></span>
+<span id="cb240-5"><a href="5-4-hah.html#cb240-5"></a><span class="co"># estimate a simple regression model</span></span>
+<span id="cb240-6"><a href="5-4-hah.html#cb240-6"></a>reg &lt;-<span class="st"> </span><span class="kw">lm</span>(Y <span class="op">~</span><span class="st"> </span>X)</span></code></pre></div>
 <p>We plot the data and add the regression line.</p>
 <div class="unfolded">
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># plot the data</span>
-<span class="kw">plot</span>(<span class="dt">x =</span> X, <span class="dt">y =</span> Y, 
-     <span class="dt">pch =</span> <span class="dv">19</span>, 
-     <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>, 
-     <span class="dt">cex =</span> <span class="fl">0.8</span>)
-
-<span class="co"># add the regression line to the plot</span>
-<span class="kw">abline</span>(reg, 
-       <span class="dt">col =</span> <span class="st">&quot;darkred&quot;</span>, 
-       <span class="dt">lwd =</span> <span class="fl">1.5</span>)</code></pre>
+<div class="sourceCode" id="cb241"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb241-1"><a href="5-4-hah.html#cb241-1"></a><span class="co"># plot the data</span></span>
+<span id="cb241-2"><a href="5-4-hah.html#cb241-2"></a><span class="kw">plot</span>(<span class="dt">x =</span> X, <span class="dt">y =</span> Y, </span>
+<span id="cb241-3"><a href="5-4-hah.html#cb241-3"></a>     <span class="dt">pch =</span> <span class="dv">19</span>, </span>
+<span id="cb241-4"><a href="5-4-hah.html#cb241-4"></a>     <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>, </span>
+<span id="cb241-5"><a href="5-4-hah.html#cb241-5"></a>     <span class="dt">cex =</span> <span class="fl">0.8</span>)</span>
+<span id="cb241-6"><a href="5-4-hah.html#cb241-6"></a></span>
+<span id="cb241-7"><a href="5-4-hah.html#cb241-7"></a><span class="co"># add the regression line to the plot</span></span>
+<span id="cb241-8"><a href="5-4-hah.html#cb241-8"></a><span class="kw">abline</span>(reg, </span>
+<span id="cb241-9"><a href="5-4-hah.html#cb241-9"></a>       <span class="dt">col =</span> <span class="st">&quot;darkred&quot;</span>, </span>
+<span id="cb241-10"><a href="5-4-hah.html#cb241-10"></a>       <span class="dt">lwd =</span> <span class="fl">1.5</span>)</span></code></pre></div>
 <p><img src="ITER_files/figure-html/unnamed-chunk-225-1.png" width="80%" style="display: block; margin: auto;" /></p>
 </div>
 <p>The plot shows that the data are heteroskedastic as the variance of <span class="math inline">\(Y\)</span> grows with <span class="math inline">\(X\)</span>. We next conduct a significance test of the (true) null hypothesis <span class="math inline">\(H_0: \beta_1 = 1\)</span> twice, once using the homoskedasticity-only standard error formula and once with the robust version (<a href="#mjx-eqn-5.6">5.6</a>). An easy way to do this in <tt>R</tt> is the function <tt>linearHypothesis()</tt> from the package <tt>car</tt>, see <code>?linearHypothesis</code>. It allows to test linear hypotheses about parameters in linear models in a similar way as done with a <span class="math inline">\(t\)</span>-statistic and offers various robust covariance matrix estimators. We test by comparing the tests’ <span class="math inline">\(p\)</span>-values to the significance level of <span class="math inline">\(5\%\)</span>.</p>
@@ -625,11 +625,11 @@ reg &lt;-<span class="st"> </span><span class="kw">lm</span>(Y <span class="op">
 In <tt>linearHypothesis()</tt>, there are different ways to specify the hypothesis to be tested, e.g., using a vector of the type <tt>character</tt> (as done in the next code chunk), see <tt>?linearHypothesis</tt> for alternatives. The function returns an object of class <tt>anova</tt> which contains further information on the test that can be accessed using the <tt>$</tt> operator.
 </div>
 
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># test hypthesis using the default standard error formula</span>
-<span class="kw">linearHypothesis</span>(reg, <span class="dt">hypothesis.matrix =</span> <span class="st">&quot;X = 1&quot;</span>)<span class="op">$</span><span class="st">&#39;Pr(&gt;F)&#39;</span>[<span class="dv">2</span>] <span class="op">&lt;</span><span class="st"> </span><span class="fl">0.05</span></code></pre>
+<div class="sourceCode" id="cb242"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb242-1"><a href="5-4-hah.html#cb242-1"></a><span class="co"># test hypthesis using the default standard error formula</span></span>
+<span id="cb242-2"><a href="5-4-hah.html#cb242-2"></a><span class="kw">linearHypothesis</span>(reg, <span class="dt">hypothesis.matrix =</span> <span class="st">&quot;X = 1&quot;</span>)<span class="op">$</span><span class="st">&#39;Pr(&gt;F)&#39;</span>[<span class="dv">2</span>] <span class="op">&lt;</span><span class="st"> </span><span class="fl">0.05</span></span></code></pre></div>
 <pre><code>## [1] TRUE</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># test hypothesis using the robust standard error formula</span>
-<span class="kw">linearHypothesis</span>(reg, <span class="dt">hypothesis.matrix =</span> <span class="st">&quot;X = 1&quot;</span>, <span class="dt">white.adjust =</span> <span class="st">&quot;hc1&quot;</span>)<span class="op">$</span><span class="st">&#39;Pr(&gt;F)&#39;</span>[<span class="dv">2</span>] <span class="op">&lt;</span><span class="st"> </span><span class="fl">0.05</span></code></pre>
+<div class="sourceCode" id="cb244"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb244-1"><a href="5-4-hah.html#cb244-1"></a><span class="co"># test hypothesis using the robust standard error formula</span></span>
+<span id="cb244-2"><a href="5-4-hah.html#cb244-2"></a><span class="kw">linearHypothesis</span>(reg, <span class="dt">hypothesis.matrix =</span> <span class="st">&quot;X = 1&quot;</span>, <span class="dt">white.adjust =</span> <span class="st">&quot;hc1&quot;</span>)<span class="op">$</span><span class="st">&#39;Pr(&gt;F)&#39;</span>[<span class="dv">2</span>] <span class="op">&lt;</span><span class="st"> </span><span class="fl">0.05</span></span></code></pre></div>
 <pre><code>## [1] FALSE</code></pre>
 <p>This is a good example of what can go wrong if we ignore heteroskedasticity: for the data set at hand the default method rejects the null hypothesis <span class="math inline">\(\beta_1 = 1\)</span> although it is true. When using the robust standard error formula the test does not reject the null. Of course, we could this might just be a coincidence and both tests do equally well in maintaining the type I error rate of <span class="math inline">\(5\%\)</span>. This can be further investigated by computing <em>Monte Carlo</em> estimates of the rejection frequencies of both tests on the basis of a large number of random samples. We proceed as follows:</p>
 <ul>
@@ -637,30 +637,30 @@ In <tt>linearHypothesis()</tt>, there are different ways to specify the hypothes
 <li>Using a <tt>for()</tt> loop, we generate <span class="math inline">\(10000\)</span> heteroskedastic random samples of size <span class="math inline">\(1000\)</span>, estimate the regression model and check whether the tests falsely reject the null at the level of <span class="math inline">\(5\%\)</span> using comparison operators. The results are stored in the respective vectors <tt>t</tt> and <tt>t.rob</tt>.</li>
 <li>After the simulation, we compute the fraction of false rejections for both tests.</li>
 </ul>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># initialize vectors t and t.rob</span>
-t &lt;-<span class="st"> </span><span class="kw">c</span>()
-t.rob &lt;-<span class="st"> </span><span class="kw">c</span>()
-
-<span class="co"># loop sampling and estimation</span>
-<span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">10000</span>) {
-  
-  <span class="co"># sample data</span>
-  X &lt;-<span class="st"> </span><span class="dv">1</span><span class="op">:</span><span class="dv">1000</span>
-  Y &lt;-<span class="st"> </span><span class="kw">rnorm</span>(<span class="dt">n =</span> <span class="dv">1000</span>, <span class="dt">mean =</span> X, <span class="dt">sd =</span> <span class="fl">0.6</span> <span class="op">*</span><span class="st"> </span>X)
-
-  <span class="co"># estimate regression model</span>
-  reg &lt;-<span class="st"> </span><span class="kw">lm</span>(Y <span class="op">~</span><span class="st"> </span>X)
-
-  <span class="co"># homoskedasdicity-only significance test</span>
-  t[i] &lt;-<span class="st"> </span><span class="kw">linearHypothesis</span>(reg, <span class="st">&quot;X = 1&quot;</span>)<span class="op">$</span><span class="st">&#39;Pr(&gt;F)&#39;</span>[<span class="dv">2</span>] <span class="op">&lt;</span><span class="st"> </span><span class="fl">0.05</span>
-
-  <span class="co"># robust significance test</span>
-  t.rob[i] &lt;-<span class="st"> </span><span class="kw">linearHypothesis</span>(reg, <span class="st">&quot;X = 1&quot;</span>, <span class="dt">white.adjust =</span> <span class="st">&quot;hc1&quot;</span>)<span class="op">$</span><span class="st">&#39;Pr(&gt;F)&#39;</span>[<span class="dv">2</span>] <span class="op">&lt;</span><span class="st"> </span><span class="fl">0.05</span>
-
-}
-
-<span class="co"># compute the fraction of false rejections</span>
-<span class="kw">round</span>(<span class="kw">cbind</span>(<span class="dt">t =</span> <span class="kw">mean</span>(t), <span class="dt">t.rob =</span> <span class="kw">mean</span>(t.rob)), <span class="dv">3</span>)</code></pre>
+<div class="sourceCode" id="cb246"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb246-1"><a href="5-4-hah.html#cb246-1"></a><span class="co"># initialize vectors t and t.rob</span></span>
+<span id="cb246-2"><a href="5-4-hah.html#cb246-2"></a>t &lt;-<span class="st"> </span><span class="kw">c</span>()</span>
+<span id="cb246-3"><a href="5-4-hah.html#cb246-3"></a>t.rob &lt;-<span class="st"> </span><span class="kw">c</span>()</span>
+<span id="cb246-4"><a href="5-4-hah.html#cb246-4"></a></span>
+<span id="cb246-5"><a href="5-4-hah.html#cb246-5"></a><span class="co"># loop sampling and estimation</span></span>
+<span id="cb246-6"><a href="5-4-hah.html#cb246-6"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">10000</span>) {</span>
+<span id="cb246-7"><a href="5-4-hah.html#cb246-7"></a>  </span>
+<span id="cb246-8"><a href="5-4-hah.html#cb246-8"></a>  <span class="co"># sample data</span></span>
+<span id="cb246-9"><a href="5-4-hah.html#cb246-9"></a>  X &lt;-<span class="st"> </span><span class="dv">1</span><span class="op">:</span><span class="dv">1000</span></span>
+<span id="cb246-10"><a href="5-4-hah.html#cb246-10"></a>  Y &lt;-<span class="st"> </span><span class="kw">rnorm</span>(<span class="dt">n =</span> <span class="dv">1000</span>, <span class="dt">mean =</span> X, <span class="dt">sd =</span> <span class="fl">0.6</span> <span class="op">*</span><span class="st"> </span>X)</span>
+<span id="cb246-11"><a href="5-4-hah.html#cb246-11"></a></span>
+<span id="cb246-12"><a href="5-4-hah.html#cb246-12"></a>  <span class="co"># estimate regression model</span></span>
+<span id="cb246-13"><a href="5-4-hah.html#cb246-13"></a>  reg &lt;-<span class="st"> </span><span class="kw">lm</span>(Y <span class="op">~</span><span class="st"> </span>X)</span>
+<span id="cb246-14"><a href="5-4-hah.html#cb246-14"></a></span>
+<span id="cb246-15"><a href="5-4-hah.html#cb246-15"></a>  <span class="co"># homoskedasdicity-only significance test</span></span>
+<span id="cb246-16"><a href="5-4-hah.html#cb246-16"></a>  t[i] &lt;-<span class="st"> </span><span class="kw">linearHypothesis</span>(reg, <span class="st">&quot;X = 1&quot;</span>)<span class="op">$</span><span class="st">&#39;Pr(&gt;F)&#39;</span>[<span class="dv">2</span>] <span class="op">&lt;</span><span class="st"> </span><span class="fl">0.05</span></span>
+<span id="cb246-17"><a href="5-4-hah.html#cb246-17"></a></span>
+<span id="cb246-18"><a href="5-4-hah.html#cb246-18"></a>  <span class="co"># robust significance test</span></span>
+<span id="cb246-19"><a href="5-4-hah.html#cb246-19"></a>  t.rob[i] &lt;-<span class="st"> </span><span class="kw">linearHypothesis</span>(reg, <span class="st">&quot;X = 1&quot;</span>, <span class="dt">white.adjust =</span> <span class="st">&quot;hc1&quot;</span>)<span class="op">$</span><span class="st">&#39;Pr(&gt;F)&#39;</span>[<span class="dv">2</span>] <span class="op">&lt;</span><span class="st"> </span><span class="fl">0.05</span></span>
+<span id="cb246-20"><a href="5-4-hah.html#cb246-20"></a></span>
+<span id="cb246-21"><a href="5-4-hah.html#cb246-21"></a>}</span>
+<span id="cb246-22"><a href="5-4-hah.html#cb246-22"></a></span>
+<span id="cb246-23"><a href="5-4-hah.html#cb246-23"></a><span class="co"># compute the fraction of false rejections</span></span>
+<span id="cb246-24"><a href="5-4-hah.html#cb246-24"></a><span class="kw">round</span>(<span class="kw">cbind</span>(<span class="dt">t =</span> <span class="kw">mean</span>(t), <span class="dt">t.rob =</span> <span class="kw">mean</span>(t.rob)), <span class="dv">3</span>)</span></code></pre></div>
 <pre><code>##          t t.rob
 ## [1,] 0.073  0.05</code></pre>
 <p>These results reveal the increased risk of falsely rejecting the null using the homoskedasticity-only standard error for the testing problem at hand: with the common standard error estimator, <span class="math inline">\(7.28\%\)</span> of all tests falsely reject the null hypothesis. In contrast, with the robust test statistic we are closer to the nominal level of <span class="math inline">\(5\%\)</span>.</p>
@@ -668,18 +668,12 @@ t.rob &lt;-<span class="st"> </span><span class="kw">c</span>()
 </div>
 <h3>References</h3>
 <div id="refs" class="references">
-<div id="ref-white1980">
-<p>White, H. (1980). A Heteroskedasticity-Consistent Covariance Matrix Estimator and a Direct Test for Heteroskedasticity. <em>Econometrica</em>, <em>48</em>(4), pp. 817–838.</p>
-</div>
 <div id="ref-mackinnon1985">
 <p>MacKinnon, J. G., &amp; White, H. (1985). Some heteroskedasticity-consistent covariance matrix estimators with improved finite sample properties. <em>Journal of Econometrics</em>, <em>29</em>(3), 305–325.</p>
 </div>
+<div id="ref-white1980">
+<p>White, H. (1980). A Heteroskedasticity-Consistent Covariance Matrix Estimator and a Direct Test for Heteroskedasticity. <em>Econometrica</em>, <em>48</em>(4), pp. 817–838.</p>
 </div>
-<div class="footnotes">
-<hr />
-<ol start="6">
-<li id="fn6"><p>The package <tt>sandwich</tt> is a dependency of the package <tt>AER</tt>, meaning that it is attached automatically if you load <tt>AER</tt>.<a href="5-4-hah.html#fnref6" class="footnote-back">↩</a></p></li>
-</ol>
 </div>
             </section>
 

@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>2 Introduction to Time Series Regression and Forecasting | Introduction to Econometrics with R</title>
+  <meta name="description" content="Beginners with little background in statistics and econometrics often have a hard time understanding the benefits of having programming skills for learning and applying Econometrics. ‘Introduction to Econometrics with R’ is an interactive companion to the well-received textbook ‘Introduction to Econometrics’ by James H. Stock and Mark W. Watson (2015). It gives a gentle introduction to the essentials of R programming and guides students in implementing the empirical applications presented throughout the textbook using the newly aquired skills. This is supported by interactive programming exercises generated with DataCamp Light and integration of interactive visualizations of central concepts which are based on the flexible JavaScript library D3.js." />
+  <meta name="generator" content="bookdown 0.12 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="2 Introduction to Time Series Regression and Forecasting | Introduction to Econometrics with R" />
+  <meta property="og:type" content="book" />
+  <meta property="og:url" content="https://www.econometrics-with-r.org/" />
+  <meta property="og:image" content="https://www.econometrics-with-r.org/images/cover.png" />
+  <meta property="og:description" content="Beginners with little background in statistics and econometrics often have a hard time understanding the benefits of having programming skills for learning and applying Econometrics. ‘Introduction to Econometrics with R’ is an interactive companion to the well-received textbook ‘Introduction to Econometrics’ by James H. Stock and Mark W. Watson (2015). It gives a gentle introduction to the essentials of R programming and guides students in implementing the empirical applications presented throughout the textbook using the newly aquired skills. This is supported by interactive programming exercises generated with DataCamp Light and integration of interactive visualizations of central concepts which are based on the flexible JavaScript library D3.js." />
+  <meta name="github-repo" content="mca91/EconometricsWithR" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="2 Introduction to Time Series Regression and Forecasting | Introduction to Econometrics with R" />
+  
+  <meta name="twitter:description" content="Beginners with little background in statistics and econometrics often have a hard time understanding the benefits of having programming skills for learning and applying Econometrics. ‘Introduction to Econometrics with R’ is an interactive companion to the well-received textbook ‘Introduction to Econometrics’ by James H. Stock and Mark W. Watson (2015). It gives a gentle introduction to the essentials of R programming and guides students in implementing the empirical applications presented throughout the textbook using the newly aquired skills. This is supported by interactive programming exercises generated with DataCamp Light and integration of interactive visualizations of central concepts which are based on the flexible JavaScript library D3.js." />
+  <meta name="twitter:image" content="https://www.econometrics-with-r.org/images/cover.png" />
+
+<meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber and Martin Schmelzer" />
+
+
+<meta name="date" content="2019-08-20" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="1-1-a-very-short-introduction-to-r-and-rstudio.html">
+<link rel="next" href="2-1-using-regression-models-for-forecasting.html">
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+
+
+
+
+
+
+
+<!-- font families -->
+
+<link href="https://fonts.googleapis.com/css?family=PT+Sans|Pacifico|Source+Sans+Pro" rel="stylesheet">
+
+<!--<script src="js/hideOutput.js"></script>-->
+
+<!-- Mathjax -->
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/default.js"></script>
+
+ <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        extensions: ["tex2jax.js", "TeX/AMSmath.js"],
+        tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+        jax: ["input/TeX","output/CommonHTML"]
+      });
+      MathJax.Hub.processSectionDelay = 0;
+  </script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-110299877-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-110299877-1');
+</script>
+
+<!-- open review block -->
+
+<script async defer src="https://hypothes.is/embed.js"></script>
+
+
+<style type="text/css">
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  background-color: #f8f8f8; }
+@media screen {
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ef2929; } /* Alert */
+code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #c4a000; } /* Attribute */
+code span.bn { color: #0000cf; } /* BaseN */
+code span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4e9a06; } /* Char */
+code span.cn { color: #000000; } /* Constant */
+code span.co { color: #8f5902; font-style: italic; } /* Comment */
+code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code span.dt { color: #204a87; } /* DataType */
+code span.dv { color: #0000cf; } /* DecVal */
+code span.er { color: #a40000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #0000cf; } /* Float */
+code span.fu { color: #000000; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code span.ot { color: #8f5902; } /* Other */
+code span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code span.sc { color: #000000; } /* SpecialChar */
+code span.ss { color: #4e9a06; } /* SpecialString */
+code span.st { color: #4e9a06; } /* String */
+code span.va { color: #000000; } /* Variable */
+code span.vs { color: #4e9a06; } /* VerbatimString */
+code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+<link rel="stylesheet" href="toc.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><center><img src="images/logo.png" alt="logo" width="50%" height="50%"style="margin: 15px 0 0 0"></center></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Preface</a></li>
+<li class="chapter" data-level="1" data-path="1-introduction.html"><a href="1-introduction.html"><i class="fa fa-check"></i><b>1</b> Introduction</a><ul>
+<li class="chapter" data-level="1.1" data-path="1-1-a-very-short-introduction-to-r-and-rstudio.html"><a href="1-1-a-very-short-introduction-to-r-and-rstudio.html"><i class="fa fa-check"></i><b>1.1</b> A Very Short Introduction to <tt>R</tt> and <em>RStudio</em></a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="2-ittsraf.html"><a href="2-ittsraf.html"><i class="fa fa-check"></i><b>2</b> Introduction to Time Series Regression and Forecasting</a><ul>
+<li class="chapter" data-level="2.1" data-path="2-1-using-regression-models-for-forecasting.html"><a href="2-1-using-regression-models-for-forecasting.html"><i class="fa fa-check"></i><b>2.1</b> Using Regression Models for Forecasting</a></li>
+<li class="chapter" data-level="2.2" data-path="2-2-tsdasc.html"><a href="2-2-tsdasc.html"><i class="fa fa-check"></i><b>2.2</b> Time Series Data and Serial Correlation</a><ul>
+<li class="chapter" data-level="" data-path="2-2-tsdasc.html"><a href="2-2-tsdasc.html#notation-lags-differences-logarithms-and-growth-rates"><i class="fa fa-check"></i>Notation, Lags, Differences, Logarithms and Growth Rates</a></li>
+</ul></li>
+<li class="chapter" data-level="2.3" data-path="2-3-autoregressions.html"><a href="2-3-autoregressions.html"><i class="fa fa-check"></i><b>2.3</b> Autoregressions</a><ul>
+<li><a href="2-3-autoregressions.html#autoregressive-models-of-order-p">Autoregressive Models of Order <span class="math inline">\(p\)</span></a></li>
+</ul></li>
+<li class="chapter" data-level="2.4" data-path="2-4-cybtmpi.html"><a href="2-4-cybtmpi.html"><i class="fa fa-check"></i><b>2.4</b> Can You Beat the Market? (Part I)</a></li>
+<li class="chapter" data-level="2.5" data-path="2-5-apatadlm.html"><a href="2-5-apatadlm.html"><i class="fa fa-check"></i><b>2.5</b> Additional Predictors and The ADL Model</a><ul>
+<li class="chapter" data-level="" data-path="2-5-apatadlm.html"><a href="2-5-apatadlm.html#forecast-uncertainty-and-forecast-intervals"><i class="fa fa-check"></i>Forecast Uncertainty and Forecast Intervals</a></li>
+</ul></li>
+<li class="chapter" data-level="2.6" data-path="2-6-llsuic.html"><a href="2-6-llsuic.html"><i class="fa fa-check"></i><b>2.6</b> Lag Length Selection Using Information Criteria</a></li>
+<li class="chapter" data-level="2.7" data-path="2-7-nit.html"><a href="2-7-nit.html"><i class="fa fa-check"></i><b>2.7</b> Nonstationarity I: Trends</a></li>
+<li class="chapter" data-level="2.8" data-path="2-8-niib.html"><a href="2-8-niib.html"><i class="fa fa-check"></i><b>2.8</b> Nonstationarity II: Breaks</a></li>
+<li class="chapter" data-level="2.9" data-path="2-9-can-you-beat-the-market-part-ii.html"><a href="2-9-can-you-beat-the-market-part-ii.html"><i class="fa fa-check"></i><b>2.9</b> Can You Beat the Market? (Part II)</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Introduction to Econometrics with R</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div class = rmdreview>
+This book is in <b>Open Review</b>. We want your feedback to make the book better for you and other students. You may annotate some text by <span style="background-color: #3297FD; color: white">selecting it with the cursor</span> and then click the <i class="h-icon-annotate"></i> on the pop-up menu. You can also see the annotations of others: click the <i class="h-icon-chevron-left"></i> in the upper right hand corner of the page <i class="fa fa-arrow-circle-right  fa-rotate-315" aria-hidden="true"></i>
+</div>
+<div id="ittsraf" class="section level1">
+<h1><span class="header-section-number">2</span> Introduction to Time Series Regression and Forecasting</h1>
+<p>Time series data is data is collected for a single entity over time. This is fundamentally different from cross-section data which is data on multiple entities at the same point in time. Time series data allows estimation of the effect on <span class="math inline">\(Y\)</span> of a change in <span class="math inline">\(X\)</span> <em>over time</em>. This is what econometricians call a <em>dynamic causal effect</em>. Let us go back to the application to cigarette consumption of Chapter <a href="#ivr"><strong>??</strong></a> where we were interested in estimating the effect on cigarette demand of a price increase caused by a raise of the general sales tax. One might use time series data to assess the causal effect of a tax increase on smoking both initially and in subsequent periods.</p>
+<p>Another application of time series data is forecasting. For example, weather services use time series data to predict tomorrow’s temperature by inter alia using today’s temperature and temperatures of the past. To motivate an economic example, central banks are interested in forecasting next month’s unemployment rates.</p>
+<p>The remainder of Chapters in the book deals with the econometric techniques for the analysis of time series data and applications to forecasting and estimation of dynamic causal effects. This section covers the basic concepts presented in Chapter 14 of the book, explains how to visualize time series data and demonstrates how to estimate simple autoregressive models, where the regressors are past values of the dependent variable or other variables. In this context we also discuss the concept of stationarity, an important property which has far-reaching consequences.</p>
+<p>Most empirical applications in this chapter are concerned with forecasting and use data on U.S. macroeconomic indicators or financial time series like Gross Domestic Product (GDP), the unemployment rate or excess stock returns.</p>
+<p>The following packages and their dependencies are needed for reproduction of the code chunks presented throughout this chapter:</p>
+<ul>
+<li><tt>AER</tt> <span class="citation">(Kleiber &amp; Zeileis, <a href="#ref-R-AER" role="doc-biblioref">2018</a>)</span></li>
+<li><tt>dynlm</tt> <span class="citation">(Zeileis, <a href="#ref-R-dynlm" role="doc-biblioref">2019</a>)</span></li>
+<li><tt>forecast</tt> <span class="citation">(Hyndman et al., <a href="#ref-R-forecast" role="doc-biblioref">2019</a>)</span></li>
+<li><tt>readxl</tt> <span class="citation">(Wickham &amp; Bryan, <a href="#ref-R-readxl" role="doc-biblioref">2019</a>)</span></li>
+<li><tt>stargazer</tt> <span class="citation">(Hlavac, <a href="#ref-R-stargazer" role="doc-biblioref">2018</a>)</span></li>
+<li><tt>scales</tt> <span class="citation">(Wickham, <a href="#ref-R-scales" role="doc-biblioref">2018</a>)</span></li>
+<li><tt>quantmod</tt> <span class="citation">(Ryan &amp; Ulrich, <a href="#ref-R-quantmod" role="doc-biblioref">2019</a>)</span></li>
+<li><tt>urca</tt> <span class="citation">(Pfaff, <a href="#ref-R-urca" role="doc-biblioref">2016</a>)</span></li>
+</ul>
+<p>Please verify that the following code chunk runs on your machine without any errors.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="2-ittsraf.html#cb9-1"></a><span class="kw">library</span>(AER)</span>
+<span id="cb9-2"><a href="2-ittsraf.html#cb9-2"></a><span class="kw">library</span>(dynlm)</span>
+<span id="cb9-3"><a href="2-ittsraf.html#cb9-3"></a><span class="kw">library</span>(forecast)</span>
+<span id="cb9-4"><a href="2-ittsraf.html#cb9-4"></a><span class="kw">library</span>(readxl)</span>
+<span id="cb9-5"><a href="2-ittsraf.html#cb9-5"></a><span class="kw">library</span>(stargazer)</span>
+<span id="cb9-6"><a href="2-ittsraf.html#cb9-6"></a><span class="kw">library</span>(scales)</span>
+<span id="cb9-7"><a href="2-ittsraf.html#cb9-7"></a><span class="kw">library</span>(quantmod)</span>
+<span id="cb9-8"><a href="2-ittsraf.html#cb9-8"></a><span class="kw">library</span>(urca)</span></code></pre></div> 
+</div>
+<h3>References</h3>
+<div id="refs" class="references">
+<div id="ref-R-stargazer">
+<p>Hlavac, M. (2018). stargazer: Well-Formatted Regression and Summary Statistics Tables (Version 5.2.2). Retrieved from <a href="https://CRAN.R-project.org/package=stargazer">https://CRAN.R-project.org/package=stargazer</a></p>
+</div>
+<div id="ref-R-forecast">
+<p>Hyndman, R., Athanasopoulos, G., Bergmeir, C., Caceres, G., Chhay, L., O’Hara-Wild, M., … Yasmeen, F. (2019). forecast: Forecasting Functions for Time Series and Linear Models (Version 8.7). Retrieved from <a href="https://CRAN.R-project.org/package=forecast">https://CRAN.R-project.org/package=forecast</a></p>
+</div>
+<div id="ref-R-AER">
+<p>Kleiber, C., &amp; Zeileis, A. (2018). AER: Applied Econometrics with R (Version 1.2-6). Retrieved from <a href="https://CRAN.R-project.org/package=AER">https://CRAN.R-project.org/package=AER</a></p>
+</div>
+<div id="ref-R-urca">
+<p>Pfaff, B. (2016). urca: Unit Root and Cointegration Tests for Time Series Data (Version 1.3-0). Retrieved from <a href="https://CRAN.R-project.org/package=urca">https://CRAN.R-project.org/package=urca</a></p>
+</div>
+<div id="ref-R-quantmod">
+<p>Ryan, J. A., &amp; Ulrich, J. M. (2019). quantmod: Quantitative Financial Modelling Framework (Version 0.4-14). Retrieved from <a href="https://CRAN.R-project.org/package=quantmod">https://CRAN.R-project.org/package=quantmod</a></p>
+</div>
+<div id="ref-R-scales">
+<p>Wickham, H. (2018). scales: Scale Functions for Visualization (Version 1.0.0). Retrieved from <a href="https://CRAN.R-project.org/package=scales">https://CRAN.R-project.org/package=scales</a></p>
+</div>
+<div id="ref-R-readxl">
+<p>Wickham, H., &amp; Bryan, J. (2019). readxl: Read Excel Files (Version 1.3.1). Retrieved from <a href="https://CRAN.R-project.org/package=readxl">https://CRAN.R-project.org/package=readxl</a></p>
+</div>
+<div id="ref-R-dynlm">
+<p>Zeileis, A. (2019). dynlm: Dynamic Linear Regression (Version 0.3-6). Retrieved from <a href="https://CRAN.R-project.org/package=dynlm">https://CRAN.R-project.org/package=dynlm</a></p>
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="1-1-a-very-short-introduction-to-r-and-rstudio.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="2-1-using-regression-models-for-forecasting.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": true,
+"facebook": true,
+"twitter": true,
+"google": false,
+"linkedin": true,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "google", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "serif",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/mca91/EconometricsWithR/edit/master/14-ch14.Rmd",
+"text": "Edit"
+},
+"history": {
+"link": null,
+"text": null
+},
+"download": ["ITER.pdf"],
+"toc": {
+"collapse": "subsection",
+"scroll_highlight": true
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:" && /^https?:/.test(src))
+      src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

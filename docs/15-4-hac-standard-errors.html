@@ -1,13 +1,12 @@
 <!DOCTYPE html>
-<html >
-
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
 <head>
 
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>15.4 HAC Standard Errors | Introduction to Econometrics with R</title>
-  <meta name="description" content="Beginners with little background in statistics and econometrics often have a hard time understanding the benefits of having programming skills for learning and applying Econometrics. ‘Introduction to Econometrics with R’ is an interactive companion to the well-received textbook ‘Introduction to Econometrics’ by James H. Stock and Mark W. Watson (2015). It gives a gentle introduction to the essentials of R programming and guides students in implementing the empirical applications presented throughout the textbook using the newly aquired skills. This is supported by interactive programming exercises generated with DataCamp Light and integration of interactive visualizations of central concepts which are based on the flexible JavaScript library D3.js.">
-  <meta name="generator" content="bookdown  and GitBook 2.6.7">
+  <meta name="description" content="Beginners with little background in statistics and econometrics often have a hard time understanding the benefits of having programming skills for learning and applying Econometrics. ‘Introduction to Econometrics with R’ is an interactive companion to the well-received textbook ‘Introduction to Econometrics’ by James H. Stock and Mark W. Watson (2015). It gives a gentle introduction to the essentials of R programming and guides students in implementing the empirical applications presented throughout the textbook using the newly aquired skills. This is supported by interactive programming exercises generated with DataCamp Light and integration of interactive visualizations of central concepts which are based on the flexible JavaScript library D3.js." />
+  <meta name="generator" content="bookdown 0.12 and GitBook 2.6.7" />
 
   <meta property="og:title" content="15.4 HAC Standard Errors | Introduction to Econometrics with R" />
   <meta property="og:type" content="book" />
@@ -22,14 +21,14 @@
   <meta name="twitter:description" content="Beginners with little background in statistics and econometrics often have a hard time understanding the benefits of having programming skills for learning and applying Econometrics. ‘Introduction to Econometrics with R’ is an interactive companion to the well-received textbook ‘Introduction to Econometrics’ by James H. Stock and Mark W. Watson (2015). It gives a gentle introduction to the essentials of R programming and guides students in implementing the empirical applications presented throughout the textbook using the newly aquired skills. This is supported by interactive programming exercises generated with DataCamp Light and integration of interactive visualizations of central concepts which are based on the flexible JavaScript library D3.js." />
   <meta name="twitter:image" content="https://www.econometrics-with-r.org/images/cover.png" />
 
-<meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber and Martin Schmelzer">
+<meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber and Martin Schmelzer" />
 
 
-<meta name="date" content="2019-03-12">
+<meta name="date" content="2019-08-20" />
 
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
 <link rel="prev" href="15-3-dynamic-multipliers-and-cumulative-dynamic-multipliers.html">
@@ -49,17 +48,17 @@
 
 
 <script src="libs/htmlwidgets-1.3/htmlwidgets.js"></script>
-<script src="libs/plotly-binding-4.8.0/plotly.js"></script>
+<script src="libs/plotly-binding-4.9.0/plotly.js"></script>
 <script src="libs/typedarray-0.1/typedarray.min.js"></script>
 <link href="libs/crosstalk-1.0.0/css/crosstalk.css" rel="stylesheet" />
 <script src="libs/crosstalk-1.0.0/js/crosstalk.min.js"></script>
-<link href="libs/plotly-htmlwidgets-css-1.39.2/plotly-htmlwidgets.css" rel="stylesheet" />
-<script src="libs/plotly-main-1.39.2/plotly-latest.min.js"></script>
+<link href="libs/plotly-htmlwidgets-css-1.46.1/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="libs/plotly-main-1.46.1/plotly-latest.min.js"></script>
 <!-- font families -->
 
 <link href="https://fonts.googleapis.com/css?family=PT+Sans|Pacifico|Source+Sans+Pro" rel="stylesheet">
 
-<script src="js/hideOutput.js"></script>
+<!--<script src="js/hideOutput.js"></script>-->
 
 <!-- Mathjax -->
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/default.js"></script>
@@ -89,26 +88,27 @@
 
 
 <style type="text/css">
-a.sourceLine { display: inline-block; line-height: 1.25; }
-a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-a.sourceLine:empty { height: 1.2em; }
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode { white-space: pre; position: relative; }
-div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
 code.sourceCode { white-space: pre-wrap; }
-a.sourceLine { text-indent: -1em; padding-left: 1em; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
-pre.numberSource a.sourceLine
-  { position: relative; left: -4em; }
-pre.numberSource a.sourceLine::before
-  { content: attr(data-line-number);
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
     position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; pointer-events: all; display: inline-block;
+    border: none; display: inline-block;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -117,9 +117,9 @@ pre.numberSource a.sourceLine::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  { background-color: #f8f8f8; }
+  {  background-color: #f8f8f8; }
 @media screen {
-a.sourceLine::before { text-decoration: underline; }
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ef2929; } /* Alert */
 code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
@@ -406,7 +406,7 @@ HAC Standard errors
 <p>If the error term <span class="math inline">\(u_t\)</span> in the distributed lag model <a href="15-2-dynamic-causal-effects.html#eq:dlm">(15.2)</a> is serially correlated, statistical inference that rests on usual (heteroskedasticity-robust) standard errors can be strongly misleading.</p>
 <p><strong>Solution</strong>:</p>
 <p>Heteroskedasticity- and autocorrelation-consistent (HAC) estimators of the variance-covariance matrix circumvent this issue. There are <tt>R</tt> functions like <tt>vcovHAC()</tt> from the package <tt>sandwich</tt> which are convenient for computation of such estimators.</p>
-The package <tt>sandwich</tt> also contains the function <tt>NeweyWest()</tt>, an implementation of the HAC variance-covariance estimator proposed by <span class="citation">Newey &amp; West (<a href="#ref-newey1987">1987</a>)</span>.
+The package <tt>sandwich</tt> also contains the function <tt>NeweyWest()</tt>, an implementation of the HAC variance-covariance estimator proposed by <span class="citation">Newey &amp; West (<a href="#ref-newey1987" role="doc-biblioref">1987</a>)</span>.
 </p>
 </div>
 <p>Consider the distributed lag regression model with no lags and a single regressor <span class="math inline">\(X_t\)</span>
@@ -427,57 +427,57 @@ is a correction factor that adjusts for serially correlated errors and involves 
   m = \left \lceil{0.75 \cdot T^{1/3}}\right\rceil. \tag{15.6}
 \end{align}\]</span></p>
 <p>We simulate a time series that, as stated above, follows a distributed lag model with autocorrelated errors and then show how to compute the Newey-West HAC estimate of <span class="math inline">\(SE(\widehat{\beta}_1)\)</span> using <tt>R</tt>. This is done via two separate but, as we will see, identical approaches: at first we follow the derivation presented in the book step-by-step and compute the estimate “manually”. We then show that the result is exactly the estimate obtained when using the function <tt>NeweyWest()</tt>.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># function that computes rho tilde</span>
-acf_c &lt;-<span class="st"> </span><span class="cf">function</span>(x, j) {
-  <span class="kw">return</span>(
-    <span class="kw">t</span>(x[<span class="op">-</span><span class="kw">c</span>(<span class="dv">1</span><span class="op">:</span>j)]) <span class="op">%*%</span><span class="st"> </span><span class="kw">na.omit</span>(<span class="kw">Lag</span>(x, j)) <span class="op">/</span><span class="st"> </span><span class="kw">t</span>(x) <span class="op">%*%</span><span class="st"> </span>x
-  )
-}
-
-<span class="co"># simulate time series with serially correlated errors</span>
-<span class="kw">set.seed</span>(<span class="dv">1</span>)
-
-N &lt;-<span class="st"> </span><span class="dv">100</span>
-
-eps &lt;-<span class="st"> </span><span class="kw">arima.sim</span>(<span class="dt">n =</span> N, <span class="dt">model =</span> <span class="kw">list</span>(<span class="dt">ma =</span> <span class="fl">0.5</span>))
-X &lt;-<span class="st"> </span><span class="kw">runif</span>(N, <span class="dv">1</span>, <span class="dv">10</span>)
-Y &lt;-<span class="st"> </span><span class="fl">0.5</span> <span class="op">*</span><span class="st"> </span>X <span class="op">+</span><span class="st"> </span>eps
-
-<span class="co"># compute OLS residuals</span>
-res &lt;-<span class="st"> </span><span class="kw">lm</span>(Y <span class="op">~</span><span class="st"> </span>X)<span class="op">$</span>res
-
-<span class="co"># compute v</span>
-v &lt;-<span class="st"> </span>(X <span class="op">-</span><span class="st"> </span><span class="kw">mean</span>(X)) <span class="op">*</span><span class="st"> </span>res
-
-<span class="co"># compute robust estimate of beta_1 variance</span>
-var_beta_hat &lt;-<span class="st"> </span><span class="dv">1</span><span class="op">/</span>N <span class="op">*</span><span class="st"> </span>(<span class="dv">1</span><span class="op">/</span>(N<span class="dv">-2</span>) <span class="op">*</span><span class="st"> </span><span class="kw">sum</span>((X <span class="op">-</span><span class="st"> </span><span class="kw">mean</span>(X))<span class="op">^</span><span class="dv">2</span> <span class="op">*</span><span class="st"> </span>res<span class="op">^</span><span class="dv">2</span>) ) <span class="op">/</span><span class="st"> </span>
-<span class="st">                        </span>(<span class="dv">1</span><span class="op">/</span>N <span class="op">*</span><span class="st"> </span><span class="kw">sum</span>((X <span class="op">-</span><span class="st"> </span><span class="kw">mean</span>(X))<span class="op">^</span><span class="dv">2</span>))<span class="op">^</span><span class="dv">2</span>
-
-<span class="co"># rule of thumb truncation parameter</span>
-m &lt;-<span class="st"> </span><span class="kw">floor</span>(<span class="fl">0.75</span> <span class="op">*</span><span class="st"> </span>N<span class="op">^</span>(<span class="dv">1</span><span class="op">/</span><span class="dv">3</span>))
-
-<span class="co"># compute correction factor</span>
-f_hat_T &lt;-<span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span><span class="dv">2</span> <span class="op">*</span><span class="st"> </span><span class="kw">sum</span>(
-  (m <span class="op">-</span><span class="st"> </span><span class="dv">1</span><span class="op">:</span>(m<span class="dv">-1</span>))<span class="op">/</span>m <span class="op">*</span><span class="st"> </span><span class="kw">sapply</span>(<span class="dv">1</span><span class="op">:</span>(m <span class="op">-</span><span class="st"> </span><span class="dv">1</span>), <span class="cf">function</span>(i) <span class="kw">acf_c</span>(<span class="dt">x =</span> v, <span class="dt">j =</span> i))
-  ) 
-
-<span class="co"># compute Newey-West HAC estimate of the standard error </span>
-<span class="kw">sqrt</span>(var_beta_hat <span class="op">*</span><span class="st"> </span>f_hat_T)</code></pre>
+<div class="sourceCode" id="cb815"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb815-1"><a href="15-4-hac-standard-errors.html#cb815-1"></a><span class="co"># function that computes rho tilde</span></span>
+<span id="cb815-2"><a href="15-4-hac-standard-errors.html#cb815-2"></a>acf_c &lt;-<span class="st"> </span><span class="cf">function</span>(x, j) {</span>
+<span id="cb815-3"><a href="15-4-hac-standard-errors.html#cb815-3"></a>  <span class="kw">return</span>(</span>
+<span id="cb815-4"><a href="15-4-hac-standard-errors.html#cb815-4"></a>    <span class="kw">t</span>(x[<span class="op">-</span><span class="kw">c</span>(<span class="dv">1</span><span class="op">:</span>j)]) <span class="op">%*%</span><span class="st"> </span><span class="kw">na.omit</span>(<span class="kw">Lag</span>(x, j)) <span class="op">/</span><span class="st"> </span><span class="kw">t</span>(x) <span class="op">%*%</span><span class="st"> </span>x</span>
+<span id="cb815-5"><a href="15-4-hac-standard-errors.html#cb815-5"></a>  )</span>
+<span id="cb815-6"><a href="15-4-hac-standard-errors.html#cb815-6"></a>}</span>
+<span id="cb815-7"><a href="15-4-hac-standard-errors.html#cb815-7"></a></span>
+<span id="cb815-8"><a href="15-4-hac-standard-errors.html#cb815-8"></a><span class="co"># simulate time series with serially correlated errors</span></span>
+<span id="cb815-9"><a href="15-4-hac-standard-errors.html#cb815-9"></a><span class="kw">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb815-10"><a href="15-4-hac-standard-errors.html#cb815-10"></a></span>
+<span id="cb815-11"><a href="15-4-hac-standard-errors.html#cb815-11"></a>N &lt;-<span class="st"> </span><span class="dv">100</span></span>
+<span id="cb815-12"><a href="15-4-hac-standard-errors.html#cb815-12"></a></span>
+<span id="cb815-13"><a href="15-4-hac-standard-errors.html#cb815-13"></a>eps &lt;-<span class="st"> </span><span class="kw">arima.sim</span>(<span class="dt">n =</span> N, <span class="dt">model =</span> <span class="kw">list</span>(<span class="dt">ma =</span> <span class="fl">0.5</span>))</span>
+<span id="cb815-14"><a href="15-4-hac-standard-errors.html#cb815-14"></a>X &lt;-<span class="st"> </span><span class="kw">runif</span>(N, <span class="dv">1</span>, <span class="dv">10</span>)</span>
+<span id="cb815-15"><a href="15-4-hac-standard-errors.html#cb815-15"></a>Y &lt;-<span class="st"> </span><span class="fl">0.5</span> <span class="op">*</span><span class="st"> </span>X <span class="op">+</span><span class="st"> </span>eps</span>
+<span id="cb815-16"><a href="15-4-hac-standard-errors.html#cb815-16"></a></span>
+<span id="cb815-17"><a href="15-4-hac-standard-errors.html#cb815-17"></a><span class="co"># compute OLS residuals</span></span>
+<span id="cb815-18"><a href="15-4-hac-standard-errors.html#cb815-18"></a>res &lt;-<span class="st"> </span><span class="kw">lm</span>(Y <span class="op">~</span><span class="st"> </span>X)<span class="op">$</span>res</span>
+<span id="cb815-19"><a href="15-4-hac-standard-errors.html#cb815-19"></a></span>
+<span id="cb815-20"><a href="15-4-hac-standard-errors.html#cb815-20"></a><span class="co"># compute v</span></span>
+<span id="cb815-21"><a href="15-4-hac-standard-errors.html#cb815-21"></a>v &lt;-<span class="st"> </span>(X <span class="op">-</span><span class="st"> </span><span class="kw">mean</span>(X)) <span class="op">*</span><span class="st"> </span>res</span>
+<span id="cb815-22"><a href="15-4-hac-standard-errors.html#cb815-22"></a></span>
+<span id="cb815-23"><a href="15-4-hac-standard-errors.html#cb815-23"></a><span class="co"># compute robust estimate of beta_1 variance</span></span>
+<span id="cb815-24"><a href="15-4-hac-standard-errors.html#cb815-24"></a>var_beta_hat &lt;-<span class="st"> </span><span class="dv">1</span><span class="op">/</span>N <span class="op">*</span><span class="st"> </span>(<span class="dv">1</span><span class="op">/</span>(N<span class="dv">-2</span>) <span class="op">*</span><span class="st"> </span><span class="kw">sum</span>((X <span class="op">-</span><span class="st"> </span><span class="kw">mean</span>(X))<span class="op">^</span><span class="dv">2</span> <span class="op">*</span><span class="st"> </span>res<span class="op">^</span><span class="dv">2</span>) ) <span class="op">/</span><span class="st"> </span></span>
+<span id="cb815-25"><a href="15-4-hac-standard-errors.html#cb815-25"></a><span class="st">                        </span>(<span class="dv">1</span><span class="op">/</span>N <span class="op">*</span><span class="st"> </span><span class="kw">sum</span>((X <span class="op">-</span><span class="st"> </span><span class="kw">mean</span>(X))<span class="op">^</span><span class="dv">2</span>))<span class="op">^</span><span class="dv">2</span></span>
+<span id="cb815-26"><a href="15-4-hac-standard-errors.html#cb815-26"></a></span>
+<span id="cb815-27"><a href="15-4-hac-standard-errors.html#cb815-27"></a><span class="co"># rule of thumb truncation parameter</span></span>
+<span id="cb815-28"><a href="15-4-hac-standard-errors.html#cb815-28"></a>m &lt;-<span class="st"> </span><span class="kw">floor</span>(<span class="fl">0.75</span> <span class="op">*</span><span class="st"> </span>N<span class="op">^</span>(<span class="dv">1</span><span class="op">/</span><span class="dv">3</span>))</span>
+<span id="cb815-29"><a href="15-4-hac-standard-errors.html#cb815-29"></a></span>
+<span id="cb815-30"><a href="15-4-hac-standard-errors.html#cb815-30"></a><span class="co"># compute correction factor</span></span>
+<span id="cb815-31"><a href="15-4-hac-standard-errors.html#cb815-31"></a>f_hat_T &lt;-<span class="st"> </span><span class="dv">1</span> <span class="op">+</span><span class="st"> </span><span class="dv">2</span> <span class="op">*</span><span class="st"> </span><span class="kw">sum</span>(</span>
+<span id="cb815-32"><a href="15-4-hac-standard-errors.html#cb815-32"></a>  (m <span class="op">-</span><span class="st"> </span><span class="dv">1</span><span class="op">:</span>(m<span class="dv">-1</span>))<span class="op">/</span>m <span class="op">*</span><span class="st"> </span><span class="kw">sapply</span>(<span class="dv">1</span><span class="op">:</span>(m <span class="op">-</span><span class="st"> </span><span class="dv">1</span>), <span class="cf">function</span>(i) <span class="kw">acf_c</span>(<span class="dt">x =</span> v, <span class="dt">j =</span> i))</span>
+<span id="cb815-33"><a href="15-4-hac-standard-errors.html#cb815-33"></a>  ) </span>
+<span id="cb815-34"><a href="15-4-hac-standard-errors.html#cb815-34"></a></span>
+<span id="cb815-35"><a href="15-4-hac-standard-errors.html#cb815-35"></a><span class="co"># compute Newey-West HAC estimate of the standard error </span></span>
+<span id="cb815-36"><a href="15-4-hac-standard-errors.html#cb815-36"></a><span class="kw">sqrt</span>(var_beta_hat <span class="op">*</span><span class="st"> </span>f_hat_T)</span></code></pre></div>
 <pre><code>## [1] 0.04036208</code></pre>
 <p>For the code to be reusable in other applications, we use <tt>sapply()</tt> to estimate the <span class="math inline">\(m-1\)</span> autocorrelations <span class="math inline">\(\overset{\sim}{\rho}_j\)</span>.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Using NeweyWest():</span>
-NW_VCOV &lt;-<span class="st"> </span><span class="kw">NeweyWest</span>(<span class="kw">lm</span>(Y <span class="op">~</span><span class="st"> </span>X), 
-              <span class="dt">lag =</span> m <span class="op">-</span><span class="st"> </span><span class="dv">1</span>, <span class="dt">prewhite =</span> F, 
-              <span class="dt">adjust =</span> T)
-
-<span class="co"># compute standard error</span>
-<span class="kw">sqrt</span>(<span class="kw">diag</span>(NW_VCOV))[<span class="dv">2</span>]</code></pre>
+<div class="sourceCode" id="cb817"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb817-1"><a href="15-4-hac-standard-errors.html#cb817-1"></a><span class="co"># Using NeweyWest():</span></span>
+<span id="cb817-2"><a href="15-4-hac-standard-errors.html#cb817-2"></a>NW_VCOV &lt;-<span class="st"> </span><span class="kw">NeweyWest</span>(<span class="kw">lm</span>(Y <span class="op">~</span><span class="st"> </span>X), </span>
+<span id="cb817-3"><a href="15-4-hac-standard-errors.html#cb817-3"></a>              <span class="dt">lag =</span> m <span class="op">-</span><span class="st"> </span><span class="dv">1</span>, <span class="dt">prewhite =</span> F, </span>
+<span id="cb817-4"><a href="15-4-hac-standard-errors.html#cb817-4"></a>              <span class="dt">adjust =</span> T)</span>
+<span id="cb817-5"><a href="15-4-hac-standard-errors.html#cb817-5"></a></span>
+<span id="cb817-6"><a href="15-4-hac-standard-errors.html#cb817-6"></a><span class="co"># compute standard error</span></span>
+<span id="cb817-7"><a href="15-4-hac-standard-errors.html#cb817-7"></a><span class="kw">sqrt</span>(<span class="kw">diag</span>(NW_VCOV))[<span class="dv">2</span>]</span></code></pre></div>
 <pre><code>##          X 
 ## 0.04036208</code></pre>
 <p>By choosing <tt>lag = m-1</tt> we ensure that the maximum order of autocorrelations used is <span class="math inline">\(m-1\)</span> — just as in equation <a href="15-4-hac-standard-errors.html#eq:nwhacf">(15.5)</a>. Notice that we set the arguments <tt>prewhite = F</tt> and <tt>adjust = T</tt> to ensure that the formula <a href="15-4-hac-standard-errors.html#eq:nwhac">(15.4)</a> is used and finite sample adjustments are made.</p>
 <p>We find that the computed standard errors coincide. Of course, a variance-covariance matrix estimate as computed by <tt>NeweyWest()</tt> can be supplied as the argument <tt>vcov</tt> in <tt>coeftest()</tt> such that HAC <span class="math inline">\(t\)</span>-statistics and <span class="math inline">\(p\)</span>-values are provided by the latter.</p>
-<pre class="sourceCode r"><code class="sourceCode r">example_mod &lt;-<span class="st"> </span><span class="kw">lm</span>(Y <span class="op">~</span><span class="st"> </span>X)
-<span class="kw">coeftest</span>(example_mod, <span class="dt">vcov =</span> NW_VCOV)</code></pre>
+<div class="sourceCode" id="cb819"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb819-1"><a href="15-4-hac-standard-errors.html#cb819-1"></a>example_mod &lt;-<span class="st"> </span><span class="kw">lm</span>(Y <span class="op">~</span><span class="st"> </span>X)</span>
+<span id="cb819-2"><a href="15-4-hac-standard-errors.html#cb819-2"></a><span class="kw">coeftest</span>(example_mod, <span class="dt">vcov =</span> NW_VCOV)</span></code></pre></div>
 <pre><code>## 
 ## t test of coefficients:
 ## 
