@@ -1,4 +1,4 @@
-script <- "<script async='async' src='https://cdn.datacamp.com/dcl-react-dev.js.gz'></script>"
+script <- "<script async='async' src='https://cdn.datacamp.com/dcl-react.js.gz'></script>"
 
 inject_document_head <- function(script, css_file = "", workdir = "/URFITE Bookdown/DCL") {
   # set directory to look for files
