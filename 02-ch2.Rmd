@@ -3,7 +3,7 @@
 This chapter reviews some basic concepts of probability theory and demonstrates how they can be
 applied in `r ttcode("R")`.
 
-Most of the statistical functionalities in `r ttcode("R")`'s standard version are collected in the `r ttcode("stats")` package. It provides simple functions which compute descriptive measures and facilitate computations involving a variety of probability distributions. It also contains more sophisticated routines that, e.g., enable the user to estimate a large number of models based on the same data or help to conduct extensive simulation studies. `r ttcode("stats")` is part of the base distribution of `r ttcode("R")`, meaning that it is installed by default so there is no need to run `install.packages("stats")` or `library("stats")`. Simply execute `library(help = "stats")` in the console to view the documentation and a complete list of all functions gathered in `r ttcode("stats")`. For most packages a documentation that can be viewed within *RStudio* is available. Documentations can be invoked using the `r ttcode("?")` operator, e.g., upon execution of `?stats` the documentation of the `r ttcode("stats")` package is shown in the help tab of the bottom-right pane.
+Most of the statistical functionalities in base `r ttcode("R")` are collected in the `r ttcode("stats")` package. It provides simple functions which compute descriptive measures and facilitate computations involving a variety of probability distributions. It also contains more sophisticated routines that, e.g., enable the user to estimate a large number of models based on the same data or help to conduct extensive simulation studies. `r ttcode("stats")` is part of the base distribution of `r ttcode("R")`, meaning that it is installed by default so there is no need to run `install.packages("stats")` or `library("stats")`. Simply execute `library(help = "stats")` in the console to view the documentation and a complete list of all functions gathered in `r ttcode("stats")`. For most packages a documentation that can be viewed within *RStudio* is available. Documentations can be invoked using the `r ttcode("?")` operator, e.g., upon execution of `?stats` the documentation of the `r ttcode("stats")` package is shown in the help tab of the bottom-right pane.
 
 In what follows, our focus is on (some of) the probability distributions that are handled by `r ttcode("R")` and show how to use the relevant functions to solve simple problems. Thereby, we refresh some core concepts of probability theory. Among other things, you will learn how to draw random numbers, how to compute densities, probabilities, quantiles and alike. As we shall see, it is very convenient to rely on these routines.
 
@@ -12,7 +12,7 @@ In what follows, our focus is on (some of) the probability distributions that ar
 Let us briefly review some basic concepts of probability theory.
 
 - The mutually exclusive results of a random process are called the *outcomes*. 'Mutually exclusive' means that only one of the possible outcomes can be observed. 
-- We refer to the *probability* of an outcome as the proportion that the outcome occurs in the long run, that is, if the experiment is repeated very often. 
+- We refer to the *probability* of an outcome as the proportion that the outcome occurs in the long run, that is, if the experiment is repeated many times. 
 - The set of all possible outcomes of a random variable is called the *sample space*. 
 - An *event* is a subset of the sample space and consists of one or more outcomes.
 
@@ -29,8 +29,7 @@ sample of size $1$ from a set of numbers which are mutually exclusive outcomes.
 Here, the sample space is $\{1,2,3,4,5,6\}$ and we can think of many different
 events, e.g., 'the observed outcome lies between $2$ and $5$'.
 
-A basic function to draw random samples from a specified set of elements is the
-the function `r ttcode("sample()")`, see `?sample`. We can use it to simulate the random outcome of a dice roll. Let's roll the dice!
+A basic function to draw random samples from a specified set of elements is the function `r ttcode("sample()")`, see `?sample`. We can use it to simulate the random outcome of a dice roll. Let's roll the dice!
 
 ```{r, echo = T, eval = T, message = F, warning = F} 
 sample(1:6, 1) 
@@ -52,10 +51,10 @@ We can easily plot both functions using `r ttcode("R")`. Since the probability e
 # generate the vector of probabilities 
 probability <- rep(1/6, 6) 
 
-# plot the probabilites 
-plot(probability, 
-     main = "Probability Distribution",
-     xlab = "outcomes") 
+# plot the probabilities 
+plot(probability,
+     xlab = "outcomes",
+     main = "Probability Distribution") 
 ``` 
 </div>
 
@@ -100,7 +99,7 @@ $$f(k)=P(k)=\begin{pmatrix}n\\ k \end{pmatrix} \cdot p^k \cdot
 with $\begin{pmatrix}n\\ k \end{pmatrix}$ the binomial coefficient. 
 
 In `r ttcode("R")`, we can solve problems like the one stated above by means of the function `r ttcode("dbinom()")` which calculates $P(k\vert n, p)$ the probability of the binomial distribution given the parameters `r ttcode("x")` ($k$),
-`r ttcode("size")` ($n$), and `r ttcode("prob")` ($p$), see `?binom`. Let us compute $P(k=5\vert n = 10, p = 0.5)$ (we write this short as $P(k=5)$.
+`r ttcode("size")` ($n$), and `r ttcode("prob")` ($p$), see `?dbinom`. Let us compute $P(k=5\vert n = 10, p = 0.5)$ (we write this short as $P(k=5)$.)
 
 ```{r, echo = T, eval = T, message = F, warning = F} 
 dbinom(x = 5,
@@ -131,6 +130,7 @@ of all possible outcomes that can occur and their respective probabilities. In t
 ```{r, echo = T, eval = T, message = F, warning = F}
 # set up vector of possible outcomes
 k <- 0:10
+k
 ```
 
 To visualize the probability distribution function of $k$ we may therefore do the following:
@@ -228,7 +228,7 @@ set.seed(1)
 sample(1:6, 3, replace = T)
 ```
 
-Note that every call of `sample(1:6, 3, replace = T)` gives a different outcome since we are we are drawing with replacement at random. 
+Note that every call of `sample(1:6, 3, replace = T)` gives a different outcome since we draw with replacement at random. To allow you to reproduce the results of computations that involve random numbers, we will used `set.seed()` to set R's random number generator to a specific state. You should check that it actually works: set the seed in your R session to 1 and verify that you obtain the same three random numbers!  
 
 ```{block2, randomseed, type='rmdknit'}
 Sequences of random numbers generated by R are pseudo-random numbers, i.e., they are not "truly" random but approximate the properties of sequences of random numbers. Since this approximation is good enough for our purposes we refer to pseudo-random numbers as random numbers throughout this book.
@@ -237,7 +237,7 @@ In general, sequences of random numbers are generated by functions called "pseud
 
 This is convenient for us:
 
-If we provide the same seed twice, we get the same sequence of numbers twice. Thus, setting a seed before excecuting R code which invovles random numbers makes the outcome reproducible! 
+If we provide the same seed twice, we get the same sequence of numbers twice. Thus, setting a seed before executing R code which involves random numbers makes the outcome reproducible! 
 ```
 
 Of course we could also consider a much bigger number of trials, $10000$ say.
@@ -287,7 +287,7 @@ $$ s^2_Y = \frac{1}{n-1} \sum_{i=1}^n (y_i - \overline{y})^2. $$
 
 Remember that $s^2_Y$ is different from the so called *population variance* of a discrete random variable $Y$, 
 
-$$ \text{Var}(Y) = \frac{1}{N} \sum_{i=1}^N (y_i - \mu_Y)^2. $$
+$$ \text{Var}(Y) = \frac{1}{N} \sum_{i=1}^N (y_i - \mu_Y)^2 $$
 
 since it measures how the $n$ observations in the sample are dispersed around the sample average $\overline{y}$. Instead, $\text{Var}(Y)$ measures the dispersion of the whole population ($N$ members) around the population mean $\mu_Y$. The difference becomes clear when we look at our dice rolling example. For $D$ we have
 
@@ -311,9 +311,7 @@ cannot use the concept of a probability distribution as used for discrete random
 variables. Instead, the probability distribution of a continuous random variable
 is summarized by its *probability density function* (PDF).
 
-The cumulative probability distribution function (CDF) for a continuous random variable is defined just as in the discrete case. Hence, the cumulative probability
-distribution of a continuous random variables states the probability that the
-random variable is less than or equal to a particular value.
+The cumulative probability distribution function (CDF) for a continuous random variable is defined just as in the discrete case. Hence, the CDF of a continuous random variables states the probability that the random variable is less than or equal to a particular value.
 
 For completeness, we present revisions of Key Concepts 2.1 and 2.2 for the continuous case.
 
@@ -358,7 +356,7 @@ $$\\text{Var}(Y) =  \\sigma_Y^2 = \\int (y - \\mu_Y)^2 f_Y(y) \\mathrm{d}y.$$
 
 Let us discuss an example:
 
-Consider the continuous random variable $X$ with probability density function
+Consider the continuous random variable $X$ with PDF
 
 $$ f_X(x) = \frac{3}{x^4}, x>1. $$
 
@@ -390,7 +388,7 @@ $$ f_X(x) = \frac{3}{x^4}, x>1. $$
   =& 3
 \end{align}
 
-So we have shown that the area under the curve equals one, that the expectation is  $E(X)=\frac{3}{2}$ and we found the variance to be $\text{Var}(X) = \frac{3}{4}$. However, this was tedious and, as we shall see, an analytic approach is not applicable for some probability density functions, e.g., if integrals have no closed form solutions.
+So we have shown that the area under the curve equals one, that the expectation is  $E(X)=\frac{3}{2}$ and we found the variance to be $\text{Var}(X) = \frac{3}{4}$. However, this was tedious and, as we shall see, an analytic approach is not applicable for some PDFs, e.g., if integrals have no closed form solutions.
 
 Luckily, `r ttcode("R")` also enables us to easily find the results derived above. The tool we use for this is the function `r ttcode("integrate()")`. First, we have to define the functions we want to calculate integrals for as `r ttcode("R")` functions, i.e., the PDF $f_X(x)$ as well as the expressions $x\cdot f_X(x)$ and $x^2\cdot f_X(x)$.
 
@@ -449,9 +447,7 @@ f(x) = \frac{1}{\sqrt{2 \pi} \sigma} \exp{-(x - \mu)^2/(2 \sigma^2)}.
 \end{align}
 
 For the standard normal distribution we have $\mu=0$ and $\sigma=1$. Standard normal variates are often denoted by $Z$. Usually, the standard normal PDF is denoted by $\phi$ and the standard normal CDF is denoted by $\Phi$. Hence,
-$$ \phi(c) = \Phi'(c) \ \ , \ \ \Phi(c) = P(Z \leq c) \ \ , \ \ Z \sim \mathcal{N}(0,1).$$ In `r ttcode("R")`, we can conveniently obtain densities of normal distributions using
-the function `r ttcode("dnorm()")`. Let us draw a plot of the standard normal density function
-using `r ttcode("curve()")` in conjunction with `r ttcode("dnorm()")`.
+$$ \phi(c) = \Phi'(c) \ \ , \ \ \Phi(c) = P(Z \leq c) \ \ , \ \ Z \sim \mathcal{N}(0,1).$$ Note that the notation X $\sim$ Y reads as "X is distributed as Y". In `r ttcode("R")`, we can conveniently obtain densities of normal distributions using the function `r ttcode("dnorm()")`. Let us draw a plot of the standard normal density function using `r ttcode("curve()")` together with `r ttcode("dnorm()")`.
 
 <div class="unfolded"> 
 ```{r, echo = T, eval = T, message = F, warning = F, fig.align='center'} 
@@ -466,7 +462,7 @@ curve(dnorm(x),
 We can obtain the density at different positions by passing a vector to `r ttcode("dnorm()")`.
 
 ```{r, echo = T, eval = T, message = F, warning = F}
-# compute denstiy at x=-1.96, x=0 and x=1.96
+# compute density at x=-1.96, x=0 and x=1.96
 dnorm(x = c(-1.96, 0, 1.96))
 ```
 
@@ -477,7 +473,7 @@ Similar to the PDF, we can plot the standard normal CDF using `r ttcode("curve()
 # plot the standard normal CDF
 curve(pnorm(x), 
       xlim = c(-3.5, 3.5), 
-      ylab = "Density", 
+      ylab = "Probability", 
       main = "Standard Normal Cumulative Distribution Function")
 ```
 </div>
@@ -611,9 +607,9 @@ plotly_iframe <- paste("<center><iframe scrolling='no' seamless='seamless' style
 ```
 `r I(plotly_iframe)`
 
-By moving the cursor over the plot you can see that the density is rotationally invariant, i.e., the density at $(a, b)$ solely depends on the distance of $(a, b)$ to the origin: geometrically, regions of equal density are edges of concentric circles in the $XY$-plane, centered at $(\mu_X = 0, \mu_Y = 0)$. 
+By moving the cursor over the plot you can see that the density is rotationally invariant, i.e., the density at $(a, b)$ solely depends on the distance of $(a, b)$ to the origin: geometrically, regions of equal density are edges of concentric circles in the XY-plane, centered at $(\mu_X = 0, \mu_Y = 0)$. 
 
-The normal distribution has some remarkable characteristics. For example, for two jointly normally distribued variables $X$ and $Y$, the conditional expectation function is linear: one can show that $$ E(Y\vert X) = E(Y) + \rho \frac{\sigma_Y}{\sigma_X} (X - E(X)). $$ The application below shows standard bivariate normally distributed sample data along with the conditional expectation function $E(Y\vert X)$ and the marginal densities of $X$ and $Y$. All elements adjust accordingly as you vary the parameters.
+The normal distribution has some remarkable characteristics. For example, for two jointly normally distribued variables $X$ and $Y$, the conditional expectation function is linear: one can show that $$ E(Y\vert X) = E(Y) + \rho \frac{\sigma_Y}{\sigma_X} (X - E(X)). $$ The interactive widget below shows standard bivariate normally distributed sample data along with the conditional expectation function $E(Y\vert X)$ and the marginal densities of $X$ and $Y$. All elements adjust accordingly as you vary the parameters.
 
 ```{r, echo=FALSE, results='asis', purl=FALSE}
 if (my_output=="html"){
@@ -773,10 +769,10 @@ follows an $F$ distribution with numerator degrees of freedom $M$ and denominato
 
 By definition, the support of both PDF and CDF of an $F_{M,n}$ distributed random variable is $\mathbb{R}_{\geq0}$.
 
-Say we have an $F$ distributed random variable $Y$ with numerator degrees of freedom $3$ and denominator degrees of freedom $14$ and are interested in $P(Y \geq 2)$. This can be computed with help of the function `r ttcode("pf()")`. By setting the argument `r ttcode("lower.tail")` to `r ttcode("TRUE")` we ensure that `r ttcode("R")` computes $1- P(Y \leq 2)$, i.e,the probability mass in the tail right of $2$. 
+Say we have an $F$ distributed random variable $Y$ with numerator degrees of freedom $3$ and denominator degrees of freedom $14$ and are interested in $P(Y \geq 2)$. This can be computed with help of the function `r ttcode("pf()")`. By setting the argument `r ttcode("lower.tail")` to `r ttcode("FALSE")` we ensure that `r ttcode("R")` computes $1- P(Y \leq 2)$, i.e,the probability mass in the tail right of $2$. 
 
 ```{r, echo = T, eval = T, message = F, warning = F}
-pf(2, 3, 13, lower.tail = F)
+pf(2, df1 = 3, df2 = 14, lower.tail = F)
 ```
 
 We can visualize this probability by drawing a line plot of the related density and adding a color shading with `r ttcode("polygon()")`.
@@ -843,7 +839,7 @@ What happens if we consider functions of the sample data? Consider the example o
 sum(sample(1:6, 2, replace = T))
 ```
 
-Clearly, this sum, let us call it $S$, is a random variable as it depends on randomly drawn summands. For this example, we can completely enumerate all outcomes and hence write down the theoretical probability distribution of our function of the sample data, $S$:
+Clearly, this sum, let us call it $S$, is a random variable as it depends on randomly drawn summands. For this example, we can completely enumerate all outcomes and hence write down the theoretical probability distribution of our function of the sample data $S$:
 
 We face $6^2=36$ possible pairs. Those pairs are 
 
@@ -892,13 +888,9 @@ ES <- sum(S * PS)
 ES
 
 # Variance of S
-VarS <- sum(
-  (S - c(ES))^2 * PS
-  )
+VarS <- sum((S - c(ES))^2 * PS)
 VarS
 ```
-
-The `r ttcode("%*%")` operator is used to compute the scalar product of two vectors.
 
 So the distribution of $S$ is known. It is also evident that its distribution differs considerably from the marginal distribution, i.e,the distribution of a single dice roll's outcome, $D$ . Let us visualize this using bar plots.
 
@@ -939,7 +931,7 @@ $\overline{Y}$ is also called the sample mean.
 
 ### Mean and Variance of the Sample Mean {-}
 
-suppose that all observations $Y_1,\dots,Y_n$ are i.i.d. and denote $\mu_Y$ and $\sigma_Y^2$ the mean and the variance of the $Y_i$. Then we have that
+suppose that $Y_1,\dots,Y_n$ are i.i.d. and denote $\mu_Y$ and $\sigma_Y^2$ as the mean and the variance of the $Y_i$. Then we have that
 
 $$ E(\overline{Y}) = E\left(\frac{1}{n} \sum_{i=1}^n Y_i \right) = \frac{1}{n} E\left(\sum_{i=1}^n Y_i\right) = \frac{1}{n} \sum_{i=1}^n E\left(Y_i\right) = \frac{1}{n} \cdot n \cdot \mu_Y = \mu_Y    $$
 and
@@ -970,7 +962,10 @@ We can use `r ttcode("R")`'s random number generation facilities to verify this 
 The approach sketched above is an example of what is commonly known as *Monte Carlo Simulation* or *Monte Carlo Experiment*. To perform this simulation in `r ttcode("R")`, we proceed as follows:
 
 1. Choose a sample size `r ttcode("n")` and the number of samples to be drawn, `r ttcode("reps")`.
-2. Use the function `r ttcode("replicate()")` in conjunction with `r ttcode("rnorm()")` to draw `r ttcode("n")` observations from the standard normal distribution `r ttcode("rep")` times. **Note**: the outcome of `r ttcode("replicate()")` is a matrix with dimensions `r ttcode("n")` $\times$ `r ttcode("rep")`. It contains the drawn samples as *columns*.
+2. Use the function `r ttcode("replicate()")` in conjunction with `r ttcode("rnorm()")` to draw `r ttcode("n")` observations from the standard normal distribution `r ttcode("rep")` times. 
+
+    **Note**: the outcome of `r ttcode("replicate()")` is a matrix with dimensions `r ttcode("n")` $\times$ `r ttcode("rep")`. It contains the drawn samples as *columns*.
+    
 3. Compute sample means using `r ttcode("colMeans()")`. This function computes the mean of each column, i.e., of each sample and returns a vector.
 
 ```{r, echo = T, eval = T, message = F, warning = F} 
@@ -1016,7 +1011,7 @@ curve(dnorm(x, sd = 1/sqrt(n)),
 ```
 </div>
 
-The sampling distribution of $\overline{Y}$ is indeed very close to that of a $\mathcal{N}(0, 0.1)$ distribution so the Monte Carlo Simulation supports the theoretical claim. 
+The sampling distribution of $\overline{Y}$ is indeed very close to that of a $\mathcal{N}(0, 0.1)$ distribution so the Monte Carlo simulation supports the theoretical claim. 
 
 Let us discuss another example where using simple random sampling in a simulation setup helps to verify a well known result. As discussed before, the [Chi-squared](#chisquare) distribution with $M$ degrees of freedom arises as the distribution of the sum of $M$ independent squared standard normal distributed random variables. 
 
@@ -1030,7 +1025,7 @@ Again, we produce a density estimate for the distribution underlying our simulat
 
 <div class="unfolded"> 
 ```{r, echo = T, eval = T, message = F, warning = F, fig.align='center'} 
-# number of repititions
+# number of repetitions
 reps <- 10000
 
 # set degrees of freedom of a chi-Square Distribution
@@ -1063,7 +1058,7 @@ curve(dchisq(x, df = DF),
 
 Sampling distributions as considered in the last section play an important role in the development of econometric methods. There are two main approaches in characterizing sampling distributions: an "exact" approach and an "approximate" approach.
 
-The exact approach aims to find a general formula for the sampling distribution that holds for any sample size $n$. We call this the *exact distribution* or *finite-sample distribution*. In the previous examples of dice rolling and normal variates, we have dealt with functions of random variables whose sample distributions are *excactly known* in the sense that we can write them down as analytic expressions. However, this is not always possible. For $\overline{Y}$, result (<a href="#mjx-eqn-2.4">2.4</a>) tells us that normality of the $Y_i$ implies normality of $\overline{Y}$ (we demonstrated this for the special case of $Y_i \overset{i.i.d.}{\sim} \mathcal{N}(0,1)$ with $n=10$ using a simulation study that involves simple random sampling). Unfortunately, the *exact* distribution of $\overline{Y}$ is generally unknown and often hard to derive (or even untraceable) if we drop the assumption that the $Y_i$ have a normal distribution.  
+The exact approach aims to find a general formula for the sampling distribution that holds for any sample size $n$. We call this the *exact distribution* or *finite-sample distribution*. In the previous examples of dice rolling and normal variates, we have dealt with functions of random variables whose sample distributions are *exactly known* in the sense that we can write them down as analytic expressions. However, this is not always possible. For $\overline{Y}$, result (<a href="#mjx-eqn-2.4">2.4</a>) tells us that normality of the $Y_i$ implies normality of $\overline{Y}$ (we demonstrated this for the special case of $Y_i \overset{i.i.d.}{\sim} \mathcal{N}(0,1)$ with $n=10$ using a simulation study that involves simple random sampling). Unfortunately, the *exact* distribution of $\overline{Y}$ is generally unknown and often hard to derive (or even untraceable) if we drop the assumption that the $Y_i$ have a normal distribution.  
 
 Therefore, as can be guessed from its name, the "approximate" approach aims to find an approximation to the sampling distribution where it is required that the sample size $n$ is large. A distribution that is used as a large-sample approximation to the sampling distribution is also called the *asymptotic distribution*. This is due to the fact that the asymptotic distribution *is* the sampling distribution for $n \rightarrow \infty$, i.e., the approximation becomes exact if the sample size goes to infinity. However, the difference between the sampling distribution and the asymptotic distribution is negligible for moderate or even small samples sizes so that approximations using the asymptotic distribution are useful.
 
@@ -1117,7 +1112,7 @@ Let $R_n$ denote the proportion of heads in the first $n$ tosses,
 
 $$ R_n = \frac{1}{n} \sum_{i=1}^n Y_i. \tag{2.5}$$
 
-According to the law of large numbers, the observed proportion of heads converges in probability to $\mu_Y = 0.5$, the probability of tossing head in a *single* coin toss, $$ R_n \xrightarrow[]{p} \mu_Y=0.5 \ \ \text{as} \ \ n \rightarrow \infty.$$ This result is the as the one illustrated by the interactive application in Key Concept 2.6. We now show how to replicate this using `r ttcode("R")`.
+According to the law of large numbers, the observed proportion of heads converges in probability to $\mu_Y = 0.5$, the probability of tossing head in a *single* coin toss, $$ R_n \xrightarrow[]{p} \mu_Y=0.5 \ \ \text{as} \ \ n \rightarrow \infty.$$ This result is illustrated by the interactive application in Key Concept 2.6. We now show how to replicate this using `r ttcode("R")`.
 
 The procedure is as follows:
 
@@ -1159,7 +1154,7 @@ There are several things to be said about this plot.
 
 - The blue graph shows the observed proportion of heads when tossing a coin $n$ times.
 
-- Since the $Y_i$ are random variables, $R_n$ is a random variate, too. The path depicted is only one of many possible realizations of $R_n$ as it is determined by the $30000$ observations sampled from the Bernoulli distribution. Thus, the code chunk above produces a different path every time you execute it (try this below!).  
+- Since the $Y_i$ are random variables, $R_n$ is a random variate, too. The path depicted is only one of many possible realizations of $R_n$ as it is determined by the $30000$ observations sampled from the Bernoulli distribution.
 
 - If the number of coin tosses $n$ is small, the proportion of heads may be anything but close to its theoretical value, $\mu_Y = 0.5$. However, as more and more observation are included in the sample we find that the path stabilizes in the neighborhood of $0.5$. The average of multiple trials shows a clear tendency to converge to its expected value as the sample size increases, just as claimed by the law of large numbers. 
 
@@ -1207,7 +1202,7 @@ The application below demonstrates the CLT for the sample average of normally di
 ')
 ```
 
-According to the CLT, the distribution of the sample mean $\overline{Y}$ of the Bernoulli distributed random variables $Y_i$, $i=1,...,n$, is well approximated by the normal distribution with parameters $\mu_Y=p=0.5$ and $\sigma^2_{Y} = p(1-p) = 0.25$ for large $n$. Consequently,  for the standardized sample mean we conclude that $$ \frac{\overline{Y} - 0.5}{0.5/\sqrt{n}} \tag{2.6}$$ should be well approximated by the standard normal distribution $\mathcal{N}(0,1)$. We employ another simulation study to demonstrate this graphically. The idea is as follows.
+According to the CLT, the distribution of the sample mean $\overline{Y}$ of the Bernoulli distributed random variables $Y_i$, $i=1,...,n$, is well approximated by the normal distribution with parameters $\mu_Y=p=0.5$ and $\sigma^2_{Y} = p(1-p)/n = 0.25/n$ for large $n$. Consequently,  for the standardized sample mean we conclude that $$ \frac{\overline{Y} - 0.5}{0.5/\sqrt{n}} \tag{2.6}$$ should be well approximated by the standard normal distribution $\mathcal{N}(0,1)$. We employ another simulation study to demonstrate this graphically. The idea is as follows.
 
 Draw a large number of random samples, $10000$ say, of size $n$ from the Bernoulli distribution and compute the sample averages. Standardize the averages as shown in (<a href="#mjx-eqn-2.6">2.6</a>). Next, visualize the distribution of the generated standardized sample averages by means of a histogram and compare to the standard normal distribution. Repeat this for different sample sizes $n$ to see how increasing the sample size $n$ impacts the simulated distribution of the averages.
 
@@ -1215,7 +1210,7 @@ In `r ttcode("R")`, realize this as follows:
 
 1. We start by defining that the next four subsequently generated figures shall be drawn in a $2\times2$ array such that they can be easily compared. This is done by calling `par(mfrow = c(2, 2))` before generating the figures.
 
-2. We define the number of repetitions `r ttcode("reps")` as $10000$ and create a vector of sample sizes named `r ttcode("sample.sizes")`. We consider samples of sizes $2$, $10$, $50$ and $100$.
+2. We define the number of repetitions `r ttcode("reps")` as $10000$ and create a vector of sample sizes named `r ttcode("sample.sizes")`. We consider samples of sizes $5$, $20$, $75$, and $100$.
 
 3. Next, we combine two `r ttcode("for()")` loops to simulate the data and plot the distributions. The inner loop generates $10000$ random samples, each consisting of `r ttcode("n")` observations that are drawn from the Bernoulli distribution, and computes the standardized averages. The outer loop executes the inner loop for the different sample sizes `r ttcode("n")` and produces a plot for each iteration.
 
@@ -1230,14 +1225,11 @@ sample.sizes <- c(5, 20, 75, 100)
 # set seed for reproducibility
 set.seed(123)
 
-# vector of break numbers for histograms
-b <- c(5, 10, 15, 30)
-
 # outer loop (loop over the sample sizes)
   for (n in sample.sizes) {
     
-    samplemean <- rep(0, reps) #initialize the vector of sample menas
-    stdsamplemean <- rep(0, reps) #initialize the vector of standardized sample menas
+    samplemean <- rep(0, reps) #initialize the vector of sample means
+    stdsamplemean <- rep(0, reps) #initialize the vector of standardized sample means
 
 # inner loop (loop over repetitions)   
     for (i in 1:reps) {
