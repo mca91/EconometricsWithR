@@ -398,75 +398,75 @@ This book is in <b>Open Review</b>. We want your feedback to make the book bette
 <h2><span class="header-section-number">11.4</span> Application to the Boston HMDA Data</h2>
 <p>Models <a href="11-2-palr.html#eq:denyprobit2">(11.6)</a> and <a href="11-2-palr.html#eq:denylogit2">(11.7)</a> indicate that denial rates are higher for African American applicants holding constant the payment-to-income ratio. Both results could be subject to omitted variable bias. In order to obtain a more trustworthy estimate of the effect of being black on the probability of a mortgage application denial we estimate a linear probability model as well as several Logit and Probit models. We thereby control for financial variables and additional applicant characteristics which are likely to influence the probability of denial and differ between black and white applicants.</p>
 <p>Sample averages as shown in Table 11.1 of the book can be easily reproduced using the functions <tt>mean()</tt> (as usual for numeric variables) and <tt>prop.table()</tt> (for factor variables).</p>
-<div class="sourceCode" id="cb277"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb277-1"><a href="11-4-application-to-the-boston-hmda-data.html#cb277-1"></a><span class="co"># Mean P/I ratio</span></span>
-<span id="cb277-2"><a href="11-4-application-to-the-boston-hmda-data.html#cb277-2"></a><span class="kw">mean</span>(HMDA<span class="op">$</span>pirat)</span>
-<span id="cb277-3"><a href="11-4-application-to-the-boston-hmda-data.html#cb277-3"></a><span class="co">#&gt; [1] 0.3308136</span></span>
-<span id="cb277-4"><a href="11-4-application-to-the-boston-hmda-data.html#cb277-4"></a></span>
-<span id="cb277-5"><a href="11-4-application-to-the-boston-hmda-data.html#cb277-5"></a><span class="co"># inhouse expense-to-total-income ratio</span></span>
-<span id="cb277-6"><a href="11-4-application-to-the-boston-hmda-data.html#cb277-6"></a><span class="kw">mean</span>(HMDA<span class="op">$</span>hirat)</span>
-<span id="cb277-7"><a href="11-4-application-to-the-boston-hmda-data.html#cb277-7"></a><span class="co">#&gt; [1] 0.2553461</span></span>
-<span id="cb277-8"><a href="11-4-application-to-the-boston-hmda-data.html#cb277-8"></a></span>
-<span id="cb277-9"><a href="11-4-application-to-the-boston-hmda-data.html#cb277-9"></a><span class="co"># loan-to-value ratio</span></span>
-<span id="cb277-10"><a href="11-4-application-to-the-boston-hmda-data.html#cb277-10"></a><span class="kw">mean</span>(HMDA<span class="op">$</span>lvrat)</span>
-<span id="cb277-11"><a href="11-4-application-to-the-boston-hmda-data.html#cb277-11"></a><span class="co">#&gt; [1] 0.7377759</span></span>
-<span id="cb277-12"><a href="11-4-application-to-the-boston-hmda-data.html#cb277-12"></a></span>
-<span id="cb277-13"><a href="11-4-application-to-the-boston-hmda-data.html#cb277-13"></a><span class="co"># consumer credit score</span></span>
-<span id="cb277-14"><a href="11-4-application-to-the-boston-hmda-data.html#cb277-14"></a><span class="kw">mean</span>(<span class="kw">as.numeric</span>(HMDA<span class="op">$</span>chist))</span>
-<span id="cb277-15"><a href="11-4-application-to-the-boston-hmda-data.html#cb277-15"></a><span class="co">#&gt; [1] 2.116387</span></span>
-<span id="cb277-16"><a href="11-4-application-to-the-boston-hmda-data.html#cb277-16"></a></span>
-<span id="cb277-17"><a href="11-4-application-to-the-boston-hmda-data.html#cb277-17"></a><span class="co"># mortgage credit score</span></span>
-<span id="cb277-18"><a href="11-4-application-to-the-boston-hmda-data.html#cb277-18"></a><span class="kw">mean</span>(<span class="kw">as.numeric</span>(HMDA<span class="op">$</span>mhist))</span>
-<span id="cb277-19"><a href="11-4-application-to-the-boston-hmda-data.html#cb277-19"></a><span class="co">#&gt; [1] 1.721008</span></span>
-<span id="cb277-20"><a href="11-4-application-to-the-boston-hmda-data.html#cb277-20"></a></span>
-<span id="cb277-21"><a href="11-4-application-to-the-boston-hmda-data.html#cb277-21"></a><span class="co"># public bad credit record</span></span>
-<span id="cb277-22"><a href="11-4-application-to-the-boston-hmda-data.html#cb277-22"></a><span class="kw">mean</span>(<span class="kw">as.numeric</span>(HMDA<span class="op">$</span>phist)<span class="op">-</span><span class="dv">1</span>)</span>
-<span id="cb277-23"><a href="11-4-application-to-the-boston-hmda-data.html#cb277-23"></a><span class="co">#&gt; [1] 0.07352941</span></span>
-<span id="cb277-24"><a href="11-4-application-to-the-boston-hmda-data.html#cb277-24"></a></span>
-<span id="cb277-25"><a href="11-4-application-to-the-boston-hmda-data.html#cb277-25"></a><span class="co"># denied mortgage insurance</span></span>
-<span id="cb277-26"><a href="11-4-application-to-the-boston-hmda-data.html#cb277-26"></a><span class="kw">prop.table</span>(<span class="kw">table</span>(HMDA<span class="op">$</span>insurance))</span>
-<span id="cb277-27"><a href="11-4-application-to-the-boston-hmda-data.html#cb277-27"></a><span class="co">#&gt; </span></span>
-<span id="cb277-28"><a href="11-4-application-to-the-boston-hmda-data.html#cb277-28"></a><span class="co">#&gt;         no        yes </span></span>
-<span id="cb277-29"><a href="11-4-application-to-the-boston-hmda-data.html#cb277-29"></a><span class="co">#&gt; 0.97983193 0.02016807</span></span>
-<span id="cb277-30"><a href="11-4-application-to-the-boston-hmda-data.html#cb277-30"></a></span>
-<span id="cb277-31"><a href="11-4-application-to-the-boston-hmda-data.html#cb277-31"></a><span class="co"># self-employed</span></span>
-<span id="cb277-32"><a href="11-4-application-to-the-boston-hmda-data.html#cb277-32"></a><span class="kw">prop.table</span>(<span class="kw">table</span>(HMDA<span class="op">$</span>selfemp))</span>
-<span id="cb277-33"><a href="11-4-application-to-the-boston-hmda-data.html#cb277-33"></a><span class="co">#&gt; </span></span>
-<span id="cb277-34"><a href="11-4-application-to-the-boston-hmda-data.html#cb277-34"></a><span class="co">#&gt;        no       yes </span></span>
-<span id="cb277-35"><a href="11-4-application-to-the-boston-hmda-data.html#cb277-35"></a><span class="co">#&gt; 0.8836134 0.1163866</span></span>
-<span id="cb277-36"><a href="11-4-application-to-the-boston-hmda-data.html#cb277-36"></a></span>
-<span id="cb277-37"><a href="11-4-application-to-the-boston-hmda-data.html#cb277-37"></a><span class="co"># single</span></span>
-<span id="cb277-38"><a href="11-4-application-to-the-boston-hmda-data.html#cb277-38"></a><span class="kw">prop.table</span>(<span class="kw">table</span>(HMDA<span class="op">$</span>single))</span>
-<span id="cb277-39"><a href="11-4-application-to-the-boston-hmda-data.html#cb277-39"></a><span class="co">#&gt; </span></span>
-<span id="cb277-40"><a href="11-4-application-to-the-boston-hmda-data.html#cb277-40"></a><span class="co">#&gt;        no       yes </span></span>
-<span id="cb277-41"><a href="11-4-application-to-the-boston-hmda-data.html#cb277-41"></a><span class="co">#&gt; 0.6067227 0.3932773</span></span>
-<span id="cb277-42"><a href="11-4-application-to-the-boston-hmda-data.html#cb277-42"></a></span>
-<span id="cb277-43"><a href="11-4-application-to-the-boston-hmda-data.html#cb277-43"></a><span class="co"># high school diploma</span></span>
-<span id="cb277-44"><a href="11-4-application-to-the-boston-hmda-data.html#cb277-44"></a><span class="kw">prop.table</span>(<span class="kw">table</span>(HMDA<span class="op">$</span>hschool))</span>
-<span id="cb277-45"><a href="11-4-application-to-the-boston-hmda-data.html#cb277-45"></a><span class="co">#&gt; </span></span>
-<span id="cb277-46"><a href="11-4-application-to-the-boston-hmda-data.html#cb277-46"></a><span class="co">#&gt;         no        yes </span></span>
-<span id="cb277-47"><a href="11-4-application-to-the-boston-hmda-data.html#cb277-47"></a><span class="co">#&gt; 0.01638655 0.98361345</span></span>
-<span id="cb277-48"><a href="11-4-application-to-the-boston-hmda-data.html#cb277-48"></a></span>
-<span id="cb277-49"><a href="11-4-application-to-the-boston-hmda-data.html#cb277-49"></a><span class="co"># unemployment rate</span></span>
-<span id="cb277-50"><a href="11-4-application-to-the-boston-hmda-data.html#cb277-50"></a><span class="kw">mean</span>(HMDA<span class="op">$</span>unemp)</span>
-<span id="cb277-51"><a href="11-4-application-to-the-boston-hmda-data.html#cb277-51"></a><span class="co">#&gt; [1] 3.774496</span></span>
-<span id="cb277-52"><a href="11-4-application-to-the-boston-hmda-data.html#cb277-52"></a></span>
-<span id="cb277-53"><a href="11-4-application-to-the-boston-hmda-data.html#cb277-53"></a><span class="co"># condominium</span></span>
-<span id="cb277-54"><a href="11-4-application-to-the-boston-hmda-data.html#cb277-54"></a><span class="kw">prop.table</span>(<span class="kw">table</span>(HMDA<span class="op">$</span>condomin))</span>
-<span id="cb277-55"><a href="11-4-application-to-the-boston-hmda-data.html#cb277-55"></a><span class="co">#&gt; </span></span>
-<span id="cb277-56"><a href="11-4-application-to-the-boston-hmda-data.html#cb277-56"></a><span class="co">#&gt;        no       yes </span></span>
-<span id="cb277-57"><a href="11-4-application-to-the-boston-hmda-data.html#cb277-57"></a><span class="co">#&gt; 0.7117647 0.2882353</span></span>
-<span id="cb277-58"><a href="11-4-application-to-the-boston-hmda-data.html#cb277-58"></a></span>
-<span id="cb277-59"><a href="11-4-application-to-the-boston-hmda-data.html#cb277-59"></a><span class="co"># black</span></span>
-<span id="cb277-60"><a href="11-4-application-to-the-boston-hmda-data.html#cb277-60"></a><span class="kw">prop.table</span>(<span class="kw">table</span>(HMDA<span class="op">$</span>black))</span>
-<span id="cb277-61"><a href="11-4-application-to-the-boston-hmda-data.html#cb277-61"></a><span class="co">#&gt; </span></span>
-<span id="cb277-62"><a href="11-4-application-to-the-boston-hmda-data.html#cb277-62"></a><span class="co">#&gt;       no      yes </span></span>
-<span id="cb277-63"><a href="11-4-application-to-the-boston-hmda-data.html#cb277-63"></a><span class="co">#&gt; 0.857563 0.142437</span></span>
-<span id="cb277-64"><a href="11-4-application-to-the-boston-hmda-data.html#cb277-64"></a></span>
-<span id="cb277-65"><a href="11-4-application-to-the-boston-hmda-data.html#cb277-65"></a><span class="co"># deny</span></span>
-<span id="cb277-66"><a href="11-4-application-to-the-boston-hmda-data.html#cb277-66"></a><span class="kw">prop.table</span>(<span class="kw">table</span>(HMDA<span class="op">$</span>deny))</span>
-<span id="cb277-67"><a href="11-4-application-to-the-boston-hmda-data.html#cb277-67"></a><span class="co">#&gt; </span></span>
-<span id="cb277-68"><a href="11-4-application-to-the-boston-hmda-data.html#cb277-68"></a><span class="co">#&gt;         0         1 </span></span>
-<span id="cb277-69"><a href="11-4-application-to-the-boston-hmda-data.html#cb277-69"></a><span class="co">#&gt; 0.8802521 0.1197479</span></span></code></pre></div>
+<div class="sourceCode" id="cb278"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb278-1"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-1"></a><span class="co"># Mean P/I ratio</span></span>
+<span id="cb278-2"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-2"></a><span class="kw">mean</span>(HMDA<span class="op">$</span>pirat)</span>
+<span id="cb278-3"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-3"></a><span class="co">#&gt; [1] 0.3308136</span></span>
+<span id="cb278-4"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-4"></a></span>
+<span id="cb278-5"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-5"></a><span class="co"># inhouse expense-to-total-income ratio</span></span>
+<span id="cb278-6"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-6"></a><span class="kw">mean</span>(HMDA<span class="op">$</span>hirat)</span>
+<span id="cb278-7"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-7"></a><span class="co">#&gt; [1] 0.2553461</span></span>
+<span id="cb278-8"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-8"></a></span>
+<span id="cb278-9"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-9"></a><span class="co"># loan-to-value ratio</span></span>
+<span id="cb278-10"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-10"></a><span class="kw">mean</span>(HMDA<span class="op">$</span>lvrat)</span>
+<span id="cb278-11"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-11"></a><span class="co">#&gt; [1] 0.7377759</span></span>
+<span id="cb278-12"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-12"></a></span>
+<span id="cb278-13"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-13"></a><span class="co"># consumer credit score</span></span>
+<span id="cb278-14"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-14"></a><span class="kw">mean</span>(<span class="kw">as.numeric</span>(HMDA<span class="op">$</span>chist))</span>
+<span id="cb278-15"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-15"></a><span class="co">#&gt; [1] 2.116387</span></span>
+<span id="cb278-16"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-16"></a></span>
+<span id="cb278-17"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-17"></a><span class="co"># mortgage credit score</span></span>
+<span id="cb278-18"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-18"></a><span class="kw">mean</span>(<span class="kw">as.numeric</span>(HMDA<span class="op">$</span>mhist))</span>
+<span id="cb278-19"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-19"></a><span class="co">#&gt; [1] 1.721008</span></span>
+<span id="cb278-20"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-20"></a></span>
+<span id="cb278-21"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-21"></a><span class="co"># public bad credit record</span></span>
+<span id="cb278-22"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-22"></a><span class="kw">mean</span>(<span class="kw">as.numeric</span>(HMDA<span class="op">$</span>phist)<span class="op">-</span><span class="dv">1</span>)</span>
+<span id="cb278-23"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-23"></a><span class="co">#&gt; [1] 0.07352941</span></span>
+<span id="cb278-24"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-24"></a></span>
+<span id="cb278-25"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-25"></a><span class="co"># denied mortgage insurance</span></span>
+<span id="cb278-26"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-26"></a><span class="kw">prop.table</span>(<span class="kw">table</span>(HMDA<span class="op">$</span>insurance))</span>
+<span id="cb278-27"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-27"></a><span class="co">#&gt; </span></span>
+<span id="cb278-28"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-28"></a><span class="co">#&gt;         no        yes </span></span>
+<span id="cb278-29"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-29"></a><span class="co">#&gt; 0.97983193 0.02016807</span></span>
+<span id="cb278-30"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-30"></a></span>
+<span id="cb278-31"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-31"></a><span class="co"># self-employed</span></span>
+<span id="cb278-32"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-32"></a><span class="kw">prop.table</span>(<span class="kw">table</span>(HMDA<span class="op">$</span>selfemp))</span>
+<span id="cb278-33"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-33"></a><span class="co">#&gt; </span></span>
+<span id="cb278-34"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-34"></a><span class="co">#&gt;        no       yes </span></span>
+<span id="cb278-35"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-35"></a><span class="co">#&gt; 0.8836134 0.1163866</span></span>
+<span id="cb278-36"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-36"></a></span>
+<span id="cb278-37"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-37"></a><span class="co"># single</span></span>
+<span id="cb278-38"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-38"></a><span class="kw">prop.table</span>(<span class="kw">table</span>(HMDA<span class="op">$</span>single))</span>
+<span id="cb278-39"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-39"></a><span class="co">#&gt; </span></span>
+<span id="cb278-40"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-40"></a><span class="co">#&gt;        no       yes </span></span>
+<span id="cb278-41"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-41"></a><span class="co">#&gt; 0.6067227 0.3932773</span></span>
+<span id="cb278-42"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-42"></a></span>
+<span id="cb278-43"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-43"></a><span class="co"># high school diploma</span></span>
+<span id="cb278-44"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-44"></a><span class="kw">prop.table</span>(<span class="kw">table</span>(HMDA<span class="op">$</span>hschool))</span>
+<span id="cb278-45"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-45"></a><span class="co">#&gt; </span></span>
+<span id="cb278-46"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-46"></a><span class="co">#&gt;         no        yes </span></span>
+<span id="cb278-47"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-47"></a><span class="co">#&gt; 0.01638655 0.98361345</span></span>
+<span id="cb278-48"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-48"></a></span>
+<span id="cb278-49"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-49"></a><span class="co"># unemployment rate</span></span>
+<span id="cb278-50"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-50"></a><span class="kw">mean</span>(HMDA<span class="op">$</span>unemp)</span>
+<span id="cb278-51"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-51"></a><span class="co">#&gt; [1] 3.774496</span></span>
+<span id="cb278-52"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-52"></a></span>
+<span id="cb278-53"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-53"></a><span class="co"># condominium</span></span>
+<span id="cb278-54"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-54"></a><span class="kw">prop.table</span>(<span class="kw">table</span>(HMDA<span class="op">$</span>condomin))</span>
+<span id="cb278-55"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-55"></a><span class="co">#&gt; </span></span>
+<span id="cb278-56"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-56"></a><span class="co">#&gt;        no       yes </span></span>
+<span id="cb278-57"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-57"></a><span class="co">#&gt; 0.7117647 0.2882353</span></span>
+<span id="cb278-58"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-58"></a></span>
+<span id="cb278-59"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-59"></a><span class="co"># black</span></span>
+<span id="cb278-60"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-60"></a><span class="kw">prop.table</span>(<span class="kw">table</span>(HMDA<span class="op">$</span>black))</span>
+<span id="cb278-61"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-61"></a><span class="co">#&gt; </span></span>
+<span id="cb278-62"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-62"></a><span class="co">#&gt;       no      yes </span></span>
+<span id="cb278-63"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-63"></a><span class="co">#&gt; 0.857563 0.142437</span></span>
+<span id="cb278-64"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-64"></a></span>
+<span id="cb278-65"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-65"></a><span class="co"># deny</span></span>
+<span id="cb278-66"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-66"></a><span class="kw">prop.table</span>(<span class="kw">table</span>(HMDA<span class="op">$</span>deny))</span>
+<span id="cb278-67"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-67"></a><span class="co">#&gt; </span></span>
+<span id="cb278-68"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-68"></a><span class="co">#&gt;         0         1 </span></span>
+<span id="cb278-69"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-69"></a><span class="co">#&gt; 0.8802521 0.1197479</span></span></code></pre></div>
 <p>See Chapter 11.4 of the book or use <tt>R</tt>’s help function for more on variables contained in the <tt>HMDA</tt> dataset.</p>
 <p>Before estimating the models we transform the loan-to-value ratio (<tt>lvrat</tt>) into a factor variable, where</p>
 <p><span class="math display">\[\begin{align*}
@@ -478,62 +478,62 @@ This book is in <b>Open Review</b>. We want your feedback to make the book bette
   \end{cases}
 \end{align*}\]</span></p>
 <p>and convert both credit scores to numeric variables.</p>
-<div class="sourceCode" id="cb278"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb278-1"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-1"></a><span class="co"># define low, medium and high loan-to-value ratio</span></span>
-<span id="cb278-2"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-2"></a>HMDA<span class="op">$</span>lvrat &lt;-<span class="st"> </span><span class="kw">factor</span>(</span>
-<span id="cb278-3"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-3"></a>  <span class="kw">ifelse</span>(HMDA<span class="op">$</span>lvrat <span class="op">&lt;</span><span class="st"> </span><span class="fl">0.8</span>, <span class="st">&quot;low&quot;</span>,</span>
-<span id="cb278-4"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-4"></a>  <span class="kw">ifelse</span>(HMDA<span class="op">$</span>lvrat <span class="op">&gt;=</span><span class="st"> </span><span class="fl">0.8</span> <span class="op">&amp;</span><span class="st"> </span>HMDA<span class="op">$</span>lvrat <span class="op">&lt;=</span><span class="st"> </span><span class="fl">0.95</span>, <span class="st">&quot;medium&quot;</span>, <span class="st">&quot;high&quot;</span>)),</span>
-<span id="cb278-5"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-5"></a>  <span class="dt">levels =</span> <span class="kw">c</span>(<span class="st">&quot;low&quot;</span>, <span class="st">&quot;medium&quot;</span>, <span class="st">&quot;high&quot;</span>))</span>
-<span id="cb278-6"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-6"></a></span>
-<span id="cb278-7"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-7"></a><span class="co"># convert credit scores to numeric</span></span>
-<span id="cb278-8"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-8"></a>HMDA<span class="op">$</span>mhist &lt;-<span class="st"> </span><span class="kw">as.numeric</span>(HMDA<span class="op">$</span>mhist)</span>
-<span id="cb278-9"><a href="11-4-application-to-the-boston-hmda-data.html#cb278-9"></a>HMDA<span class="op">$</span>chist &lt;-<span class="st"> </span><span class="kw">as.numeric</span>(HMDA<span class="op">$</span>chist)</span></code></pre></div>
+<div class="sourceCode" id="cb279"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb279-1"><a href="11-4-application-to-the-boston-hmda-data.html#cb279-1"></a><span class="co"># define low, medium and high loan-to-value ratio</span></span>
+<span id="cb279-2"><a href="11-4-application-to-the-boston-hmda-data.html#cb279-2"></a>HMDA<span class="op">$</span>lvrat &lt;-<span class="st"> </span><span class="kw">factor</span>(</span>
+<span id="cb279-3"><a href="11-4-application-to-the-boston-hmda-data.html#cb279-3"></a>  <span class="kw">ifelse</span>(HMDA<span class="op">$</span>lvrat <span class="op">&lt;</span><span class="st"> </span><span class="fl">0.8</span>, <span class="st">&quot;low&quot;</span>,</span>
+<span id="cb279-4"><a href="11-4-application-to-the-boston-hmda-data.html#cb279-4"></a>  <span class="kw">ifelse</span>(HMDA<span class="op">$</span>lvrat <span class="op">&gt;=</span><span class="st"> </span><span class="fl">0.8</span> <span class="op">&amp;</span><span class="st"> </span>HMDA<span class="op">$</span>lvrat <span class="op">&lt;=</span><span class="st"> </span><span class="fl">0.95</span>, <span class="st">&quot;medium&quot;</span>, <span class="st">&quot;high&quot;</span>)),</span>
+<span id="cb279-5"><a href="11-4-application-to-the-boston-hmda-data.html#cb279-5"></a>  <span class="dt">levels =</span> <span class="kw">c</span>(<span class="st">&quot;low&quot;</span>, <span class="st">&quot;medium&quot;</span>, <span class="st">&quot;high&quot;</span>))</span>
+<span id="cb279-6"><a href="11-4-application-to-the-boston-hmda-data.html#cb279-6"></a></span>
+<span id="cb279-7"><a href="11-4-application-to-the-boston-hmda-data.html#cb279-7"></a><span class="co"># convert credit scores to numeric</span></span>
+<span id="cb279-8"><a href="11-4-application-to-the-boston-hmda-data.html#cb279-8"></a>HMDA<span class="op">$</span>mhist &lt;-<span class="st"> </span><span class="kw">as.numeric</span>(HMDA<span class="op">$</span>mhist)</span>
+<span id="cb279-9"><a href="11-4-application-to-the-boston-hmda-data.html#cb279-9"></a>HMDA<span class="op">$</span>chist &lt;-<span class="st"> </span><span class="kw">as.numeric</span>(HMDA<span class="op">$</span>chist)</span></code></pre></div>
 <p>Next we reproduce the estimation results presented in Table 11.2 of the book.</p>
-<div class="sourceCode" id="cb279"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb279-1"><a href="11-4-application-to-the-boston-hmda-data.html#cb279-1"></a><span class="co"># estimate all 6 models for the denial probability</span></span>
-<span id="cb279-2"><a href="11-4-application-to-the-boston-hmda-data.html#cb279-2"></a>lpm_HMDA &lt;-<span class="st"> </span><span class="kw">lm</span>(deny <span class="op">~</span><span class="st"> </span>black <span class="op">+</span><span class="st"> </span>pirat <span class="op">+</span><span class="st"> </span>hirat <span class="op">+</span><span class="st"> </span>lvrat <span class="op">+</span><span class="st"> </span>chist <span class="op">+</span><span class="st"> </span>mhist <span class="op">+</span><span class="st"> </span>phist </span>
-<span id="cb279-3"><a href="11-4-application-to-the-boston-hmda-data.html#cb279-3"></a>               <span class="op">+</span><span class="st"> </span>insurance <span class="op">+</span><span class="st"> </span>selfemp, <span class="dt">data =</span> HMDA)</span>
-<span id="cb279-4"><a href="11-4-application-to-the-boston-hmda-data.html#cb279-4"></a></span>
-<span id="cb279-5"><a href="11-4-application-to-the-boston-hmda-data.html#cb279-5"></a>logit_HMDA &lt;-<span class="st"> </span><span class="kw">glm</span>(deny <span class="op">~</span><span class="st"> </span>black <span class="op">+</span><span class="st"> </span>pirat <span class="op">+</span><span class="st"> </span>hirat <span class="op">+</span><span class="st"> </span>lvrat <span class="op">+</span><span class="st"> </span>chist <span class="op">+</span><span class="st"> </span>mhist <span class="op">+</span><span class="st"> </span>phist </span>
-<span id="cb279-6"><a href="11-4-application-to-the-boston-hmda-data.html#cb279-6"></a>                  <span class="op">+</span><span class="st"> </span>insurance <span class="op">+</span><span class="st"> </span>selfemp, </span>
-<span id="cb279-7"><a href="11-4-application-to-the-boston-hmda-data.html#cb279-7"></a>                  <span class="dt">family =</span> <span class="kw">binomial</span>(<span class="dt">link =</span> <span class="st">&quot;logit&quot;</span>), </span>
-<span id="cb279-8"><a href="11-4-application-to-the-boston-hmda-data.html#cb279-8"></a>                  <span class="dt">data =</span> HMDA)</span>
-<span id="cb279-9"><a href="11-4-application-to-the-boston-hmda-data.html#cb279-9"></a></span>
-<span id="cb279-10"><a href="11-4-application-to-the-boston-hmda-data.html#cb279-10"></a>probit_HMDA_<span class="dv">1</span> &lt;-<span class="st"> </span><span class="kw">glm</span>(deny <span class="op">~</span><span class="st"> </span>black <span class="op">+</span><span class="st"> </span>pirat <span class="op">+</span><span class="st"> </span>hirat <span class="op">+</span><span class="st"> </span>lvrat <span class="op">+</span><span class="st"> </span>chist <span class="op">+</span><span class="st"> </span>mhist <span class="op">+</span><span class="st"> </span>phist </span>
-<span id="cb279-11"><a href="11-4-application-to-the-boston-hmda-data.html#cb279-11"></a>                     <span class="op">+</span><span class="st"> </span>insurance <span class="op">+</span><span class="st"> </span>selfemp, </span>
-<span id="cb279-12"><a href="11-4-application-to-the-boston-hmda-data.html#cb279-12"></a>                     <span class="dt">family =</span> <span class="kw">binomial</span>(<span class="dt">link =</span> <span class="st">&quot;probit&quot;</span>), </span>
-<span id="cb279-13"><a href="11-4-application-to-the-boston-hmda-data.html#cb279-13"></a>                     <span class="dt">data =</span> HMDA)</span>
-<span id="cb279-14"><a href="11-4-application-to-the-boston-hmda-data.html#cb279-14"></a></span>
-<span id="cb279-15"><a href="11-4-application-to-the-boston-hmda-data.html#cb279-15"></a>probit_HMDA_<span class="dv">2</span> &lt;-<span class="st"> </span><span class="kw">glm</span>(deny <span class="op">~</span><span class="st"> </span>black <span class="op">+</span><span class="st"> </span>pirat <span class="op">+</span><span class="st"> </span>hirat <span class="op">+</span><span class="st"> </span>lvrat <span class="op">+</span><span class="st"> </span>chist <span class="op">+</span><span class="st"> </span>mhist <span class="op">+</span><span class="st"> </span>phist </span>
-<span id="cb279-16"><a href="11-4-application-to-the-boston-hmda-data.html#cb279-16"></a>                     <span class="op">+</span><span class="st"> </span>insurance <span class="op">+</span><span class="st"> </span>selfemp <span class="op">+</span><span class="st"> </span>single <span class="op">+</span><span class="st"> </span>hschool <span class="op">+</span><span class="st"> </span>unemp, </span>
-<span id="cb279-17"><a href="11-4-application-to-the-boston-hmda-data.html#cb279-17"></a>                     <span class="dt">family =</span> <span class="kw">binomial</span>(<span class="dt">link =</span> <span class="st">&quot;probit&quot;</span>), </span>
-<span id="cb279-18"><a href="11-4-application-to-the-boston-hmda-data.html#cb279-18"></a>                     <span class="dt">data =</span> HMDA)</span>
-<span id="cb279-19"><a href="11-4-application-to-the-boston-hmda-data.html#cb279-19"></a></span>
-<span id="cb279-20"><a href="11-4-application-to-the-boston-hmda-data.html#cb279-20"></a>probit_HMDA_<span class="dv">3</span> &lt;-<span class="st"> </span><span class="kw">glm</span>(deny <span class="op">~</span><span class="st"> </span>black <span class="op">+</span><span class="st"> </span>pirat <span class="op">+</span><span class="st"> </span>hirat <span class="op">+</span><span class="st"> </span>lvrat <span class="op">+</span><span class="st"> </span>chist <span class="op">+</span><span class="st"> </span>mhist </span>
-<span id="cb279-21"><a href="11-4-application-to-the-boston-hmda-data.html#cb279-21"></a>                     <span class="op">+</span><span class="st"> </span>phist <span class="op">+</span><span class="st"> </span>insurance <span class="op">+</span><span class="st"> </span>selfemp <span class="op">+</span><span class="st"> </span>single <span class="op">+</span><span class="st"> </span>hschool <span class="op">+</span><span class="st"> </span>unemp <span class="op">+</span><span class="st"> </span>condomin </span>
-<span id="cb279-22"><a href="11-4-application-to-the-boston-hmda-data.html#cb279-22"></a>                     <span class="op">+</span><span class="st"> </span><span class="kw">I</span>(mhist<span class="op">==</span><span class="dv">3</span>) <span class="op">+</span><span class="st"> </span><span class="kw">I</span>(mhist<span class="op">==</span><span class="dv">4</span>) <span class="op">+</span><span class="st"> </span><span class="kw">I</span>(chist<span class="op">==</span><span class="dv">3</span>) <span class="op">+</span><span class="st"> </span><span class="kw">I</span>(chist<span class="op">==</span><span class="dv">4</span>) <span class="op">+</span><span class="st"> </span><span class="kw">I</span>(chist<span class="op">==</span><span class="dv">5</span>) </span>
-<span id="cb279-23"><a href="11-4-application-to-the-boston-hmda-data.html#cb279-23"></a>                     <span class="op">+</span><span class="st"> </span><span class="kw">I</span>(chist<span class="op">==</span><span class="dv">6</span>), </span>
-<span id="cb279-24"><a href="11-4-application-to-the-boston-hmda-data.html#cb279-24"></a>                     <span class="dt">family =</span> <span class="kw">binomial</span>(<span class="dt">link =</span> <span class="st">&quot;probit&quot;</span>), </span>
-<span id="cb279-25"><a href="11-4-application-to-the-boston-hmda-data.html#cb279-25"></a>                     <span class="dt">data =</span> HMDA)</span>
-<span id="cb279-26"><a href="11-4-application-to-the-boston-hmda-data.html#cb279-26"></a></span>
-<span id="cb279-27"><a href="11-4-application-to-the-boston-hmda-data.html#cb279-27"></a>probit_HMDA_<span class="dv">4</span> &lt;-<span class="st"> </span><span class="kw">glm</span>(deny <span class="op">~</span><span class="st"> </span>black <span class="op">*</span><span class="st"> </span>(pirat <span class="op">+</span><span class="st"> </span>hirat) <span class="op">+</span><span class="st"> </span>lvrat <span class="op">+</span><span class="st"> </span>chist <span class="op">+</span><span class="st"> </span>mhist <span class="op">+</span><span class="st"> </span>phist </span>
-<span id="cb279-28"><a href="11-4-application-to-the-boston-hmda-data.html#cb279-28"></a>                     <span class="op">+</span><span class="st"> </span>insurance <span class="op">+</span><span class="st"> </span>selfemp <span class="op">+</span><span class="st"> </span>single <span class="op">+</span><span class="st"> </span>hschool <span class="op">+</span><span class="st"> </span>unemp, </span>
-<span id="cb279-29"><a href="11-4-application-to-the-boston-hmda-data.html#cb279-29"></a>                     <span class="dt">family =</span> <span class="kw">binomial</span>(<span class="dt">link =</span> <span class="st">&quot;probit&quot;</span>), </span>
-<span id="cb279-30"><a href="11-4-application-to-the-boston-hmda-data.html#cb279-30"></a>                     <span class="dt">data =</span> HMDA)</span></code></pre></div>
+<div class="sourceCode" id="cb280"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb280-1"><a href="11-4-application-to-the-boston-hmda-data.html#cb280-1"></a><span class="co"># estimate all 6 models for the denial probability</span></span>
+<span id="cb280-2"><a href="11-4-application-to-the-boston-hmda-data.html#cb280-2"></a>lpm_HMDA &lt;-<span class="st"> </span><span class="kw">lm</span>(deny <span class="op">~</span><span class="st"> </span>black <span class="op">+</span><span class="st"> </span>pirat <span class="op">+</span><span class="st"> </span>hirat <span class="op">+</span><span class="st"> </span>lvrat <span class="op">+</span><span class="st"> </span>chist <span class="op">+</span><span class="st"> </span>mhist <span class="op">+</span><span class="st"> </span>phist </span>
+<span id="cb280-3"><a href="11-4-application-to-the-boston-hmda-data.html#cb280-3"></a>               <span class="op">+</span><span class="st"> </span>insurance <span class="op">+</span><span class="st"> </span>selfemp, <span class="dt">data =</span> HMDA)</span>
+<span id="cb280-4"><a href="11-4-application-to-the-boston-hmda-data.html#cb280-4"></a></span>
+<span id="cb280-5"><a href="11-4-application-to-the-boston-hmda-data.html#cb280-5"></a>logit_HMDA &lt;-<span class="st"> </span><span class="kw">glm</span>(deny <span class="op">~</span><span class="st"> </span>black <span class="op">+</span><span class="st"> </span>pirat <span class="op">+</span><span class="st"> </span>hirat <span class="op">+</span><span class="st"> </span>lvrat <span class="op">+</span><span class="st"> </span>chist <span class="op">+</span><span class="st"> </span>mhist <span class="op">+</span><span class="st"> </span>phist </span>
+<span id="cb280-6"><a href="11-4-application-to-the-boston-hmda-data.html#cb280-6"></a>                  <span class="op">+</span><span class="st"> </span>insurance <span class="op">+</span><span class="st"> </span>selfemp, </span>
+<span id="cb280-7"><a href="11-4-application-to-the-boston-hmda-data.html#cb280-7"></a>                  <span class="dt">family =</span> <span class="kw">binomial</span>(<span class="dt">link =</span> <span class="st">&quot;logit&quot;</span>), </span>
+<span id="cb280-8"><a href="11-4-application-to-the-boston-hmda-data.html#cb280-8"></a>                  <span class="dt">data =</span> HMDA)</span>
+<span id="cb280-9"><a href="11-4-application-to-the-boston-hmda-data.html#cb280-9"></a></span>
+<span id="cb280-10"><a href="11-4-application-to-the-boston-hmda-data.html#cb280-10"></a>probit_HMDA_<span class="dv">1</span> &lt;-<span class="st"> </span><span class="kw">glm</span>(deny <span class="op">~</span><span class="st"> </span>black <span class="op">+</span><span class="st"> </span>pirat <span class="op">+</span><span class="st"> </span>hirat <span class="op">+</span><span class="st"> </span>lvrat <span class="op">+</span><span class="st"> </span>chist <span class="op">+</span><span class="st"> </span>mhist <span class="op">+</span><span class="st"> </span>phist </span>
+<span id="cb280-11"><a href="11-4-application-to-the-boston-hmda-data.html#cb280-11"></a>                     <span class="op">+</span><span class="st"> </span>insurance <span class="op">+</span><span class="st"> </span>selfemp, </span>
+<span id="cb280-12"><a href="11-4-application-to-the-boston-hmda-data.html#cb280-12"></a>                     <span class="dt">family =</span> <span class="kw">binomial</span>(<span class="dt">link =</span> <span class="st">&quot;probit&quot;</span>), </span>
+<span id="cb280-13"><a href="11-4-application-to-the-boston-hmda-data.html#cb280-13"></a>                     <span class="dt">data =</span> HMDA)</span>
+<span id="cb280-14"><a href="11-4-application-to-the-boston-hmda-data.html#cb280-14"></a></span>
+<span id="cb280-15"><a href="11-4-application-to-the-boston-hmda-data.html#cb280-15"></a>probit_HMDA_<span class="dv">2</span> &lt;-<span class="st"> </span><span class="kw">glm</span>(deny <span class="op">~</span><span class="st"> </span>black <span class="op">+</span><span class="st"> </span>pirat <span class="op">+</span><span class="st"> </span>hirat <span class="op">+</span><span class="st"> </span>lvrat <span class="op">+</span><span class="st"> </span>chist <span class="op">+</span><span class="st"> </span>mhist <span class="op">+</span><span class="st"> </span>phist </span>
+<span id="cb280-16"><a href="11-4-application-to-the-boston-hmda-data.html#cb280-16"></a>                     <span class="op">+</span><span class="st"> </span>insurance <span class="op">+</span><span class="st"> </span>selfemp <span class="op">+</span><span class="st"> </span>single <span class="op">+</span><span class="st"> </span>hschool <span class="op">+</span><span class="st"> </span>unemp, </span>
+<span id="cb280-17"><a href="11-4-application-to-the-boston-hmda-data.html#cb280-17"></a>                     <span class="dt">family =</span> <span class="kw">binomial</span>(<span class="dt">link =</span> <span class="st">&quot;probit&quot;</span>), </span>
+<span id="cb280-18"><a href="11-4-application-to-the-boston-hmda-data.html#cb280-18"></a>                     <span class="dt">data =</span> HMDA)</span>
+<span id="cb280-19"><a href="11-4-application-to-the-boston-hmda-data.html#cb280-19"></a></span>
+<span id="cb280-20"><a href="11-4-application-to-the-boston-hmda-data.html#cb280-20"></a>probit_HMDA_<span class="dv">3</span> &lt;-<span class="st"> </span><span class="kw">glm</span>(deny <span class="op">~</span><span class="st"> </span>black <span class="op">+</span><span class="st"> </span>pirat <span class="op">+</span><span class="st"> </span>hirat <span class="op">+</span><span class="st"> </span>lvrat <span class="op">+</span><span class="st"> </span>chist <span class="op">+</span><span class="st"> </span>mhist </span>
+<span id="cb280-21"><a href="11-4-application-to-the-boston-hmda-data.html#cb280-21"></a>                     <span class="op">+</span><span class="st"> </span>phist <span class="op">+</span><span class="st"> </span>insurance <span class="op">+</span><span class="st"> </span>selfemp <span class="op">+</span><span class="st"> </span>single <span class="op">+</span><span class="st"> </span>hschool <span class="op">+</span><span class="st"> </span>unemp <span class="op">+</span><span class="st"> </span>condomin </span>
+<span id="cb280-22"><a href="11-4-application-to-the-boston-hmda-data.html#cb280-22"></a>                     <span class="op">+</span><span class="st"> </span><span class="kw">I</span>(mhist<span class="op">==</span><span class="dv">3</span>) <span class="op">+</span><span class="st"> </span><span class="kw">I</span>(mhist<span class="op">==</span><span class="dv">4</span>) <span class="op">+</span><span class="st"> </span><span class="kw">I</span>(chist<span class="op">==</span><span class="dv">3</span>) <span class="op">+</span><span class="st"> </span><span class="kw">I</span>(chist<span class="op">==</span><span class="dv">4</span>) <span class="op">+</span><span class="st"> </span><span class="kw">I</span>(chist<span class="op">==</span><span class="dv">5</span>) </span>
+<span id="cb280-23"><a href="11-4-application-to-the-boston-hmda-data.html#cb280-23"></a>                     <span class="op">+</span><span class="st"> </span><span class="kw">I</span>(chist<span class="op">==</span><span class="dv">6</span>), </span>
+<span id="cb280-24"><a href="11-4-application-to-the-boston-hmda-data.html#cb280-24"></a>                     <span class="dt">family =</span> <span class="kw">binomial</span>(<span class="dt">link =</span> <span class="st">&quot;probit&quot;</span>), </span>
+<span id="cb280-25"><a href="11-4-application-to-the-boston-hmda-data.html#cb280-25"></a>                     <span class="dt">data =</span> HMDA)</span>
+<span id="cb280-26"><a href="11-4-application-to-the-boston-hmda-data.html#cb280-26"></a></span>
+<span id="cb280-27"><a href="11-4-application-to-the-boston-hmda-data.html#cb280-27"></a>probit_HMDA_<span class="dv">4</span> &lt;-<span class="st"> </span><span class="kw">glm</span>(deny <span class="op">~</span><span class="st"> </span>black <span class="op">*</span><span class="st"> </span>(pirat <span class="op">+</span><span class="st"> </span>hirat) <span class="op">+</span><span class="st"> </span>lvrat <span class="op">+</span><span class="st"> </span>chist <span class="op">+</span><span class="st"> </span>mhist <span class="op">+</span><span class="st"> </span>phist </span>
+<span id="cb280-28"><a href="11-4-application-to-the-boston-hmda-data.html#cb280-28"></a>                     <span class="op">+</span><span class="st"> </span>insurance <span class="op">+</span><span class="st"> </span>selfemp <span class="op">+</span><span class="st"> </span>single <span class="op">+</span><span class="st"> </span>hschool <span class="op">+</span><span class="st"> </span>unemp, </span>
+<span id="cb280-29"><a href="11-4-application-to-the-boston-hmda-data.html#cb280-29"></a>                     <span class="dt">family =</span> <span class="kw">binomial</span>(<span class="dt">link =</span> <span class="st">&quot;probit&quot;</span>), </span>
+<span id="cb280-30"><a href="11-4-application-to-the-boston-hmda-data.html#cb280-30"></a>                     <span class="dt">data =</span> HMDA)</span></code></pre></div>
 <p>Just as in previous chapters, we store heteroskedasticity-robust standard errors of the coefficient estimators in a <tt>list</tt> which is then used as the argument <tt>se</tt> in <tt>stargazer()</tt>.</p>
-<div class="sourceCode" id="cb280"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb280-1"><a href="11-4-application-to-the-boston-hmda-data.html#cb280-1"></a>rob_se &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="kw">sqrt</span>(<span class="kw">diag</span>(<span class="kw">vcovHC</span>(lpm_HMDA, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>))),</span>
-<span id="cb280-2"><a href="11-4-application-to-the-boston-hmda-data.html#cb280-2"></a>               <span class="kw">sqrt</span>(<span class="kw">diag</span>(<span class="kw">vcovHC</span>(logit_HMDA, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>))),</span>
-<span id="cb280-3"><a href="11-4-application-to-the-boston-hmda-data.html#cb280-3"></a>               <span class="kw">sqrt</span>(<span class="kw">diag</span>(<span class="kw">vcovHC</span>(probit_HMDA_<span class="dv">1</span>, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>))),</span>
-<span id="cb280-4"><a href="11-4-application-to-the-boston-hmda-data.html#cb280-4"></a>               <span class="kw">sqrt</span>(<span class="kw">diag</span>(<span class="kw">vcovHC</span>(probit_HMDA_<span class="dv">2</span>, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>))),</span>
-<span id="cb280-5"><a href="11-4-application-to-the-boston-hmda-data.html#cb280-5"></a>               <span class="kw">sqrt</span>(<span class="kw">diag</span>(<span class="kw">vcovHC</span>(probit_HMDA_<span class="dv">3</span>, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>))),</span>
-<span id="cb280-6"><a href="11-4-application-to-the-boston-hmda-data.html#cb280-6"></a>               <span class="kw">sqrt</span>(<span class="kw">diag</span>(<span class="kw">vcovHC</span>(probit_HMDA_<span class="dv">4</span>, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>))))</span>
-<span id="cb280-7"><a href="11-4-application-to-the-boston-hmda-data.html#cb280-7"></a></span>
-<span id="cb280-8"><a href="11-4-application-to-the-boston-hmda-data.html#cb280-8"></a><span class="kw">stargazer</span>(lpm_HMDA, logit_HMDA, probit_HMDA_<span class="dv">1</span>, </span>
-<span id="cb280-9"><a href="11-4-application-to-the-boston-hmda-data.html#cb280-9"></a>          probit_HMDA_<span class="dv">2</span>, probit_HMDA_<span class="dv">3</span>, probit_HMDA_<span class="dv">4</span>,  </span>
-<span id="cb280-10"><a href="11-4-application-to-the-boston-hmda-data.html#cb280-10"></a>          <span class="dt">digits =</span> <span class="dv">3</span>,</span>
-<span id="cb280-11"><a href="11-4-application-to-the-boston-hmda-data.html#cb280-11"></a>          <span class="dt">type =</span> <span class="st">&quot;latex&quot;</span>, </span>
-<span id="cb280-12"><a href="11-4-application-to-the-boston-hmda-data.html#cb280-12"></a>          <span class="dt">header =</span> <span class="ot">FALSE</span>,</span>
-<span id="cb280-13"><a href="11-4-application-to-the-boston-hmda-data.html#cb280-13"></a>          <span class="dt">se =</span> rob_se,</span>
-<span id="cb280-14"><a href="11-4-application-to-the-boston-hmda-data.html#cb280-14"></a>          <span class="dt">model.numbers =</span> <span class="ot">FALSE</span>,</span>
-<span id="cb280-15"><a href="11-4-application-to-the-boston-hmda-data.html#cb280-15"></a>          <span class="dt">column.labels =</span> <span class="kw">c</span>(<span class="st">&quot;(1)&quot;</span>, <span class="st">&quot;(2)&quot;</span>, <span class="st">&quot;(3)&quot;</span>, <span class="st">&quot;(4)&quot;</span>, <span class="st">&quot;(5)&quot;</span>, <span class="st">&quot;(6)&quot;</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb281"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb281-1"><a href="11-4-application-to-the-boston-hmda-data.html#cb281-1"></a>rob_se &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="kw">sqrt</span>(<span class="kw">diag</span>(<span class="kw">vcovHC</span>(lpm_HMDA, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>))),</span>
+<span id="cb281-2"><a href="11-4-application-to-the-boston-hmda-data.html#cb281-2"></a>               <span class="kw">sqrt</span>(<span class="kw">diag</span>(<span class="kw">vcovHC</span>(logit_HMDA, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>))),</span>
+<span id="cb281-3"><a href="11-4-application-to-the-boston-hmda-data.html#cb281-3"></a>               <span class="kw">sqrt</span>(<span class="kw">diag</span>(<span class="kw">vcovHC</span>(probit_HMDA_<span class="dv">1</span>, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>))),</span>
+<span id="cb281-4"><a href="11-4-application-to-the-boston-hmda-data.html#cb281-4"></a>               <span class="kw">sqrt</span>(<span class="kw">diag</span>(<span class="kw">vcovHC</span>(probit_HMDA_<span class="dv">2</span>, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>))),</span>
+<span id="cb281-5"><a href="11-4-application-to-the-boston-hmda-data.html#cb281-5"></a>               <span class="kw">sqrt</span>(<span class="kw">diag</span>(<span class="kw">vcovHC</span>(probit_HMDA_<span class="dv">3</span>, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>))),</span>
+<span id="cb281-6"><a href="11-4-application-to-the-boston-hmda-data.html#cb281-6"></a>               <span class="kw">sqrt</span>(<span class="kw">diag</span>(<span class="kw">vcovHC</span>(probit_HMDA_<span class="dv">4</span>, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>))))</span>
+<span id="cb281-7"><a href="11-4-application-to-the-boston-hmda-data.html#cb281-7"></a></span>
+<span id="cb281-8"><a href="11-4-application-to-the-boston-hmda-data.html#cb281-8"></a><span class="kw">stargazer</span>(lpm_HMDA, logit_HMDA, probit_HMDA_<span class="dv">1</span>, </span>
+<span id="cb281-9"><a href="11-4-application-to-the-boston-hmda-data.html#cb281-9"></a>          probit_HMDA_<span class="dv">2</span>, probit_HMDA_<span class="dv">3</span>, probit_HMDA_<span class="dv">4</span>,  </span>
+<span id="cb281-10"><a href="11-4-application-to-the-boston-hmda-data.html#cb281-10"></a>          <span class="dt">digits =</span> <span class="dv">3</span>,</span>
+<span id="cb281-11"><a href="11-4-application-to-the-boston-hmda-data.html#cb281-11"></a>          <span class="dt">type =</span> <span class="st">&quot;latex&quot;</span>, </span>
+<span id="cb281-12"><a href="11-4-application-to-the-boston-hmda-data.html#cb281-12"></a>          <span class="dt">header =</span> <span class="ot">FALSE</span>,</span>
+<span id="cb281-13"><a href="11-4-application-to-the-boston-hmda-data.html#cb281-13"></a>          <span class="dt">se =</span> rob_se,</span>
+<span id="cb281-14"><a href="11-4-application-to-the-boston-hmda-data.html#cb281-14"></a>          <span class="dt">model.numbers =</span> <span class="ot">FALSE</span>,</span>
+<span id="cb281-15"><a href="11-4-application-to-the-boston-hmda-data.html#cb281-15"></a>          <span class="dt">column.labels =</span> <span class="kw">c</span>(<span class="st">&quot;(1)&quot;</span>, <span class="st">&quot;(2)&quot;</span>, <span class="st">&quot;(3)&quot;</span>, <span class="st">&quot;(4)&quot;</span>, <span class="st">&quot;(5)&quot;</span>, <span class="st">&quot;(6)&quot;</span>))</span></code></pre></div>
 
 
 
@@ -626,102 +626,102 @@ This book is in <b>Open Review</b>. We want your feedback to make the book bette
 <p>In Table <a href="11-4-application-to-the-boston-hmda-data.html#tab:hmdad">11.1</a>, models (1), (2) and (3) are baseline specifications that include several financial control variables. They differ only in the way they model the denial probability. Model (1) is a linear probability model, model (2) is a Logit regression and model (3) uses the Probit approach.</p>
 <p>In the linear model (1), the coefficients have direct interpretation. For example, an increase in the consumer credit score by <span class="math inline">\(1\)</span> unit is estimated to increase the probability of a loan denial by about <span class="math inline">\(0.031\)</span> percentage points. Having a high loan-to-value ratio is detriment for credit approval: the coefficient for a loan-to-value ratio higher than <span class="math inline">\(0.95\)</span> is <span class="math inline">\(0.189\)</span> so clients with this property are estimated to face an almost <span class="math inline">\(19\%\)</span> larger risk of denial than those with a low loan-to-value ratio, ceteris paribus. The estimated coefficient on the race dummy is <span class="math inline">\(0.084\)</span>, which indicates the denial probability for African Americans is <span class="math inline">\(8.4\%\)</span> larger than for white applicants with the same characteristics except for race. Apart from the housing-expense-to-income ratio and the mortgage credit score, all coefficients are significant.</p>
 <p>Models (2) and (3) provide similar evidence that there is racial discrimination in the U.S. mortgage market. All coefficients except for the housing expense-to-income ratio (which is not significantly different from zero) are significant at the <span class="math inline">\(1\%\)</span> level. As discussed above, the nonlinearity makes the interpretation of the coefficient estimates more difficult than for model (1). In order to make a statement about the effect of being black, we need to compute the estimated denial probability for two individuals that differ only in race. For the comparison we consider two individuals that share mean values for all numeric regressors. For the qualitative variables we assign the property that is most representative for the data at hand. For example, consider self-employment: we have seen that about <span class="math inline">\(88\%\)</span> of all individuals in the sample are not self-employed such that we set <tt>selfemp = no</tt>. Using this approach, the estimate for the effect on the denial probability of being African American of the Logit model (2) is about <span class="math inline">\(4\%\)</span>. The next code chunk shows how to apply this approach for models (1) to (7) using <tt>R</tt>.</p>
-<div class="sourceCode" id="cb281"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb281-1"><a href="11-4-application-to-the-boston-hmda-data.html#cb281-1"></a><span class="co"># comppute regressor values for an average black person</span></span>
-<span id="cb281-2"><a href="11-4-application-to-the-boston-hmda-data.html#cb281-2"></a>new &lt;-<span class="st"> </span><span class="kw">data.frame</span>(</span>
-<span id="cb281-3"><a href="11-4-application-to-the-boston-hmda-data.html#cb281-3"></a>  <span class="st">&quot;pirat&quot;</span> =<span class="st"> </span><span class="kw">mean</span>(HMDA<span class="op">$</span>pirat),</span>
-<span id="cb281-4"><a href="11-4-application-to-the-boston-hmda-data.html#cb281-4"></a>  <span class="st">&quot;hirat&quot;</span> =<span class="st"> </span><span class="kw">mean</span>(HMDA<span class="op">$</span>hirat),</span>
-<span id="cb281-5"><a href="11-4-application-to-the-boston-hmda-data.html#cb281-5"></a>  <span class="st">&quot;lvrat&quot;</span> =<span class="st"> &quot;low&quot;</span>,</span>
-<span id="cb281-6"><a href="11-4-application-to-the-boston-hmda-data.html#cb281-6"></a>  <span class="st">&quot;chist&quot;</span> =<span class="st"> </span><span class="kw">mean</span>(HMDA<span class="op">$</span>chist),</span>
-<span id="cb281-7"><a href="11-4-application-to-the-boston-hmda-data.html#cb281-7"></a>  <span class="st">&quot;mhist&quot;</span> =<span class="st"> </span><span class="kw">mean</span>(HMDA<span class="op">$</span>mhist),</span>
-<span id="cb281-8"><a href="11-4-application-to-the-boston-hmda-data.html#cb281-8"></a>  <span class="st">&quot;phist&quot;</span> =<span class="st"> &quot;no&quot;</span>,</span>
-<span id="cb281-9"><a href="11-4-application-to-the-boston-hmda-data.html#cb281-9"></a>  <span class="st">&quot;insurance&quot;</span> =<span class="st"> &quot;no&quot;</span>,</span>
-<span id="cb281-10"><a href="11-4-application-to-the-boston-hmda-data.html#cb281-10"></a>  <span class="st">&quot;selfemp&quot;</span> =<span class="st"> &quot;no&quot;</span>,</span>
-<span id="cb281-11"><a href="11-4-application-to-the-boston-hmda-data.html#cb281-11"></a>  <span class="st">&quot;black&quot;</span> =<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;no&quot;</span>, <span class="st">&quot;yes&quot;</span>),</span>
-<span id="cb281-12"><a href="11-4-application-to-the-boston-hmda-data.html#cb281-12"></a>  <span class="st">&quot;single&quot;</span> =<span class="st"> &quot;no&quot;</span>,</span>
-<span id="cb281-13"><a href="11-4-application-to-the-boston-hmda-data.html#cb281-13"></a>  <span class="st">&quot;hschool&quot;</span> =<span class="st"> &quot;yes&quot;</span>,</span>
-<span id="cb281-14"><a href="11-4-application-to-the-boston-hmda-data.html#cb281-14"></a>  <span class="st">&quot;unemp&quot;</span> =<span class="st"> </span><span class="kw">mean</span>(HMDA<span class="op">$</span>unemp),</span>
-<span id="cb281-15"><a href="11-4-application-to-the-boston-hmda-data.html#cb281-15"></a>  <span class="st">&quot;condomin&quot;</span> =<span class="st"> &quot;no&quot;</span>)</span>
-<span id="cb281-16"><a href="11-4-application-to-the-boston-hmda-data.html#cb281-16"></a></span>
-<span id="cb281-17"><a href="11-4-application-to-the-boston-hmda-data.html#cb281-17"></a><span class="co"># differnce predicted by the LPM</span></span>
-<span id="cb281-18"><a href="11-4-application-to-the-boston-hmda-data.html#cb281-18"></a>predictions &lt;-<span class="st"> </span><span class="kw">predict</span>(lpm_HMDA, <span class="dt">newdata =</span> new)</span>
-<span id="cb281-19"><a href="11-4-application-to-the-boston-hmda-data.html#cb281-19"></a><span class="kw">diff</span>(predictions)</span>
-<span id="cb281-20"><a href="11-4-application-to-the-boston-hmda-data.html#cb281-20"></a><span class="co">#&gt;          2 </span></span>
-<span id="cb281-21"><a href="11-4-application-to-the-boston-hmda-data.html#cb281-21"></a><span class="co">#&gt; 0.08369674</span></span>
-<span id="cb281-22"><a href="11-4-application-to-the-boston-hmda-data.html#cb281-22"></a></span>
-<span id="cb281-23"><a href="11-4-application-to-the-boston-hmda-data.html#cb281-23"></a><span class="co"># differnce predicted by the logit model</span></span>
-<span id="cb281-24"><a href="11-4-application-to-the-boston-hmda-data.html#cb281-24"></a>predictions &lt;-<span class="st"> </span><span class="kw">predict</span>(logit_HMDA, <span class="dt">newdata =</span> new, <span class="dt">type =</span> <span class="st">&quot;response&quot;</span>)</span>
-<span id="cb281-25"><a href="11-4-application-to-the-boston-hmda-data.html#cb281-25"></a><span class="kw">diff</span>(predictions)</span>
-<span id="cb281-26"><a href="11-4-application-to-the-boston-hmda-data.html#cb281-26"></a><span class="co">#&gt;          2 </span></span>
-<span id="cb281-27"><a href="11-4-application-to-the-boston-hmda-data.html#cb281-27"></a><span class="co">#&gt; 0.04042135</span></span>
-<span id="cb281-28"><a href="11-4-application-to-the-boston-hmda-data.html#cb281-28"></a></span>
-<span id="cb281-29"><a href="11-4-application-to-the-boston-hmda-data.html#cb281-29"></a><span class="co"># difference predicted by probit model (3)</span></span>
-<span id="cb281-30"><a href="11-4-application-to-the-boston-hmda-data.html#cb281-30"></a>predictions &lt;-<span class="st"> </span><span class="kw">predict</span>(probit_HMDA_<span class="dv">1</span>, <span class="dt">newdata =</span> new, <span class="dt">type =</span> <span class="st">&quot;response&quot;</span>)</span>
-<span id="cb281-31"><a href="11-4-application-to-the-boston-hmda-data.html#cb281-31"></a><span class="kw">diff</span>(predictions)</span>
-<span id="cb281-32"><a href="11-4-application-to-the-boston-hmda-data.html#cb281-32"></a><span class="co">#&gt;          2 </span></span>
-<span id="cb281-33"><a href="11-4-application-to-the-boston-hmda-data.html#cb281-33"></a><span class="co">#&gt; 0.05049716</span></span>
-<span id="cb281-34"><a href="11-4-application-to-the-boston-hmda-data.html#cb281-34"></a></span>
-<span id="cb281-35"><a href="11-4-application-to-the-boston-hmda-data.html#cb281-35"></a><span class="co"># difference predicted by probit model (4)</span></span>
-<span id="cb281-36"><a href="11-4-application-to-the-boston-hmda-data.html#cb281-36"></a>predictions &lt;-<span class="st"> </span><span class="kw">predict</span>(probit_HMDA_<span class="dv">2</span>, <span class="dt">newdata =</span> new, <span class="dt">type =</span> <span class="st">&quot;response&quot;</span>)</span>
-<span id="cb281-37"><a href="11-4-application-to-the-boston-hmda-data.html#cb281-37"></a><span class="kw">diff</span>(predictions)</span>
-<span id="cb281-38"><a href="11-4-application-to-the-boston-hmda-data.html#cb281-38"></a><span class="co">#&gt;          2 </span></span>
-<span id="cb281-39"><a href="11-4-application-to-the-boston-hmda-data.html#cb281-39"></a><span class="co">#&gt; 0.03978918</span></span>
-<span id="cb281-40"><a href="11-4-application-to-the-boston-hmda-data.html#cb281-40"></a></span>
-<span id="cb281-41"><a href="11-4-application-to-the-boston-hmda-data.html#cb281-41"></a><span class="co"># difference predicted by probit model (5)</span></span>
-<span id="cb281-42"><a href="11-4-application-to-the-boston-hmda-data.html#cb281-42"></a>predictions &lt;-<span class="st"> </span><span class="kw">predict</span>(probit_HMDA_<span class="dv">3</span>, <span class="dt">newdata =</span> new, <span class="dt">type =</span> <span class="st">&quot;response&quot;</span>)</span>
-<span id="cb281-43"><a href="11-4-application-to-the-boston-hmda-data.html#cb281-43"></a><span class="kw">diff</span>(predictions)</span>
-<span id="cb281-44"><a href="11-4-application-to-the-boston-hmda-data.html#cb281-44"></a><span class="co">#&gt;          2 </span></span>
-<span id="cb281-45"><a href="11-4-application-to-the-boston-hmda-data.html#cb281-45"></a><span class="co">#&gt; 0.04972468</span></span>
-<span id="cb281-46"><a href="11-4-application-to-the-boston-hmda-data.html#cb281-46"></a></span>
-<span id="cb281-47"><a href="11-4-application-to-the-boston-hmda-data.html#cb281-47"></a><span class="co"># difference predicted by probit model (6)</span></span>
-<span id="cb281-48"><a href="11-4-application-to-the-boston-hmda-data.html#cb281-48"></a>predictions &lt;-<span class="st"> </span><span class="kw">predict</span>(probit_HMDA_<span class="dv">4</span>, <span class="dt">newdata =</span> new, <span class="dt">type =</span> <span class="st">&quot;response&quot;</span>)</span>
-<span id="cb281-49"><a href="11-4-application-to-the-boston-hmda-data.html#cb281-49"></a><span class="kw">diff</span>(predictions)</span>
-<span id="cb281-50"><a href="11-4-application-to-the-boston-hmda-data.html#cb281-50"></a><span class="co">#&gt;          2 </span></span>
-<span id="cb281-51"><a href="11-4-application-to-the-boston-hmda-data.html#cb281-51"></a><span class="co">#&gt; 0.03955893</span></span></code></pre></div>
+<div class="sourceCode" id="cb282"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb282-1"><a href="11-4-application-to-the-boston-hmda-data.html#cb282-1"></a><span class="co"># comppute regressor values for an average black person</span></span>
+<span id="cb282-2"><a href="11-4-application-to-the-boston-hmda-data.html#cb282-2"></a>new &lt;-<span class="st"> </span><span class="kw">data.frame</span>(</span>
+<span id="cb282-3"><a href="11-4-application-to-the-boston-hmda-data.html#cb282-3"></a>  <span class="st">&quot;pirat&quot;</span> =<span class="st"> </span><span class="kw">mean</span>(HMDA<span class="op">$</span>pirat),</span>
+<span id="cb282-4"><a href="11-4-application-to-the-boston-hmda-data.html#cb282-4"></a>  <span class="st">&quot;hirat&quot;</span> =<span class="st"> </span><span class="kw">mean</span>(HMDA<span class="op">$</span>hirat),</span>
+<span id="cb282-5"><a href="11-4-application-to-the-boston-hmda-data.html#cb282-5"></a>  <span class="st">&quot;lvrat&quot;</span> =<span class="st"> &quot;low&quot;</span>,</span>
+<span id="cb282-6"><a href="11-4-application-to-the-boston-hmda-data.html#cb282-6"></a>  <span class="st">&quot;chist&quot;</span> =<span class="st"> </span><span class="kw">mean</span>(HMDA<span class="op">$</span>chist),</span>
+<span id="cb282-7"><a href="11-4-application-to-the-boston-hmda-data.html#cb282-7"></a>  <span class="st">&quot;mhist&quot;</span> =<span class="st"> </span><span class="kw">mean</span>(HMDA<span class="op">$</span>mhist),</span>
+<span id="cb282-8"><a href="11-4-application-to-the-boston-hmda-data.html#cb282-8"></a>  <span class="st">&quot;phist&quot;</span> =<span class="st"> &quot;no&quot;</span>,</span>
+<span id="cb282-9"><a href="11-4-application-to-the-boston-hmda-data.html#cb282-9"></a>  <span class="st">&quot;insurance&quot;</span> =<span class="st"> &quot;no&quot;</span>,</span>
+<span id="cb282-10"><a href="11-4-application-to-the-boston-hmda-data.html#cb282-10"></a>  <span class="st">&quot;selfemp&quot;</span> =<span class="st"> &quot;no&quot;</span>,</span>
+<span id="cb282-11"><a href="11-4-application-to-the-boston-hmda-data.html#cb282-11"></a>  <span class="st">&quot;black&quot;</span> =<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;no&quot;</span>, <span class="st">&quot;yes&quot;</span>),</span>
+<span id="cb282-12"><a href="11-4-application-to-the-boston-hmda-data.html#cb282-12"></a>  <span class="st">&quot;single&quot;</span> =<span class="st"> &quot;no&quot;</span>,</span>
+<span id="cb282-13"><a href="11-4-application-to-the-boston-hmda-data.html#cb282-13"></a>  <span class="st">&quot;hschool&quot;</span> =<span class="st"> &quot;yes&quot;</span>,</span>
+<span id="cb282-14"><a href="11-4-application-to-the-boston-hmda-data.html#cb282-14"></a>  <span class="st">&quot;unemp&quot;</span> =<span class="st"> </span><span class="kw">mean</span>(HMDA<span class="op">$</span>unemp),</span>
+<span id="cb282-15"><a href="11-4-application-to-the-boston-hmda-data.html#cb282-15"></a>  <span class="st">&quot;condomin&quot;</span> =<span class="st"> &quot;no&quot;</span>)</span>
+<span id="cb282-16"><a href="11-4-application-to-the-boston-hmda-data.html#cb282-16"></a></span>
+<span id="cb282-17"><a href="11-4-application-to-the-boston-hmda-data.html#cb282-17"></a><span class="co"># differnce predicted by the LPM</span></span>
+<span id="cb282-18"><a href="11-4-application-to-the-boston-hmda-data.html#cb282-18"></a>predictions &lt;-<span class="st"> </span><span class="kw">predict</span>(lpm_HMDA, <span class="dt">newdata =</span> new)</span>
+<span id="cb282-19"><a href="11-4-application-to-the-boston-hmda-data.html#cb282-19"></a><span class="kw">diff</span>(predictions)</span>
+<span id="cb282-20"><a href="11-4-application-to-the-boston-hmda-data.html#cb282-20"></a><span class="co">#&gt;          2 </span></span>
+<span id="cb282-21"><a href="11-4-application-to-the-boston-hmda-data.html#cb282-21"></a><span class="co">#&gt; 0.08369674</span></span>
+<span id="cb282-22"><a href="11-4-application-to-the-boston-hmda-data.html#cb282-22"></a></span>
+<span id="cb282-23"><a href="11-4-application-to-the-boston-hmda-data.html#cb282-23"></a><span class="co"># differnce predicted by the logit model</span></span>
+<span id="cb282-24"><a href="11-4-application-to-the-boston-hmda-data.html#cb282-24"></a>predictions &lt;-<span class="st"> </span><span class="kw">predict</span>(logit_HMDA, <span class="dt">newdata =</span> new, <span class="dt">type =</span> <span class="st">&quot;response&quot;</span>)</span>
+<span id="cb282-25"><a href="11-4-application-to-the-boston-hmda-data.html#cb282-25"></a><span class="kw">diff</span>(predictions)</span>
+<span id="cb282-26"><a href="11-4-application-to-the-boston-hmda-data.html#cb282-26"></a><span class="co">#&gt;          2 </span></span>
+<span id="cb282-27"><a href="11-4-application-to-the-boston-hmda-data.html#cb282-27"></a><span class="co">#&gt; 0.04042135</span></span>
+<span id="cb282-28"><a href="11-4-application-to-the-boston-hmda-data.html#cb282-28"></a></span>
+<span id="cb282-29"><a href="11-4-application-to-the-boston-hmda-data.html#cb282-29"></a><span class="co"># difference predicted by probit model (3)</span></span>
+<span id="cb282-30"><a href="11-4-application-to-the-boston-hmda-data.html#cb282-30"></a>predictions &lt;-<span class="st"> </span><span class="kw">predict</span>(probit_HMDA_<span class="dv">1</span>, <span class="dt">newdata =</span> new, <span class="dt">type =</span> <span class="st">&quot;response&quot;</span>)</span>
+<span id="cb282-31"><a href="11-4-application-to-the-boston-hmda-data.html#cb282-31"></a><span class="kw">diff</span>(predictions)</span>
+<span id="cb282-32"><a href="11-4-application-to-the-boston-hmda-data.html#cb282-32"></a><span class="co">#&gt;          2 </span></span>
+<span id="cb282-33"><a href="11-4-application-to-the-boston-hmda-data.html#cb282-33"></a><span class="co">#&gt; 0.05049716</span></span>
+<span id="cb282-34"><a href="11-4-application-to-the-boston-hmda-data.html#cb282-34"></a></span>
+<span id="cb282-35"><a href="11-4-application-to-the-boston-hmda-data.html#cb282-35"></a><span class="co"># difference predicted by probit model (4)</span></span>
+<span id="cb282-36"><a href="11-4-application-to-the-boston-hmda-data.html#cb282-36"></a>predictions &lt;-<span class="st"> </span><span class="kw">predict</span>(probit_HMDA_<span class="dv">2</span>, <span class="dt">newdata =</span> new, <span class="dt">type =</span> <span class="st">&quot;response&quot;</span>)</span>
+<span id="cb282-37"><a href="11-4-application-to-the-boston-hmda-data.html#cb282-37"></a><span class="kw">diff</span>(predictions)</span>
+<span id="cb282-38"><a href="11-4-application-to-the-boston-hmda-data.html#cb282-38"></a><span class="co">#&gt;          2 </span></span>
+<span id="cb282-39"><a href="11-4-application-to-the-boston-hmda-data.html#cb282-39"></a><span class="co">#&gt; 0.03978918</span></span>
+<span id="cb282-40"><a href="11-4-application-to-the-boston-hmda-data.html#cb282-40"></a></span>
+<span id="cb282-41"><a href="11-4-application-to-the-boston-hmda-data.html#cb282-41"></a><span class="co"># difference predicted by probit model (5)</span></span>
+<span id="cb282-42"><a href="11-4-application-to-the-boston-hmda-data.html#cb282-42"></a>predictions &lt;-<span class="st"> </span><span class="kw">predict</span>(probit_HMDA_<span class="dv">3</span>, <span class="dt">newdata =</span> new, <span class="dt">type =</span> <span class="st">&quot;response&quot;</span>)</span>
+<span id="cb282-43"><a href="11-4-application-to-the-boston-hmda-data.html#cb282-43"></a><span class="kw">diff</span>(predictions)</span>
+<span id="cb282-44"><a href="11-4-application-to-the-boston-hmda-data.html#cb282-44"></a><span class="co">#&gt;          2 </span></span>
+<span id="cb282-45"><a href="11-4-application-to-the-boston-hmda-data.html#cb282-45"></a><span class="co">#&gt; 0.04972468</span></span>
+<span id="cb282-46"><a href="11-4-application-to-the-boston-hmda-data.html#cb282-46"></a></span>
+<span id="cb282-47"><a href="11-4-application-to-the-boston-hmda-data.html#cb282-47"></a><span class="co"># difference predicted by probit model (6)</span></span>
+<span id="cb282-48"><a href="11-4-application-to-the-boston-hmda-data.html#cb282-48"></a>predictions &lt;-<span class="st"> </span><span class="kw">predict</span>(probit_HMDA_<span class="dv">4</span>, <span class="dt">newdata =</span> new, <span class="dt">type =</span> <span class="st">&quot;response&quot;</span>)</span>
+<span id="cb282-49"><a href="11-4-application-to-the-boston-hmda-data.html#cb282-49"></a><span class="kw">diff</span>(predictions)</span>
+<span id="cb282-50"><a href="11-4-application-to-the-boston-hmda-data.html#cb282-50"></a><span class="co">#&gt;          2 </span></span>
+<span id="cb282-51"><a href="11-4-application-to-the-boston-hmda-data.html#cb282-51"></a><span class="co">#&gt; 0.03955893</span></span></code></pre></div>
 <p>The estimates of the impact on the denial probability of being black are similar for models (2) and (3). It is interesting that the magnitude of the estimated effects is much smaller than for Probit and Logit models that do not control for financial characteristics (see section 11.2). This indicates that these simple models produce biased estimates due to omitted variables.</p>
 <p>Regressions (4) to (6) use regression specifications that include different applicant characteristics and credit rating indicator variables as well as interactions. However, most of the corresponding coefficients are not significant and the estimates of the coefficient on <tt>black</tt> obtained for these models as well as the estimated difference in denial probabilities do not differ much from those obtained for the similar specifications (2) and (3).</p>
 <p>An interesting question related to racial discrimination can be investigated using the Probit model (6) where the interactions <tt>blackyes:pirat</tt> and <tt>blackyes:hirat</tt> are added to model (4). If the coefficient on <tt>blackyes:pirat</tt> was different from zero, the effect of the payment-to-income ratio on the denial probability would be different for black and white applicants. Similarly, a non-zero coefficient on <tt>blackyes:hirat</tt> would indicate that loan officers weight the risk of bankruptcy associated with a high loan-to-value ratio differently for black and white mortgage applicants. We can test whether these coefficients are jointly significant at the <span class="math inline">\(5\%\)</span> level using an <span class="math inline">\(F\)</span>-Test.</p>
-<div class="sourceCode" id="cb282"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb282-1"><a href="11-4-application-to-the-boston-hmda-data.html#cb282-1"></a><span class="kw">linearHypothesis</span>(probit_HMDA_<span class="dv">4</span>,</span>
-<span id="cb282-2"><a href="11-4-application-to-the-boston-hmda-data.html#cb282-2"></a>                 <span class="dt">test =</span> <span class="st">&quot;F&quot;</span>,</span>
-<span id="cb282-3"><a href="11-4-application-to-the-boston-hmda-data.html#cb282-3"></a>                 <span class="kw">c</span>(<span class="st">&quot;blackyes:pirat=0&quot;</span>, <span class="st">&quot;blackyes:hirat=0&quot;</span>),</span>
-<span id="cb282-4"><a href="11-4-application-to-the-boston-hmda-data.html#cb282-4"></a>                 <span class="dt">vcov =</span> vcovHC, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>)</span>
-<span id="cb282-5"><a href="11-4-application-to-the-boston-hmda-data.html#cb282-5"></a><span class="co">#&gt; Linear hypothesis test</span></span>
-<span id="cb282-6"><a href="11-4-application-to-the-boston-hmda-data.html#cb282-6"></a><span class="co">#&gt; </span></span>
-<span id="cb282-7"><a href="11-4-application-to-the-boston-hmda-data.html#cb282-7"></a><span class="co">#&gt; Hypothesis:</span></span>
-<span id="cb282-8"><a href="11-4-application-to-the-boston-hmda-data.html#cb282-8"></a><span class="co">#&gt; blackyes:pirat = 0</span></span>
-<span id="cb282-9"><a href="11-4-application-to-the-boston-hmda-data.html#cb282-9"></a><span class="co">#&gt; blackyes:hirat = 0</span></span>
-<span id="cb282-10"><a href="11-4-application-to-the-boston-hmda-data.html#cb282-10"></a><span class="co">#&gt; </span></span>
-<span id="cb282-11"><a href="11-4-application-to-the-boston-hmda-data.html#cb282-11"></a><span class="co">#&gt; Model 1: restricted model</span></span>
-<span id="cb282-12"><a href="11-4-application-to-the-boston-hmda-data.html#cb282-12"></a><span class="co">#&gt; Model 2: deny ~ black * (pirat + hirat) + lvrat + chist + mhist + phist + </span></span>
-<span id="cb282-13"><a href="11-4-application-to-the-boston-hmda-data.html#cb282-13"></a><span class="co">#&gt;     insurance + selfemp + single + hschool + unemp</span></span>
-<span id="cb282-14"><a href="11-4-application-to-the-boston-hmda-data.html#cb282-14"></a><span class="co">#&gt; </span></span>
-<span id="cb282-15"><a href="11-4-application-to-the-boston-hmda-data.html#cb282-15"></a><span class="co">#&gt; Note: Coefficient covariance matrix supplied.</span></span>
-<span id="cb282-16"><a href="11-4-application-to-the-boston-hmda-data.html#cb282-16"></a><span class="co">#&gt; </span></span>
-<span id="cb282-17"><a href="11-4-application-to-the-boston-hmda-data.html#cb282-17"></a><span class="co">#&gt;   Res.Df Df      F Pr(&gt;F)</span></span>
-<span id="cb282-18"><a href="11-4-application-to-the-boston-hmda-data.html#cb282-18"></a><span class="co">#&gt; 1   2366                 </span></span>
-<span id="cb282-19"><a href="11-4-application-to-the-boston-hmda-data.html#cb282-19"></a><span class="co">#&gt; 2   2364  2 0.2473 0.7809</span></span></code></pre></div>
-<p>Since <span class="math inline">\(p\text{-value} \approx 0.77\)</span> for this test, the null cannot be rejected. Nonetheless, we can reject the hypothesis that there is no racial discrimination at all since the corresponding <span class="math inline">\(F\)</span>-test has a <span class="math inline">\(p\text{-value}\)</span> of about <span class="math inline">\(0.002\)</span>.</p>
 <div class="sourceCode" id="cb283"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb283-1"><a href="11-4-application-to-the-boston-hmda-data.html#cb283-1"></a><span class="kw">linearHypothesis</span>(probit_HMDA_<span class="dv">4</span>,</span>
 <span id="cb283-2"><a href="11-4-application-to-the-boston-hmda-data.html#cb283-2"></a>                 <span class="dt">test =</span> <span class="st">&quot;F&quot;</span>,</span>
-<span id="cb283-3"><a href="11-4-application-to-the-boston-hmda-data.html#cb283-3"></a>                 <span class="kw">c</span>(<span class="st">&quot;blackyes=0&quot;</span>, <span class="st">&quot;blackyes:pirat=0&quot;</span>, <span class="st">&quot;blackyes:hirat=0&quot;</span>),</span>
+<span id="cb283-3"><a href="11-4-application-to-the-boston-hmda-data.html#cb283-3"></a>                 <span class="kw">c</span>(<span class="st">&quot;blackyes:pirat=0&quot;</span>, <span class="st">&quot;blackyes:hirat=0&quot;</span>),</span>
 <span id="cb283-4"><a href="11-4-application-to-the-boston-hmda-data.html#cb283-4"></a>                 <span class="dt">vcov =</span> vcovHC, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>)</span>
 <span id="cb283-5"><a href="11-4-application-to-the-boston-hmda-data.html#cb283-5"></a><span class="co">#&gt; Linear hypothesis test</span></span>
 <span id="cb283-6"><a href="11-4-application-to-the-boston-hmda-data.html#cb283-6"></a><span class="co">#&gt; </span></span>
 <span id="cb283-7"><a href="11-4-application-to-the-boston-hmda-data.html#cb283-7"></a><span class="co">#&gt; Hypothesis:</span></span>
-<span id="cb283-8"><a href="11-4-application-to-the-boston-hmda-data.html#cb283-8"></a><span class="co">#&gt; blackyes = 0</span></span>
-<span id="cb283-9"><a href="11-4-application-to-the-boston-hmda-data.html#cb283-9"></a><span class="co">#&gt; blackyes:pirat = 0</span></span>
-<span id="cb283-10"><a href="11-4-application-to-the-boston-hmda-data.html#cb283-10"></a><span class="co">#&gt; blackyes:hirat = 0</span></span>
-<span id="cb283-11"><a href="11-4-application-to-the-boston-hmda-data.html#cb283-11"></a><span class="co">#&gt; </span></span>
-<span id="cb283-12"><a href="11-4-application-to-the-boston-hmda-data.html#cb283-12"></a><span class="co">#&gt; Model 1: restricted model</span></span>
-<span id="cb283-13"><a href="11-4-application-to-the-boston-hmda-data.html#cb283-13"></a><span class="co">#&gt; Model 2: deny ~ black * (pirat + hirat) + lvrat + chist + mhist + phist + </span></span>
-<span id="cb283-14"><a href="11-4-application-to-the-boston-hmda-data.html#cb283-14"></a><span class="co">#&gt;     insurance + selfemp + single + hschool + unemp</span></span>
-<span id="cb283-15"><a href="11-4-application-to-the-boston-hmda-data.html#cb283-15"></a><span class="co">#&gt; </span></span>
-<span id="cb283-16"><a href="11-4-application-to-the-boston-hmda-data.html#cb283-16"></a><span class="co">#&gt; Note: Coefficient covariance matrix supplied.</span></span>
-<span id="cb283-17"><a href="11-4-application-to-the-boston-hmda-data.html#cb283-17"></a><span class="co">#&gt; </span></span>
-<span id="cb283-18"><a href="11-4-application-to-the-boston-hmda-data.html#cb283-18"></a><span class="co">#&gt;   Res.Df Df      F   Pr(&gt;F)   </span></span>
-<span id="cb283-19"><a href="11-4-application-to-the-boston-hmda-data.html#cb283-19"></a><span class="co">#&gt; 1   2367                      </span></span>
-<span id="cb283-20"><a href="11-4-application-to-the-boston-hmda-data.html#cb283-20"></a><span class="co">#&gt; 2   2364  3 4.7774 0.002534 **</span></span>
-<span id="cb283-21"><a href="11-4-application-to-the-boston-hmda-data.html#cb283-21"></a><span class="co">#&gt; ---</span></span>
-<span id="cb283-22"><a href="11-4-application-to-the-boston-hmda-data.html#cb283-22"></a><span class="co">#&gt; Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span></code></pre></div>
+<span id="cb283-8"><a href="11-4-application-to-the-boston-hmda-data.html#cb283-8"></a><span class="co">#&gt; blackyes:pirat = 0</span></span>
+<span id="cb283-9"><a href="11-4-application-to-the-boston-hmda-data.html#cb283-9"></a><span class="co">#&gt; blackyes:hirat = 0</span></span>
+<span id="cb283-10"><a href="11-4-application-to-the-boston-hmda-data.html#cb283-10"></a><span class="co">#&gt; </span></span>
+<span id="cb283-11"><a href="11-4-application-to-the-boston-hmda-data.html#cb283-11"></a><span class="co">#&gt; Model 1: restricted model</span></span>
+<span id="cb283-12"><a href="11-4-application-to-the-boston-hmda-data.html#cb283-12"></a><span class="co">#&gt; Model 2: deny ~ black * (pirat + hirat) + lvrat + chist + mhist + phist + </span></span>
+<span id="cb283-13"><a href="11-4-application-to-the-boston-hmda-data.html#cb283-13"></a><span class="co">#&gt;     insurance + selfemp + single + hschool + unemp</span></span>
+<span id="cb283-14"><a href="11-4-application-to-the-boston-hmda-data.html#cb283-14"></a><span class="co">#&gt; </span></span>
+<span id="cb283-15"><a href="11-4-application-to-the-boston-hmda-data.html#cb283-15"></a><span class="co">#&gt; Note: Coefficient covariance matrix supplied.</span></span>
+<span id="cb283-16"><a href="11-4-application-to-the-boston-hmda-data.html#cb283-16"></a><span class="co">#&gt; </span></span>
+<span id="cb283-17"><a href="11-4-application-to-the-boston-hmda-data.html#cb283-17"></a><span class="co">#&gt;   Res.Df Df      F Pr(&gt;F)</span></span>
+<span id="cb283-18"><a href="11-4-application-to-the-boston-hmda-data.html#cb283-18"></a><span class="co">#&gt; 1   2366                 </span></span>
+<span id="cb283-19"><a href="11-4-application-to-the-boston-hmda-data.html#cb283-19"></a><span class="co">#&gt; 2   2364  2 0.2473 0.7809</span></span></code></pre></div>
+<p>Since <span class="math inline">\(p\text{-value} \approx 0.77\)</span> for this test, the null cannot be rejected. Nonetheless, we can reject the hypothesis that there is no racial discrimination at all since the corresponding <span class="math inline">\(F\)</span>-test has a <span class="math inline">\(p\text{-value}\)</span> of about <span class="math inline">\(0.002\)</span>.</p>
+<div class="sourceCode" id="cb284"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb284-1"><a href="11-4-application-to-the-boston-hmda-data.html#cb284-1"></a><span class="kw">linearHypothesis</span>(probit_HMDA_<span class="dv">4</span>,</span>
+<span id="cb284-2"><a href="11-4-application-to-the-boston-hmda-data.html#cb284-2"></a>                 <span class="dt">test =</span> <span class="st">&quot;F&quot;</span>,</span>
+<span id="cb284-3"><a href="11-4-application-to-the-boston-hmda-data.html#cb284-3"></a>                 <span class="kw">c</span>(<span class="st">&quot;blackyes=0&quot;</span>, <span class="st">&quot;blackyes:pirat=0&quot;</span>, <span class="st">&quot;blackyes:hirat=0&quot;</span>),</span>
+<span id="cb284-4"><a href="11-4-application-to-the-boston-hmda-data.html#cb284-4"></a>                 <span class="dt">vcov =</span> vcovHC, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>)</span>
+<span id="cb284-5"><a href="11-4-application-to-the-boston-hmda-data.html#cb284-5"></a><span class="co">#&gt; Linear hypothesis test</span></span>
+<span id="cb284-6"><a href="11-4-application-to-the-boston-hmda-data.html#cb284-6"></a><span class="co">#&gt; </span></span>
+<span id="cb284-7"><a href="11-4-application-to-the-boston-hmda-data.html#cb284-7"></a><span class="co">#&gt; Hypothesis:</span></span>
+<span id="cb284-8"><a href="11-4-application-to-the-boston-hmda-data.html#cb284-8"></a><span class="co">#&gt; blackyes = 0</span></span>
+<span id="cb284-9"><a href="11-4-application-to-the-boston-hmda-data.html#cb284-9"></a><span class="co">#&gt; blackyes:pirat = 0</span></span>
+<span id="cb284-10"><a href="11-4-application-to-the-boston-hmda-data.html#cb284-10"></a><span class="co">#&gt; blackyes:hirat = 0</span></span>
+<span id="cb284-11"><a href="11-4-application-to-the-boston-hmda-data.html#cb284-11"></a><span class="co">#&gt; </span></span>
+<span id="cb284-12"><a href="11-4-application-to-the-boston-hmda-data.html#cb284-12"></a><span class="co">#&gt; Model 1: restricted model</span></span>
+<span id="cb284-13"><a href="11-4-application-to-the-boston-hmda-data.html#cb284-13"></a><span class="co">#&gt; Model 2: deny ~ black * (pirat + hirat) + lvrat + chist + mhist + phist + </span></span>
+<span id="cb284-14"><a href="11-4-application-to-the-boston-hmda-data.html#cb284-14"></a><span class="co">#&gt;     insurance + selfemp + single + hschool + unemp</span></span>
+<span id="cb284-15"><a href="11-4-application-to-the-boston-hmda-data.html#cb284-15"></a><span class="co">#&gt; </span></span>
+<span id="cb284-16"><a href="11-4-application-to-the-boston-hmda-data.html#cb284-16"></a><span class="co">#&gt; Note: Coefficient covariance matrix supplied.</span></span>
+<span id="cb284-17"><a href="11-4-application-to-the-boston-hmda-data.html#cb284-17"></a><span class="co">#&gt; </span></span>
+<span id="cb284-18"><a href="11-4-application-to-the-boston-hmda-data.html#cb284-18"></a><span class="co">#&gt;   Res.Df Df      F   Pr(&gt;F)   </span></span>
+<span id="cb284-19"><a href="11-4-application-to-the-boston-hmda-data.html#cb284-19"></a><span class="co">#&gt; 1   2367                      </span></span>
+<span id="cb284-20"><a href="11-4-application-to-the-boston-hmda-data.html#cb284-20"></a><span class="co">#&gt; 2   2364  3 4.7774 0.002534 **</span></span>
+<span id="cb284-21"><a href="11-4-application-to-the-boston-hmda-data.html#cb284-21"></a><span class="co">#&gt; ---</span></span>
+<span id="cb284-22"><a href="11-4-application-to-the-boston-hmda-data.html#cb284-22"></a><span class="co">#&gt; Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span></code></pre></div>
 <div id="summary" class="section level4 unnumbered">
 <h4>Summary</h4>
 <p>Models (1) to (6) provide evidence that there is an effect of being African American on the probability of a mortgage application denial: in all specifications, the effect is estimated to be positive (ranging from <span class="math inline">\(4\%\)</span> to <span class="math inline">\(5\%\)</span>) and is significantly different from zero at the <span class="math inline">\(1\%\)</span> level. While the linear probability model seems to slightly overestimate this effect, it still can be used as an approximation to an intrinsically nonlinear relationship.</p>

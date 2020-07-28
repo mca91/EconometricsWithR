@@ -437,67 +437,67 @@ The QLR test can be used to test for a break in the population regression functi
             &amp;+\, u_t.
 \end{align*}\]</span></p>
 <p>Next, we estimate the model for each break point and compute the <span class="math inline">\(F\)</span>-statistic corresponding to the null hypothesis <span class="math inline">\(H_0: \gamma_1=\gamma_2=\gamma_3=0\)</span>. The <span class="math inline">\(QLR\)</span>-statistic is the largest of the <span class="math inline">\(F\)</span>-statistics obtained in this manner.</p>
-<div class="sourceCode" id="cb393"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb393-1"><a href="14-8-niib.html#cb393-1"></a><span class="co"># set up a range of possible break dates</span></span>
-<span id="cb393-2"><a href="14-8-niib.html#cb393-2"></a>tau &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="dv">1970</span>, <span class="dv">2005</span>, <span class="fl">0.25</span>)</span>
-<span id="cb393-3"><a href="14-8-niib.html#cb393-3"></a></span>
-<span id="cb393-4"><a href="14-8-niib.html#cb393-4"></a><span class="co"># initialize vector of F-statistics</span></span>
-<span id="cb393-5"><a href="14-8-niib.html#cb393-5"></a>Fstats &lt;-<span class="st"> </span><span class="kw">numeric</span>(<span class="kw">length</span>(tau))</span>
-<span id="cb393-6"><a href="14-8-niib.html#cb393-6"></a></span>
-<span id="cb393-7"><a href="14-8-niib.html#cb393-7"></a><span class="co"># estimation loop over break dates</span></span>
-<span id="cb393-8"><a href="14-8-niib.html#cb393-8"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="kw">length</span>(tau)) {</span>
-<span id="cb393-9"><a href="14-8-niib.html#cb393-9"></a></span>
-<span id="cb393-10"><a href="14-8-niib.html#cb393-10"></a>  <span class="co"># set up dummy variable</span></span>
-<span id="cb393-11"><a href="14-8-niib.html#cb393-11"></a>  D &lt;-<span class="st"> </span><span class="kw">time</span>(GDPGrowth_ts) <span class="op">&gt;</span><span class="st"> </span>tau[i]</span>
-<span id="cb393-12"><a href="14-8-niib.html#cb393-12"></a></span>
-<span id="cb393-13"><a href="14-8-niib.html#cb393-13"></a>  <span class="co"># estimate ADL(2,2) model with intercations</span></span>
-<span id="cb393-14"><a href="14-8-niib.html#cb393-14"></a>  test &lt;-<span class="st"> </span><span class="kw">dynlm</span>(GDPGrowth_ts <span class="op">~</span><span class="st"> </span><span class="kw">L</span>(GDPGrowth_ts) <span class="op">+</span><span class="st"> </span><span class="kw">L</span>(GDPGrowth_ts, <span class="dv">2</span>) <span class="op">+</span><span class="st"> </span></span>
-<span id="cb393-15"><a href="14-8-niib.html#cb393-15"></a><span class="st">                </span>D<span class="op">*</span><span class="kw">L</span>(TSpread_ts) <span class="op">+</span><span class="st"> </span>D<span class="op">*</span><span class="kw">L</span>(TSpread_ts, <span class="dv">2</span>),</span>
-<span id="cb393-16"><a href="14-8-niib.html#cb393-16"></a>                <span class="dt">start =</span> <span class="kw">c</span>(<span class="dv">1962</span>, <span class="dv">1</span>), </span>
-<span id="cb393-17"><a href="14-8-niib.html#cb393-17"></a>                <span class="dt">end =</span> <span class="kw">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>))</span>
-<span id="cb393-18"><a href="14-8-niib.html#cb393-18"></a>  </span>
-<span id="cb393-19"><a href="14-8-niib.html#cb393-19"></a>  <span class="co"># compute and save the F-statistic</span></span>
-<span id="cb393-20"><a href="14-8-niib.html#cb393-20"></a>  Fstats[i] &lt;-<span class="st"> </span><span class="kw">linearHypothesis</span>(test, </span>
-<span id="cb393-21"><a href="14-8-niib.html#cb393-21"></a>                                <span class="kw">c</span>(<span class="st">&quot;DTRUE=0&quot;</span>, <span class="st">&quot;DTRUE:L(TSpread_ts)&quot;</span>, </span>
-<span id="cb393-22"><a href="14-8-niib.html#cb393-22"></a>                                  <span class="st">&quot;DTRUE:L(TSpread_ts, 2)&quot;</span>),</span>
-<span id="cb393-23"><a href="14-8-niib.html#cb393-23"></a>                                <span class="dt">vcov. =</span> sandwich)<span class="op">$</span>F[<span class="dv">2</span>]</span>
-<span id="cb393-24"><a href="14-8-niib.html#cb393-24"></a></span>
-<span id="cb393-25"><a href="14-8-niib.html#cb393-25"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb394"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb394-1"><a href="14-8-niib.html#cb394-1"></a><span class="co"># set up a range of possible break dates</span></span>
+<span id="cb394-2"><a href="14-8-niib.html#cb394-2"></a>tau &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="dv">1970</span>, <span class="dv">2005</span>, <span class="fl">0.25</span>)</span>
+<span id="cb394-3"><a href="14-8-niib.html#cb394-3"></a></span>
+<span id="cb394-4"><a href="14-8-niib.html#cb394-4"></a><span class="co"># initialize vector of F-statistics</span></span>
+<span id="cb394-5"><a href="14-8-niib.html#cb394-5"></a>Fstats &lt;-<span class="st"> </span><span class="kw">numeric</span>(<span class="kw">length</span>(tau))</span>
+<span id="cb394-6"><a href="14-8-niib.html#cb394-6"></a></span>
+<span id="cb394-7"><a href="14-8-niib.html#cb394-7"></a><span class="co"># estimation loop over break dates</span></span>
+<span id="cb394-8"><a href="14-8-niib.html#cb394-8"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="kw">length</span>(tau)) {</span>
+<span id="cb394-9"><a href="14-8-niib.html#cb394-9"></a></span>
+<span id="cb394-10"><a href="14-8-niib.html#cb394-10"></a>  <span class="co"># set up dummy variable</span></span>
+<span id="cb394-11"><a href="14-8-niib.html#cb394-11"></a>  D &lt;-<span class="st"> </span><span class="kw">time</span>(GDPGrowth_ts) <span class="op">&gt;</span><span class="st"> </span>tau[i]</span>
+<span id="cb394-12"><a href="14-8-niib.html#cb394-12"></a></span>
+<span id="cb394-13"><a href="14-8-niib.html#cb394-13"></a>  <span class="co"># estimate ADL(2,2) model with intercations</span></span>
+<span id="cb394-14"><a href="14-8-niib.html#cb394-14"></a>  test &lt;-<span class="st"> </span><span class="kw">dynlm</span>(GDPGrowth_ts <span class="op">~</span><span class="st"> </span><span class="kw">L</span>(GDPGrowth_ts) <span class="op">+</span><span class="st"> </span><span class="kw">L</span>(GDPGrowth_ts, <span class="dv">2</span>) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb394-15"><a href="14-8-niib.html#cb394-15"></a><span class="st">                </span>D<span class="op">*</span><span class="kw">L</span>(TSpread_ts) <span class="op">+</span><span class="st"> </span>D<span class="op">*</span><span class="kw">L</span>(TSpread_ts, <span class="dv">2</span>),</span>
+<span id="cb394-16"><a href="14-8-niib.html#cb394-16"></a>                <span class="dt">start =</span> <span class="kw">c</span>(<span class="dv">1962</span>, <span class="dv">1</span>), </span>
+<span id="cb394-17"><a href="14-8-niib.html#cb394-17"></a>                <span class="dt">end =</span> <span class="kw">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>))</span>
+<span id="cb394-18"><a href="14-8-niib.html#cb394-18"></a>  </span>
+<span id="cb394-19"><a href="14-8-niib.html#cb394-19"></a>  <span class="co"># compute and save the F-statistic</span></span>
+<span id="cb394-20"><a href="14-8-niib.html#cb394-20"></a>  Fstats[i] &lt;-<span class="st"> </span><span class="kw">linearHypothesis</span>(test, </span>
+<span id="cb394-21"><a href="14-8-niib.html#cb394-21"></a>                                <span class="kw">c</span>(<span class="st">&quot;DTRUE=0&quot;</span>, <span class="st">&quot;DTRUE:L(TSpread_ts)&quot;</span>, </span>
+<span id="cb394-22"><a href="14-8-niib.html#cb394-22"></a>                                  <span class="st">&quot;DTRUE:L(TSpread_ts, 2)&quot;</span>),</span>
+<span id="cb394-23"><a href="14-8-niib.html#cb394-23"></a>                                <span class="dt">vcov. =</span> sandwich)<span class="op">$</span>F[<span class="dv">2</span>]</span>
+<span id="cb394-24"><a href="14-8-niib.html#cb394-24"></a></span>
+<span id="cb394-25"><a href="14-8-niib.html#cb394-25"></a>}</span></code></pre></div>
 <p>We determine the <span class="math inline">\(QLR\)</span> statistic using <tt>max()</tt>.</p>
-<div class="sourceCode" id="cb394"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb394-1"><a href="14-8-niib.html#cb394-1"></a><span class="co"># identify QLR statistic</span></span>
-<span id="cb394-2"><a href="14-8-niib.html#cb394-2"></a>QLR &lt;-<span class="st"> </span><span class="kw">max</span>(Fstats)</span>
-<span id="cb394-3"><a href="14-8-niib.html#cb394-3"></a>QLR</span>
-<span id="cb394-4"><a href="14-8-niib.html#cb394-4"></a><span class="co">#&gt; [1] 6.651156</span></span></code></pre></div>
+<div class="sourceCode" id="cb395"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb395-1"><a href="14-8-niib.html#cb395-1"></a><span class="co"># identify QLR statistic</span></span>
+<span id="cb395-2"><a href="14-8-niib.html#cb395-2"></a>QLR &lt;-<span class="st"> </span><span class="kw">max</span>(Fstats)</span>
+<span id="cb395-3"><a href="14-8-niib.html#cb395-3"></a>QLR</span>
+<span id="cb395-4"><a href="14-8-niib.html#cb395-4"></a><span class="co">#&gt; [1] 6.651156</span></span></code></pre></div>
 <p>Let us check that the <span class="math inline">\(QLR\)</span>-statistic is the <span class="math inline">\(F\)</span>-statistic obtained for the regression where 1980:Q4 is chosen as the break date.</p>
-<div class="sourceCode" id="cb395"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb395-1"><a href="14-8-niib.html#cb395-1"></a><span class="co"># identify the time period where the QLR-statistic is observed</span></span>
-<span id="cb395-2"><a href="14-8-niib.html#cb395-2"></a><span class="kw">as.yearqtr</span>(tau[<span class="kw">which.max</span>(Fstats)])</span>
-<span id="cb395-3"><a href="14-8-niib.html#cb395-3"></a><span class="co">#&gt; [1] &quot;1980 Q4&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb396"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb396-1"><a href="14-8-niib.html#cb396-1"></a><span class="co"># identify the time period where the QLR-statistic is observed</span></span>
+<span id="cb396-2"><a href="14-8-niib.html#cb396-2"></a><span class="kw">as.yearqtr</span>(tau[<span class="kw">which.max</span>(Fstats)])</span>
+<span id="cb396-3"><a href="14-8-niib.html#cb396-3"></a><span class="co">#&gt; [1] &quot;1980 Q4&quot;</span></span></code></pre></div>
 <p>Since <span class="math inline">\(q=3\)</span> hypotheses are tested and the central <span class="math inline">\(70\%\)</span> of the sample are considered to contain breaks, the corresponding <span class="math inline">\(1\%\)</span> critical value of the <span class="math inline">\(QLR\)</span> test is <span class="math inline">\(6.02\)</span>. We reject the null hypothesis that all coefficients (the coefficients on both lags of term spread and the intercept) are stable since the computed <span class="math inline">\(QLR\)</span>-statistic exceeds this threshold. Thus evidence from the <span class="math inline">\(QLR\)</span> test suggests that there is a break in the ADL(<span class="math inline">\(2\)</span>,<span class="math inline">\(2\)</span>) model of GDP growth in the early 1980s.</p>
 <p>To reproduce Figure 14.5 of the book, we convert the vector of sequential break-point <span class="math inline">\(F\)</span>-statistics into a time series object and then generate a simple plot with some annotations.</p>
 <div class="unfolded">
-<div class="sourceCode" id="cb396"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb396-1"><a href="14-8-niib.html#cb396-1"></a><span class="co"># series of F-statistics</span></span>
-<span id="cb396-2"><a href="14-8-niib.html#cb396-2"></a>Fstatsseries &lt;-<span class="st"> </span><span class="kw">ts</span>(Fstats, </span>
-<span id="cb396-3"><a href="14-8-niib.html#cb396-3"></a>                   <span class="dt">start =</span> tau[<span class="dv">1</span>], </span>
-<span id="cb396-4"><a href="14-8-niib.html#cb396-4"></a>                   <span class="dt">end =</span> tau[<span class="kw">length</span>(tau)], </span>
-<span id="cb396-5"><a href="14-8-niib.html#cb396-5"></a>                   <span class="dt">frequency =</span> <span class="dv">4</span>)</span>
-<span id="cb396-6"><a href="14-8-niib.html#cb396-6"></a></span>
-<span id="cb396-7"><a href="14-8-niib.html#cb396-7"></a><span class="co"># plot the F-statistics </span></span>
-<span id="cb396-8"><a href="14-8-niib.html#cb396-8"></a><span class="kw">plot</span>(Fstatsseries, </span>
-<span id="cb396-9"><a href="14-8-niib.html#cb396-9"></a>     <span class="dt">xlim =</span> <span class="kw">c</span>(<span class="dv">1960</span>, <span class="dv">2015</span>),</span>
-<span id="cb396-10"><a href="14-8-niib.html#cb396-10"></a>     <span class="dt">ylim =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="fl">7.5</span>),</span>
-<span id="cb396-11"><a href="14-8-niib.html#cb396-11"></a>     <span class="dt">lwd =</span> <span class="dv">2</span>,</span>
-<span id="cb396-12"><a href="14-8-niib.html#cb396-12"></a>     <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>,</span>
-<span id="cb396-13"><a href="14-8-niib.html#cb396-13"></a>     <span class="dt">ylab =</span> <span class="st">&quot;F-Statistic&quot;</span>,</span>
-<span id="cb396-14"><a href="14-8-niib.html#cb396-14"></a>     <span class="dt">xlab =</span> <span class="st">&quot;Break Date&quot;</span>,</span>
-<span id="cb396-15"><a href="14-8-niib.html#cb396-15"></a>     <span class="dt">main =</span> <span class="st">&quot;Testing for a Break in GDP ADL(2,2) Regression at Different Dates&quot;</span>)</span>
-<span id="cb396-16"><a href="14-8-niib.html#cb396-16"></a></span>
-<span id="cb396-17"><a href="14-8-niib.html#cb396-17"></a><span class="co"># dashed horizontal lines for critical values and QLR statistic</span></span>
-<span id="cb396-18"><a href="14-8-niib.html#cb396-18"></a><span class="kw">abline</span>(<span class="dt">h =</span> <span class="fl">4.71</span>, <span class="dt">lty =</span> <span class="dv">2</span>)</span>
-<span id="cb396-19"><a href="14-8-niib.html#cb396-19"></a><span class="kw">abline</span>(<span class="dt">h =</span> <span class="fl">6.02</span>, <span class="dt">lty =</span> <span class="dv">2</span>)</span>
-<span id="cb396-20"><a href="14-8-niib.html#cb396-20"></a><span class="kw">segments</span>(<span class="dv">0</span>, QLR, <span class="fl">1980.75</span>, QLR, <span class="dt">col =</span> <span class="st">&quot;darkred&quot;</span>)</span>
-<span id="cb396-21"><a href="14-8-niib.html#cb396-21"></a><span class="kw">text</span>(<span class="dv">2010</span>, <span class="fl">6.2</span>, <span class="st">&quot;1% Critical Value&quot;</span>)</span>
-<span id="cb396-22"><a href="14-8-niib.html#cb396-22"></a><span class="kw">text</span>(<span class="dv">2010</span>, <span class="fl">4.9</span>, <span class="st">&quot;5% Critical Value&quot;</span>)</span>
-<span id="cb396-23"><a href="14-8-niib.html#cb396-23"></a><span class="kw">text</span>(<span class="fl">1980.75</span>, QLR<span class="fl">+0.2</span>, <span class="st">&quot;QLR Statistic&quot;</span>)</span></code></pre></div>
-<p><img src="ITER_files/figure-html/unnamed-chunk-649-1.png" width="80%" style="display: block; margin: auto;" /></p>
+<div class="sourceCode" id="cb397"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb397-1"><a href="14-8-niib.html#cb397-1"></a><span class="co"># series of F-statistics</span></span>
+<span id="cb397-2"><a href="14-8-niib.html#cb397-2"></a>Fstatsseries &lt;-<span class="st"> </span><span class="kw">ts</span>(Fstats, </span>
+<span id="cb397-3"><a href="14-8-niib.html#cb397-3"></a>                   <span class="dt">start =</span> tau[<span class="dv">1</span>], </span>
+<span id="cb397-4"><a href="14-8-niib.html#cb397-4"></a>                   <span class="dt">end =</span> tau[<span class="kw">length</span>(tau)], </span>
+<span id="cb397-5"><a href="14-8-niib.html#cb397-5"></a>                   <span class="dt">frequency =</span> <span class="dv">4</span>)</span>
+<span id="cb397-6"><a href="14-8-niib.html#cb397-6"></a></span>
+<span id="cb397-7"><a href="14-8-niib.html#cb397-7"></a><span class="co"># plot the F-statistics </span></span>
+<span id="cb397-8"><a href="14-8-niib.html#cb397-8"></a><span class="kw">plot</span>(Fstatsseries, </span>
+<span id="cb397-9"><a href="14-8-niib.html#cb397-9"></a>     <span class="dt">xlim =</span> <span class="kw">c</span>(<span class="dv">1960</span>, <span class="dv">2015</span>),</span>
+<span id="cb397-10"><a href="14-8-niib.html#cb397-10"></a>     <span class="dt">ylim =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="fl">7.5</span>),</span>
+<span id="cb397-11"><a href="14-8-niib.html#cb397-11"></a>     <span class="dt">lwd =</span> <span class="dv">2</span>,</span>
+<span id="cb397-12"><a href="14-8-niib.html#cb397-12"></a>     <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>,</span>
+<span id="cb397-13"><a href="14-8-niib.html#cb397-13"></a>     <span class="dt">ylab =</span> <span class="st">&quot;F-Statistic&quot;</span>,</span>
+<span id="cb397-14"><a href="14-8-niib.html#cb397-14"></a>     <span class="dt">xlab =</span> <span class="st">&quot;Break Date&quot;</span>,</span>
+<span id="cb397-15"><a href="14-8-niib.html#cb397-15"></a>     <span class="dt">main =</span> <span class="st">&quot;Testing for a Break in GDP ADL(2,2) Regression at Different Dates&quot;</span>)</span>
+<span id="cb397-16"><a href="14-8-niib.html#cb397-16"></a></span>
+<span id="cb397-17"><a href="14-8-niib.html#cb397-17"></a><span class="co"># dashed horizontal lines for critical values and QLR statistic</span></span>
+<span id="cb397-18"><a href="14-8-niib.html#cb397-18"></a><span class="kw">abline</span>(<span class="dt">h =</span> <span class="fl">4.71</span>, <span class="dt">lty =</span> <span class="dv">2</span>)</span>
+<span id="cb397-19"><a href="14-8-niib.html#cb397-19"></a><span class="kw">abline</span>(<span class="dt">h =</span> <span class="fl">6.02</span>, <span class="dt">lty =</span> <span class="dv">2</span>)</span>
+<span id="cb397-20"><a href="14-8-niib.html#cb397-20"></a><span class="kw">segments</span>(<span class="dv">0</span>, QLR, <span class="fl">1980.75</span>, QLR, <span class="dt">col =</span> <span class="st">&quot;darkred&quot;</span>)</span>
+<span id="cb397-21"><a href="14-8-niib.html#cb397-21"></a><span class="kw">text</span>(<span class="dv">2010</span>, <span class="fl">6.2</span>, <span class="st">&quot;1% Critical Value&quot;</span>)</span>
+<span id="cb397-22"><a href="14-8-niib.html#cb397-22"></a><span class="kw">text</span>(<span class="dv">2010</span>, <span class="fl">4.9</span>, <span class="st">&quot;5% Critical Value&quot;</span>)</span>
+<span id="cb397-23"><a href="14-8-niib.html#cb397-23"></a><span class="kw">text</span>(<span class="fl">1980.75</span>, QLR<span class="fl">+0.2</span>, <span class="st">&quot;QLR Statistic&quot;</span>)</span></code></pre></div>
+<p><img src="ITER_files/figure-html/unnamed-chunk-650-1.png" width="80%" style="display: block; margin: auto;" /></p>
 </div>
 </div>
 <div id="pseudo-out-of-sample-forecasting" class="section level4 unnumbered">
@@ -523,94 +523,94 @@ Pseudo Out-of-Sample Forecasting
 <h4>Did the Predictive Power of the Term Spread Change During the 2000s?</h4>
 <p>The insight gained in the previous section gives reason to presume that the pseudo-out-of-sample performance of ADL(<span class="math inline">\(2\)</span>,<span class="math inline">\(2\)</span>) models estimated using data <em>after</em> the break in the early 1980s should not deteriorate relative to using the whole sample: provided that the coefficients of the population regression function are stable after the potential break in 1980:Q4, these models should have good predictive power. We check this by computing pseudo-out-of-sample forecasts for the period 2003:Q1 - 2012:Q4, a range covering 40 periods, where the forecast for 2003:Q1 is done using data from 1981:Q1 - 2002:Q4, the forecast for 2003:Q2 is based on data from 1981:Q1 - 2003:Q1 and so on.</p>
 <p>Similarly as for the <span class="math inline">\(QLR\)</span>-test we use a <tt>for()</tt> loop for estimation of all 40 models and gather their <span class="math inline">\(SER\)</span>s and the obtained forecasts in a vector which is then used to compute pseudo-out-of-sample forecast errors.</p>
-<div class="sourceCode" id="cb397"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb397-1"><a href="14-8-niib.html#cb397-1"></a><span class="co"># end of sample dates</span></span>
-<span id="cb397-2"><a href="14-8-niib.html#cb397-2"></a>EndOfSample &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="fl">2002.75</span>, <span class="fl">2012.5</span>, <span class="fl">0.25</span>)</span>
-<span id="cb397-3"><a href="14-8-niib.html#cb397-3"></a></span>
-<span id="cb397-4"><a href="14-8-niib.html#cb397-4"></a><span class="co"># initialize matrix forecasts</span></span>
-<span id="cb397-5"><a href="14-8-niib.html#cb397-5"></a>forecasts &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="dt">nrow =</span> <span class="dv">1</span>, </span>
-<span id="cb397-6"><a href="14-8-niib.html#cb397-6"></a>                    <span class="dt">ncol =</span> <span class="kw">length</span>(EndOfSample))</span>
-<span id="cb397-7"><a href="14-8-niib.html#cb397-7"></a></span>
-<span id="cb397-8"><a href="14-8-niib.html#cb397-8"></a><span class="co"># initialize vector SER</span></span>
-<span id="cb397-9"><a href="14-8-niib.html#cb397-9"></a>SER  &lt;-<span class="st"> </span><span class="kw">numeric</span>(<span class="kw">length</span>(EndOfSample))</span>
-<span id="cb397-10"><a href="14-8-niib.html#cb397-10"></a></span>
-<span id="cb397-11"><a href="14-8-niib.html#cb397-11"></a><span class="co"># estimation loop over end of sample dates</span></span>
-<span id="cb397-12"><a href="14-8-niib.html#cb397-12"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="kw">length</span>(EndOfSample)) {</span>
-<span id="cb397-13"><a href="14-8-niib.html#cb397-13"></a></span>
-<span id="cb397-14"><a href="14-8-niib.html#cb397-14"></a>  <span class="co"># estimate ADL(2,2) model</span></span>
-<span id="cb397-15"><a href="14-8-niib.html#cb397-15"></a>  m &lt;-<span class="st"> </span><span class="kw">dynlm</span>(GDPGrowth_ts <span class="op">~</span><span class="st"> </span><span class="kw">L</span>(GDPGrowth_ts) <span class="op">+</span><span class="st"> </span><span class="kw">L</span>(GDPGrowth_ts, <span class="dv">2</span>) </span>
-<span id="cb397-16"><a href="14-8-niib.html#cb397-16"></a>                          <span class="op">+</span><span class="st"> </span><span class="kw">L</span>(TSpread_ts) <span class="op">+</span><span class="st"> </span><span class="kw">L</span>(TSpread_ts, <span class="dv">2</span>), </span>
-<span id="cb397-17"><a href="14-8-niib.html#cb397-17"></a>                <span class="dt">start =</span> <span class="kw">c</span>(<span class="dv">1981</span>, <span class="dv">1</span>), </span>
-<span id="cb397-18"><a href="14-8-niib.html#cb397-18"></a>                <span class="dt">end =</span> EndOfSample[i])</span>
-<span id="cb397-19"><a href="14-8-niib.html#cb397-19"></a>  </span>
-<span id="cb397-20"><a href="14-8-niib.html#cb397-20"></a>  SER[i] &lt;-<span class="st"> </span><span class="kw">summary</span>(m)<span class="op">$</span>sigma</span>
-<span id="cb397-21"><a href="14-8-niib.html#cb397-21"></a>  </span>
-<span id="cb397-22"><a href="14-8-niib.html#cb397-22"></a>  <span class="co"># sample data for one-period ahead forecast</span></span>
-<span id="cb397-23"><a href="14-8-niib.html#cb397-23"></a>  s &lt;-<span class="st"> </span><span class="kw">window</span>(ADLdata, EndOfSample[i] <span class="op">-</span><span class="st"> </span><span class="fl">0.25</span>, EndOfSample[i])</span>
-<span id="cb397-24"><a href="14-8-niib.html#cb397-24"></a>  </span>
-<span id="cb397-25"><a href="14-8-niib.html#cb397-25"></a>  <span class="co"># compute forecast</span></span>
-<span id="cb397-26"><a href="14-8-niib.html#cb397-26"></a>  forecasts[i] &lt;-<span class="st"> </span><span class="kw">coef</span>(m) <span class="op">%*%</span><span class="st"> </span><span class="kw">c</span>(<span class="dv">1</span>, s[<span class="dv">1</span>, <span class="dv">1</span>], s[<span class="dv">2</span>, <span class="dv">1</span>], s[<span class="dv">1</span>, <span class="dv">2</span>], s[<span class="dv">2</span>, <span class="dv">2</span>]) </span>
-<span id="cb397-27"><a href="14-8-niib.html#cb397-27"></a>}</span></code></pre></div>
-<div class="sourceCode" id="cb398"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb398-1"><a href="14-8-niib.html#cb398-1"></a><span class="co"># compute psuedo-out-of-sample forecast errors</span></span>
-<span id="cb398-2"><a href="14-8-niib.html#cb398-2"></a>POOSFCE &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="kw">window</span>(GDPGrowth_ts, <span class="kw">c</span>(<span class="dv">2003</span>, <span class="dv">1</span>), <span class="kw">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>))) <span class="op">-</span><span class="st"> </span>forecasts</span></code></pre></div>
+<div class="sourceCode" id="cb398"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb398-1"><a href="14-8-niib.html#cb398-1"></a><span class="co"># end of sample dates</span></span>
+<span id="cb398-2"><a href="14-8-niib.html#cb398-2"></a>EndOfSample &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="fl">2002.75</span>, <span class="fl">2012.5</span>, <span class="fl">0.25</span>)</span>
+<span id="cb398-3"><a href="14-8-niib.html#cb398-3"></a></span>
+<span id="cb398-4"><a href="14-8-niib.html#cb398-4"></a><span class="co"># initialize matrix forecasts</span></span>
+<span id="cb398-5"><a href="14-8-niib.html#cb398-5"></a>forecasts &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="dt">nrow =</span> <span class="dv">1</span>, </span>
+<span id="cb398-6"><a href="14-8-niib.html#cb398-6"></a>                    <span class="dt">ncol =</span> <span class="kw">length</span>(EndOfSample))</span>
+<span id="cb398-7"><a href="14-8-niib.html#cb398-7"></a></span>
+<span id="cb398-8"><a href="14-8-niib.html#cb398-8"></a><span class="co"># initialize vector SER</span></span>
+<span id="cb398-9"><a href="14-8-niib.html#cb398-9"></a>SER  &lt;-<span class="st"> </span><span class="kw">numeric</span>(<span class="kw">length</span>(EndOfSample))</span>
+<span id="cb398-10"><a href="14-8-niib.html#cb398-10"></a></span>
+<span id="cb398-11"><a href="14-8-niib.html#cb398-11"></a><span class="co"># estimation loop over end of sample dates</span></span>
+<span id="cb398-12"><a href="14-8-niib.html#cb398-12"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="kw">length</span>(EndOfSample)) {</span>
+<span id="cb398-13"><a href="14-8-niib.html#cb398-13"></a></span>
+<span id="cb398-14"><a href="14-8-niib.html#cb398-14"></a>  <span class="co"># estimate ADL(2,2) model</span></span>
+<span id="cb398-15"><a href="14-8-niib.html#cb398-15"></a>  m &lt;-<span class="st"> </span><span class="kw">dynlm</span>(GDPGrowth_ts <span class="op">~</span><span class="st"> </span><span class="kw">L</span>(GDPGrowth_ts) <span class="op">+</span><span class="st"> </span><span class="kw">L</span>(GDPGrowth_ts, <span class="dv">2</span>) </span>
+<span id="cb398-16"><a href="14-8-niib.html#cb398-16"></a>                          <span class="op">+</span><span class="st"> </span><span class="kw">L</span>(TSpread_ts) <span class="op">+</span><span class="st"> </span><span class="kw">L</span>(TSpread_ts, <span class="dv">2</span>), </span>
+<span id="cb398-17"><a href="14-8-niib.html#cb398-17"></a>                <span class="dt">start =</span> <span class="kw">c</span>(<span class="dv">1981</span>, <span class="dv">1</span>), </span>
+<span id="cb398-18"><a href="14-8-niib.html#cb398-18"></a>                <span class="dt">end =</span> EndOfSample[i])</span>
+<span id="cb398-19"><a href="14-8-niib.html#cb398-19"></a>  </span>
+<span id="cb398-20"><a href="14-8-niib.html#cb398-20"></a>  SER[i] &lt;-<span class="st"> </span><span class="kw">summary</span>(m)<span class="op">$</span>sigma</span>
+<span id="cb398-21"><a href="14-8-niib.html#cb398-21"></a>  </span>
+<span id="cb398-22"><a href="14-8-niib.html#cb398-22"></a>  <span class="co"># sample data for one-period ahead forecast</span></span>
+<span id="cb398-23"><a href="14-8-niib.html#cb398-23"></a>  s &lt;-<span class="st"> </span><span class="kw">window</span>(ADLdata, EndOfSample[i] <span class="op">-</span><span class="st"> </span><span class="fl">0.25</span>, EndOfSample[i])</span>
+<span id="cb398-24"><a href="14-8-niib.html#cb398-24"></a>  </span>
+<span id="cb398-25"><a href="14-8-niib.html#cb398-25"></a>  <span class="co"># compute forecast</span></span>
+<span id="cb398-26"><a href="14-8-niib.html#cb398-26"></a>  forecasts[i] &lt;-<span class="st"> </span><span class="kw">coef</span>(m) <span class="op">%*%</span><span class="st"> </span><span class="kw">c</span>(<span class="dv">1</span>, s[<span class="dv">1</span>, <span class="dv">1</span>], s[<span class="dv">2</span>, <span class="dv">1</span>], s[<span class="dv">1</span>, <span class="dv">2</span>], s[<span class="dv">2</span>, <span class="dv">2</span>]) </span>
+<span id="cb398-27"><a href="14-8-niib.html#cb398-27"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb399"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb399-1"><a href="14-8-niib.html#cb399-1"></a><span class="co"># compute psuedo-out-of-sample forecast errors</span></span>
+<span id="cb399-2"><a href="14-8-niib.html#cb399-2"></a>POOSFCE &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="kw">window</span>(GDPGrowth_ts, <span class="kw">c</span>(<span class="dv">2003</span>, <span class="dv">1</span>), <span class="kw">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>))) <span class="op">-</span><span class="st"> </span>forecasts</span></code></pre></div>
 <p>We next translate the pseudo-out-of-sample forecasts into an object of class <tt>ts</tt> and plot the real GDP growth rate against the forecasted series.</p>
 <div class="unfolded">
-<div class="sourceCode" id="cb399"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb399-1"><a href="14-8-niib.html#cb399-1"></a><span class="co"># series of pseudo-out-of-sample forecasts</span></span>
-<span id="cb399-2"><a href="14-8-niib.html#cb399-2"></a>PSOSSFc &lt;-<span class="st"> </span><span class="kw">ts</span>(<span class="kw">c</span>(forecasts), </span>
-<span id="cb399-3"><a href="14-8-niib.html#cb399-3"></a>              <span class="dt">start =</span> <span class="dv">2003</span>, </span>
-<span id="cb399-4"><a href="14-8-niib.html#cb399-4"></a>              <span class="dt">end =</span> <span class="fl">2012.75</span>, </span>
-<span id="cb399-5"><a href="14-8-niib.html#cb399-5"></a>              <span class="dt">frequency =</span> <span class="dv">4</span>)</span>
-<span id="cb399-6"><a href="14-8-niib.html#cb399-6"></a></span>
-<span id="cb399-7"><a href="14-8-niib.html#cb399-7"></a><span class="co"># plot the GDP growth time series</span></span>
-<span id="cb399-8"><a href="14-8-niib.html#cb399-8"></a><span class="kw">plot</span>(<span class="kw">window</span>(GDPGrowth_ts, <span class="kw">c</span>(<span class="dv">2003</span>, <span class="dv">1</span>), <span class="kw">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>)),</span>
-<span id="cb399-9"><a href="14-8-niib.html#cb399-9"></a>     <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>,</span>
-<span id="cb399-10"><a href="14-8-niib.html#cb399-10"></a>     <span class="dt">lwd =</span> <span class="dv">2</span>,</span>
-<span id="cb399-11"><a href="14-8-niib.html#cb399-11"></a>     <span class="dt">ylab =</span> <span class="st">&quot;Percent&quot;</span>,</span>
-<span id="cb399-12"><a href="14-8-niib.html#cb399-12"></a>     <span class="dt">main =</span> <span class="st">&quot;Pseudo-Out-Of-Sample Forecasts of GDP Growth&quot;</span>)</span>
-<span id="cb399-13"><a href="14-8-niib.html#cb399-13"></a></span>
-<span id="cb399-14"><a href="14-8-niib.html#cb399-14"></a><span class="co"># add the series of pseudo-out-of-sample forecasts</span></span>
-<span id="cb399-15"><a href="14-8-niib.html#cb399-15"></a><span class="kw">lines</span>(PSOSSFc, </span>
-<span id="cb399-16"><a href="14-8-niib.html#cb399-16"></a>      <span class="dt">lwd =</span> <span class="dv">2</span>, </span>
-<span id="cb399-17"><a href="14-8-niib.html#cb399-17"></a>      <span class="dt">lty =</span> <span class="dv">2</span>)</span>
-<span id="cb399-18"><a href="14-8-niib.html#cb399-18"></a></span>
-<span id="cb399-19"><a href="14-8-niib.html#cb399-19"></a><span class="co"># shade area between curves (the pseudo forecast error)</span></span>
-<span id="cb399-20"><a href="14-8-niib.html#cb399-20"></a><span class="kw">polygon</span>(<span class="kw">c</span>(<span class="kw">time</span>(PSOSSFc), <span class="kw">rev</span>(<span class="kw">time</span>(PSOSSFc))), </span>
-<span id="cb399-21"><a href="14-8-niib.html#cb399-21"></a>        <span class="kw">c</span>(<span class="kw">window</span>(GDPGrowth_ts, <span class="kw">c</span>(<span class="dv">2003</span>, <span class="dv">1</span>), <span class="kw">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>)), <span class="kw">rev</span>(PSOSSFc)),</span>
-<span id="cb399-22"><a href="14-8-niib.html#cb399-22"></a>        <span class="dt">col =</span> <span class="kw">alpha</span>(<span class="st">&quot;blue&quot;</span>, <span class="dt">alpha =</span> <span class="fl">0.3</span>),</span>
-<span id="cb399-23"><a href="14-8-niib.html#cb399-23"></a>        <span class="dt">border =</span> <span class="ot">NA</span>)</span>
-<span id="cb399-24"><a href="14-8-niib.html#cb399-24"></a></span>
-<span id="cb399-25"><a href="14-8-niib.html#cb399-25"></a><span class="co"># add a legend</span></span>
-<span id="cb399-26"><a href="14-8-niib.html#cb399-26"></a><span class="kw">legend</span>(<span class="st">&quot;bottomleft&quot;</span>, </span>
-<span id="cb399-27"><a href="14-8-niib.html#cb399-27"></a>       <span class="dt">lty =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">1</span>),</span>
-<span id="cb399-28"><a href="14-8-niib.html#cb399-28"></a>       <span class="dt">lwd =</span> <span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">10</span>),</span>
-<span id="cb399-29"><a href="14-8-niib.html#cb399-29"></a>       <span class="dt">col =</span> <span class="kw">c</span>(<span class="st">&quot;steelblue&quot;</span>, <span class="st">&quot;black&quot;</span>, <span class="kw">alpha</span>(<span class="st">&quot;blue&quot;</span>, <span class="dt">alpha =</span> <span class="fl">0.3</span>)), </span>
-<span id="cb399-30"><a href="14-8-niib.html#cb399-30"></a>       <span class="dt">legend =</span> <span class="kw">c</span>(<span class="st">&quot;Actual GDP growth rate&quot;</span>,</span>
-<span id="cb399-31"><a href="14-8-niib.html#cb399-31"></a>         <span class="st">&quot;Forecasted GDP growth rate&quot;</span>,</span>
-<span id="cb399-32"><a href="14-8-niib.html#cb399-32"></a>         <span class="st">&quot;Pseudo forecast Error&quot;</span>))</span></code></pre></div>
-<p><img src="ITER_files/figure-html/unnamed-chunk-654-1.png" width="80%" style="display: block; margin: auto;" /></p>
+<div class="sourceCode" id="cb400"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb400-1"><a href="14-8-niib.html#cb400-1"></a><span class="co"># series of pseudo-out-of-sample forecasts</span></span>
+<span id="cb400-2"><a href="14-8-niib.html#cb400-2"></a>PSOSSFc &lt;-<span class="st"> </span><span class="kw">ts</span>(<span class="kw">c</span>(forecasts), </span>
+<span id="cb400-3"><a href="14-8-niib.html#cb400-3"></a>              <span class="dt">start =</span> <span class="dv">2003</span>, </span>
+<span id="cb400-4"><a href="14-8-niib.html#cb400-4"></a>              <span class="dt">end =</span> <span class="fl">2012.75</span>, </span>
+<span id="cb400-5"><a href="14-8-niib.html#cb400-5"></a>              <span class="dt">frequency =</span> <span class="dv">4</span>)</span>
+<span id="cb400-6"><a href="14-8-niib.html#cb400-6"></a></span>
+<span id="cb400-7"><a href="14-8-niib.html#cb400-7"></a><span class="co"># plot the GDP growth time series</span></span>
+<span id="cb400-8"><a href="14-8-niib.html#cb400-8"></a><span class="kw">plot</span>(<span class="kw">window</span>(GDPGrowth_ts, <span class="kw">c</span>(<span class="dv">2003</span>, <span class="dv">1</span>), <span class="kw">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>)),</span>
+<span id="cb400-9"><a href="14-8-niib.html#cb400-9"></a>     <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>,</span>
+<span id="cb400-10"><a href="14-8-niib.html#cb400-10"></a>     <span class="dt">lwd =</span> <span class="dv">2</span>,</span>
+<span id="cb400-11"><a href="14-8-niib.html#cb400-11"></a>     <span class="dt">ylab =</span> <span class="st">&quot;Percent&quot;</span>,</span>
+<span id="cb400-12"><a href="14-8-niib.html#cb400-12"></a>     <span class="dt">main =</span> <span class="st">&quot;Pseudo-Out-Of-Sample Forecasts of GDP Growth&quot;</span>)</span>
+<span id="cb400-13"><a href="14-8-niib.html#cb400-13"></a></span>
+<span id="cb400-14"><a href="14-8-niib.html#cb400-14"></a><span class="co"># add the series of pseudo-out-of-sample forecasts</span></span>
+<span id="cb400-15"><a href="14-8-niib.html#cb400-15"></a><span class="kw">lines</span>(PSOSSFc, </span>
+<span id="cb400-16"><a href="14-8-niib.html#cb400-16"></a>      <span class="dt">lwd =</span> <span class="dv">2</span>, </span>
+<span id="cb400-17"><a href="14-8-niib.html#cb400-17"></a>      <span class="dt">lty =</span> <span class="dv">2</span>)</span>
+<span id="cb400-18"><a href="14-8-niib.html#cb400-18"></a></span>
+<span id="cb400-19"><a href="14-8-niib.html#cb400-19"></a><span class="co"># shade area between curves (the pseudo forecast error)</span></span>
+<span id="cb400-20"><a href="14-8-niib.html#cb400-20"></a><span class="kw">polygon</span>(<span class="kw">c</span>(<span class="kw">time</span>(PSOSSFc), <span class="kw">rev</span>(<span class="kw">time</span>(PSOSSFc))), </span>
+<span id="cb400-21"><a href="14-8-niib.html#cb400-21"></a>        <span class="kw">c</span>(<span class="kw">window</span>(GDPGrowth_ts, <span class="kw">c</span>(<span class="dv">2003</span>, <span class="dv">1</span>), <span class="kw">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>)), <span class="kw">rev</span>(PSOSSFc)),</span>
+<span id="cb400-22"><a href="14-8-niib.html#cb400-22"></a>        <span class="dt">col =</span> <span class="kw">alpha</span>(<span class="st">&quot;blue&quot;</span>, <span class="dt">alpha =</span> <span class="fl">0.3</span>),</span>
+<span id="cb400-23"><a href="14-8-niib.html#cb400-23"></a>        <span class="dt">border =</span> <span class="ot">NA</span>)</span>
+<span id="cb400-24"><a href="14-8-niib.html#cb400-24"></a></span>
+<span id="cb400-25"><a href="14-8-niib.html#cb400-25"></a><span class="co"># add a legend</span></span>
+<span id="cb400-26"><a href="14-8-niib.html#cb400-26"></a><span class="kw">legend</span>(<span class="st">&quot;bottomleft&quot;</span>, </span>
+<span id="cb400-27"><a href="14-8-niib.html#cb400-27"></a>       <span class="dt">lty =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">1</span>),</span>
+<span id="cb400-28"><a href="14-8-niib.html#cb400-28"></a>       <span class="dt">lwd =</span> <span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">10</span>),</span>
+<span id="cb400-29"><a href="14-8-niib.html#cb400-29"></a>       <span class="dt">col =</span> <span class="kw">c</span>(<span class="st">&quot;steelblue&quot;</span>, <span class="st">&quot;black&quot;</span>, <span class="kw">alpha</span>(<span class="st">&quot;blue&quot;</span>, <span class="dt">alpha =</span> <span class="fl">0.3</span>)), </span>
+<span id="cb400-30"><a href="14-8-niib.html#cb400-30"></a>       <span class="dt">legend =</span> <span class="kw">c</span>(<span class="st">&quot;Actual GDP growth rate&quot;</span>,</span>
+<span id="cb400-31"><a href="14-8-niib.html#cb400-31"></a>         <span class="st">&quot;Forecasted GDP growth rate&quot;</span>,</span>
+<span id="cb400-32"><a href="14-8-niib.html#cb400-32"></a>         <span class="st">&quot;Pseudo forecast Error&quot;</span>))</span></code></pre></div>
+<p><img src="ITER_files/figure-html/unnamed-chunk-655-1.png" width="80%" style="display: block; margin: auto;" /></p>
 </div>
 <p>Apparently, the pseudo forecasts track the actual GDP growth rate quite well, except for the kink in 2009 which can be attributed to the recent financial crisis.</p>
 <p>The <span class="math inline">\(SER\)</span> of the first model (estimated using data from 1981:Q1 to 2002:Q4) is <span class="math inline">\(2.39\)</span> so based on the in-sample fit we would expect the out of sample forecast errors to have mean zero and a root mean squared forecast error of about <span class="math inline">\(2.39\)</span>.</p>
-<div class="sourceCode" id="cb400"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb400-1"><a href="14-8-niib.html#cb400-1"></a><span class="co"># SER of ADL(2,2) mode using data from 1981:Q1 - 2002:Q4</span></span>
-<span id="cb400-2"><a href="14-8-niib.html#cb400-2"></a>SER[<span class="dv">1</span>]</span>
-<span id="cb400-3"><a href="14-8-niib.html#cb400-3"></a><span class="co">#&gt; [1] 2.389773</span></span></code></pre></div>
+<div class="sourceCode" id="cb401"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb401-1"><a href="14-8-niib.html#cb401-1"></a><span class="co"># SER of ADL(2,2) mode using data from 1981:Q1 - 2002:Q4</span></span>
+<span id="cb401-2"><a href="14-8-niib.html#cb401-2"></a>SER[<span class="dv">1</span>]</span>
+<span id="cb401-3"><a href="14-8-niib.html#cb401-3"></a><span class="co">#&gt; [1] 2.389773</span></span></code></pre></div>
 <p>The root mean squared forecast error of the pseudo-out-of-sample forecasts is somewhat larger.</p>
-<div class="sourceCode" id="cb401"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb401-1"><a href="14-8-niib.html#cb401-1"></a><span class="co"># compute root mean squared forecast error</span></span>
-<span id="cb401-2"><a href="14-8-niib.html#cb401-2"></a><span class="kw">sd</span>(POOSFCE)</span>
-<span id="cb401-3"><a href="14-8-niib.html#cb401-3"></a><span class="co">#&gt; [1] 2.667612</span></span></code></pre></div>
+<div class="sourceCode" id="cb402"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb402-1"><a href="14-8-niib.html#cb402-1"></a><span class="co"># compute root mean squared forecast error</span></span>
+<span id="cb402-2"><a href="14-8-niib.html#cb402-2"></a><span class="kw">sd</span>(POOSFCE)</span>
+<span id="cb402-3"><a href="14-8-niib.html#cb402-3"></a><span class="co">#&gt; [1] 2.667612</span></span></code></pre></div>
 <p>An interesting hypothesis is whether the mean forecast error is zero, that is the ADL(<span class="math inline">\(2\)</span>,<span class="math inline">\(2\)</span>) forecasts are right, on average. This hypothesis is easily tested using the function <tt>t.test()</tt>.</p>
-<div class="sourceCode" id="cb402"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb402-1"><a href="14-8-niib.html#cb402-1"></a><span class="co"># test if mean forecast error is zero</span></span>
-<span id="cb402-2"><a href="14-8-niib.html#cb402-2"></a><span class="kw">t.test</span>(POOSFCE)</span>
-<span id="cb402-3"><a href="14-8-niib.html#cb402-3"></a><span class="co">#&gt; </span></span>
-<span id="cb402-4"><a href="14-8-niib.html#cb402-4"></a><span class="co">#&gt; 	One Sample t-test</span></span>
-<span id="cb402-5"><a href="14-8-niib.html#cb402-5"></a><span class="co">#&gt; </span></span>
-<span id="cb402-6"><a href="14-8-niib.html#cb402-6"></a><span class="co">#&gt; data:  POOSFCE</span></span>
-<span id="cb402-7"><a href="14-8-niib.html#cb402-7"></a><span class="co">#&gt; t = -1.5523, df = 39, p-value = 0.1287</span></span>
-<span id="cb402-8"><a href="14-8-niib.html#cb402-8"></a><span class="co">#&gt; alternative hypothesis: true mean is not equal to 0</span></span>
-<span id="cb402-9"><a href="14-8-niib.html#cb402-9"></a><span class="co">#&gt; 95 percent confidence interval:</span></span>
-<span id="cb402-10"><a href="14-8-niib.html#cb402-10"></a><span class="co">#&gt;  -1.5078876  0.1984001</span></span>
-<span id="cb402-11"><a href="14-8-niib.html#cb402-11"></a><span class="co">#&gt; sample estimates:</span></span>
-<span id="cb402-12"><a href="14-8-niib.html#cb402-12"></a><span class="co">#&gt;  mean of x </span></span>
-<span id="cb402-13"><a href="14-8-niib.html#cb402-13"></a><span class="co">#&gt; -0.6547438</span></span></code></pre></div>
+<div class="sourceCode" id="cb403"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb403-1"><a href="14-8-niib.html#cb403-1"></a><span class="co"># test if mean forecast error is zero</span></span>
+<span id="cb403-2"><a href="14-8-niib.html#cb403-2"></a><span class="kw">t.test</span>(POOSFCE)</span>
+<span id="cb403-3"><a href="14-8-niib.html#cb403-3"></a><span class="co">#&gt; </span></span>
+<span id="cb403-4"><a href="14-8-niib.html#cb403-4"></a><span class="co">#&gt; 	One Sample t-test</span></span>
+<span id="cb403-5"><a href="14-8-niib.html#cb403-5"></a><span class="co">#&gt; </span></span>
+<span id="cb403-6"><a href="14-8-niib.html#cb403-6"></a><span class="co">#&gt; data:  POOSFCE</span></span>
+<span id="cb403-7"><a href="14-8-niib.html#cb403-7"></a><span class="co">#&gt; t = -1.5523, df = 39, p-value = 0.1287</span></span>
+<span id="cb403-8"><a href="14-8-niib.html#cb403-8"></a><span class="co">#&gt; alternative hypothesis: true mean is not equal to 0</span></span>
+<span id="cb403-9"><a href="14-8-niib.html#cb403-9"></a><span class="co">#&gt; 95 percent confidence interval:</span></span>
+<span id="cb403-10"><a href="14-8-niib.html#cb403-10"></a><span class="co">#&gt;  -1.5078876  0.1984001</span></span>
+<span id="cb403-11"><a href="14-8-niib.html#cb403-11"></a><span class="co">#&gt; sample estimates:</span></span>
+<span id="cb403-12"><a href="14-8-niib.html#cb403-12"></a><span class="co">#&gt;  mean of x </span></span>
+<span id="cb403-13"><a href="14-8-niib.html#cb403-13"></a><span class="co">#&gt; -0.6547438</span></span></code></pre></div>
 <p>The hypothesis cannot be rejected at the <span class="math inline">\(10\%\)</span> significance level. Altogether the analysis suggests that the ADL(<span class="math inline">\(2\)</span>,<span class="math inline">\(2\)</span>) model coefficients have been stable since the presumed break in the early 1980s.</p>
 </div>
 </div>

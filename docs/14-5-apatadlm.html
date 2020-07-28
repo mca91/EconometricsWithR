@@ -418,127 +418,127 @@ is an <em>autoregressive distributed lag model</em> with <span class="math inlin
 <p>Interest rates on long-term and short term treasury bonds are closely linked to macroeconomic conditions. While interest rates on both types of bonds have the same long-run tendencies, they behave quite differently in the short run.
 The difference in interest rates of two bonds with distinct maturity is called the <em>term spread</em>.</p>
 <p>The following code chunks reproduce Figure 14.3 of the book which displays interest rates of 10-year U.S. Treasury bonds and 3-months U.S. Treasury bills from 1960 to 2012.</p>
-<div class="sourceCode" id="cb366"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb366-1"><a href="14-5-apatadlm.html#cb366-1"></a><span class="co"># 3-months Treasury bills interest rate</span></span>
-<span id="cb366-2"><a href="14-5-apatadlm.html#cb366-2"></a>TB3MS &lt;-<span class="st"> </span><span class="kw">xts</span>(USMacroSWQ<span class="op">$</span>TB3MS, USMacroSWQ<span class="op">$</span>Date)[<span class="st">&quot;1960::2012&quot;</span>]</span>
-<span id="cb366-3"><a href="14-5-apatadlm.html#cb366-3"></a></span>
-<span id="cb366-4"><a href="14-5-apatadlm.html#cb366-4"></a><span class="co"># 10-years Treasury bonds interest rate</span></span>
-<span id="cb366-5"><a href="14-5-apatadlm.html#cb366-5"></a>TB10YS &lt;-<span class="st"> </span><span class="kw">xts</span>(USMacroSWQ<span class="op">$</span>GS10, USMacroSWQ<span class="op">$</span>Date)[<span class="st">&quot;1960::2012&quot;</span>]</span>
-<span id="cb366-6"><a href="14-5-apatadlm.html#cb366-6"></a></span>
-<span id="cb366-7"><a href="14-5-apatadlm.html#cb366-7"></a><span class="co"># term spread</span></span>
-<span id="cb366-8"><a href="14-5-apatadlm.html#cb366-8"></a>TSpread &lt;-<span class="st"> </span>TB10YS <span class="op">-</span><span class="st"> </span>TB3MS</span></code></pre></div>
+<div class="sourceCode" id="cb367"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb367-1"><a href="14-5-apatadlm.html#cb367-1"></a><span class="co"># 3-months Treasury bills interest rate</span></span>
+<span id="cb367-2"><a href="14-5-apatadlm.html#cb367-2"></a>TB3MS &lt;-<span class="st"> </span><span class="kw">xts</span>(USMacroSWQ<span class="op">$</span>TB3MS, USMacroSWQ<span class="op">$</span>Date)[<span class="st">&quot;1960::2012&quot;</span>]</span>
+<span id="cb367-3"><a href="14-5-apatadlm.html#cb367-3"></a></span>
+<span id="cb367-4"><a href="14-5-apatadlm.html#cb367-4"></a><span class="co"># 10-years Treasury bonds interest rate</span></span>
+<span id="cb367-5"><a href="14-5-apatadlm.html#cb367-5"></a>TB10YS &lt;-<span class="st"> </span><span class="kw">xts</span>(USMacroSWQ<span class="op">$</span>GS10, USMacroSWQ<span class="op">$</span>Date)[<span class="st">&quot;1960::2012&quot;</span>]</span>
+<span id="cb367-6"><a href="14-5-apatadlm.html#cb367-6"></a></span>
+<span id="cb367-7"><a href="14-5-apatadlm.html#cb367-7"></a><span class="co"># term spread</span></span>
+<span id="cb367-8"><a href="14-5-apatadlm.html#cb367-8"></a>TSpread &lt;-<span class="st"> </span>TB10YS <span class="op">-</span><span class="st"> </span>TB3MS</span></code></pre></div>
 <div class="unfolded">
-<div class="sourceCode" id="cb367"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb367-1"><a href="14-5-apatadlm.html#cb367-1"></a><span class="co"># reproduce Figure 14.2 (a) of the book</span></span>
-<span id="cb367-2"><a href="14-5-apatadlm.html#cb367-2"></a><span class="kw">plot</span>(<span class="kw">merge</span>(<span class="kw">as.zoo</span>(TB3MS), <span class="kw">as.zoo</span>(TB10YS)), </span>
-<span id="cb367-3"><a href="14-5-apatadlm.html#cb367-3"></a>     <span class="dt">plot.type =</span> <span class="st">&quot;single&quot;</span>, </span>
-<span id="cb367-4"><a href="14-5-apatadlm.html#cb367-4"></a>     <span class="dt">col =</span> <span class="kw">c</span>(<span class="st">&quot;darkred&quot;</span>, <span class="st">&quot;steelblue&quot;</span>),</span>
-<span id="cb367-5"><a href="14-5-apatadlm.html#cb367-5"></a>     <span class="dt">lwd =</span> <span class="dv">2</span>,</span>
-<span id="cb367-6"><a href="14-5-apatadlm.html#cb367-6"></a>     <span class="dt">xlab =</span> <span class="st">&quot;Date&quot;</span>,</span>
-<span id="cb367-7"><a href="14-5-apatadlm.html#cb367-7"></a>     <span class="dt">ylab =</span> <span class="st">&quot;Percent per annum&quot;</span>,</span>
-<span id="cb367-8"><a href="14-5-apatadlm.html#cb367-8"></a>     <span class="dt">main =</span> <span class="st">&quot;Interest Rates&quot;</span>)</span>
-<span id="cb367-9"><a href="14-5-apatadlm.html#cb367-9"></a></span>
-<span id="cb367-10"><a href="14-5-apatadlm.html#cb367-10"></a><span class="co"># define function that transform years to class &#39;yearqtr&#39;</span></span>
-<span id="cb367-11"><a href="14-5-apatadlm.html#cb367-11"></a>YToYQTR &lt;-<span class="st"> </span><span class="cf">function</span>(years) {</span>
-<span id="cb367-12"><a href="14-5-apatadlm.html#cb367-12"></a>  <span class="kw">return</span>(</span>
-<span id="cb367-13"><a href="14-5-apatadlm.html#cb367-13"></a>      <span class="kw">sort</span>(<span class="kw">as.yearqtr</span>(<span class="kw">sapply</span>(years, paste, <span class="kw">c</span>(<span class="st">&quot;Q1&quot;</span>, <span class="st">&quot;Q2&quot;</span>, <span class="st">&quot;Q3&quot;</span>, <span class="st">&quot;Q4&quot;</span>))))</span>
-<span id="cb367-14"><a href="14-5-apatadlm.html#cb367-14"></a>  )</span>
-<span id="cb367-15"><a href="14-5-apatadlm.html#cb367-15"></a>}</span>
-<span id="cb367-16"><a href="14-5-apatadlm.html#cb367-16"></a></span>
-<span id="cb367-17"><a href="14-5-apatadlm.html#cb367-17"></a><span class="co"># recessions</span></span>
-<span id="cb367-18"><a href="14-5-apatadlm.html#cb367-18"></a>recessions &lt;-<span class="st"> </span><span class="kw">YToYQTR</span>(<span class="kw">c</span>(<span class="dv">1961</span><span class="op">:</span><span class="dv">1962</span>, <span class="dv">1970</span>, <span class="dv">1974</span><span class="op">:</span><span class="dv">1975</span>, <span class="dv">1980</span><span class="op">:</span><span class="dv">1982</span>, <span class="dv">1990</span><span class="op">:</span><span class="dv">1991</span>, <span class="dv">2001</span>, <span class="dv">2007</span><span class="op">:</span><span class="dv">2008</span>))</span>
-<span id="cb367-19"><a href="14-5-apatadlm.html#cb367-19"></a>          </span>
-<span id="cb367-20"><a href="14-5-apatadlm.html#cb367-20"></a><span class="co"># add color shading for recessions</span></span>
-<span id="cb367-21"><a href="14-5-apatadlm.html#cb367-21"></a><span class="kw">xblocks</span>(<span class="kw">time</span>(<span class="kw">as.zoo</span>(TB3MS)), </span>
-<span id="cb367-22"><a href="14-5-apatadlm.html#cb367-22"></a>        <span class="kw">c</span>(<span class="kw">time</span>(TB3MS) <span class="op">%in%</span><span class="st"> </span>recessions), </span>
-<span id="cb367-23"><a href="14-5-apatadlm.html#cb367-23"></a>        <span class="dt">col =</span> <span class="kw">alpha</span>(<span class="st">&quot;steelblue&quot;</span>, <span class="dt">alpha =</span> <span class="fl">0.3</span>))</span>
-<span id="cb367-24"><a href="14-5-apatadlm.html#cb367-24"></a></span>
-<span id="cb367-25"><a href="14-5-apatadlm.html#cb367-25"></a><span class="co"># add a legend</span></span>
-<span id="cb367-26"><a href="14-5-apatadlm.html#cb367-26"></a><span class="kw">legend</span>(<span class="st">&quot;topright&quot;</span>, </span>
-<span id="cb367-27"><a href="14-5-apatadlm.html#cb367-27"></a>       <span class="dt">legend =</span> <span class="kw">c</span>(<span class="st">&quot;TB3MS&quot;</span>, <span class="st">&quot;TB10YS&quot;</span>),</span>
-<span id="cb367-28"><a href="14-5-apatadlm.html#cb367-28"></a>       <span class="dt">col =</span> <span class="kw">c</span>(<span class="st">&quot;darkred&quot;</span>, <span class="st">&quot;steelblue&quot;</span>),</span>
-<span id="cb367-29"><a href="14-5-apatadlm.html#cb367-29"></a>       <span class="dt">lwd =</span> <span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">2</span>))</span></code></pre></div>
-<p><img src="ITER_files/figure-html/unnamed-chunk-611-1.png" width="80%" style="display: block; margin: auto;" /></p>
-<div class="sourceCode" id="cb368"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb368-1"><a href="14-5-apatadlm.html#cb368-1"></a></span>
-<span id="cb368-2"><a href="14-5-apatadlm.html#cb368-2"></a><span class="co"># reproduce Figure 14.2 (b) of the book</span></span>
-<span id="cb368-3"><a href="14-5-apatadlm.html#cb368-3"></a><span class="kw">plot</span>(<span class="kw">as.zoo</span>(TSpread), </span>
-<span id="cb368-4"><a href="14-5-apatadlm.html#cb368-4"></a>     <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>,</span>
+<div class="sourceCode" id="cb368"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb368-1"><a href="14-5-apatadlm.html#cb368-1"></a><span class="co"># reproduce Figure 14.2 (a) of the book</span></span>
+<span id="cb368-2"><a href="14-5-apatadlm.html#cb368-2"></a><span class="kw">plot</span>(<span class="kw">merge</span>(<span class="kw">as.zoo</span>(TB3MS), <span class="kw">as.zoo</span>(TB10YS)), </span>
+<span id="cb368-3"><a href="14-5-apatadlm.html#cb368-3"></a>     <span class="dt">plot.type =</span> <span class="st">&quot;single&quot;</span>, </span>
+<span id="cb368-4"><a href="14-5-apatadlm.html#cb368-4"></a>     <span class="dt">col =</span> <span class="kw">c</span>(<span class="st">&quot;darkred&quot;</span>, <span class="st">&quot;steelblue&quot;</span>),</span>
 <span id="cb368-5"><a href="14-5-apatadlm.html#cb368-5"></a>     <span class="dt">lwd =</span> <span class="dv">2</span>,</span>
 <span id="cb368-6"><a href="14-5-apatadlm.html#cb368-6"></a>     <span class="dt">xlab =</span> <span class="st">&quot;Date&quot;</span>,</span>
 <span id="cb368-7"><a href="14-5-apatadlm.html#cb368-7"></a>     <span class="dt">ylab =</span> <span class="st">&quot;Percent per annum&quot;</span>,</span>
-<span id="cb368-8"><a href="14-5-apatadlm.html#cb368-8"></a>     <span class="dt">main =</span> <span class="st">&quot;Term Spread&quot;</span>)</span>
+<span id="cb368-8"><a href="14-5-apatadlm.html#cb368-8"></a>     <span class="dt">main =</span> <span class="st">&quot;Interest Rates&quot;</span>)</span>
 <span id="cb368-9"><a href="14-5-apatadlm.html#cb368-9"></a></span>
-<span id="cb368-10"><a href="14-5-apatadlm.html#cb368-10"></a><span class="co"># add color shading for recessions</span></span>
-<span id="cb368-11"><a href="14-5-apatadlm.html#cb368-11"></a><span class="kw">xblocks</span>(<span class="kw">time</span>(<span class="kw">as.zoo</span>(TB3MS)), </span>
-<span id="cb368-12"><a href="14-5-apatadlm.html#cb368-12"></a>        <span class="kw">c</span>(<span class="kw">time</span>(TB3MS) <span class="op">%in%</span><span class="st"> </span>recessions), </span>
-<span id="cb368-13"><a href="14-5-apatadlm.html#cb368-13"></a>        <span class="dt">col =</span> <span class="kw">alpha</span>(<span class="st">&quot;steelblue&quot;</span>, <span class="dt">alpha =</span> <span class="fl">0.3</span>))</span></code></pre></div>
-<p><img src="ITER_files/figure-html/unnamed-chunk-611-2.png" width="80%" style="display: block; margin: auto;" /></p>
+<span id="cb368-10"><a href="14-5-apatadlm.html#cb368-10"></a><span class="co"># define function that transform years to class &#39;yearqtr&#39;</span></span>
+<span id="cb368-11"><a href="14-5-apatadlm.html#cb368-11"></a>YToYQTR &lt;-<span class="st"> </span><span class="cf">function</span>(years) {</span>
+<span id="cb368-12"><a href="14-5-apatadlm.html#cb368-12"></a>  <span class="kw">return</span>(</span>
+<span id="cb368-13"><a href="14-5-apatadlm.html#cb368-13"></a>      <span class="kw">sort</span>(<span class="kw">as.yearqtr</span>(<span class="kw">sapply</span>(years, paste, <span class="kw">c</span>(<span class="st">&quot;Q1&quot;</span>, <span class="st">&quot;Q2&quot;</span>, <span class="st">&quot;Q3&quot;</span>, <span class="st">&quot;Q4&quot;</span>))))</span>
+<span id="cb368-14"><a href="14-5-apatadlm.html#cb368-14"></a>  )</span>
+<span id="cb368-15"><a href="14-5-apatadlm.html#cb368-15"></a>}</span>
+<span id="cb368-16"><a href="14-5-apatadlm.html#cb368-16"></a></span>
+<span id="cb368-17"><a href="14-5-apatadlm.html#cb368-17"></a><span class="co"># recessions</span></span>
+<span id="cb368-18"><a href="14-5-apatadlm.html#cb368-18"></a>recessions &lt;-<span class="st"> </span><span class="kw">YToYQTR</span>(<span class="kw">c</span>(<span class="dv">1961</span><span class="op">:</span><span class="dv">1962</span>, <span class="dv">1970</span>, <span class="dv">1974</span><span class="op">:</span><span class="dv">1975</span>, <span class="dv">1980</span><span class="op">:</span><span class="dv">1982</span>, <span class="dv">1990</span><span class="op">:</span><span class="dv">1991</span>, <span class="dv">2001</span>, <span class="dv">2007</span><span class="op">:</span><span class="dv">2008</span>))</span>
+<span id="cb368-19"><a href="14-5-apatadlm.html#cb368-19"></a>          </span>
+<span id="cb368-20"><a href="14-5-apatadlm.html#cb368-20"></a><span class="co"># add color shading for recessions</span></span>
+<span id="cb368-21"><a href="14-5-apatadlm.html#cb368-21"></a><span class="kw">xblocks</span>(<span class="kw">time</span>(<span class="kw">as.zoo</span>(TB3MS)), </span>
+<span id="cb368-22"><a href="14-5-apatadlm.html#cb368-22"></a>        <span class="kw">c</span>(<span class="kw">time</span>(TB3MS) <span class="op">%in%</span><span class="st"> </span>recessions), </span>
+<span id="cb368-23"><a href="14-5-apatadlm.html#cb368-23"></a>        <span class="dt">col =</span> <span class="kw">alpha</span>(<span class="st">&quot;steelblue&quot;</span>, <span class="dt">alpha =</span> <span class="fl">0.3</span>))</span>
+<span id="cb368-24"><a href="14-5-apatadlm.html#cb368-24"></a></span>
+<span id="cb368-25"><a href="14-5-apatadlm.html#cb368-25"></a><span class="co"># add a legend</span></span>
+<span id="cb368-26"><a href="14-5-apatadlm.html#cb368-26"></a><span class="kw">legend</span>(<span class="st">&quot;topright&quot;</span>, </span>
+<span id="cb368-27"><a href="14-5-apatadlm.html#cb368-27"></a>       <span class="dt">legend =</span> <span class="kw">c</span>(<span class="st">&quot;TB3MS&quot;</span>, <span class="st">&quot;TB10YS&quot;</span>),</span>
+<span id="cb368-28"><a href="14-5-apatadlm.html#cb368-28"></a>       <span class="dt">col =</span> <span class="kw">c</span>(<span class="st">&quot;darkred&quot;</span>, <span class="st">&quot;steelblue&quot;</span>),</span>
+<span id="cb368-29"><a href="14-5-apatadlm.html#cb368-29"></a>       <span class="dt">lwd =</span> <span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">2</span>))</span></code></pre></div>
+<p><img src="ITER_files/figure-html/unnamed-chunk-612-1.png" width="80%" style="display: block; margin: auto;" /></p>
+<div class="sourceCode" id="cb369"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb369-1"><a href="14-5-apatadlm.html#cb369-1"></a></span>
+<span id="cb369-2"><a href="14-5-apatadlm.html#cb369-2"></a><span class="co"># reproduce Figure 14.2 (b) of the book</span></span>
+<span id="cb369-3"><a href="14-5-apatadlm.html#cb369-3"></a><span class="kw">plot</span>(<span class="kw">as.zoo</span>(TSpread), </span>
+<span id="cb369-4"><a href="14-5-apatadlm.html#cb369-4"></a>     <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>,</span>
+<span id="cb369-5"><a href="14-5-apatadlm.html#cb369-5"></a>     <span class="dt">lwd =</span> <span class="dv">2</span>,</span>
+<span id="cb369-6"><a href="14-5-apatadlm.html#cb369-6"></a>     <span class="dt">xlab =</span> <span class="st">&quot;Date&quot;</span>,</span>
+<span id="cb369-7"><a href="14-5-apatadlm.html#cb369-7"></a>     <span class="dt">ylab =</span> <span class="st">&quot;Percent per annum&quot;</span>,</span>
+<span id="cb369-8"><a href="14-5-apatadlm.html#cb369-8"></a>     <span class="dt">main =</span> <span class="st">&quot;Term Spread&quot;</span>)</span>
+<span id="cb369-9"><a href="14-5-apatadlm.html#cb369-9"></a></span>
+<span id="cb369-10"><a href="14-5-apatadlm.html#cb369-10"></a><span class="co"># add color shading for recessions</span></span>
+<span id="cb369-11"><a href="14-5-apatadlm.html#cb369-11"></a><span class="kw">xblocks</span>(<span class="kw">time</span>(<span class="kw">as.zoo</span>(TB3MS)), </span>
+<span id="cb369-12"><a href="14-5-apatadlm.html#cb369-12"></a>        <span class="kw">c</span>(<span class="kw">time</span>(TB3MS) <span class="op">%in%</span><span class="st"> </span>recessions), </span>
+<span id="cb369-13"><a href="14-5-apatadlm.html#cb369-13"></a>        <span class="dt">col =</span> <span class="kw">alpha</span>(<span class="st">&quot;steelblue&quot;</span>, <span class="dt">alpha =</span> <span class="fl">0.3</span>))</span></code></pre></div>
+<p><img src="ITER_files/figure-html/unnamed-chunk-612-2.png" width="80%" style="display: block; margin: auto;" /></p>
 </div>
 <p>Before recessions, the gap between interest rates on long-term bonds and short term bills narrows and consequently the term spread declines drastically towards zero or even becomes negative in times of economic stress. This information might be used to improve GDP growth forecasts of future.</p>
 <p>We check this by estimating an ADL(<span class="math inline">\(2\)</span>, <span class="math inline">\(1\)</span>) model and an ADL(<span class="math inline">\(2\)</span>, <span class="math inline">\(2\)</span>) model of the GDP growth rate using lags of GDP growth and lags of the term spread as regressors. We then use both models for forecasting GDP growth in 2013:Q1.</p>
-<div class="sourceCode" id="cb369"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb369-1"><a href="14-5-apatadlm.html#cb369-1"></a><span class="co"># convert growth and spread series to ts objects</span></span>
-<span id="cb369-2"><a href="14-5-apatadlm.html#cb369-2"></a>GDPGrowth_ts &lt;-<span class="st"> </span><span class="kw">ts</span>(GDPGrowth, </span>
-<span id="cb369-3"><a href="14-5-apatadlm.html#cb369-3"></a>                  <span class="dt">start =</span> <span class="kw">c</span>(<span class="dv">1960</span>, <span class="dv">1</span>), </span>
-<span id="cb369-4"><a href="14-5-apatadlm.html#cb369-4"></a>                  <span class="dt">end =</span> <span class="kw">c</span>(<span class="dv">2013</span>, <span class="dv">4</span>), </span>
-<span id="cb369-5"><a href="14-5-apatadlm.html#cb369-5"></a>                  <span class="dt">frequency =</span> <span class="dv">4</span>)</span>
-<span id="cb369-6"><a href="14-5-apatadlm.html#cb369-6"></a></span>
-<span id="cb369-7"><a href="14-5-apatadlm.html#cb369-7"></a>TSpread_ts &lt;-<span class="st"> </span><span class="kw">ts</span>(TSpread, </span>
-<span id="cb369-8"><a href="14-5-apatadlm.html#cb369-8"></a>                <span class="dt">start =</span> <span class="kw">c</span>(<span class="dv">1960</span>, <span class="dv">1</span>), </span>
-<span id="cb369-9"><a href="14-5-apatadlm.html#cb369-9"></a>                <span class="dt">end =</span> <span class="kw">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>), </span>
-<span id="cb369-10"><a href="14-5-apatadlm.html#cb369-10"></a>                <span class="dt">frequency =</span> <span class="dv">4</span>)</span>
-<span id="cb369-11"><a href="14-5-apatadlm.html#cb369-11"></a></span>
-<span id="cb369-12"><a href="14-5-apatadlm.html#cb369-12"></a><span class="co"># join both ts objects</span></span>
-<span id="cb369-13"><a href="14-5-apatadlm.html#cb369-13"></a>ADLdata &lt;-<span class="st"> </span><span class="kw">ts.union</span>(GDPGrowth_ts, TSpread_ts)</span></code></pre></div>
-<div class="sourceCode" id="cb370"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb370-1"><a href="14-5-apatadlm.html#cb370-1"></a><span class="co"># estimate the ADL(2,1) model of GDP growth</span></span>
-<span id="cb370-2"><a href="14-5-apatadlm.html#cb370-2"></a>GDPGR_ADL21 &lt;-<span class="st"> </span><span class="kw">dynlm</span>(GDPGrowth_ts <span class="op">~</span><span class="st"> </span><span class="kw">L</span>(GDPGrowth_ts) <span class="op">+</span><span class="st"> </span><span class="kw">L</span>(GDPGrowth_ts, <span class="dv">2</span>) <span class="op">+</span><span class="st"> </span><span class="kw">L</span>(TSpread_ts), </span>
-<span id="cb370-3"><a href="14-5-apatadlm.html#cb370-3"></a>      <span class="dt">start =</span> <span class="kw">c</span>(<span class="dv">1962</span>, <span class="dv">1</span>), <span class="dt">end =</span> <span class="kw">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>))</span>
-<span id="cb370-4"><a href="14-5-apatadlm.html#cb370-4"></a></span>
-<span id="cb370-5"><a href="14-5-apatadlm.html#cb370-5"></a><span class="kw">coeftest</span>(GDPGR_ADL21, <span class="dt">vcov. =</span> sandwich)</span>
-<span id="cb370-6"><a href="14-5-apatadlm.html#cb370-6"></a><span class="co">#&gt; </span></span>
-<span id="cb370-7"><a href="14-5-apatadlm.html#cb370-7"></a><span class="co">#&gt; t test of coefficients:</span></span>
-<span id="cb370-8"><a href="14-5-apatadlm.html#cb370-8"></a><span class="co">#&gt; </span></span>
-<span id="cb370-9"><a href="14-5-apatadlm.html#cb370-9"></a><span class="co">#&gt;                    Estimate Std. Error t value Pr(&gt;|t|)   </span></span>
-<span id="cb370-10"><a href="14-5-apatadlm.html#cb370-10"></a><span class="co">#&gt; (Intercept)        0.954990   0.486976  1.9611 0.051260 . </span></span>
-<span id="cb370-11"><a href="14-5-apatadlm.html#cb370-11"></a><span class="co">#&gt; L(GDPGrowth_ts)    0.267729   0.082562  3.2428 0.001387 **</span></span>
-<span id="cb370-12"><a href="14-5-apatadlm.html#cb370-12"></a><span class="co">#&gt; L(GDPGrowth_ts, 2) 0.192370   0.077683  2.4763 0.014104 * </span></span>
-<span id="cb370-13"><a href="14-5-apatadlm.html#cb370-13"></a><span class="co">#&gt; L(TSpread_ts)      0.444047   0.182637  2.4313 0.015925 * </span></span>
-<span id="cb370-14"><a href="14-5-apatadlm.html#cb370-14"></a><span class="co">#&gt; ---</span></span>
-<span id="cb370-15"><a href="14-5-apatadlm.html#cb370-15"></a><span class="co">#&gt; Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span></code></pre></div>
+<div class="sourceCode" id="cb370"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb370-1"><a href="14-5-apatadlm.html#cb370-1"></a><span class="co"># convert growth and spread series to ts objects</span></span>
+<span id="cb370-2"><a href="14-5-apatadlm.html#cb370-2"></a>GDPGrowth_ts &lt;-<span class="st"> </span><span class="kw">ts</span>(GDPGrowth, </span>
+<span id="cb370-3"><a href="14-5-apatadlm.html#cb370-3"></a>                  <span class="dt">start =</span> <span class="kw">c</span>(<span class="dv">1960</span>, <span class="dv">1</span>), </span>
+<span id="cb370-4"><a href="14-5-apatadlm.html#cb370-4"></a>                  <span class="dt">end =</span> <span class="kw">c</span>(<span class="dv">2013</span>, <span class="dv">4</span>), </span>
+<span id="cb370-5"><a href="14-5-apatadlm.html#cb370-5"></a>                  <span class="dt">frequency =</span> <span class="dv">4</span>)</span>
+<span id="cb370-6"><a href="14-5-apatadlm.html#cb370-6"></a></span>
+<span id="cb370-7"><a href="14-5-apatadlm.html#cb370-7"></a>TSpread_ts &lt;-<span class="st"> </span><span class="kw">ts</span>(TSpread, </span>
+<span id="cb370-8"><a href="14-5-apatadlm.html#cb370-8"></a>                <span class="dt">start =</span> <span class="kw">c</span>(<span class="dv">1960</span>, <span class="dv">1</span>), </span>
+<span id="cb370-9"><a href="14-5-apatadlm.html#cb370-9"></a>                <span class="dt">end =</span> <span class="kw">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>), </span>
+<span id="cb370-10"><a href="14-5-apatadlm.html#cb370-10"></a>                <span class="dt">frequency =</span> <span class="dv">4</span>)</span>
+<span id="cb370-11"><a href="14-5-apatadlm.html#cb370-11"></a></span>
+<span id="cb370-12"><a href="14-5-apatadlm.html#cb370-12"></a><span class="co"># join both ts objects</span></span>
+<span id="cb370-13"><a href="14-5-apatadlm.html#cb370-13"></a>ADLdata &lt;-<span class="st"> </span><span class="kw">ts.union</span>(GDPGrowth_ts, TSpread_ts)</span></code></pre></div>
+<div class="sourceCode" id="cb371"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb371-1"><a href="14-5-apatadlm.html#cb371-1"></a><span class="co"># estimate the ADL(2,1) model of GDP growth</span></span>
+<span id="cb371-2"><a href="14-5-apatadlm.html#cb371-2"></a>GDPGR_ADL21 &lt;-<span class="st"> </span><span class="kw">dynlm</span>(GDPGrowth_ts <span class="op">~</span><span class="st"> </span><span class="kw">L</span>(GDPGrowth_ts) <span class="op">+</span><span class="st"> </span><span class="kw">L</span>(GDPGrowth_ts, <span class="dv">2</span>) <span class="op">+</span><span class="st"> </span><span class="kw">L</span>(TSpread_ts), </span>
+<span id="cb371-3"><a href="14-5-apatadlm.html#cb371-3"></a>      <span class="dt">start =</span> <span class="kw">c</span>(<span class="dv">1962</span>, <span class="dv">1</span>), <span class="dt">end =</span> <span class="kw">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>))</span>
+<span id="cb371-4"><a href="14-5-apatadlm.html#cb371-4"></a></span>
+<span id="cb371-5"><a href="14-5-apatadlm.html#cb371-5"></a><span class="kw">coeftest</span>(GDPGR_ADL21, <span class="dt">vcov. =</span> sandwich)</span>
+<span id="cb371-6"><a href="14-5-apatadlm.html#cb371-6"></a><span class="co">#&gt; </span></span>
+<span id="cb371-7"><a href="14-5-apatadlm.html#cb371-7"></a><span class="co">#&gt; t test of coefficients:</span></span>
+<span id="cb371-8"><a href="14-5-apatadlm.html#cb371-8"></a><span class="co">#&gt; </span></span>
+<span id="cb371-9"><a href="14-5-apatadlm.html#cb371-9"></a><span class="co">#&gt;                    Estimate Std. Error t value Pr(&gt;|t|)   </span></span>
+<span id="cb371-10"><a href="14-5-apatadlm.html#cb371-10"></a><span class="co">#&gt; (Intercept)        0.954990   0.486976  1.9611 0.051260 . </span></span>
+<span id="cb371-11"><a href="14-5-apatadlm.html#cb371-11"></a><span class="co">#&gt; L(GDPGrowth_ts)    0.267729   0.082562  3.2428 0.001387 **</span></span>
+<span id="cb371-12"><a href="14-5-apatadlm.html#cb371-12"></a><span class="co">#&gt; L(GDPGrowth_ts, 2) 0.192370   0.077683  2.4763 0.014104 * </span></span>
+<span id="cb371-13"><a href="14-5-apatadlm.html#cb371-13"></a><span class="co">#&gt; L(TSpread_ts)      0.444047   0.182637  2.4313 0.015925 * </span></span>
+<span id="cb371-14"><a href="14-5-apatadlm.html#cb371-14"></a><span class="co">#&gt; ---</span></span>
+<span id="cb371-15"><a href="14-5-apatadlm.html#cb371-15"></a><span class="co">#&gt; Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span></code></pre></div>
 <p>The estimated equation of the ADL(<span class="math inline">\(2\)</span>, <span class="math inline">\(1\)</span>) model is
 <span class="math display" id="eq:gdpgradl21">\[\begin{align}
   \widehat{GDPGR}_t = \underset{(0.49)}{0.96} + \underset{(0.08)}{0.26} GDPGR_{t-1} + \underset{(0.08)}{0.19} GDPGR_{t-2} + \underset{(0.18)}{0.44} TSpread_{t-1} \tag{14.4}
 \end{align}\]</span></p>
 <p>All coefficients are significant at the level of <span class="math inline">\(5\%\)</span>.</p>
-<div class="sourceCode" id="cb371"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb371-1"><a href="14-5-apatadlm.html#cb371-1"></a><span class="co"># 2012:Q3 / 2012:Q4 data on GDP growth and term spread</span></span>
-<span id="cb371-2"><a href="14-5-apatadlm.html#cb371-2"></a>subset &lt;-<span class="st"> </span><span class="kw">window</span>(ADLdata, <span class="kw">c</span>(<span class="dv">2012</span>, <span class="dv">3</span>), <span class="kw">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>))</span>
-<span id="cb371-3"><a href="14-5-apatadlm.html#cb371-3"></a></span>
-<span id="cb371-4"><a href="14-5-apatadlm.html#cb371-4"></a><span class="co"># ADL(2,1) GDP growth forecast for 2013:Q1</span></span>
-<span id="cb371-5"><a href="14-5-apatadlm.html#cb371-5"></a>ADL21_forecast &lt;-<span class="st"> </span><span class="kw">coef</span>(GDPGR_ADL21) <span class="op">%*%</span><span class="st"> </span><span class="kw">c</span>(<span class="dv">1</span>, subset[<span class="dv">2</span>, <span class="dv">1</span>], subset[<span class="dv">1</span>, <span class="dv">1</span>], subset[<span class="dv">2</span>, <span class="dv">2</span>])</span>
-<span id="cb371-6"><a href="14-5-apatadlm.html#cb371-6"></a>ADL21_forecast</span>
-<span id="cb371-7"><a href="14-5-apatadlm.html#cb371-7"></a><span class="co">#&gt;          [,1]</span></span>
-<span id="cb371-8"><a href="14-5-apatadlm.html#cb371-8"></a><span class="co">#&gt; [1,] 2.241689</span></span>
-<span id="cb371-9"><a href="14-5-apatadlm.html#cb371-9"></a></span>
-<span id="cb371-10"><a href="14-5-apatadlm.html#cb371-10"></a><span class="co"># compute the forecast error</span></span>
-<span id="cb371-11"><a href="14-5-apatadlm.html#cb371-11"></a><span class="kw">window</span>(GDPGrowth_ts, <span class="kw">c</span>(<span class="dv">2013</span>, <span class="dv">1</span>), <span class="kw">c</span>(<span class="dv">2013</span>, <span class="dv">1</span>)) <span class="op">-</span><span class="st"> </span>ADL21_forecast</span>
-<span id="cb371-12"><a href="14-5-apatadlm.html#cb371-12"></a><span class="co">#&gt;           Qtr1</span></span>
-<span id="cb371-13"><a href="14-5-apatadlm.html#cb371-13"></a><span class="co">#&gt; 2013 -1.102487</span></span></code></pre></div>
+<div class="sourceCode" id="cb372"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb372-1"><a href="14-5-apatadlm.html#cb372-1"></a><span class="co"># 2012:Q3 / 2012:Q4 data on GDP growth and term spread</span></span>
+<span id="cb372-2"><a href="14-5-apatadlm.html#cb372-2"></a>subset &lt;-<span class="st"> </span><span class="kw">window</span>(ADLdata, <span class="kw">c</span>(<span class="dv">2012</span>, <span class="dv">3</span>), <span class="kw">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>))</span>
+<span id="cb372-3"><a href="14-5-apatadlm.html#cb372-3"></a></span>
+<span id="cb372-4"><a href="14-5-apatadlm.html#cb372-4"></a><span class="co"># ADL(2,1) GDP growth forecast for 2013:Q1</span></span>
+<span id="cb372-5"><a href="14-5-apatadlm.html#cb372-5"></a>ADL21_forecast &lt;-<span class="st"> </span><span class="kw">coef</span>(GDPGR_ADL21) <span class="op">%*%</span><span class="st"> </span><span class="kw">c</span>(<span class="dv">1</span>, subset[<span class="dv">2</span>, <span class="dv">1</span>], subset[<span class="dv">1</span>, <span class="dv">1</span>], subset[<span class="dv">2</span>, <span class="dv">2</span>])</span>
+<span id="cb372-6"><a href="14-5-apatadlm.html#cb372-6"></a>ADL21_forecast</span>
+<span id="cb372-7"><a href="14-5-apatadlm.html#cb372-7"></a><span class="co">#&gt;          [,1]</span></span>
+<span id="cb372-8"><a href="14-5-apatadlm.html#cb372-8"></a><span class="co">#&gt; [1,] 2.241689</span></span>
+<span id="cb372-9"><a href="14-5-apatadlm.html#cb372-9"></a></span>
+<span id="cb372-10"><a href="14-5-apatadlm.html#cb372-10"></a><span class="co"># compute the forecast error</span></span>
+<span id="cb372-11"><a href="14-5-apatadlm.html#cb372-11"></a><span class="kw">window</span>(GDPGrowth_ts, <span class="kw">c</span>(<span class="dv">2013</span>, <span class="dv">1</span>), <span class="kw">c</span>(<span class="dv">2013</span>, <span class="dv">1</span>)) <span class="op">-</span><span class="st"> </span>ADL21_forecast</span>
+<span id="cb372-12"><a href="14-5-apatadlm.html#cb372-12"></a><span class="co">#&gt;           Qtr1</span></span>
+<span id="cb372-13"><a href="14-5-apatadlm.html#cb372-13"></a><span class="co">#&gt; 2013 -1.102487</span></span></code></pre></div>
 <p>Model <a href="14-5-apatadlm.html#eq:gdpgradl21">(14.4)</a> predicts the GDP growth in 2013:Q1 to be <span class="math inline">\(2.24\%\)</span> which leads to a forecast error of <span class="math inline">\(-1.10\%\)</span>.</p>
 <p>We estimate the ADL(<span class="math inline">\(2\)</span>,<span class="math inline">\(2\)</span>) specification to see whether adding additional information on past term spread improves the forecast.</p>
-<div class="sourceCode" id="cb372"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb372-1"><a href="14-5-apatadlm.html#cb372-1"></a><span class="co"># estimate the ADL(2,2) model of GDP growth</span></span>
-<span id="cb372-2"><a href="14-5-apatadlm.html#cb372-2"></a>GDPGR_ADL22 &lt;-<span class="st"> </span><span class="kw">dynlm</span>(GDPGrowth_ts <span class="op">~</span><span class="st"> </span><span class="kw">L</span>(GDPGrowth_ts) <span class="op">+</span><span class="st"> </span><span class="kw">L</span>(GDPGrowth_ts, <span class="dv">2</span>) </span>
-<span id="cb372-3"><a href="14-5-apatadlm.html#cb372-3"></a>                     <span class="op">+</span><span class="st"> </span><span class="kw">L</span>(TSpread_ts) <span class="op">+</span><span class="st"> </span><span class="kw">L</span>(TSpread_ts, <span class="dv">2</span>), </span>
-<span id="cb372-4"><a href="14-5-apatadlm.html#cb372-4"></a>                     <span class="dt">start =</span> <span class="kw">c</span>(<span class="dv">1962</span>, <span class="dv">1</span>), <span class="dt">end =</span> <span class="kw">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>))</span>
-<span id="cb372-5"><a href="14-5-apatadlm.html#cb372-5"></a></span>
-<span id="cb372-6"><a href="14-5-apatadlm.html#cb372-6"></a><span class="kw">coeftest</span>(GDPGR_ADL22, <span class="dt">vcov. =</span> sandwich)</span>
-<span id="cb372-7"><a href="14-5-apatadlm.html#cb372-7"></a><span class="co">#&gt; </span></span>
-<span id="cb372-8"><a href="14-5-apatadlm.html#cb372-8"></a><span class="co">#&gt; t test of coefficients:</span></span>
-<span id="cb372-9"><a href="14-5-apatadlm.html#cb372-9"></a><span class="co">#&gt; </span></span>
-<span id="cb372-10"><a href="14-5-apatadlm.html#cb372-10"></a><span class="co">#&gt;                     Estimate Std. Error t value Pr(&gt;|t|)   </span></span>
-<span id="cb372-11"><a href="14-5-apatadlm.html#cb372-11"></a><span class="co">#&gt; (Intercept)         0.967967   0.472470  2.0487 0.041800 * </span></span>
-<span id="cb372-12"><a href="14-5-apatadlm.html#cb372-12"></a><span class="co">#&gt; L(GDPGrowth_ts)     0.243175   0.077836  3.1242 0.002049 **</span></span>
-<span id="cb372-13"><a href="14-5-apatadlm.html#cb372-13"></a><span class="co">#&gt; L(GDPGrowth_ts, 2)  0.177070   0.077027  2.2988 0.022555 * </span></span>
-<span id="cb372-14"><a href="14-5-apatadlm.html#cb372-14"></a><span class="co">#&gt; L(TSpread_ts)      -0.139554   0.422162 -0.3306 0.741317   </span></span>
-<span id="cb372-15"><a href="14-5-apatadlm.html#cb372-15"></a><span class="co">#&gt; L(TSpread_ts, 2)    0.656347   0.429802  1.5271 0.128326   </span></span>
-<span id="cb372-16"><a href="14-5-apatadlm.html#cb372-16"></a><span class="co">#&gt; ---</span></span>
-<span id="cb372-17"><a href="14-5-apatadlm.html#cb372-17"></a><span class="co">#&gt; Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span></code></pre></div>
+<div class="sourceCode" id="cb373"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb373-1"><a href="14-5-apatadlm.html#cb373-1"></a><span class="co"># estimate the ADL(2,2) model of GDP growth</span></span>
+<span id="cb373-2"><a href="14-5-apatadlm.html#cb373-2"></a>GDPGR_ADL22 &lt;-<span class="st"> </span><span class="kw">dynlm</span>(GDPGrowth_ts <span class="op">~</span><span class="st"> </span><span class="kw">L</span>(GDPGrowth_ts) <span class="op">+</span><span class="st"> </span><span class="kw">L</span>(GDPGrowth_ts, <span class="dv">2</span>) </span>
+<span id="cb373-3"><a href="14-5-apatadlm.html#cb373-3"></a>                     <span class="op">+</span><span class="st"> </span><span class="kw">L</span>(TSpread_ts) <span class="op">+</span><span class="st"> </span><span class="kw">L</span>(TSpread_ts, <span class="dv">2</span>), </span>
+<span id="cb373-4"><a href="14-5-apatadlm.html#cb373-4"></a>                     <span class="dt">start =</span> <span class="kw">c</span>(<span class="dv">1962</span>, <span class="dv">1</span>), <span class="dt">end =</span> <span class="kw">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>))</span>
+<span id="cb373-5"><a href="14-5-apatadlm.html#cb373-5"></a></span>
+<span id="cb373-6"><a href="14-5-apatadlm.html#cb373-6"></a><span class="kw">coeftest</span>(GDPGR_ADL22, <span class="dt">vcov. =</span> sandwich)</span>
+<span id="cb373-7"><a href="14-5-apatadlm.html#cb373-7"></a><span class="co">#&gt; </span></span>
+<span id="cb373-8"><a href="14-5-apatadlm.html#cb373-8"></a><span class="co">#&gt; t test of coefficients:</span></span>
+<span id="cb373-9"><a href="14-5-apatadlm.html#cb373-9"></a><span class="co">#&gt; </span></span>
+<span id="cb373-10"><a href="14-5-apatadlm.html#cb373-10"></a><span class="co">#&gt;                     Estimate Std. Error t value Pr(&gt;|t|)   </span></span>
+<span id="cb373-11"><a href="14-5-apatadlm.html#cb373-11"></a><span class="co">#&gt; (Intercept)         0.967967   0.472470  2.0487 0.041800 * </span></span>
+<span id="cb373-12"><a href="14-5-apatadlm.html#cb373-12"></a><span class="co">#&gt; L(GDPGrowth_ts)     0.243175   0.077836  3.1242 0.002049 **</span></span>
+<span id="cb373-13"><a href="14-5-apatadlm.html#cb373-13"></a><span class="co">#&gt; L(GDPGrowth_ts, 2)  0.177070   0.077027  2.2988 0.022555 * </span></span>
+<span id="cb373-14"><a href="14-5-apatadlm.html#cb373-14"></a><span class="co">#&gt; L(TSpread_ts)      -0.139554   0.422162 -0.3306 0.741317   </span></span>
+<span id="cb373-15"><a href="14-5-apatadlm.html#cb373-15"></a><span class="co">#&gt; L(TSpread_ts, 2)    0.656347   0.429802  1.5271 0.128326   </span></span>
+<span id="cb373-16"><a href="14-5-apatadlm.html#cb373-16"></a><span class="co">#&gt; ---</span></span>
+<span id="cb373-17"><a href="14-5-apatadlm.html#cb373-17"></a><span class="co">#&gt; Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span></code></pre></div>
 <p>We obtain
 <span class="math display" id="eq:gdpgradl22">\[\begin{align}
   \begin{split}
@@ -547,53 +547,53 @@ The difference in interest rates of two bonds with distinct maturity is called t
   \end{split} \tag{14.5}
 \end{align}\]</span></p>
 <p>The coefficients on both lags of the term spread are not significant at the <span class="math inline">\(10\%\)</span> level.</p>
-<div class="sourceCode" id="cb373"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb373-1"><a href="14-5-apatadlm.html#cb373-1"></a><span class="co"># ADL(2,2) GDP growth forecast for 2013:Q1</span></span>
-<span id="cb373-2"><a href="14-5-apatadlm.html#cb373-2"></a>ADL22_forecast &lt;-<span class="st"> </span><span class="kw">coef</span>(GDPGR_ADL22) <span class="op">%*%</span><span class="st"> </span><span class="kw">c</span>(<span class="dv">1</span>, subset[<span class="dv">2</span>, <span class="dv">1</span>], subset[<span class="dv">1</span>, <span class="dv">1</span>], subset[<span class="dv">2</span>, <span class="dv">2</span>], subset[<span class="dv">1</span>, <span class="dv">2</span>])</span>
-<span id="cb373-3"><a href="14-5-apatadlm.html#cb373-3"></a>ADL22_forecast</span>
-<span id="cb373-4"><a href="14-5-apatadlm.html#cb373-4"></a><span class="co">#&gt;          [,1]</span></span>
-<span id="cb373-5"><a href="14-5-apatadlm.html#cb373-5"></a><span class="co">#&gt; [1,] 2.274407</span></span>
-<span id="cb373-6"><a href="14-5-apatadlm.html#cb373-6"></a></span>
-<span id="cb373-7"><a href="14-5-apatadlm.html#cb373-7"></a><span class="co"># compute the forecast error</span></span>
-<span id="cb373-8"><a href="14-5-apatadlm.html#cb373-8"></a><span class="kw">window</span>(GDPGrowth_ts, <span class="kw">c</span>(<span class="dv">2013</span>, <span class="dv">1</span>), <span class="kw">c</span>(<span class="dv">2013</span>, <span class="dv">1</span>)) <span class="op">-</span><span class="st"> </span>ADL22_forecast</span>
-<span id="cb373-9"><a href="14-5-apatadlm.html#cb373-9"></a><span class="co">#&gt;           Qtr1</span></span>
-<span id="cb373-10"><a href="14-5-apatadlm.html#cb373-10"></a><span class="co">#&gt; 2013 -1.135206</span></span></code></pre></div>
+<div class="sourceCode" id="cb374"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb374-1"><a href="14-5-apatadlm.html#cb374-1"></a><span class="co"># ADL(2,2) GDP growth forecast for 2013:Q1</span></span>
+<span id="cb374-2"><a href="14-5-apatadlm.html#cb374-2"></a>ADL22_forecast &lt;-<span class="st"> </span><span class="kw">coef</span>(GDPGR_ADL22) <span class="op">%*%</span><span class="st"> </span><span class="kw">c</span>(<span class="dv">1</span>, subset[<span class="dv">2</span>, <span class="dv">1</span>], subset[<span class="dv">1</span>, <span class="dv">1</span>], subset[<span class="dv">2</span>, <span class="dv">2</span>], subset[<span class="dv">1</span>, <span class="dv">2</span>])</span>
+<span id="cb374-3"><a href="14-5-apatadlm.html#cb374-3"></a>ADL22_forecast</span>
+<span id="cb374-4"><a href="14-5-apatadlm.html#cb374-4"></a><span class="co">#&gt;          [,1]</span></span>
+<span id="cb374-5"><a href="14-5-apatadlm.html#cb374-5"></a><span class="co">#&gt; [1,] 2.274407</span></span>
+<span id="cb374-6"><a href="14-5-apatadlm.html#cb374-6"></a></span>
+<span id="cb374-7"><a href="14-5-apatadlm.html#cb374-7"></a><span class="co"># compute the forecast error</span></span>
+<span id="cb374-8"><a href="14-5-apatadlm.html#cb374-8"></a><span class="kw">window</span>(GDPGrowth_ts, <span class="kw">c</span>(<span class="dv">2013</span>, <span class="dv">1</span>), <span class="kw">c</span>(<span class="dv">2013</span>, <span class="dv">1</span>)) <span class="op">-</span><span class="st"> </span>ADL22_forecast</span>
+<span id="cb374-9"><a href="14-5-apatadlm.html#cb374-9"></a><span class="co">#&gt;           Qtr1</span></span>
+<span id="cb374-10"><a href="14-5-apatadlm.html#cb374-10"></a><span class="co">#&gt; 2013 -1.135206</span></span></code></pre></div>
 <p>The ADL(<span class="math inline">\(2\)</span>,<span class="math inline">\(2\)</span>) forecast of GDP growth in 2013:Q1 is <span class="math inline">\(2.27\%\)</span> which implies a forecast error of <span class="math inline">\(1.14\%\)</span>.</p>
 <p>Do the ADL models <a href="14-5-apatadlm.html#eq:gdpgradl21">(14.4)</a> and <a href="14-5-apatadlm.html#eq:gdpgradl22">(14.5)</a> improve upon the simple AR(<span class="math inline">\(2\)</span>) model <a href="14-3-autoregressions.html#eq:GDPGRAR2">(14.3)</a>? The answer is yes: while <span class="math inline">\(SER\)</span> and <span class="math inline">\(\bar{R}^2\)</span> improve only slightly, an <span class="math inline">\(F\)</span>-test on the term spread coefficients in <a href="14-5-apatadlm.html#eq:gdpgradl22">(14.5)</a> provides evidence that the model does better in explaining GDP growth than the AR(<span class="math inline">\(2\)</span>) model as the hypothesis that both coefficients are zero cannot be rejected at the level of <span class="math inline">\(5\%\)</span>.</p>
-<div class="sourceCode" id="cb374"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb374-1"><a href="14-5-apatadlm.html#cb374-1"></a><span class="co"># compare adj. R2</span></span>
-<span id="cb374-2"><a href="14-5-apatadlm.html#cb374-2"></a><span class="kw">c</span>(<span class="st">&quot;Adj.R2 AR(2)&quot;</span> =<span class="st"> </span><span class="kw">summary</span>(GDPGR_AR2)<span class="op">$</span>r.squared,</span>
-<span id="cb374-3"><a href="14-5-apatadlm.html#cb374-3"></a>  <span class="st">&quot;Adj.R2 ADL(2,1)&quot;</span> =<span class="st"> </span><span class="kw">summary</span>(GDPGR_ADL21)<span class="op">$</span>r.squared,</span>
-<span id="cb374-4"><a href="14-5-apatadlm.html#cb374-4"></a>  <span class="st">&quot;Adj.R2 ADL(2,2)&quot;</span> =<span class="st"> </span><span class="kw">summary</span>(GDPGR_ADL22)<span class="op">$</span>r.squared)</span>
-<span id="cb374-5"><a href="14-5-apatadlm.html#cb374-5"></a><span class="co">#&gt;    Adj.R2 AR(2) Adj.R2 ADL(2,1) Adj.R2 ADL(2,2) </span></span>
-<span id="cb374-6"><a href="14-5-apatadlm.html#cb374-6"></a><span class="co">#&gt;       0.1425484       0.1743996       0.1855245</span></span>
-<span id="cb374-7"><a href="14-5-apatadlm.html#cb374-7"></a></span>
-<span id="cb374-8"><a href="14-5-apatadlm.html#cb374-8"></a><span class="co"># compare SER</span></span>
-<span id="cb374-9"><a href="14-5-apatadlm.html#cb374-9"></a><span class="kw">c</span>(<span class="st">&quot;SER AR(2)&quot;</span> =<span class="st"> </span><span class="kw">summary</span>(GDPGR_AR2)<span class="op">$</span>sigma,</span>
-<span id="cb374-10"><a href="14-5-apatadlm.html#cb374-10"></a>  <span class="st">&quot;SER ADL(2,1)&quot;</span> =<span class="st"> </span><span class="kw">summary</span>(GDPGR_ADL21)<span class="op">$</span>sigma,</span>
-<span id="cb374-11"><a href="14-5-apatadlm.html#cb374-11"></a>  <span class="st">&quot;SER ADL(2,2)&quot;</span> =<span class="st"> </span><span class="kw">summary</span>(GDPGR_ADL22)<span class="op">$</span>sigma)</span>
-<span id="cb374-12"><a href="14-5-apatadlm.html#cb374-12"></a><span class="co">#&gt;    SER AR(2) SER ADL(2,1) SER ADL(2,2) </span></span>
-<span id="cb374-13"><a href="14-5-apatadlm.html#cb374-13"></a><span class="co">#&gt;     3.132122     3.070760     3.057655</span></span>
-<span id="cb374-14"><a href="14-5-apatadlm.html#cb374-14"></a></span>
-<span id="cb374-15"><a href="14-5-apatadlm.html#cb374-15"></a><span class="co"># F-test on coefficients of term spread</span></span>
-<span id="cb374-16"><a href="14-5-apatadlm.html#cb374-16"></a><span class="kw">linearHypothesis</span>(GDPGR_ADL22, </span>
-<span id="cb374-17"><a href="14-5-apatadlm.html#cb374-17"></a>                 <span class="kw">c</span>(<span class="st">&quot;L(TSpread_ts)=0&quot;</span>, <span class="st">&quot;L(TSpread_ts, 2)=0&quot;</span>),</span>
-<span id="cb374-18"><a href="14-5-apatadlm.html#cb374-18"></a>                 <span class="dt">vcov. =</span> sandwich)</span>
-<span id="cb374-19"><a href="14-5-apatadlm.html#cb374-19"></a><span class="co">#&gt; Linear hypothesis test</span></span>
-<span id="cb374-20"><a href="14-5-apatadlm.html#cb374-20"></a><span class="co">#&gt; </span></span>
-<span id="cb374-21"><a href="14-5-apatadlm.html#cb374-21"></a><span class="co">#&gt; Hypothesis:</span></span>
-<span id="cb374-22"><a href="14-5-apatadlm.html#cb374-22"></a><span class="co">#&gt; L(TSpread_ts) = 0</span></span>
-<span id="cb374-23"><a href="14-5-apatadlm.html#cb374-23"></a><span class="co">#&gt; L(TSpread_ts, 2) = 0</span></span>
-<span id="cb374-24"><a href="14-5-apatadlm.html#cb374-24"></a><span class="co">#&gt; </span></span>
-<span id="cb374-25"><a href="14-5-apatadlm.html#cb374-25"></a><span class="co">#&gt; Model 1: restricted model</span></span>
-<span id="cb374-26"><a href="14-5-apatadlm.html#cb374-26"></a><span class="co">#&gt; Model 2: GDPGrowth_ts ~ L(GDPGrowth_ts) + L(GDPGrowth_ts, 2) + L(TSpread_ts) + </span></span>
-<span id="cb374-27"><a href="14-5-apatadlm.html#cb374-27"></a><span class="co">#&gt;     L(TSpread_ts, 2)</span></span>
-<span id="cb374-28"><a href="14-5-apatadlm.html#cb374-28"></a><span class="co">#&gt; </span></span>
-<span id="cb374-29"><a href="14-5-apatadlm.html#cb374-29"></a><span class="co">#&gt; Note: Coefficient covariance matrix supplied.</span></span>
-<span id="cb374-30"><a href="14-5-apatadlm.html#cb374-30"></a><span class="co">#&gt; </span></span>
-<span id="cb374-31"><a href="14-5-apatadlm.html#cb374-31"></a><span class="co">#&gt;   Res.Df Df      F  Pr(&gt;F)  </span></span>
-<span id="cb374-32"><a href="14-5-apatadlm.html#cb374-32"></a><span class="co">#&gt; 1    201                    </span></span>
-<span id="cb374-33"><a href="14-5-apatadlm.html#cb374-33"></a><span class="co">#&gt; 2    199  2 4.4344 0.01306 *</span></span>
-<span id="cb374-34"><a href="14-5-apatadlm.html#cb374-34"></a><span class="co">#&gt; ---</span></span>
-<span id="cb374-35"><a href="14-5-apatadlm.html#cb374-35"></a><span class="co">#&gt; Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span></code></pre></div>
+<div class="sourceCode" id="cb375"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb375-1"><a href="14-5-apatadlm.html#cb375-1"></a><span class="co"># compare adj. R2</span></span>
+<span id="cb375-2"><a href="14-5-apatadlm.html#cb375-2"></a><span class="kw">c</span>(<span class="st">&quot;Adj.R2 AR(2)&quot;</span> =<span class="st"> </span><span class="kw">summary</span>(GDPGR_AR2)<span class="op">$</span>r.squared,</span>
+<span id="cb375-3"><a href="14-5-apatadlm.html#cb375-3"></a>  <span class="st">&quot;Adj.R2 ADL(2,1)&quot;</span> =<span class="st"> </span><span class="kw">summary</span>(GDPGR_ADL21)<span class="op">$</span>r.squared,</span>
+<span id="cb375-4"><a href="14-5-apatadlm.html#cb375-4"></a>  <span class="st">&quot;Adj.R2 ADL(2,2)&quot;</span> =<span class="st"> </span><span class="kw">summary</span>(GDPGR_ADL22)<span class="op">$</span>r.squared)</span>
+<span id="cb375-5"><a href="14-5-apatadlm.html#cb375-5"></a><span class="co">#&gt;    Adj.R2 AR(2) Adj.R2 ADL(2,1) Adj.R2 ADL(2,2) </span></span>
+<span id="cb375-6"><a href="14-5-apatadlm.html#cb375-6"></a><span class="co">#&gt;       0.1425484       0.1743996       0.1855245</span></span>
+<span id="cb375-7"><a href="14-5-apatadlm.html#cb375-7"></a></span>
+<span id="cb375-8"><a href="14-5-apatadlm.html#cb375-8"></a><span class="co"># compare SER</span></span>
+<span id="cb375-9"><a href="14-5-apatadlm.html#cb375-9"></a><span class="kw">c</span>(<span class="st">&quot;SER AR(2)&quot;</span> =<span class="st"> </span><span class="kw">summary</span>(GDPGR_AR2)<span class="op">$</span>sigma,</span>
+<span id="cb375-10"><a href="14-5-apatadlm.html#cb375-10"></a>  <span class="st">&quot;SER ADL(2,1)&quot;</span> =<span class="st"> </span><span class="kw">summary</span>(GDPGR_ADL21)<span class="op">$</span>sigma,</span>
+<span id="cb375-11"><a href="14-5-apatadlm.html#cb375-11"></a>  <span class="st">&quot;SER ADL(2,2)&quot;</span> =<span class="st"> </span><span class="kw">summary</span>(GDPGR_ADL22)<span class="op">$</span>sigma)</span>
+<span id="cb375-12"><a href="14-5-apatadlm.html#cb375-12"></a><span class="co">#&gt;    SER AR(2) SER ADL(2,1) SER ADL(2,2) </span></span>
+<span id="cb375-13"><a href="14-5-apatadlm.html#cb375-13"></a><span class="co">#&gt;     3.132122     3.070760     3.057655</span></span>
+<span id="cb375-14"><a href="14-5-apatadlm.html#cb375-14"></a></span>
+<span id="cb375-15"><a href="14-5-apatadlm.html#cb375-15"></a><span class="co"># F-test on coefficients of term spread</span></span>
+<span id="cb375-16"><a href="14-5-apatadlm.html#cb375-16"></a><span class="kw">linearHypothesis</span>(GDPGR_ADL22, </span>
+<span id="cb375-17"><a href="14-5-apatadlm.html#cb375-17"></a>                 <span class="kw">c</span>(<span class="st">&quot;L(TSpread_ts)=0&quot;</span>, <span class="st">&quot;L(TSpread_ts, 2)=0&quot;</span>),</span>
+<span id="cb375-18"><a href="14-5-apatadlm.html#cb375-18"></a>                 <span class="dt">vcov. =</span> sandwich)</span>
+<span id="cb375-19"><a href="14-5-apatadlm.html#cb375-19"></a><span class="co">#&gt; Linear hypothesis test</span></span>
+<span id="cb375-20"><a href="14-5-apatadlm.html#cb375-20"></a><span class="co">#&gt; </span></span>
+<span id="cb375-21"><a href="14-5-apatadlm.html#cb375-21"></a><span class="co">#&gt; Hypothesis:</span></span>
+<span id="cb375-22"><a href="14-5-apatadlm.html#cb375-22"></a><span class="co">#&gt; L(TSpread_ts) = 0</span></span>
+<span id="cb375-23"><a href="14-5-apatadlm.html#cb375-23"></a><span class="co">#&gt; L(TSpread_ts, 2) = 0</span></span>
+<span id="cb375-24"><a href="14-5-apatadlm.html#cb375-24"></a><span class="co">#&gt; </span></span>
+<span id="cb375-25"><a href="14-5-apatadlm.html#cb375-25"></a><span class="co">#&gt; Model 1: restricted model</span></span>
+<span id="cb375-26"><a href="14-5-apatadlm.html#cb375-26"></a><span class="co">#&gt; Model 2: GDPGrowth_ts ~ L(GDPGrowth_ts) + L(GDPGrowth_ts, 2) + L(TSpread_ts) + </span></span>
+<span id="cb375-27"><a href="14-5-apatadlm.html#cb375-27"></a><span class="co">#&gt;     L(TSpread_ts, 2)</span></span>
+<span id="cb375-28"><a href="14-5-apatadlm.html#cb375-28"></a><span class="co">#&gt; </span></span>
+<span id="cb375-29"><a href="14-5-apatadlm.html#cb375-29"></a><span class="co">#&gt; Note: Coefficient covariance matrix supplied.</span></span>
+<span id="cb375-30"><a href="14-5-apatadlm.html#cb375-30"></a><span class="co">#&gt; </span></span>
+<span id="cb375-31"><a href="14-5-apatadlm.html#cb375-31"></a><span class="co">#&gt;   Res.Df Df      F  Pr(&gt;F)  </span></span>
+<span id="cb375-32"><a href="14-5-apatadlm.html#cb375-32"></a><span class="co">#&gt; 1    201                    </span></span>
+<span id="cb375-33"><a href="14-5-apatadlm.html#cb375-33"></a><span class="co">#&gt; 2    199  2 4.4344 0.01306 *</span></span>
+<span id="cb375-34"><a href="14-5-apatadlm.html#cb375-34"></a><span class="co">#&gt; ---</span></span>
+<span id="cb375-35"><a href="14-5-apatadlm.html#cb375-35"></a><span class="co">#&gt; Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span></code></pre></div>
 </div>
 <div id="stationarity" class="section level4 unnumbered">
 <h4>Stationarity</h4>
@@ -681,25 +681,25 @@ The mean squared forecast error (MSFE) and the RMFSE are
 Of course, the computation gets more complicated when the error term is heteroskedastic or if we are interested in computing a forecast interval for <span class="math inline">\(T+s, s&gt;1\)</span>.</p>
 <p>In some applications it is useful to report multiple forecast intervals for subsequent periods, see the box <em>The River of Blood</em> on p. 592 of the book. These can be visualized in a so-called fan chart. We will not replicate the fan chart presented in Figure 14.2 of book because the underlying model is by far more complex than the simple AR and ADL models treated here. Instead, in the example below we use simulated time series data and estimate an AR(<span class="math inline">\(2\)</span>) model which is then used for forecasting the subsequent <span class="math inline">\(25\)</span> future outcomes of the series.</p>
 <div class="unfolded">
-<div class="sourceCode" id="cb375"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb375-1"><a href="14-5-apatadlm.html#cb375-1"></a><span class="co"># set seed</span></span>
-<span id="cb375-2"><a href="14-5-apatadlm.html#cb375-2"></a><span class="kw">set.seed</span>(<span class="dv">1234</span>)</span>
-<span id="cb375-3"><a href="14-5-apatadlm.html#cb375-3"></a></span>
-<span id="cb375-4"><a href="14-5-apatadlm.html#cb375-4"></a><span class="co"># simulate the time series</span></span>
-<span id="cb375-5"><a href="14-5-apatadlm.html#cb375-5"></a>Y &lt;-<span class="st"> </span><span class="kw">arima.sim</span>(<span class="kw">list</span>(<span class="dt">order =</span> <span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">0</span>, <span class="dv">0</span>), <span class="dt">ar =</span> <span class="kw">c</span>(<span class="fl">0.2</span>, <span class="fl">0.2</span>)),  <span class="dt">n =</span> <span class="dv">200</span>)</span>
-<span id="cb375-6"><a href="14-5-apatadlm.html#cb375-6"></a></span>
-<span id="cb375-7"><a href="14-5-apatadlm.html#cb375-7"></a><span class="co"># estimate an AR(2) model using &#39;arima()&#39;, see ?arima</span></span>
-<span id="cb375-8"><a href="14-5-apatadlm.html#cb375-8"></a>model &lt;-<span class="st"> </span><span class="kw">arima</span>(Y, <span class="dt">order =</span> <span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">0</span>, <span class="dv">0</span>))</span>
-<span id="cb375-9"><a href="14-5-apatadlm.html#cb375-9"></a></span>
-<span id="cb375-10"><a href="14-5-apatadlm.html#cb375-10"></a><span class="co"># compute points forecasts and prediction intervals for the next 25 periods</span></span>
-<span id="cb375-11"><a href="14-5-apatadlm.html#cb375-11"></a>fc &lt;-<span class="st"> </span><span class="kw">forecast</span>(model, <span class="dt">h =</span> <span class="dv">25</span>, <span class="dt">level =</span> <span class="kw">seq</span>(<span class="dv">5</span>, <span class="dv">99</span>, <span class="dv">10</span>))</span>
-<span id="cb375-12"><a href="14-5-apatadlm.html#cb375-12"></a></span>
-<span id="cb375-13"><a href="14-5-apatadlm.html#cb375-13"></a><span class="co"># plot a fan chart</span></span>
-<span id="cb375-14"><a href="14-5-apatadlm.html#cb375-14"></a><span class="kw">plot</span>(fc, </span>
-<span id="cb375-15"><a href="14-5-apatadlm.html#cb375-15"></a>     <span class="dt">main =</span> <span class="st">&quot;Forecast Fan Chart for AR(2) Model of Simulated Data&quot;</span>, </span>
-<span id="cb375-16"><a href="14-5-apatadlm.html#cb375-16"></a>     <span class="dt">showgap =</span> F, </span>
-<span id="cb375-17"><a href="14-5-apatadlm.html#cb375-17"></a>     <span class="dt">fcol =</span> <span class="st">&quot;red&quot;</span>,</span>
-<span id="cb375-18"><a href="14-5-apatadlm.html#cb375-18"></a>     <span class="dt">flty =</span> <span class="dv">2</span>)</span></code></pre></div>
-<p><img src="ITER_files/figure-html/unnamed-chunk-624-1.png" width="80%" style="display: block; margin: auto;" /></p>
+<div class="sourceCode" id="cb376"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb376-1"><a href="14-5-apatadlm.html#cb376-1"></a><span class="co"># set seed</span></span>
+<span id="cb376-2"><a href="14-5-apatadlm.html#cb376-2"></a><span class="kw">set.seed</span>(<span class="dv">1234</span>)</span>
+<span id="cb376-3"><a href="14-5-apatadlm.html#cb376-3"></a></span>
+<span id="cb376-4"><a href="14-5-apatadlm.html#cb376-4"></a><span class="co"># simulate the time series</span></span>
+<span id="cb376-5"><a href="14-5-apatadlm.html#cb376-5"></a>Y &lt;-<span class="st"> </span><span class="kw">arima.sim</span>(<span class="kw">list</span>(<span class="dt">order =</span> <span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">0</span>, <span class="dv">0</span>), <span class="dt">ar =</span> <span class="kw">c</span>(<span class="fl">0.2</span>, <span class="fl">0.2</span>)),  <span class="dt">n =</span> <span class="dv">200</span>)</span>
+<span id="cb376-6"><a href="14-5-apatadlm.html#cb376-6"></a></span>
+<span id="cb376-7"><a href="14-5-apatadlm.html#cb376-7"></a><span class="co"># estimate an AR(2) model using &#39;arima()&#39;, see ?arima</span></span>
+<span id="cb376-8"><a href="14-5-apatadlm.html#cb376-8"></a>model &lt;-<span class="st"> </span><span class="kw">arima</span>(Y, <span class="dt">order =</span> <span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">0</span>, <span class="dv">0</span>))</span>
+<span id="cb376-9"><a href="14-5-apatadlm.html#cb376-9"></a></span>
+<span id="cb376-10"><a href="14-5-apatadlm.html#cb376-10"></a><span class="co"># compute points forecasts and prediction intervals for the next 25 periods</span></span>
+<span id="cb376-11"><a href="14-5-apatadlm.html#cb376-11"></a>fc &lt;-<span class="st"> </span><span class="kw">forecast</span>(model, <span class="dt">h =</span> <span class="dv">25</span>, <span class="dt">level =</span> <span class="kw">seq</span>(<span class="dv">5</span>, <span class="dv">99</span>, <span class="dv">10</span>))</span>
+<span id="cb376-12"><a href="14-5-apatadlm.html#cb376-12"></a></span>
+<span id="cb376-13"><a href="14-5-apatadlm.html#cb376-13"></a><span class="co"># plot a fan chart</span></span>
+<span id="cb376-14"><a href="14-5-apatadlm.html#cb376-14"></a><span class="kw">plot</span>(fc, </span>
+<span id="cb376-15"><a href="14-5-apatadlm.html#cb376-15"></a>     <span class="dt">main =</span> <span class="st">&quot;Forecast Fan Chart for AR(2) Model of Simulated Data&quot;</span>, </span>
+<span id="cb376-16"><a href="14-5-apatadlm.html#cb376-16"></a>     <span class="dt">showgap =</span> F, </span>
+<span id="cb376-17"><a href="14-5-apatadlm.html#cb376-17"></a>     <span class="dt">fcol =</span> <span class="st">&quot;red&quot;</span>,</span>
+<span id="cb376-18"><a href="14-5-apatadlm.html#cb376-18"></a>     <span class="dt">flty =</span> <span class="dv">2</span>)</span></code></pre></div>
+<p><img src="ITER_files/figure-html/unnamed-chunk-625-1.png" width="80%" style="display: block; margin: auto;" /></p>
 </div>
 <p><tt>arima.sim()</tt> simulates autoregressive integrated moving average (ARIMA) models. AR models belong to this class of models. We use <tt>list(order = c(2, 0, 0), ar = c(0.2, 0.2))</tt> so the DGP is <span class="math display">\[Y_t = 0.2 Y_{t-1} + 0.2 Y_{t-2} + u_t.\]</span></p>
 <p>We choose <tt>level = seq(5, 99, 10)</tt> in the call of <tt>forecast()</tt> such that forecast intervals with levels <span class="math inline">\(5\%, 15\%, \dots, 95\%\)</span> are computed for each point forecast of the series.</p>

@@ -409,53 +409,53 @@ is the AR(1) population model of a time series <span class="math inline">\(Y_t\)
   \widehat{GDPGR}_t = \hat\beta_0 + \hat\beta_1  GDPGR_{t-1}. \tag{14.1}
 \end{align}\]</span>
 Following the book we use data from 1962 to 2012 to estimate <a href="14-3-autoregressions.html#eq:GDPGRAR1">(14.1)</a>. This is easily done with the function <tt>ar.ols()</tt> from the package <tt>stats</tt>.</p>
-<div class="sourceCode" id="cb352"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb352-1"><a href="14-3-autoregressions.html#cb352-1"></a><span class="co"># subset data</span></span>
-<span id="cb352-2"><a href="14-3-autoregressions.html#cb352-2"></a>GDPGRSub &lt;-<span class="st"> </span>GDPGrowth[<span class="st">&quot;1962::2012&quot;</span>]</span>
-<span id="cb352-3"><a href="14-3-autoregressions.html#cb352-3"></a></span>
-<span id="cb352-4"><a href="14-3-autoregressions.html#cb352-4"></a><span class="co"># estimate the model</span></span>
-<span id="cb352-5"><a href="14-3-autoregressions.html#cb352-5"></a><span class="kw">ar.ols</span>(GDPGRSub, </span>
-<span id="cb352-6"><a href="14-3-autoregressions.html#cb352-6"></a>       <span class="dt">order.max =</span> <span class="dv">1</span>, </span>
-<span id="cb352-7"><a href="14-3-autoregressions.html#cb352-7"></a>       <span class="dt">demean =</span> F, </span>
-<span id="cb352-8"><a href="14-3-autoregressions.html#cb352-8"></a>       <span class="dt">intercept =</span> T)</span>
-<span id="cb352-9"><a href="14-3-autoregressions.html#cb352-9"></a><span class="co">#&gt; </span></span>
-<span id="cb352-10"><a href="14-3-autoregressions.html#cb352-10"></a><span class="co">#&gt; Call:</span></span>
-<span id="cb352-11"><a href="14-3-autoregressions.html#cb352-11"></a><span class="co">#&gt; ar.ols(x = GDPGRSub, order.max = 1, demean = F, intercept = T)</span></span>
-<span id="cb352-12"><a href="14-3-autoregressions.html#cb352-12"></a><span class="co">#&gt; </span></span>
-<span id="cb352-13"><a href="14-3-autoregressions.html#cb352-13"></a><span class="co">#&gt; Coefficients:</span></span>
-<span id="cb352-14"><a href="14-3-autoregressions.html#cb352-14"></a><span class="co">#&gt;      1  </span></span>
-<span id="cb352-15"><a href="14-3-autoregressions.html#cb352-15"></a><span class="co">#&gt; 0.3384  </span></span>
-<span id="cb352-16"><a href="14-3-autoregressions.html#cb352-16"></a><span class="co">#&gt; </span></span>
-<span id="cb352-17"><a href="14-3-autoregressions.html#cb352-17"></a><span class="co">#&gt; Intercept: 1.995 (0.2993) </span></span>
-<span id="cb352-18"><a href="14-3-autoregressions.html#cb352-18"></a><span class="co">#&gt; </span></span>
-<span id="cb352-19"><a href="14-3-autoregressions.html#cb352-19"></a><span class="co">#&gt; Order selected 1  sigma^2 estimated as  9.886</span></span></code></pre></div>
-<p>We can check that the computations done by <tt>ar.ols()</tt> are the same as done by <tt>lm()</tt>.</p>
-<div class="sourceCode" id="cb353"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb353-1"><a href="14-3-autoregressions.html#cb353-1"></a><span class="co"># length of data set</span></span>
-<span id="cb353-2"><a href="14-3-autoregressions.html#cb353-2"></a>N &lt;-<span class="kw">length</span>(GDPGRSub)</span>
+<div class="sourceCode" id="cb353"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb353-1"><a href="14-3-autoregressions.html#cb353-1"></a><span class="co"># subset data</span></span>
+<span id="cb353-2"><a href="14-3-autoregressions.html#cb353-2"></a>GDPGRSub &lt;-<span class="st"> </span>GDPGrowth[<span class="st">&quot;1962::2012&quot;</span>]</span>
 <span id="cb353-3"><a href="14-3-autoregressions.html#cb353-3"></a></span>
-<span id="cb353-4"><a href="14-3-autoregressions.html#cb353-4"></a>GDPGR_level &lt;-<span class="st"> </span><span class="kw">as.numeric</span>(GDPGRSub[<span class="op">-</span><span class="dv">1</span>])</span>
-<span id="cb353-5"><a href="14-3-autoregressions.html#cb353-5"></a>GDPGR_lags &lt;-<span class="st"> </span><span class="kw">as.numeric</span>(GDPGRSub[<span class="op">-</span>N])</span>
-<span id="cb353-6"><a href="14-3-autoregressions.html#cb353-6"></a></span>
-<span id="cb353-7"><a href="14-3-autoregressions.html#cb353-7"></a><span class="co"># estimate the model</span></span>
-<span id="cb353-8"><a href="14-3-autoregressions.html#cb353-8"></a>armod &lt;-<span class="st"> </span><span class="kw">lm</span>(GDPGR_level <span class="op">~</span><span class="st"> </span>GDPGR_lags)</span>
-<span id="cb353-9"><a href="14-3-autoregressions.html#cb353-9"></a>armod</span>
-<span id="cb353-10"><a href="14-3-autoregressions.html#cb353-10"></a><span class="co">#&gt; </span></span>
-<span id="cb353-11"><a href="14-3-autoregressions.html#cb353-11"></a><span class="co">#&gt; Call:</span></span>
-<span id="cb353-12"><a href="14-3-autoregressions.html#cb353-12"></a><span class="co">#&gt; lm(formula = GDPGR_level ~ GDPGR_lags)</span></span>
-<span id="cb353-13"><a href="14-3-autoregressions.html#cb353-13"></a><span class="co">#&gt; </span></span>
-<span id="cb353-14"><a href="14-3-autoregressions.html#cb353-14"></a><span class="co">#&gt; Coefficients:</span></span>
-<span id="cb353-15"><a href="14-3-autoregressions.html#cb353-15"></a><span class="co">#&gt; (Intercept)   GDPGR_lags  </span></span>
-<span id="cb353-16"><a href="14-3-autoregressions.html#cb353-16"></a><span class="co">#&gt;      1.9950       0.3384</span></span></code></pre></div>
+<span id="cb353-4"><a href="14-3-autoregressions.html#cb353-4"></a><span class="co"># estimate the model</span></span>
+<span id="cb353-5"><a href="14-3-autoregressions.html#cb353-5"></a><span class="kw">ar.ols</span>(GDPGRSub, </span>
+<span id="cb353-6"><a href="14-3-autoregressions.html#cb353-6"></a>       <span class="dt">order.max =</span> <span class="dv">1</span>, </span>
+<span id="cb353-7"><a href="14-3-autoregressions.html#cb353-7"></a>       <span class="dt">demean =</span> F, </span>
+<span id="cb353-8"><a href="14-3-autoregressions.html#cb353-8"></a>       <span class="dt">intercept =</span> T)</span>
+<span id="cb353-9"><a href="14-3-autoregressions.html#cb353-9"></a><span class="co">#&gt; </span></span>
+<span id="cb353-10"><a href="14-3-autoregressions.html#cb353-10"></a><span class="co">#&gt; Call:</span></span>
+<span id="cb353-11"><a href="14-3-autoregressions.html#cb353-11"></a><span class="co">#&gt; ar.ols(x = GDPGRSub, order.max = 1, demean = F, intercept = T)</span></span>
+<span id="cb353-12"><a href="14-3-autoregressions.html#cb353-12"></a><span class="co">#&gt; </span></span>
+<span id="cb353-13"><a href="14-3-autoregressions.html#cb353-13"></a><span class="co">#&gt; Coefficients:</span></span>
+<span id="cb353-14"><a href="14-3-autoregressions.html#cb353-14"></a><span class="co">#&gt;      1  </span></span>
+<span id="cb353-15"><a href="14-3-autoregressions.html#cb353-15"></a><span class="co">#&gt; 0.3384  </span></span>
+<span id="cb353-16"><a href="14-3-autoregressions.html#cb353-16"></a><span class="co">#&gt; </span></span>
+<span id="cb353-17"><a href="14-3-autoregressions.html#cb353-17"></a><span class="co">#&gt; Intercept: 1.995 (0.2993) </span></span>
+<span id="cb353-18"><a href="14-3-autoregressions.html#cb353-18"></a><span class="co">#&gt; </span></span>
+<span id="cb353-19"><a href="14-3-autoregressions.html#cb353-19"></a><span class="co">#&gt; Order selected 1  sigma^2 estimated as  9.886</span></span></code></pre></div>
+<p>We can check that the computations done by <tt>ar.ols()</tt> are the same as done by <tt>lm()</tt>.</p>
+<div class="sourceCode" id="cb354"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb354-1"><a href="14-3-autoregressions.html#cb354-1"></a><span class="co"># length of data set</span></span>
+<span id="cb354-2"><a href="14-3-autoregressions.html#cb354-2"></a>N &lt;-<span class="kw">length</span>(GDPGRSub)</span>
+<span id="cb354-3"><a href="14-3-autoregressions.html#cb354-3"></a></span>
+<span id="cb354-4"><a href="14-3-autoregressions.html#cb354-4"></a>GDPGR_level &lt;-<span class="st"> </span><span class="kw">as.numeric</span>(GDPGRSub[<span class="op">-</span><span class="dv">1</span>])</span>
+<span id="cb354-5"><a href="14-3-autoregressions.html#cb354-5"></a>GDPGR_lags &lt;-<span class="st"> </span><span class="kw">as.numeric</span>(GDPGRSub[<span class="op">-</span>N])</span>
+<span id="cb354-6"><a href="14-3-autoregressions.html#cb354-6"></a></span>
+<span id="cb354-7"><a href="14-3-autoregressions.html#cb354-7"></a><span class="co"># estimate the model</span></span>
+<span id="cb354-8"><a href="14-3-autoregressions.html#cb354-8"></a>armod &lt;-<span class="st"> </span><span class="kw">lm</span>(GDPGR_level <span class="op">~</span><span class="st"> </span>GDPGR_lags)</span>
+<span id="cb354-9"><a href="14-3-autoregressions.html#cb354-9"></a>armod</span>
+<span id="cb354-10"><a href="14-3-autoregressions.html#cb354-10"></a><span class="co">#&gt; </span></span>
+<span id="cb354-11"><a href="14-3-autoregressions.html#cb354-11"></a><span class="co">#&gt; Call:</span></span>
+<span id="cb354-12"><a href="14-3-autoregressions.html#cb354-12"></a><span class="co">#&gt; lm(formula = GDPGR_level ~ GDPGR_lags)</span></span>
+<span id="cb354-13"><a href="14-3-autoregressions.html#cb354-13"></a><span class="co">#&gt; </span></span>
+<span id="cb354-14"><a href="14-3-autoregressions.html#cb354-14"></a><span class="co">#&gt; Coefficients:</span></span>
+<span id="cb354-15"><a href="14-3-autoregressions.html#cb354-15"></a><span class="co">#&gt; (Intercept)   GDPGR_lags  </span></span>
+<span id="cb354-16"><a href="14-3-autoregressions.html#cb354-16"></a><span class="co">#&gt;      1.9950       0.3384</span></span></code></pre></div>
 <p>As usual, we may use <tt>coeftest()</tt> to obtain a robust summary on the estimated regression coefficients.</p>
-<div class="sourceCode" id="cb354"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb354-1"><a href="14-3-autoregressions.html#cb354-1"></a><span class="co"># robust summary</span></span>
-<span id="cb354-2"><a href="14-3-autoregressions.html#cb354-2"></a><span class="kw">coeftest</span>(armod, <span class="dt">vcov. =</span> vcovHC, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>)</span>
-<span id="cb354-3"><a href="14-3-autoregressions.html#cb354-3"></a><span class="co">#&gt; </span></span>
-<span id="cb354-4"><a href="14-3-autoregressions.html#cb354-4"></a><span class="co">#&gt; t test of coefficients:</span></span>
-<span id="cb354-5"><a href="14-3-autoregressions.html#cb354-5"></a><span class="co">#&gt; </span></span>
-<span id="cb354-6"><a href="14-3-autoregressions.html#cb354-6"></a><span class="co">#&gt;             Estimate Std. Error t value  Pr(&gt;|t|)    </span></span>
-<span id="cb354-7"><a href="14-3-autoregressions.html#cb354-7"></a><span class="co">#&gt; (Intercept) 1.994986   0.351274  5.6793 4.691e-08 ***</span></span>
-<span id="cb354-8"><a href="14-3-autoregressions.html#cb354-8"></a><span class="co">#&gt; GDPGR_lags  0.338436   0.076188  4.4421 1.470e-05 ***</span></span>
-<span id="cb354-9"><a href="14-3-autoregressions.html#cb354-9"></a><span class="co">#&gt; ---</span></span>
-<span id="cb354-10"><a href="14-3-autoregressions.html#cb354-10"></a><span class="co">#&gt; Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span></code></pre></div>
+<div class="sourceCode" id="cb355"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb355-1"><a href="14-3-autoregressions.html#cb355-1"></a><span class="co"># robust summary</span></span>
+<span id="cb355-2"><a href="14-3-autoregressions.html#cb355-2"></a><span class="kw">coeftest</span>(armod, <span class="dt">vcov. =</span> vcovHC, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>)</span>
+<span id="cb355-3"><a href="14-3-autoregressions.html#cb355-3"></a><span class="co">#&gt; </span></span>
+<span id="cb355-4"><a href="14-3-autoregressions.html#cb355-4"></a><span class="co">#&gt; t test of coefficients:</span></span>
+<span id="cb355-5"><a href="14-3-autoregressions.html#cb355-5"></a><span class="co">#&gt; </span></span>
+<span id="cb355-6"><a href="14-3-autoregressions.html#cb355-6"></a><span class="co">#&gt;             Estimate Std. Error t value  Pr(&gt;|t|)    </span></span>
+<span id="cb355-7"><a href="14-3-autoregressions.html#cb355-7"></a><span class="co">#&gt; (Intercept) 1.994986   0.351274  5.6793 4.691e-08 ***</span></span>
+<span id="cb355-8"><a href="14-3-autoregressions.html#cb355-8"></a><span class="co">#&gt; GDPGR_lags  0.338436   0.076188  4.4421 1.470e-05 ***</span></span>
+<span id="cb355-9"><a href="14-3-autoregressions.html#cb355-9"></a><span class="co">#&gt; ---</span></span>
+<span id="cb355-10"><a href="14-3-autoregressions.html#cb355-10"></a><span class="co">#&gt; Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span></code></pre></div>
 <p>Thus the estimated model is
 <span class="math display" id="eq:gdpgrar1">\[\begin{align}
   \widehat{GDPGR}_t = \underset{(0.351)}{1.995} + \underset{(0.076)}{0.338} GDPGR_{t-1} \tag{14.2}.
@@ -489,30 +489,30 @@ Following the book we use data from 1962 to 2012 to estimate <a href="14-3-autor
   \widehat{GDPGR}_{2013:Q1} = 1.995 + 0.348 \cdot 0.15 = 2.047.
 \end{align*}\]</span></p>
 <p>The function <tt>forecast()</tt> from the <tt>forecast</tt> package has some useful features for forecasting time series data.</p>
-<div class="sourceCode" id="cb355"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb355-1"><a href="14-3-autoregressions.html#cb355-1"></a><span class="kw">library</span>(forecast)</span>
-<span id="cb355-2"><a href="14-3-autoregressions.html#cb355-2"></a></span>
-<span id="cb355-3"><a href="14-3-autoregressions.html#cb355-3"></a><span class="co"># assign GDP growth rate in 2012:Q4</span></span>
-<span id="cb355-4"><a href="14-3-autoregressions.html#cb355-4"></a>new &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="st">&quot;GDPGR_lags&quot;</span> =<span class="st"> </span>GDPGR_level[N<span class="dv">-1</span>])</span>
-<span id="cb355-5"><a href="14-3-autoregressions.html#cb355-5"></a></span>
-<span id="cb355-6"><a href="14-3-autoregressions.html#cb355-6"></a><span class="co"># forecast GDP growth rate in 2013:Q1</span></span>
-<span id="cb355-7"><a href="14-3-autoregressions.html#cb355-7"></a><span class="kw">forecast</span>(armod, <span class="dt">newdata =</span> new)</span>
-<span id="cb355-8"><a href="14-3-autoregressions.html#cb355-8"></a><span class="co">#&gt;   Point Forecast     Lo 80    Hi 80     Lo 95    Hi 95</span></span>
-<span id="cb355-9"><a href="14-3-autoregressions.html#cb355-9"></a><span class="co">#&gt; 1       2.044155 -2.036225 6.124534 -4.213414 8.301723</span></span></code></pre></div>
+<div class="sourceCode" id="cb356"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb356-1"><a href="14-3-autoregressions.html#cb356-1"></a><span class="kw">library</span>(forecast)</span>
+<span id="cb356-2"><a href="14-3-autoregressions.html#cb356-2"></a></span>
+<span id="cb356-3"><a href="14-3-autoregressions.html#cb356-3"></a><span class="co"># assign GDP growth rate in 2012:Q4</span></span>
+<span id="cb356-4"><a href="14-3-autoregressions.html#cb356-4"></a>new &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="st">&quot;GDPGR_lags&quot;</span> =<span class="st"> </span>GDPGR_level[N<span class="dv">-1</span>])</span>
+<span id="cb356-5"><a href="14-3-autoregressions.html#cb356-5"></a></span>
+<span id="cb356-6"><a href="14-3-autoregressions.html#cb356-6"></a><span class="co"># forecast GDP growth rate in 2013:Q1</span></span>
+<span id="cb356-7"><a href="14-3-autoregressions.html#cb356-7"></a><span class="kw">forecast</span>(armod, <span class="dt">newdata =</span> new)</span>
+<span id="cb356-8"><a href="14-3-autoregressions.html#cb356-8"></a><span class="co">#&gt;   Point Forecast     Lo 80    Hi 80     Lo 95    Hi 95</span></span>
+<span id="cb356-9"><a href="14-3-autoregressions.html#cb356-9"></a><span class="co">#&gt; 1       2.044155 -2.036225 6.124534 -4.213414 8.301723</span></span></code></pre></div>
 <p>Using <tt>forecast()</tt>produces the same point forecast of about 2.0, along with <span class="math inline">\(80\%\)</span> and <span class="math inline">\(95\%\)</span> forecast intervals, see section <a href="14-5-apatadlm.html#apatadlm">14.5</a>. We conclude that our AR(1) model forecasts GDP growth to be <span class="math inline">\(2\%\)</span> in 2013:Q1.</p>
 <p>How accurate is this forecast? The forecast error is quite large: <span class="math inline">\(GDPGR_{2013:Q1} \approx 1.1\%\)</span> while our forecast is <span class="math inline">\(2\%\)</span>.
 Second, by calling <code>summary(armod)</code> shows that the model explains only little of the variation in the growth rate of GDP and the <span class="math inline">\(SER\)</span> is about <span class="math inline">\(3.16\)</span>. Leaving aside forecast uncertainty due to estimation of the model coefficients <span class="math inline">\(\beta_0\)</span> and <span class="math inline">\(\beta_1\)</span>, the <span class="math inline">\(RMSFE\)</span> must be at least <span class="math inline">\(3.16\%\)</span>, the estimate of the standard deviation of the errors. We conclude that this forecast is pretty inaccurate.</p>
-<div class="sourceCode" id="cb356"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb356-1"><a href="14-3-autoregressions.html#cb356-1"></a><span class="co"># compute the forecast error</span></span>
-<span id="cb356-2"><a href="14-3-autoregressions.html#cb356-2"></a><span class="kw">forecast</span>(armod, <span class="dt">newdata =</span> new)<span class="op">$</span>mean <span class="op">-</span><span class="st"> </span>GDPGrowth[<span class="st">&quot;2013&quot;</span>][<span class="dv">1</span>]</span>
-<span id="cb356-3"><a href="14-3-autoregressions.html#cb356-3"></a><span class="co">#&gt;                 x</span></span>
-<span id="cb356-4"><a href="14-3-autoregressions.html#cb356-4"></a><span class="co">#&gt; 2013 Q1 0.9049532</span></span>
-<span id="cb356-5"><a href="14-3-autoregressions.html#cb356-5"></a></span>
-<span id="cb356-6"><a href="14-3-autoregressions.html#cb356-6"></a><span class="co"># R^2</span></span>
-<span id="cb356-7"><a href="14-3-autoregressions.html#cb356-7"></a><span class="kw">summary</span>(armod)<span class="op">$</span>r.squared</span>
-<span id="cb356-8"><a href="14-3-autoregressions.html#cb356-8"></a><span class="co">#&gt; [1] 0.1149576</span></span>
-<span id="cb356-9"><a href="14-3-autoregressions.html#cb356-9"></a></span>
-<span id="cb356-10"><a href="14-3-autoregressions.html#cb356-10"></a><span class="co"># SER</span></span>
-<span id="cb356-11"><a href="14-3-autoregressions.html#cb356-11"></a><span class="kw">summary</span>(armod)<span class="op">$</span>sigma</span>
-<span id="cb356-12"><a href="14-3-autoregressions.html#cb356-12"></a><span class="co">#&gt; [1] 3.15979</span></span></code></pre></div>
+<div class="sourceCode" id="cb357"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb357-1"><a href="14-3-autoregressions.html#cb357-1"></a><span class="co"># compute the forecast error</span></span>
+<span id="cb357-2"><a href="14-3-autoregressions.html#cb357-2"></a><span class="kw">forecast</span>(armod, <span class="dt">newdata =</span> new)<span class="op">$</span>mean <span class="op">-</span><span class="st"> </span>GDPGrowth[<span class="st">&quot;2013&quot;</span>][<span class="dv">1</span>]</span>
+<span id="cb357-3"><a href="14-3-autoregressions.html#cb357-3"></a><span class="co">#&gt;                 x</span></span>
+<span id="cb357-4"><a href="14-3-autoregressions.html#cb357-4"></a><span class="co">#&gt; 2013 Q1 0.9049532</span></span>
+<span id="cb357-5"><a href="14-3-autoregressions.html#cb357-5"></a></span>
+<span id="cb357-6"><a href="14-3-autoregressions.html#cb357-6"></a><span class="co"># R^2</span></span>
+<span id="cb357-7"><a href="14-3-autoregressions.html#cb357-7"></a><span class="kw">summary</span>(armod)<span class="op">$</span>r.squared</span>
+<span id="cb357-8"><a href="14-3-autoregressions.html#cb357-8"></a><span class="co">#&gt; [1] 0.1149576</span></span>
+<span id="cb357-9"><a href="14-3-autoregressions.html#cb357-9"></a></span>
+<span id="cb357-10"><a href="14-3-autoregressions.html#cb357-10"></a><span class="co"># SER</span></span>
+<span id="cb357-11"><a href="14-3-autoregressions.html#cb357-11"></a><span class="kw">summary</span>(armod)<span class="op">$</span>sigma</span>
+<span id="cb357-12"><a href="14-3-autoregressions.html#cb357-12"></a><span class="co">#&gt; [1] 3.15979</span></span></code></pre></div>
 </div>
 <div id="autoregressive-models-of-order-p" class="section level3 unnumbered">
 <h3>Autoregressive Models of Order <span class="math inline">\(p\)</span></h3>
@@ -533,39 +533,39 @@ is an autoregressive model of order <span class="math inline">\(p\)</span> where
 </p>
 </div>
 <p>Following the book, we estimate an AR(<span class="math inline">\(2\)</span>) model of the GDP growth series from 1962:Q1 to 2012:Q4.</p>
-<div class="sourceCode" id="cb357"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb357-1"><a href="14-3-autoregressions.html#cb357-1"></a><span class="co"># estimate the AR(2) model</span></span>
-<span id="cb357-2"><a href="14-3-autoregressions.html#cb357-2"></a>GDPGR_AR2 &lt;-<span class="st"> </span><span class="kw">dynlm</span>(<span class="kw">ts</span>(GDPGR_level) <span class="op">~</span><span class="st"> </span><span class="kw">L</span>(<span class="kw">ts</span>(GDPGR_level)) <span class="op">+</span><span class="st"> </span><span class="kw">L</span>(<span class="kw">ts</span>(GDPGR_level), <span class="dv">2</span>))</span>
-<span id="cb357-3"><a href="14-3-autoregressions.html#cb357-3"></a></span>
-<span id="cb357-4"><a href="14-3-autoregressions.html#cb357-4"></a><span class="kw">coeftest</span>(GDPGR_AR2, <span class="dt">vcov. =</span> sandwich)</span>
-<span id="cb357-5"><a href="14-3-autoregressions.html#cb357-5"></a><span class="co">#&gt; </span></span>
-<span id="cb357-6"><a href="14-3-autoregressions.html#cb357-6"></a><span class="co">#&gt; t test of coefficients:</span></span>
-<span id="cb357-7"><a href="14-3-autoregressions.html#cb357-7"></a><span class="co">#&gt; </span></span>
-<span id="cb357-8"><a href="14-3-autoregressions.html#cb357-8"></a><span class="co">#&gt;                       Estimate Std. Error t value  Pr(&gt;|t|)    </span></span>
-<span id="cb357-9"><a href="14-3-autoregressions.html#cb357-9"></a><span class="co">#&gt; (Intercept)           1.631747   0.402023  4.0588 7.096e-05 ***</span></span>
-<span id="cb357-10"><a href="14-3-autoregressions.html#cb357-10"></a><span class="co">#&gt; L(ts(GDPGR_level))    0.277787   0.079250  3.5052 0.0005643 ***</span></span>
-<span id="cb357-11"><a href="14-3-autoregressions.html#cb357-11"></a><span class="co">#&gt; L(ts(GDPGR_level), 2) 0.179269   0.079951  2.2422 0.0260560 *  </span></span>
-<span id="cb357-12"><a href="14-3-autoregressions.html#cb357-12"></a><span class="co">#&gt; ---</span></span>
-<span id="cb357-13"><a href="14-3-autoregressions.html#cb357-13"></a><span class="co">#&gt; Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span></code></pre></div>
+<div class="sourceCode" id="cb358"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb358-1"><a href="14-3-autoregressions.html#cb358-1"></a><span class="co"># estimate the AR(2) model</span></span>
+<span id="cb358-2"><a href="14-3-autoregressions.html#cb358-2"></a>GDPGR_AR2 &lt;-<span class="st"> </span><span class="kw">dynlm</span>(<span class="kw">ts</span>(GDPGR_level) <span class="op">~</span><span class="st"> </span><span class="kw">L</span>(<span class="kw">ts</span>(GDPGR_level)) <span class="op">+</span><span class="st"> </span><span class="kw">L</span>(<span class="kw">ts</span>(GDPGR_level), <span class="dv">2</span>))</span>
+<span id="cb358-3"><a href="14-3-autoregressions.html#cb358-3"></a></span>
+<span id="cb358-4"><a href="14-3-autoregressions.html#cb358-4"></a><span class="kw">coeftest</span>(GDPGR_AR2, <span class="dt">vcov. =</span> sandwich)</span>
+<span id="cb358-5"><a href="14-3-autoregressions.html#cb358-5"></a><span class="co">#&gt; </span></span>
+<span id="cb358-6"><a href="14-3-autoregressions.html#cb358-6"></a><span class="co">#&gt; t test of coefficients:</span></span>
+<span id="cb358-7"><a href="14-3-autoregressions.html#cb358-7"></a><span class="co">#&gt; </span></span>
+<span id="cb358-8"><a href="14-3-autoregressions.html#cb358-8"></a><span class="co">#&gt;                       Estimate Std. Error t value  Pr(&gt;|t|)    </span></span>
+<span id="cb358-9"><a href="14-3-autoregressions.html#cb358-9"></a><span class="co">#&gt; (Intercept)           1.631747   0.402023  4.0588 7.096e-05 ***</span></span>
+<span id="cb358-10"><a href="14-3-autoregressions.html#cb358-10"></a><span class="co">#&gt; L(ts(GDPGR_level))    0.277787   0.079250  3.5052 0.0005643 ***</span></span>
+<span id="cb358-11"><a href="14-3-autoregressions.html#cb358-11"></a><span class="co">#&gt; L(ts(GDPGR_level), 2) 0.179269   0.079951  2.2422 0.0260560 *  </span></span>
+<span id="cb358-12"><a href="14-3-autoregressions.html#cb358-12"></a><span class="co">#&gt; ---</span></span>
+<span id="cb358-13"><a href="14-3-autoregressions.html#cb358-13"></a><span class="co">#&gt; Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span></code></pre></div>
 <p>The estimation yields
 <span class="math display" id="eq:GDPGRAR2">\[\begin{align}
   \widehat{GDPGR}_t = \underset{(0.40)}{1.63} + \underset{(0.08)}{0.28} GDPGR_{t-1} + \underset{(0.08)}{0.18} GDPGR_{t-1}. \tag{14.3}
 \end{align}\]</span>
 We see that the coefficient on the second lag is significantly different from zero. The fit improves slightly: <span class="math inline">\(\bar{R}^2\)</span> grows from <span class="math inline">\(0.11\)</span> for the AR(<span class="math inline">\(1\)</span>) model to about <span class="math inline">\(0.14\)</span> and the <span class="math inline">\(SER\)</span> reduces to <span class="math inline">\(3.13\)</span>.</p>
-<div class="sourceCode" id="cb358"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb358-1"><a href="14-3-autoregressions.html#cb358-1"></a><span class="co"># R^2</span></span>
-<span id="cb358-2"><a href="14-3-autoregressions.html#cb358-2"></a><span class="kw">summary</span>(GDPGR_AR2)<span class="op">$</span>r.squared</span>
-<span id="cb358-3"><a href="14-3-autoregressions.html#cb358-3"></a><span class="co">#&gt; [1] 0.1425484</span></span>
-<span id="cb358-4"><a href="14-3-autoregressions.html#cb358-4"></a></span>
-<span id="cb358-5"><a href="14-3-autoregressions.html#cb358-5"></a><span class="co"># SER</span></span>
-<span id="cb358-6"><a href="14-3-autoregressions.html#cb358-6"></a><span class="kw">summary</span>(GDPGR_AR2)<span class="op">$</span>sigma</span>
-<span id="cb358-7"><a href="14-3-autoregressions.html#cb358-7"></a><span class="co">#&gt; [1] 3.132122</span></span></code></pre></div>
+<div class="sourceCode" id="cb359"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb359-1"><a href="14-3-autoregressions.html#cb359-1"></a><span class="co"># R^2</span></span>
+<span id="cb359-2"><a href="14-3-autoregressions.html#cb359-2"></a><span class="kw">summary</span>(GDPGR_AR2)<span class="op">$</span>r.squared</span>
+<span id="cb359-3"><a href="14-3-autoregressions.html#cb359-3"></a><span class="co">#&gt; [1] 0.1425484</span></span>
+<span id="cb359-4"><a href="14-3-autoregressions.html#cb359-4"></a></span>
+<span id="cb359-5"><a href="14-3-autoregressions.html#cb359-5"></a><span class="co"># SER</span></span>
+<span id="cb359-6"><a href="14-3-autoregressions.html#cb359-6"></a><span class="kw">summary</span>(GDPGR_AR2)<span class="op">$</span>sigma</span>
+<span id="cb359-7"><a href="14-3-autoregressions.html#cb359-7"></a><span class="co">#&gt; [1] 3.132122</span></span></code></pre></div>
 <p>We may use the AR(<span class="math inline">\(2\)</span>) model to obtain a forecast for GDP growth in 2013:Q1 in the same manner as for the AR(1) model.</p>
-<div class="sourceCode" id="cb359"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb359-1"><a href="14-3-autoregressions.html#cb359-1"></a><span class="co"># AR(2) forecast of GDP growth in 2013:Q1 </span></span>
-<span id="cb359-2"><a href="14-3-autoregressions.html#cb359-2"></a>forecast &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;2013:Q1&quot;</span> =<span class="st"> </span><span class="kw">coef</span>(GDPGR_AR2) <span class="op">%*%</span><span class="st"> </span><span class="kw">c</span>(<span class="dv">1</span>, GDPGR_level[N<span class="dv">-1</span>], GDPGR_level[N<span class="dv">-2</span>]))</span></code></pre></div>
+<div class="sourceCode" id="cb360"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb360-1"><a href="14-3-autoregressions.html#cb360-1"></a><span class="co"># AR(2) forecast of GDP growth in 2013:Q1 </span></span>
+<span id="cb360-2"><a href="14-3-autoregressions.html#cb360-2"></a>forecast &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;2013:Q1&quot;</span> =<span class="st"> </span><span class="kw">coef</span>(GDPGR_AR2) <span class="op">%*%</span><span class="st"> </span><span class="kw">c</span>(<span class="dv">1</span>, GDPGR_level[N<span class="dv">-1</span>], GDPGR_level[N<span class="dv">-2</span>]))</span></code></pre></div>
 <p>This leads to a forecast error of roughly <span class="math inline">\(-1\%\)</span>.</p>
-<div class="sourceCode" id="cb360"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb360-1"><a href="14-3-autoregressions.html#cb360-1"></a><span class="co"># compute AR(2) forecast error </span></span>
-<span id="cb360-2"><a href="14-3-autoregressions.html#cb360-2"></a>GDPGrowth[<span class="st">&quot;2013&quot;</span>][<span class="dv">1</span>] <span class="op">-</span><span class="st"> </span>forecast</span>
-<span id="cb360-3"><a href="14-3-autoregressions.html#cb360-3"></a><span class="co">#&gt;                 x</span></span>
-<span id="cb360-4"><a href="14-3-autoregressions.html#cb360-4"></a><span class="co">#&gt; 2013 Q1 -1.025358</span></span></code></pre></div>
+<div class="sourceCode" id="cb361"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb361-1"><a href="14-3-autoregressions.html#cb361-1"></a><span class="co"># compute AR(2) forecast error </span></span>
+<span id="cb361-2"><a href="14-3-autoregressions.html#cb361-2"></a>GDPGrowth[<span class="st">&quot;2013&quot;</span>][<span class="dv">1</span>] <span class="op">-</span><span class="st"> </span>forecast</span>
+<span id="cb361-3"><a href="14-3-autoregressions.html#cb361-3"></a><span class="co">#&gt;                 x</span></span>
+<span id="cb361-4"><a href="14-3-autoregressions.html#cb361-4"></a><span class="co">#&gt; 2013 Q1 -1.025358</span></span></code></pre></div>
 </div>
 </div>
             </section>

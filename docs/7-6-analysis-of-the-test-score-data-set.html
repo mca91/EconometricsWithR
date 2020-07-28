@@ -403,48 +403,48 @@ This book is in <b>Open Review</b>. We want your feedback to make the book bette
 <li><p><span class="math inline">\(lunch\)</span>, the share of students that qualify for a subsidized or even a free lunch at school</p></li>
 </ul>
 <p>Another new variable provided with <tt>CASchools</tt> is <tt>calworks</tt>, the percentage of students that qualify for the <em>CalWorks</em> income assistance program. Students eligible for <em>CalWorks</em> live in families with a total income below the threshold for the subsidized lunch program so both variables are indicators for the share of economically disadvantaged children. Both indicators are highly correlated:</p>
-<div class="sourceCode" id="cb168"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb168-1"><a href="7-6-analysis-of-the-test-score-data-set.html#cb168-1"></a><span class="co"># estimate the correlation between &#39;calworks&#39; and &#39;lunch&#39;</span></span>
-<span id="cb168-2"><a href="7-6-analysis-of-the-test-score-data-set.html#cb168-2"></a><span class="kw">cor</span>(CASchools<span class="op">$</span>calworks, CASchools<span class="op">$</span>lunch)</span>
-<span id="cb168-3"><a href="7-6-analysis-of-the-test-score-data-set.html#cb168-3"></a><span class="co">#&gt; [1] 0.7394218</span></span></code></pre></div>
+<div class="sourceCode" id="cb169"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb169-1"><a href="7-6-analysis-of-the-test-score-data-set.html#cb169-1"></a><span class="co"># estimate the correlation between &#39;calworks&#39; and &#39;lunch&#39;</span></span>
+<span id="cb169-2"><a href="7-6-analysis-of-the-test-score-data-set.html#cb169-2"></a><span class="kw">cor</span>(CASchools<span class="op">$</span>calworks, CASchools<span class="op">$</span>lunch)</span>
+<span id="cb169-3"><a href="7-6-analysis-of-the-test-score-data-set.html#cb169-3"></a><span class="co">#&gt; [1] 0.7394218</span></span></code></pre></div>
 <p>There is no unambiguous way to proceed when deciding which variable to use. In any case it may not a good idea to use both variables as regressors in view of collinearity. Therefore, we also consider alternative model specifications.</p>
 <p>For a start, we plot student characteristics against test scores.</p>
-<div class="sourceCode" id="cb169"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb169-1"><a href="7-6-analysis-of-the-test-score-data-set.html#cb169-1"></a><span class="co"># set up arrangement of plots</span></span>
-<span id="cb169-2"><a href="7-6-analysis-of-the-test-score-data-set.html#cb169-2"></a>m &lt;-<span class="st"> </span><span class="kw">rbind</span>(<span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">2</span>), <span class="kw">c</span>(<span class="dv">3</span>, <span class="dv">0</span>))</span>
-<span id="cb169-3"><a href="7-6-analysis-of-the-test-score-data-set.html#cb169-3"></a>graphics<span class="op">::</span><span class="kw">layout</span>(<span class="dt">mat =</span> m)</span>
-<span id="cb169-4"><a href="7-6-analysis-of-the-test-score-data-set.html#cb169-4"></a></span>
-<span id="cb169-5"><a href="7-6-analysis-of-the-test-score-data-set.html#cb169-5"></a><span class="co"># scatterplots</span></span>
-<span id="cb169-6"><a href="7-6-analysis-of-the-test-score-data-set.html#cb169-6"></a><span class="kw">plot</span>(score <span class="op">~</span><span class="st"> </span>english, </span>
-<span id="cb169-7"><a href="7-6-analysis-of-the-test-score-data-set.html#cb169-7"></a>     <span class="dt">data =</span> CASchools, </span>
-<span id="cb169-8"><a href="7-6-analysis-of-the-test-score-data-set.html#cb169-8"></a>     <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>, </span>
-<span id="cb169-9"><a href="7-6-analysis-of-the-test-score-data-set.html#cb169-9"></a>     <span class="dt">pch =</span> <span class="dv">20</span>, </span>
-<span id="cb169-10"><a href="7-6-analysis-of-the-test-score-data-set.html#cb169-10"></a>     <span class="dt">xlim =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">100</span>),</span>
-<span id="cb169-11"><a href="7-6-analysis-of-the-test-score-data-set.html#cb169-11"></a>     <span class="dt">cex.main =</span> <span class="fl">0.9</span>,</span>
-<span id="cb169-12"><a href="7-6-analysis-of-the-test-score-data-set.html#cb169-12"></a>     <span class="dt">main =</span> <span class="st">&quot;Percentage of English language learners&quot;</span>)</span>
-<span id="cb169-13"><a href="7-6-analysis-of-the-test-score-data-set.html#cb169-13"></a></span>
-<span id="cb169-14"><a href="7-6-analysis-of-the-test-score-data-set.html#cb169-14"></a><span class="kw">plot</span>(score <span class="op">~</span><span class="st"> </span>lunch, </span>
-<span id="cb169-15"><a href="7-6-analysis-of-the-test-score-data-set.html#cb169-15"></a>     <span class="dt">data =</span> CASchools, </span>
-<span id="cb169-16"><a href="7-6-analysis-of-the-test-score-data-set.html#cb169-16"></a>     <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>, </span>
-<span id="cb169-17"><a href="7-6-analysis-of-the-test-score-data-set.html#cb169-17"></a>     <span class="dt">pch =</span> <span class="dv">20</span>,</span>
-<span id="cb169-18"><a href="7-6-analysis-of-the-test-score-data-set.html#cb169-18"></a>     <span class="dt">cex.main =</span> <span class="fl">0.9</span>,</span>
-<span id="cb169-19"><a href="7-6-analysis-of-the-test-score-data-set.html#cb169-19"></a>     <span class="dt">main =</span> <span class="st">&quot;Percentage qualifying for reduced price lunch&quot;</span>)</span>
-<span id="cb169-20"><a href="7-6-analysis-of-the-test-score-data-set.html#cb169-20"></a></span>
-<span id="cb169-21"><a href="7-6-analysis-of-the-test-score-data-set.html#cb169-21"></a><span class="kw">plot</span>(score <span class="op">~</span><span class="st"> </span>calworks, </span>
-<span id="cb169-22"><a href="7-6-analysis-of-the-test-score-data-set.html#cb169-22"></a>     <span class="dt">data =</span> CASchools, </span>
-<span id="cb169-23"><a href="7-6-analysis-of-the-test-score-data-set.html#cb169-23"></a>     <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>, </span>
-<span id="cb169-24"><a href="7-6-analysis-of-the-test-score-data-set.html#cb169-24"></a>     <span class="dt">pch =</span> <span class="dv">20</span>, </span>
-<span id="cb169-25"><a href="7-6-analysis-of-the-test-score-data-set.html#cb169-25"></a>     <span class="dt">xlim =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">100</span>),</span>
-<span id="cb169-26"><a href="7-6-analysis-of-the-test-score-data-set.html#cb169-26"></a>     <span class="dt">cex.main =</span> <span class="fl">0.9</span>,</span>
-<span id="cb169-27"><a href="7-6-analysis-of-the-test-score-data-set.html#cb169-27"></a>     <span class="dt">main =</span> <span class="st">&quot;Percentage qualifying for income assistance&quot;</span>)</span></code></pre></div>
-<p><img src="ITER_files/figure-html/unnamed-chunk-302-1.png" width="80%" style="display: block; margin: auto;" /></p>
+<div class="sourceCode" id="cb170"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb170-1"><a href="7-6-analysis-of-the-test-score-data-set.html#cb170-1"></a><span class="co"># set up arrangement of plots</span></span>
+<span id="cb170-2"><a href="7-6-analysis-of-the-test-score-data-set.html#cb170-2"></a>m &lt;-<span class="st"> </span><span class="kw">rbind</span>(<span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">2</span>), <span class="kw">c</span>(<span class="dv">3</span>, <span class="dv">0</span>))</span>
+<span id="cb170-3"><a href="7-6-analysis-of-the-test-score-data-set.html#cb170-3"></a>graphics<span class="op">::</span><span class="kw">layout</span>(<span class="dt">mat =</span> m)</span>
+<span id="cb170-4"><a href="7-6-analysis-of-the-test-score-data-set.html#cb170-4"></a></span>
+<span id="cb170-5"><a href="7-6-analysis-of-the-test-score-data-set.html#cb170-5"></a><span class="co"># scatterplots</span></span>
+<span id="cb170-6"><a href="7-6-analysis-of-the-test-score-data-set.html#cb170-6"></a><span class="kw">plot</span>(score <span class="op">~</span><span class="st"> </span>english, </span>
+<span id="cb170-7"><a href="7-6-analysis-of-the-test-score-data-set.html#cb170-7"></a>     <span class="dt">data =</span> CASchools, </span>
+<span id="cb170-8"><a href="7-6-analysis-of-the-test-score-data-set.html#cb170-8"></a>     <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>, </span>
+<span id="cb170-9"><a href="7-6-analysis-of-the-test-score-data-set.html#cb170-9"></a>     <span class="dt">pch =</span> <span class="dv">20</span>, </span>
+<span id="cb170-10"><a href="7-6-analysis-of-the-test-score-data-set.html#cb170-10"></a>     <span class="dt">xlim =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">100</span>),</span>
+<span id="cb170-11"><a href="7-6-analysis-of-the-test-score-data-set.html#cb170-11"></a>     <span class="dt">cex.main =</span> <span class="fl">0.9</span>,</span>
+<span id="cb170-12"><a href="7-6-analysis-of-the-test-score-data-set.html#cb170-12"></a>     <span class="dt">main =</span> <span class="st">&quot;Percentage of English language learners&quot;</span>)</span>
+<span id="cb170-13"><a href="7-6-analysis-of-the-test-score-data-set.html#cb170-13"></a></span>
+<span id="cb170-14"><a href="7-6-analysis-of-the-test-score-data-set.html#cb170-14"></a><span class="kw">plot</span>(score <span class="op">~</span><span class="st"> </span>lunch, </span>
+<span id="cb170-15"><a href="7-6-analysis-of-the-test-score-data-set.html#cb170-15"></a>     <span class="dt">data =</span> CASchools, </span>
+<span id="cb170-16"><a href="7-6-analysis-of-the-test-score-data-set.html#cb170-16"></a>     <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>, </span>
+<span id="cb170-17"><a href="7-6-analysis-of-the-test-score-data-set.html#cb170-17"></a>     <span class="dt">pch =</span> <span class="dv">20</span>,</span>
+<span id="cb170-18"><a href="7-6-analysis-of-the-test-score-data-set.html#cb170-18"></a>     <span class="dt">cex.main =</span> <span class="fl">0.9</span>,</span>
+<span id="cb170-19"><a href="7-6-analysis-of-the-test-score-data-set.html#cb170-19"></a>     <span class="dt">main =</span> <span class="st">&quot;Percentage qualifying for reduced price lunch&quot;</span>)</span>
+<span id="cb170-20"><a href="7-6-analysis-of-the-test-score-data-set.html#cb170-20"></a></span>
+<span id="cb170-21"><a href="7-6-analysis-of-the-test-score-data-set.html#cb170-21"></a><span class="kw">plot</span>(score <span class="op">~</span><span class="st"> </span>calworks, </span>
+<span id="cb170-22"><a href="7-6-analysis-of-the-test-score-data-set.html#cb170-22"></a>     <span class="dt">data =</span> CASchools, </span>
+<span id="cb170-23"><a href="7-6-analysis-of-the-test-score-data-set.html#cb170-23"></a>     <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>, </span>
+<span id="cb170-24"><a href="7-6-analysis-of-the-test-score-data-set.html#cb170-24"></a>     <span class="dt">pch =</span> <span class="dv">20</span>, </span>
+<span id="cb170-25"><a href="7-6-analysis-of-the-test-score-data-set.html#cb170-25"></a>     <span class="dt">xlim =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">100</span>),</span>
+<span id="cb170-26"><a href="7-6-analysis-of-the-test-score-data-set.html#cb170-26"></a>     <span class="dt">cex.main =</span> <span class="fl">0.9</span>,</span>
+<span id="cb170-27"><a href="7-6-analysis-of-the-test-score-data-set.html#cb170-27"></a>     <span class="dt">main =</span> <span class="st">&quot;Percentage qualifying for income assistance&quot;</span>)</span></code></pre></div>
+<p><img src="ITER_files/figure-html/unnamed-chunk-303-1.png" width="80%" style="display: block; margin: auto;" /></p>
 <p>We divide the plotting area up using <tt>layout()</tt>. The matrix <tt>m</tt> specifies the location of the plots, see <code>?layout</code>.</p>
 <p>We see that all relationships are negative. Here are the correlation coefficients.</p>
-<div class="sourceCode" id="cb170"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb170-1"><a href="7-6-analysis-of-the-test-score-data-set.html#cb170-1"></a><span class="co"># estimate correlation between student characteristics and test scores</span></span>
-<span id="cb170-2"><a href="7-6-analysis-of-the-test-score-data-set.html#cb170-2"></a><span class="kw">cor</span>(CASchools<span class="op">$</span>score, CASchools<span class="op">$</span>english)</span>
-<span id="cb170-3"><a href="7-6-analysis-of-the-test-score-data-set.html#cb170-3"></a><span class="co">#&gt; [1] -0.6441238</span></span>
-<span id="cb170-4"><a href="7-6-analysis-of-the-test-score-data-set.html#cb170-4"></a><span class="kw">cor</span>(CASchools<span class="op">$</span>score, CASchools<span class="op">$</span>lunch)</span>
-<span id="cb170-5"><a href="7-6-analysis-of-the-test-score-data-set.html#cb170-5"></a><span class="co">#&gt; [1] -0.868772</span></span>
-<span id="cb170-6"><a href="7-6-analysis-of-the-test-score-data-set.html#cb170-6"></a><span class="kw">cor</span>(CASchools<span class="op">$</span>score, CASchools<span class="op">$</span>calworks)</span>
-<span id="cb170-7"><a href="7-6-analysis-of-the-test-score-data-set.html#cb170-7"></a><span class="co">#&gt; [1] -0.6268533</span></span></code></pre></div>
+<div class="sourceCode" id="cb171"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb171-1"><a href="7-6-analysis-of-the-test-score-data-set.html#cb171-1"></a><span class="co"># estimate correlation between student characteristics and test scores</span></span>
+<span id="cb171-2"><a href="7-6-analysis-of-the-test-score-data-set.html#cb171-2"></a><span class="kw">cor</span>(CASchools<span class="op">$</span>score, CASchools<span class="op">$</span>english)</span>
+<span id="cb171-3"><a href="7-6-analysis-of-the-test-score-data-set.html#cb171-3"></a><span class="co">#&gt; [1] -0.6441238</span></span>
+<span id="cb171-4"><a href="7-6-analysis-of-the-test-score-data-set.html#cb171-4"></a><span class="kw">cor</span>(CASchools<span class="op">$</span>score, CASchools<span class="op">$</span>lunch)</span>
+<span id="cb171-5"><a href="7-6-analysis-of-the-test-score-data-set.html#cb171-5"></a><span class="co">#&gt; [1] -0.868772</span></span>
+<span id="cb171-6"><a href="7-6-analysis-of-the-test-score-data-set.html#cb171-6"></a><span class="kw">cor</span>(CASchools<span class="op">$</span>score, CASchools<span class="op">$</span>calworks)</span>
+<span id="cb171-7"><a href="7-6-analysis-of-the-test-score-data-set.html#cb171-7"></a><span class="co">#&gt; [1] -0.6268533</span></span></code></pre></div>
 <p>We shall consider five different model equations:</p>
 <p><span class="math display">\[\begin{align*}
   (I) \quad TestScore=&amp; \, \beta_0 + \beta_1 \times size + u, \\
@@ -454,29 +454,29 @@ This book is in <b>Open Review</b>. We want your feedback to make the book bette
   (V) \quad TestScore=&amp; \, \beta_0 + \beta_1 \times size + \beta_2 \times english + \beta_3 \times lunch + \beta_4 \times calworks + u
 \end{align*}\]</span></p>
 <p>The best way to communicate regression results is in a table. The <tt>stargazer</tt> package is very convenient for this purpose. It provides a function that generates professionally looking HTML and LaTeX tables that satisfy scientific standards. One simply has to provide one or multiple object(s) of class <tt>lm</tt>. The rest is done by the function <tt>stargazer()</tt>.</p>
-<div class="sourceCode" id="cb171"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb171-1"><a href="7-6-analysis-of-the-test-score-data-set.html#cb171-1"></a><span class="co"># load the stargazer library</span></span>
-<span id="cb171-2"><a href="7-6-analysis-of-the-test-score-data-set.html#cb171-2"></a><span class="kw">library</span>(stargazer)</span>
-<span id="cb171-3"><a href="7-6-analysis-of-the-test-score-data-set.html#cb171-3"></a></span>
-<span id="cb171-4"><a href="7-6-analysis-of-the-test-score-data-set.html#cb171-4"></a><span class="co"># estimate different model specifications</span></span>
-<span id="cb171-5"><a href="7-6-analysis-of-the-test-score-data-set.html#cb171-5"></a>spec1 &lt;-<span class="st"> </span><span class="kw">lm</span>(score <span class="op">~</span><span class="st"> </span>size, <span class="dt">data =</span> CASchools)</span>
-<span id="cb171-6"><a href="7-6-analysis-of-the-test-score-data-set.html#cb171-6"></a>spec2 &lt;-<span class="st"> </span><span class="kw">lm</span>(score <span class="op">~</span><span class="st"> </span>size <span class="op">+</span><span class="st"> </span>english, <span class="dt">data =</span> CASchools)</span>
-<span id="cb171-7"><a href="7-6-analysis-of-the-test-score-data-set.html#cb171-7"></a>spec3 &lt;-<span class="st"> </span><span class="kw">lm</span>(score <span class="op">~</span><span class="st"> </span>size <span class="op">+</span><span class="st"> </span>english <span class="op">+</span><span class="st"> </span>lunch, <span class="dt">data =</span> CASchools)</span>
-<span id="cb171-8"><a href="7-6-analysis-of-the-test-score-data-set.html#cb171-8"></a>spec4 &lt;-<span class="st"> </span><span class="kw">lm</span>(score <span class="op">~</span><span class="st"> </span>size <span class="op">+</span><span class="st"> </span>english <span class="op">+</span><span class="st"> </span>calworks, <span class="dt">data =</span> CASchools)</span>
-<span id="cb171-9"><a href="7-6-analysis-of-the-test-score-data-set.html#cb171-9"></a>spec5 &lt;-<span class="st"> </span><span class="kw">lm</span>(score <span class="op">~</span><span class="st"> </span>size <span class="op">+</span><span class="st"> </span>english <span class="op">+</span><span class="st"> </span>lunch <span class="op">+</span><span class="st"> </span>calworks, <span class="dt">data =</span> CASchools)</span>
-<span id="cb171-10"><a href="7-6-analysis-of-the-test-score-data-set.html#cb171-10"></a></span>
-<span id="cb171-11"><a href="7-6-analysis-of-the-test-score-data-set.html#cb171-11"></a><span class="co"># gather robust standard errors in a list</span></span>
-<span id="cb171-12"><a href="7-6-analysis-of-the-test-score-data-set.html#cb171-12"></a>rob_se &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="kw">sqrt</span>(<span class="kw">diag</span>(<span class="kw">vcovHC</span>(spec1, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>))),</span>
-<span id="cb171-13"><a href="7-6-analysis-of-the-test-score-data-set.html#cb171-13"></a>               <span class="kw">sqrt</span>(<span class="kw">diag</span>(<span class="kw">vcovHC</span>(spec2, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>))),</span>
-<span id="cb171-14"><a href="7-6-analysis-of-the-test-score-data-set.html#cb171-14"></a>               <span class="kw">sqrt</span>(<span class="kw">diag</span>(<span class="kw">vcovHC</span>(spec3, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>))),</span>
-<span id="cb171-15"><a href="7-6-analysis-of-the-test-score-data-set.html#cb171-15"></a>               <span class="kw">sqrt</span>(<span class="kw">diag</span>(<span class="kw">vcovHC</span>(spec4, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>))),</span>
-<span id="cb171-16"><a href="7-6-analysis-of-the-test-score-data-set.html#cb171-16"></a>               <span class="kw">sqrt</span>(<span class="kw">diag</span>(<span class="kw">vcovHC</span>(spec5, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>))))</span>
-<span id="cb171-17"><a href="7-6-analysis-of-the-test-score-data-set.html#cb171-17"></a></span>
-<span id="cb171-18"><a href="7-6-analysis-of-the-test-score-data-set.html#cb171-18"></a><span class="co"># generate a LaTeX table using stargazer</span></span>
-<span id="cb171-19"><a href="7-6-analysis-of-the-test-score-data-set.html#cb171-19"></a><span class="kw">stargazer</span>(spec1, spec2, spec3, spec4, spec5,</span>
-<span id="cb171-20"><a href="7-6-analysis-of-the-test-score-data-set.html#cb171-20"></a>          <span class="dt">se =</span> rob_se,</span>
-<span id="cb171-21"><a href="7-6-analysis-of-the-test-score-data-set.html#cb171-21"></a>          <span class="dt">digits =</span> <span class="dv">3</span>,</span>
-<span id="cb171-22"><a href="7-6-analysis-of-the-test-score-data-set.html#cb171-22"></a>          <span class="dt">header =</span> F,</span>
-<span id="cb171-23"><a href="7-6-analysis-of-the-test-score-data-set.html#cb171-23"></a>          <span class="dt">column.labels =</span> <span class="kw">c</span>(<span class="st">&quot;(I)&quot;</span>, <span class="st">&quot;(II)&quot;</span>, <span class="st">&quot;(III)&quot;</span>, <span class="st">&quot;(IV)&quot;</span>, <span class="st">&quot;(V)&quot;</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb172"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb172-1"><a href="7-6-analysis-of-the-test-score-data-set.html#cb172-1"></a><span class="co"># load the stargazer library</span></span>
+<span id="cb172-2"><a href="7-6-analysis-of-the-test-score-data-set.html#cb172-2"></a><span class="kw">library</span>(stargazer)</span>
+<span id="cb172-3"><a href="7-6-analysis-of-the-test-score-data-set.html#cb172-3"></a></span>
+<span id="cb172-4"><a href="7-6-analysis-of-the-test-score-data-set.html#cb172-4"></a><span class="co"># estimate different model specifications</span></span>
+<span id="cb172-5"><a href="7-6-analysis-of-the-test-score-data-set.html#cb172-5"></a>spec1 &lt;-<span class="st"> </span><span class="kw">lm</span>(score <span class="op">~</span><span class="st"> </span>size, <span class="dt">data =</span> CASchools)</span>
+<span id="cb172-6"><a href="7-6-analysis-of-the-test-score-data-set.html#cb172-6"></a>spec2 &lt;-<span class="st"> </span><span class="kw">lm</span>(score <span class="op">~</span><span class="st"> </span>size <span class="op">+</span><span class="st"> </span>english, <span class="dt">data =</span> CASchools)</span>
+<span id="cb172-7"><a href="7-6-analysis-of-the-test-score-data-set.html#cb172-7"></a>spec3 &lt;-<span class="st"> </span><span class="kw">lm</span>(score <span class="op">~</span><span class="st"> </span>size <span class="op">+</span><span class="st"> </span>english <span class="op">+</span><span class="st"> </span>lunch, <span class="dt">data =</span> CASchools)</span>
+<span id="cb172-8"><a href="7-6-analysis-of-the-test-score-data-set.html#cb172-8"></a>spec4 &lt;-<span class="st"> </span><span class="kw">lm</span>(score <span class="op">~</span><span class="st"> </span>size <span class="op">+</span><span class="st"> </span>english <span class="op">+</span><span class="st"> </span>calworks, <span class="dt">data =</span> CASchools)</span>
+<span id="cb172-9"><a href="7-6-analysis-of-the-test-score-data-set.html#cb172-9"></a>spec5 &lt;-<span class="st"> </span><span class="kw">lm</span>(score <span class="op">~</span><span class="st"> </span>size <span class="op">+</span><span class="st"> </span>english <span class="op">+</span><span class="st"> </span>lunch <span class="op">+</span><span class="st"> </span>calworks, <span class="dt">data =</span> CASchools)</span>
+<span id="cb172-10"><a href="7-6-analysis-of-the-test-score-data-set.html#cb172-10"></a></span>
+<span id="cb172-11"><a href="7-6-analysis-of-the-test-score-data-set.html#cb172-11"></a><span class="co"># gather robust standard errors in a list</span></span>
+<span id="cb172-12"><a href="7-6-analysis-of-the-test-score-data-set.html#cb172-12"></a>rob_se &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="kw">sqrt</span>(<span class="kw">diag</span>(<span class="kw">vcovHC</span>(spec1, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>))),</span>
+<span id="cb172-13"><a href="7-6-analysis-of-the-test-score-data-set.html#cb172-13"></a>               <span class="kw">sqrt</span>(<span class="kw">diag</span>(<span class="kw">vcovHC</span>(spec2, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>))),</span>
+<span id="cb172-14"><a href="7-6-analysis-of-the-test-score-data-set.html#cb172-14"></a>               <span class="kw">sqrt</span>(<span class="kw">diag</span>(<span class="kw">vcovHC</span>(spec3, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>))),</span>
+<span id="cb172-15"><a href="7-6-analysis-of-the-test-score-data-set.html#cb172-15"></a>               <span class="kw">sqrt</span>(<span class="kw">diag</span>(<span class="kw">vcovHC</span>(spec4, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>))),</span>
+<span id="cb172-16"><a href="7-6-analysis-of-the-test-score-data-set.html#cb172-16"></a>               <span class="kw">sqrt</span>(<span class="kw">diag</span>(<span class="kw">vcovHC</span>(spec5, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>))))</span>
+<span id="cb172-17"><a href="7-6-analysis-of-the-test-score-data-set.html#cb172-17"></a></span>
+<span id="cb172-18"><a href="7-6-analysis-of-the-test-score-data-set.html#cb172-18"></a><span class="co"># generate a LaTeX table using stargazer</span></span>
+<span id="cb172-19"><a href="7-6-analysis-of-the-test-score-data-set.html#cb172-19"></a><span class="kw">stargazer</span>(spec1, spec2, spec3, spec4, spec5,</span>
+<span id="cb172-20"><a href="7-6-analysis-of-the-test-score-data-set.html#cb172-20"></a>          <span class="dt">se =</span> rob_se,</span>
+<span id="cb172-21"><a href="7-6-analysis-of-the-test-score-data-set.html#cb172-21"></a>          <span class="dt">digits =</span> <span class="dv">3</span>,</span>
+<span id="cb172-22"><a href="7-6-analysis-of-the-test-score-data-set.html#cb172-22"></a>          <span class="dt">header =</span> F,</span>
+<span id="cb172-23"><a href="7-6-analysis-of-the-test-score-data-set.html#cb172-23"></a>          <span class="dt">column.labels =</span> <span class="kw">c</span>(<span class="st">&quot;(I)&quot;</span>, <span class="st">&quot;(II)&quot;</span>, <span class="st">&quot;(III)&quot;</span>, <span class="st">&quot;(IV)&quot;</span>, <span class="st">&quot;(V)&quot;</span>))</span></code></pre></div>
 
 
 

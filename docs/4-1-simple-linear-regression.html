@@ -399,27 +399,27 @@ This book is in <b>Open Review</b>. We want your feedback to make the book bette
 <p>To start with an easy example, consider the following combinations of average test score and the average student-teacher ratio in some fictional school districts.</p>
 
 <p>To work with these data in <tt>R</tt> we begin by generating two vectors: one for the student-teacher ratios (<tt>STR</tt>) and one for test scores (<tt>TestScore</tt>), both containing the data from the table above.</p>
-<div class="sourceCode" id="cb80"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb80-1"><a href="4-1-simple-linear-regression.html#cb80-1"></a><span class="co"># Create sample data</span></span>
-<span id="cb80-2"><a href="4-1-simple-linear-regression.html#cb80-2"></a>STR &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">15</span>, <span class="dv">17</span>, <span class="dv">19</span>, <span class="dv">20</span>, <span class="dv">22</span>, <span class="fl">23.5</span>, <span class="dv">25</span>)</span>
-<span id="cb80-3"><a href="4-1-simple-linear-regression.html#cb80-3"></a>TestScore &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">680</span>, <span class="dv">640</span>, <span class="dv">670</span>, <span class="dv">660</span>, <span class="dv">630</span>, <span class="dv">660</span>, <span class="dv">635</span>) </span>
-<span id="cb80-4"><a href="4-1-simple-linear-regression.html#cb80-4"></a></span>
-<span id="cb80-5"><a href="4-1-simple-linear-regression.html#cb80-5"></a><span class="co"># Print out sample data</span></span>
-<span id="cb80-6"><a href="4-1-simple-linear-regression.html#cb80-6"></a>STR</span>
-<span id="cb80-7"><a href="4-1-simple-linear-regression.html#cb80-7"></a><span class="co">#&gt; [1] 15.0 17.0 19.0 20.0 22.0 23.5 25.0</span></span>
-<span id="cb80-8"><a href="4-1-simple-linear-regression.html#cb80-8"></a>TestScore</span>
-<span id="cb80-9"><a href="4-1-simple-linear-regression.html#cb80-9"></a><span class="co">#&gt; [1] 680 640 670 660 630 660 635</span></span></code></pre></div>
+<div class="sourceCode" id="cb81"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb81-1"><a href="4-1-simple-linear-regression.html#cb81-1"></a><span class="co"># Create sample data</span></span>
+<span id="cb81-2"><a href="4-1-simple-linear-regression.html#cb81-2"></a>STR &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">15</span>, <span class="dv">17</span>, <span class="dv">19</span>, <span class="dv">20</span>, <span class="dv">22</span>, <span class="fl">23.5</span>, <span class="dv">25</span>)</span>
+<span id="cb81-3"><a href="4-1-simple-linear-regression.html#cb81-3"></a>TestScore &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">680</span>, <span class="dv">640</span>, <span class="dv">670</span>, <span class="dv">660</span>, <span class="dv">630</span>, <span class="dv">660</span>, <span class="dv">635</span>) </span>
+<span id="cb81-4"><a href="4-1-simple-linear-regression.html#cb81-4"></a></span>
+<span id="cb81-5"><a href="4-1-simple-linear-regression.html#cb81-5"></a><span class="co"># Print out sample data</span></span>
+<span id="cb81-6"><a href="4-1-simple-linear-regression.html#cb81-6"></a>STR</span>
+<span id="cb81-7"><a href="4-1-simple-linear-regression.html#cb81-7"></a><span class="co">#&gt; [1] 15.0 17.0 19.0 20.0 22.0 23.5 25.0</span></span>
+<span id="cb81-8"><a href="4-1-simple-linear-regression.html#cb81-8"></a>TestScore</span>
+<span id="cb81-9"><a href="4-1-simple-linear-regression.html#cb81-9"></a><span class="co">#&gt; [1] 680 640 670 660 630 660 635</span></span></code></pre></div>
 <p>In a simple linear regression model, we model the relationship between both variables by a straight line, formally <span class="math display">\[ Y = b \cdot X + a. \]</span> For now, let us suppose that the function which relates test score and student-teacher ratio
 to each other is <span class="math display">\[TestScore = 713 - 3 \times STR.\]</span></p>
 <p>It is always a good idea to visualize the data you work with. Here, it is suitable to use <tt>plot()</tt> to produce a scatterplot with <tt>STR</tt> on the <span class="math inline">\(x\)</span>-axis and <tt>TestScore</tt> on the <span class="math inline">\(y\)</span>-axis. Just call <code>plot(y_variable ~ x_variable)</code> whereby <tt>y_variable</tt> and <tt>x_variable</tt> are placeholders for the vectors of observations we want to plot. Furthermore, we might want to add a systematic relationship to the plot. To draw a straight line, <tt>R</tt> provides the function <tt>abline()</tt>. We just have to call this function with arguments <tt>a</tt> (representing the intercept)
 and <tt>b</tt> (representing the slope) after executing <tt>plot()</tt> in order to add the line to our plot.</p>
 <p>The following code reproduces Figure 4.1 from the textbook.</p>
 <div class="unfolded">
-<div class="sourceCode" id="cb81"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb81-1"><a href="4-1-simple-linear-regression.html#cb81-1"></a><span class="co"># create a scatterplot of the data</span></span>
-<span id="cb81-2"><a href="4-1-simple-linear-regression.html#cb81-2"></a><span class="kw">plot</span>(TestScore <span class="op">~</span><span class="st"> </span>STR)</span>
-<span id="cb81-3"><a href="4-1-simple-linear-regression.html#cb81-3"></a></span>
-<span id="cb81-4"><a href="4-1-simple-linear-regression.html#cb81-4"></a><span class="co"># add the systematic relationship to the plot</span></span>
-<span id="cb81-5"><a href="4-1-simple-linear-regression.html#cb81-5"></a><span class="kw">abline</span>(<span class="dt">a =</span> <span class="dv">713</span>, <span class="dt">b =</span> <span class="dv">-3</span>)</span></code></pre></div>
-<p><img src="ITER_files/figure-html/unnamed-chunk-143-1.png" width="80%" style="display: block; margin: auto;" /></p>
+<div class="sourceCode" id="cb82"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb82-1"><a href="4-1-simple-linear-regression.html#cb82-1"></a><span class="co"># create a scatterplot of the data</span></span>
+<span id="cb82-2"><a href="4-1-simple-linear-regression.html#cb82-2"></a><span class="kw">plot</span>(TestScore <span class="op">~</span><span class="st"> </span>STR)</span>
+<span id="cb82-3"><a href="4-1-simple-linear-regression.html#cb82-3"></a></span>
+<span id="cb82-4"><a href="4-1-simple-linear-regression.html#cb82-4"></a><span class="co"># add the systematic relationship to the plot</span></span>
+<span id="cb82-5"><a href="4-1-simple-linear-regression.html#cb82-5"></a><span class="kw">abline</span>(<span class="dt">a =</span> <span class="dv">713</span>, <span class="dt">b =</span> <span class="dv">-3</span>)</span></code></pre></div>
+<p><img src="ITER_files/figure-html/unnamed-chunk-144-1.png" width="80%" style="display: block; margin: auto;" /></p>
 </div>
 <p>We find that the line does not touch any of the points although we claimed that it represents the systematic relationship. The reason for this is randomness. Most of the time there are additional influences which imply that there is no bivariate relationship between the two variables.</p>
 <p>In order to account for these differences between observed data and the systematic relationship, we extend our model from above by an <em>error term</em> <span class="math inline">\(u\)</span> which captures additional random effects. Put differently, <span class="math inline">\(u\)</span> accounts for all the differences between the regression line and the actual observed data. Beside pure randomness, these deviations could also arise from measurement errors or, as will be discussed later, could be the consequence of leaving out other factors that are relevant in explaining the dependent variable.</p>

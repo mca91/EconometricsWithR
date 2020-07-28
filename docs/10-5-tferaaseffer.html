@@ -419,30 +419,30 @@ The Fixed Effects Regression Assumptions
 <p>Similar as for heteroskedasticity, autocorrelation invalidates the usual standard error formulas as well as heteroskedasticity-robust standard errors since these are derived under the assumption that there is no autocorrelation. When there is both heteroskedasticity <em>and</em> autocorrelation so-called <em>heteroskedasticity and autocorrelation-consistent (HAC) standard errors</em> need to be used. <em>Clustered standard errors</em> belong to these type of standard errors. They allow for heteroskedasticity and autocorrelated errors within an entity but <em>not</em> correlation across entities.</p>
 <p>As shown in the examples throughout this chapter, it is fairly easy to specify usage of clustered standard errors in regression summaries produced by function like <tt>coeftest()</tt> in conjunction with <tt>vcovHC()</tt> from the package <tt>sandwich</tt>. Conveniently, <tt>vcovHC()</tt> recognizes panel model objects (objects of class <tt>plm</tt>) and computes clustered standard errors by default.</p>
 <p>The regressions conducted in this chapter are a good examples for why usage of clustered standard errors is crucial in empirical applications of fixed effects models. For example, consider the entity and time fixed effects model for fatalities. Since <tt>fatal_tefe_lm_mod</tt> is an object of class <tt>lm</tt>, <tt>coeftest()</tt> does not compute clustered standard errors but uses robust standard errors that are only valid in the absence of autocorrelated errors.</p>
-<div class="sourceCode" id="cb253"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb253-1"><a href="10-5-tferaaseffer.html#cb253-1"></a><span class="co"># check class of the model object</span></span>
-<span id="cb253-2"><a href="10-5-tferaaseffer.html#cb253-2"></a><span class="kw">class</span>(fatal_tefe_lm_mod)</span>
-<span id="cb253-3"><a href="10-5-tferaaseffer.html#cb253-3"></a><span class="co">#&gt; [1] &quot;lm&quot;</span></span>
-<span id="cb253-4"><a href="10-5-tferaaseffer.html#cb253-4"></a></span>
-<span id="cb253-5"><a href="10-5-tferaaseffer.html#cb253-5"></a><span class="co"># obtain a summary based on heteroskedasticity-robust standard errors </span></span>
-<span id="cb253-6"><a href="10-5-tferaaseffer.html#cb253-6"></a><span class="co"># (no adjustment for heteroskedasticity only)</span></span>
-<span id="cb253-7"><a href="10-5-tferaaseffer.html#cb253-7"></a><span class="kw">coeftest</span>(fatal_tefe_lm_mod, <span class="dt">vcov =</span> vcovHC, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>)[<span class="dv">1</span>, ]</span>
-<span id="cb253-8"><a href="10-5-tferaaseffer.html#cb253-8"></a><span class="co">#&gt;   Estimate Std. Error    t value   Pr(&gt;|t|) </span></span>
-<span id="cb253-9"><a href="10-5-tferaaseffer.html#cb253-9"></a><span class="co">#&gt; -0.6399800  0.2547149 -2.5125346  0.0125470</span></span>
-<span id="cb253-10"><a href="10-5-tferaaseffer.html#cb253-10"></a></span>
-<span id="cb253-11"><a href="10-5-tferaaseffer.html#cb253-11"></a><span class="co"># check class of the (plm) model object</span></span>
-<span id="cb253-12"><a href="10-5-tferaaseffer.html#cb253-12"></a><span class="kw">class</span>(fatal_tefe_mod)</span>
-<span id="cb253-13"><a href="10-5-tferaaseffer.html#cb253-13"></a><span class="co">#&gt; [1] &quot;plm&quot;        &quot;panelmodel&quot;</span></span>
-<span id="cb253-14"><a href="10-5-tferaaseffer.html#cb253-14"></a></span>
-<span id="cb253-15"><a href="10-5-tferaaseffer.html#cb253-15"></a><span class="co"># obtain a summary based on clusterd standard errors </span></span>
-<span id="cb253-16"><a href="10-5-tferaaseffer.html#cb253-16"></a><span class="co"># (adjustment for autocorrelation + heteroskedasticity)</span></span>
-<span id="cb253-17"><a href="10-5-tferaaseffer.html#cb253-17"></a><span class="kw">coeftest</span>(fatal_tefe_mod, <span class="dt">vcov =</span> vcovHC, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>)</span>
-<span id="cb253-18"><a href="10-5-tferaaseffer.html#cb253-18"></a><span class="co">#&gt; </span></span>
-<span id="cb253-19"><a href="10-5-tferaaseffer.html#cb253-19"></a><span class="co">#&gt; t test of coefficients:</span></span>
-<span id="cb253-20"><a href="10-5-tferaaseffer.html#cb253-20"></a><span class="co">#&gt; </span></span>
-<span id="cb253-21"><a href="10-5-tferaaseffer.html#cb253-21"></a><span class="co">#&gt;         Estimate Std. Error t value Pr(&gt;|t|)  </span></span>
-<span id="cb253-22"><a href="10-5-tferaaseffer.html#cb253-22"></a><span class="co">#&gt; beertax -0.63998    0.35015 -1.8277  0.06865 .</span></span>
-<span id="cb253-23"><a href="10-5-tferaaseffer.html#cb253-23"></a><span class="co">#&gt; ---</span></span>
-<span id="cb253-24"><a href="10-5-tferaaseffer.html#cb253-24"></a><span class="co">#&gt; Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span></code></pre></div>
+<div class="sourceCode" id="cb254"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb254-1"><a href="10-5-tferaaseffer.html#cb254-1"></a><span class="co"># check class of the model object</span></span>
+<span id="cb254-2"><a href="10-5-tferaaseffer.html#cb254-2"></a><span class="kw">class</span>(fatal_tefe_lm_mod)</span>
+<span id="cb254-3"><a href="10-5-tferaaseffer.html#cb254-3"></a><span class="co">#&gt; [1] &quot;lm&quot;</span></span>
+<span id="cb254-4"><a href="10-5-tferaaseffer.html#cb254-4"></a></span>
+<span id="cb254-5"><a href="10-5-tferaaseffer.html#cb254-5"></a><span class="co"># obtain a summary based on heteroskedasticity-robust standard errors </span></span>
+<span id="cb254-6"><a href="10-5-tferaaseffer.html#cb254-6"></a><span class="co"># (no adjustment for heteroskedasticity only)</span></span>
+<span id="cb254-7"><a href="10-5-tferaaseffer.html#cb254-7"></a><span class="kw">coeftest</span>(fatal_tefe_lm_mod, <span class="dt">vcov =</span> vcovHC, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>)[<span class="dv">1</span>, ]</span>
+<span id="cb254-8"><a href="10-5-tferaaseffer.html#cb254-8"></a><span class="co">#&gt;   Estimate Std. Error    t value   Pr(&gt;|t|) </span></span>
+<span id="cb254-9"><a href="10-5-tferaaseffer.html#cb254-9"></a><span class="co">#&gt; -0.6399800  0.2547149 -2.5125346  0.0125470</span></span>
+<span id="cb254-10"><a href="10-5-tferaaseffer.html#cb254-10"></a></span>
+<span id="cb254-11"><a href="10-5-tferaaseffer.html#cb254-11"></a><span class="co"># check class of the (plm) model object</span></span>
+<span id="cb254-12"><a href="10-5-tferaaseffer.html#cb254-12"></a><span class="kw">class</span>(fatal_tefe_mod)</span>
+<span id="cb254-13"><a href="10-5-tferaaseffer.html#cb254-13"></a><span class="co">#&gt; [1] &quot;plm&quot;        &quot;panelmodel&quot;</span></span>
+<span id="cb254-14"><a href="10-5-tferaaseffer.html#cb254-14"></a></span>
+<span id="cb254-15"><a href="10-5-tferaaseffer.html#cb254-15"></a><span class="co"># obtain a summary based on clusterd standard errors </span></span>
+<span id="cb254-16"><a href="10-5-tferaaseffer.html#cb254-16"></a><span class="co"># (adjustment for autocorrelation + heteroskedasticity)</span></span>
+<span id="cb254-17"><a href="10-5-tferaaseffer.html#cb254-17"></a><span class="kw">coeftest</span>(fatal_tefe_mod, <span class="dt">vcov =</span> vcovHC, <span class="dt">type =</span> <span class="st">&quot;HC1&quot;</span>)</span>
+<span id="cb254-18"><a href="10-5-tferaaseffer.html#cb254-18"></a><span class="co">#&gt; </span></span>
+<span id="cb254-19"><a href="10-5-tferaaseffer.html#cb254-19"></a><span class="co">#&gt; t test of coefficients:</span></span>
+<span id="cb254-20"><a href="10-5-tferaaseffer.html#cb254-20"></a><span class="co">#&gt; </span></span>
+<span id="cb254-21"><a href="10-5-tferaaseffer.html#cb254-21"></a><span class="co">#&gt;         Estimate Std. Error t value Pr(&gt;|t|)  </span></span>
+<span id="cb254-22"><a href="10-5-tferaaseffer.html#cb254-22"></a><span class="co">#&gt; beertax -0.63998    0.35015 -1.8277  0.06865 .</span></span>
+<span id="cb254-23"><a href="10-5-tferaaseffer.html#cb254-23"></a><span class="co">#&gt; ---</span></span>
+<span id="cb254-24"><a href="10-5-tferaaseffer.html#cb254-24"></a><span class="co">#&gt; Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span></code></pre></div>
 <p>The outcomes differ rather strongly: imposing no autocorrelation we obtain a standard error of <span class="math inline">\(0.25\)</span> which implies significance of <span class="math inline">\(\hat\beta_1\)</span>, the coefficient on <span class="math inline">\(BeerTax\)</span> at the level of <span class="math inline">\(5\%\)</span>. On the contrary, using the clustered standard error <span class="math inline">\(0.35\)</span> leads to acceptance of the hypothesis <span class="math inline">\(H_0: \beta_1 = 0\)</span> at the same level, see equation <a href="10-4-regression-with-time-fixed-effects.html#eq:cbnfemod">(10.8)</a>. Consult Appendix 10.2 of the book for insights on the computation of clustered standard errors.</p>
 </div>
 </div>

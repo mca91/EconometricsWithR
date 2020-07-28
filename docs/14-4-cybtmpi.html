@@ -399,50 +399,50 @@ This book is in <b>Open Review</b>. We want your feedback to make the book bette
 <p>The theory of efficient capital markets states that stock prices embody all currently available information. If this hypothesis holds, it should not be possible to estimate a useful model for forecasting future stock returns using publicly available information on past returns (this is also referred to as the weak-form efficiency hypothesis): if it was possible to forecast the market, traders would be able to arbitrage, e.g., by relying on an AR(<span class="math inline">\(2\)</span>) model, they would use information that is not already priced-in which would push prices until the expected return is zero.</p>
 <p>This idea is presented in the box <em>Can You Beat the Market? (Part I)</em> on p. 582 of the book. This section reproduces the estimation results.</p>
 <p>We start by importing monthly data from 1931:1 to 2002:12 on excess returns of a broad-based index of stock prices, the CRSP value-weighted index. The data are provided by the authors of the book as an excel sheet which can be downloaded <a href="http://wps.aw.com/wps/media/objects/11422/11696965/data3eu/Stock_Returns_1931_2002.xlsx">here</a>.</p>
-<div class="sourceCode" id="cb361"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb361-1"><a href="14-4-cybtmpi.html#cb361-1"></a><span class="co"># read in data on stock returns</span></span>
-<span id="cb361-2"><a href="14-4-cybtmpi.html#cb361-2"></a>SReturns &lt;-<span class="st"> </span><span class="kw">read_xlsx</span>(<span class="st">&quot;Data/Stock_Returns_1931_2002.xlsx&quot;</span>,</span>
-<span id="cb361-3"><a href="14-4-cybtmpi.html#cb361-3"></a>                      <span class="dt">sheet =</span> <span class="dv">1</span>,</span>
-<span id="cb361-4"><a href="14-4-cybtmpi.html#cb361-4"></a>                      <span class="dt">col_types =</span> <span class="st">&quot;numeric&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb362"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb362-1"><a href="14-4-cybtmpi.html#cb362-1"></a><span class="co"># read in data on stock returns</span></span>
+<span id="cb362-2"><a href="14-4-cybtmpi.html#cb362-2"></a>SReturns &lt;-<span class="st"> </span><span class="kw">read_xlsx</span>(<span class="st">&quot;Data/Stock_Returns_1931_2002.xlsx&quot;</span>,</span>
+<span id="cb362-3"><a href="14-4-cybtmpi.html#cb362-3"></a>                      <span class="dt">sheet =</span> <span class="dv">1</span>,</span>
+<span id="cb362-4"><a href="14-4-cybtmpi.html#cb362-4"></a>                      <span class="dt">col_types =</span> <span class="st">&quot;numeric&quot;</span>)</span></code></pre></div>
 <p>We continue by converting the data to an object of class <tt>ts</tt>.</p>
-<div class="sourceCode" id="cb362"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb362-1"><a href="14-4-cybtmpi.html#cb362-1"></a><span class="co"># convert to ts object</span></span>
-<span id="cb362-2"><a href="14-4-cybtmpi.html#cb362-2"></a>StockReturns &lt;-<span class="st"> </span><span class="kw">ts</span>(SReturns[, <span class="dv">3</span><span class="op">:</span><span class="dv">4</span>], </span>
-<span id="cb362-3"><a href="14-4-cybtmpi.html#cb362-3"></a>                   <span class="dt">start =</span> <span class="kw">c</span>(<span class="dv">1931</span>, <span class="dv">1</span>), </span>
-<span id="cb362-4"><a href="14-4-cybtmpi.html#cb362-4"></a>                   <span class="dt">end =</span> <span class="kw">c</span>(<span class="dv">2002</span>, <span class="dv">12</span>), </span>
-<span id="cb362-5"><a href="14-4-cybtmpi.html#cb362-5"></a>                   <span class="dt">frequency =</span> <span class="dv">12</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb363"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb363-1"><a href="14-4-cybtmpi.html#cb363-1"></a><span class="co"># convert to ts object</span></span>
+<span id="cb363-2"><a href="14-4-cybtmpi.html#cb363-2"></a>StockReturns &lt;-<span class="st"> </span><span class="kw">ts</span>(SReturns[, <span class="dv">3</span><span class="op">:</span><span class="dv">4</span>], </span>
+<span id="cb363-3"><a href="14-4-cybtmpi.html#cb363-3"></a>                   <span class="dt">start =</span> <span class="kw">c</span>(<span class="dv">1931</span>, <span class="dv">1</span>), </span>
+<span id="cb363-4"><a href="14-4-cybtmpi.html#cb363-4"></a>                   <span class="dt">end =</span> <span class="kw">c</span>(<span class="dv">2002</span>, <span class="dv">12</span>), </span>
+<span id="cb363-5"><a href="14-4-cybtmpi.html#cb363-5"></a>                   <span class="dt">frequency =</span> <span class="dv">12</span>)</span></code></pre></div>
 <p>Next, we estimate AR(<span class="math inline">\(1\)</span>), AR(<span class="math inline">\(2\)</span>) and AR(<span class="math inline">\(4\)</span>) models of excess returns for the time period 1960:1 to 2002:12.</p>
-<div class="sourceCode" id="cb363"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb363-1"><a href="14-4-cybtmpi.html#cb363-1"></a><span class="co"># estimate AR models:</span></span>
-<span id="cb363-2"><a href="14-4-cybtmpi.html#cb363-2"></a></span>
-<span id="cb363-3"><a href="14-4-cybtmpi.html#cb363-3"></a><span class="co"># AR(1)</span></span>
-<span id="cb363-4"><a href="14-4-cybtmpi.html#cb363-4"></a>SR_AR1 &lt;-<span class="st"> </span><span class="kw">dynlm</span>(ExReturn <span class="op">~</span><span class="st"> </span><span class="kw">L</span>(ExReturn), </span>
-<span id="cb363-5"><a href="14-4-cybtmpi.html#cb363-5"></a>      <span class="dt">data =</span> StockReturns, <span class="dt">start =</span> <span class="kw">c</span>(<span class="dv">1960</span>, <span class="dv">1</span>), <span class="dt">end =</span> <span class="kw">c</span>(<span class="dv">2002</span>, <span class="dv">12</span>))</span>
-<span id="cb363-6"><a href="14-4-cybtmpi.html#cb363-6"></a></span>
-<span id="cb363-7"><a href="14-4-cybtmpi.html#cb363-7"></a><span class="co"># AR(2)</span></span>
-<span id="cb363-8"><a href="14-4-cybtmpi.html#cb363-8"></a>SR_AR2 &lt;-<span class="st"> </span><span class="kw">dynlm</span>(ExReturn <span class="op">~</span><span class="st"> </span><span class="kw">L</span>(ExReturn) <span class="op">+</span><span class="st"> </span><span class="kw">L</span>(ExReturn, <span class="dv">2</span>), </span>
-<span id="cb363-9"><a href="14-4-cybtmpi.html#cb363-9"></a>      <span class="dt">data =</span> StockReturns, <span class="dt">start =</span> <span class="kw">c</span>(<span class="dv">1960</span>, <span class="dv">1</span>), <span class="dt">end =</span> <span class="kw">c</span>(<span class="dv">2002</span>, <span class="dv">12</span>))</span>
-<span id="cb363-10"><a href="14-4-cybtmpi.html#cb363-10"></a></span>
-<span id="cb363-11"><a href="14-4-cybtmpi.html#cb363-11"></a><span class="co"># AR(4)</span></span>
-<span id="cb363-12"><a href="14-4-cybtmpi.html#cb363-12"></a>SR_AR4 &lt;-<span class="st"> </span><span class="kw">dynlm</span>(ExReturn <span class="op">~</span><span class="st"> </span><span class="kw">L</span>(ExReturn) <span class="op">+</span><span class="st"> </span><span class="kw">L</span>(ExReturn, <span class="dv">1</span><span class="op">:</span><span class="dv">4</span>), </span>
-<span id="cb363-13"><a href="14-4-cybtmpi.html#cb363-13"></a>      <span class="dt">data =</span> StockReturns, <span class="dt">start =</span> <span class="kw">c</span>(<span class="dv">1960</span>, <span class="dv">1</span>), <span class="dt">end =</span> <span class="kw">c</span>(<span class="dv">2002</span>, <span class="dv">12</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb364"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb364-1"><a href="14-4-cybtmpi.html#cb364-1"></a><span class="co"># estimate AR models:</span></span>
+<span id="cb364-2"><a href="14-4-cybtmpi.html#cb364-2"></a></span>
+<span id="cb364-3"><a href="14-4-cybtmpi.html#cb364-3"></a><span class="co"># AR(1)</span></span>
+<span id="cb364-4"><a href="14-4-cybtmpi.html#cb364-4"></a>SR_AR1 &lt;-<span class="st"> </span><span class="kw">dynlm</span>(ExReturn <span class="op">~</span><span class="st"> </span><span class="kw">L</span>(ExReturn), </span>
+<span id="cb364-5"><a href="14-4-cybtmpi.html#cb364-5"></a>      <span class="dt">data =</span> StockReturns, <span class="dt">start =</span> <span class="kw">c</span>(<span class="dv">1960</span>, <span class="dv">1</span>), <span class="dt">end =</span> <span class="kw">c</span>(<span class="dv">2002</span>, <span class="dv">12</span>))</span>
+<span id="cb364-6"><a href="14-4-cybtmpi.html#cb364-6"></a></span>
+<span id="cb364-7"><a href="14-4-cybtmpi.html#cb364-7"></a><span class="co"># AR(2)</span></span>
+<span id="cb364-8"><a href="14-4-cybtmpi.html#cb364-8"></a>SR_AR2 &lt;-<span class="st"> </span><span class="kw">dynlm</span>(ExReturn <span class="op">~</span><span class="st"> </span><span class="kw">L</span>(ExReturn) <span class="op">+</span><span class="st"> </span><span class="kw">L</span>(ExReturn, <span class="dv">2</span>), </span>
+<span id="cb364-9"><a href="14-4-cybtmpi.html#cb364-9"></a>      <span class="dt">data =</span> StockReturns, <span class="dt">start =</span> <span class="kw">c</span>(<span class="dv">1960</span>, <span class="dv">1</span>), <span class="dt">end =</span> <span class="kw">c</span>(<span class="dv">2002</span>, <span class="dv">12</span>))</span>
+<span id="cb364-10"><a href="14-4-cybtmpi.html#cb364-10"></a></span>
+<span id="cb364-11"><a href="14-4-cybtmpi.html#cb364-11"></a><span class="co"># AR(4)</span></span>
+<span id="cb364-12"><a href="14-4-cybtmpi.html#cb364-12"></a>SR_AR4 &lt;-<span class="st"> </span><span class="kw">dynlm</span>(ExReturn <span class="op">~</span><span class="st"> </span><span class="kw">L</span>(ExReturn) <span class="op">+</span><span class="st"> </span><span class="kw">L</span>(ExReturn, <span class="dv">1</span><span class="op">:</span><span class="dv">4</span>), </span>
+<span id="cb364-13"><a href="14-4-cybtmpi.html#cb364-13"></a>      <span class="dt">data =</span> StockReturns, <span class="dt">start =</span> <span class="kw">c</span>(<span class="dv">1960</span>, <span class="dv">1</span>), <span class="dt">end =</span> <span class="kw">c</span>(<span class="dv">2002</span>, <span class="dv">12</span>))</span></code></pre></div>
 <p>After computing robust standard errors, we gather the results in a table generated by <tt>stargazer()</tt>.</p>
-<div class="sourceCode" id="cb364"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb364-1"><a href="14-4-cybtmpi.html#cb364-1"></a><span class="co"># compute robust standard errors</span></span>
-<span id="cb364-2"><a href="14-4-cybtmpi.html#cb364-2"></a>rob_se &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="kw">sqrt</span>(<span class="kw">diag</span>(<span class="kw">sandwich</span>(SR_AR1))),</span>
-<span id="cb364-3"><a href="14-4-cybtmpi.html#cb364-3"></a>               <span class="kw">sqrt</span>(<span class="kw">diag</span>(<span class="kw">sandwich</span>(SR_AR2))),</span>
-<span id="cb364-4"><a href="14-4-cybtmpi.html#cb364-4"></a>               <span class="kw">sqrt</span>(<span class="kw">diag</span>(<span class="kw">sandwich</span>(SR_AR4))))</span></code></pre></div>
-<div class="sourceCode" id="cb365"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb365-1"><a href="14-4-cybtmpi.html#cb365-1"></a><span class="co"># generate table using &#39;stargazer()&#39;</span></span>
-<span id="cb365-2"><a href="14-4-cybtmpi.html#cb365-2"></a><span class="kw">stargazer</span>(SR_AR1, SR_AR2, SR_AR4,</span>
-<span id="cb365-3"><a href="14-4-cybtmpi.html#cb365-3"></a>  <span class="dt">title =</span> <span class="st">&quot;Autoregressive Models of Monthly Excess Stock Returns&quot;</span>,</span>
-<span id="cb365-4"><a href="14-4-cybtmpi.html#cb365-4"></a>  <span class="dt">header =</span> <span class="ot">FALSE</span>, </span>
-<span id="cb365-5"><a href="14-4-cybtmpi.html#cb365-5"></a>  <span class="dt">model.numbers =</span> F,</span>
-<span id="cb365-6"><a href="14-4-cybtmpi.html#cb365-6"></a>  <span class="dt">omit.table.layout =</span> <span class="st">&quot;n&quot;</span>,</span>
-<span id="cb365-7"><a href="14-4-cybtmpi.html#cb365-7"></a>  <span class="dt">digits =</span> <span class="dv">3</span>, </span>
-<span id="cb365-8"><a href="14-4-cybtmpi.html#cb365-8"></a>  <span class="dt">column.labels =</span> <span class="kw">c</span>(<span class="st">&quot;AR(1)&quot;</span>, <span class="st">&quot;AR(2)&quot;</span>, <span class="st">&quot;AR(4)&quot;</span>),</span>
-<span id="cb365-9"><a href="14-4-cybtmpi.html#cb365-9"></a>  <span class="dt">dep.var.caption  =</span> <span class="st">&quot;Dependent Variable: Excess Returns on the CSRP Value-Weighted Index&quot;</span>,</span>
-<span id="cb365-10"><a href="14-4-cybtmpi.html#cb365-10"></a>  <span class="dt">dep.var.labels.include =</span> <span class="ot">FALSE</span>,</span>
-<span id="cb365-11"><a href="14-4-cybtmpi.html#cb365-11"></a>  <span class="dt">covariate.labels =</span> <span class="kw">c</span>(<span class="st">&quot;$excess return_{t-1}$&quot;</span>, <span class="st">&quot;$excess return_{t-2}$&quot;</span>, </span>
-<span id="cb365-12"><a href="14-4-cybtmpi.html#cb365-12"></a>                       <span class="st">&quot;$excess return_{t-3}$&quot;</span>, <span class="st">&quot;$excess return_{t-4}$&quot;</span>, </span>
-<span id="cb365-13"><a href="14-4-cybtmpi.html#cb365-13"></a>                       <span class="st">&quot;Intercept&quot;</span>),</span>
-<span id="cb365-14"><a href="14-4-cybtmpi.html#cb365-14"></a>  <span class="dt">se =</span> rob_se,</span>
-<span id="cb365-15"><a href="14-4-cybtmpi.html#cb365-15"></a>  <span class="dt">omit.stat =</span> <span class="st">&quot;rsq&quot;</span>) </span></code></pre></div>
+<div class="sourceCode" id="cb365"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb365-1"><a href="14-4-cybtmpi.html#cb365-1"></a><span class="co"># compute robust standard errors</span></span>
+<span id="cb365-2"><a href="14-4-cybtmpi.html#cb365-2"></a>rob_se &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="kw">sqrt</span>(<span class="kw">diag</span>(<span class="kw">sandwich</span>(SR_AR1))),</span>
+<span id="cb365-3"><a href="14-4-cybtmpi.html#cb365-3"></a>               <span class="kw">sqrt</span>(<span class="kw">diag</span>(<span class="kw">sandwich</span>(SR_AR2))),</span>
+<span id="cb365-4"><a href="14-4-cybtmpi.html#cb365-4"></a>               <span class="kw">sqrt</span>(<span class="kw">diag</span>(<span class="kw">sandwich</span>(SR_AR4))))</span></code></pre></div>
+<div class="sourceCode" id="cb366"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb366-1"><a href="14-4-cybtmpi.html#cb366-1"></a><span class="co"># generate table using &#39;stargazer()&#39;</span></span>
+<span id="cb366-2"><a href="14-4-cybtmpi.html#cb366-2"></a><span class="kw">stargazer</span>(SR_AR1, SR_AR2, SR_AR4,</span>
+<span id="cb366-3"><a href="14-4-cybtmpi.html#cb366-3"></a>  <span class="dt">title =</span> <span class="st">&quot;Autoregressive Models of Monthly Excess Stock Returns&quot;</span>,</span>
+<span id="cb366-4"><a href="14-4-cybtmpi.html#cb366-4"></a>  <span class="dt">header =</span> <span class="ot">FALSE</span>, </span>
+<span id="cb366-5"><a href="14-4-cybtmpi.html#cb366-5"></a>  <span class="dt">model.numbers =</span> F,</span>
+<span id="cb366-6"><a href="14-4-cybtmpi.html#cb366-6"></a>  <span class="dt">omit.table.layout =</span> <span class="st">&quot;n&quot;</span>,</span>
+<span id="cb366-7"><a href="14-4-cybtmpi.html#cb366-7"></a>  <span class="dt">digits =</span> <span class="dv">3</span>, </span>
+<span id="cb366-8"><a href="14-4-cybtmpi.html#cb366-8"></a>  <span class="dt">column.labels =</span> <span class="kw">c</span>(<span class="st">&quot;AR(1)&quot;</span>, <span class="st">&quot;AR(2)&quot;</span>, <span class="st">&quot;AR(4)&quot;</span>),</span>
+<span id="cb366-9"><a href="14-4-cybtmpi.html#cb366-9"></a>  <span class="dt">dep.var.caption  =</span> <span class="st">&quot;Dependent Variable: Excess Returns on the CSRP Value-Weighted Index&quot;</span>,</span>
+<span id="cb366-10"><a href="14-4-cybtmpi.html#cb366-10"></a>  <span class="dt">dep.var.labels.include =</span> <span class="ot">FALSE</span>,</span>
+<span id="cb366-11"><a href="14-4-cybtmpi.html#cb366-11"></a>  <span class="dt">covariate.labels =</span> <span class="kw">c</span>(<span class="st">&quot;$excess return_{t-1}$&quot;</span>, <span class="st">&quot;$excess return_{t-2}$&quot;</span>, </span>
+<span id="cb366-12"><a href="14-4-cybtmpi.html#cb366-12"></a>                       <span class="st">&quot;$excess return_{t-3}$&quot;</span>, <span class="st">&quot;$excess return_{t-4}$&quot;</span>, </span>
+<span id="cb366-13"><a href="14-4-cybtmpi.html#cb366-13"></a>                       <span class="st">&quot;Intercept&quot;</span>),</span>
+<span id="cb366-14"><a href="14-4-cybtmpi.html#cb366-14"></a>  <span class="dt">se =</span> rob_se,</span>
+<span id="cb366-15"><a href="14-4-cybtmpi.html#cb366-15"></a>  <span class="dt">omit.stat =</span> <span class="st">&quot;rsq&quot;</span>) </span></code></pre></div>
 
 
 
