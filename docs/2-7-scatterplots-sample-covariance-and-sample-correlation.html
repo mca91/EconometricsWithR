@@ -1,13 +1,12 @@
 <!DOCTYPE html>
-<html >
-
+<html lang="" xml:lang="">
 <head>
 
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>2.7 Scatterplots, Sample Covariance and Sample Correlation | Introduction to Econometrics with R</title>
-  <meta name="description" content="Beginners with little background in statistics and econometrics often have a hard time understanding the benefits of having programming skills for learning and applying Econometrics. ‘Introduction to Econometrics with R’ is an interactive companion to the well-received textbook ‘Introduction to Econometrics’ by James H. Stock and Mark W. Watson (2015). It gives a gentle introduction to the essentials of R programming and guides students in implementing the empirical applications presented throughout the textbook using the newly aquired skills. This is supported by interactive programming exercises generated with DataCamp Light and integration of interactive visualizations of central concepts which are based on the flexible JavaScript library D3.js.">
-  <meta name="generator" content="bookdown  and GitBook 2.6.7">
+  <meta name="description" content="Beginners with little background in statistics and econometrics often have a hard time understanding the benefits of having programming skills for learning and applying Econometrics. ‘Introduction to Econometrics with R’ is an interactive companion to the well-received textbook ‘Introduction to Econometrics’ by James H. Stock and Mark W. Watson (2015). It gives a gentle introduction to the essentials of R programming and guides students in implementing the empirical applications presented throughout the textbook using the newly aquired skills. This is supported by interactive programming exercises generated with DataCamp Light and integration of interactive visualizations of central concepts which are based on the flexible JavaScript library D3.js." />
+  <meta name="generator" content="bookdown 0.20 and GitBook 2.6.7" />
 
   <meta property="og:title" content="2.7 Scatterplots, Sample Covariance and Sample Correlation | Introduction to Econometrics with R" />
   <meta property="og:type" content="book" />
@@ -22,18 +21,18 @@
   <meta name="twitter:description" content="Beginners with little background in statistics and econometrics often have a hard time understanding the benefits of having programming skills for learning and applying Econometrics. ‘Introduction to Econometrics with R’ is an interactive companion to the well-received textbook ‘Introduction to Econometrics’ by James H. Stock and Mark W. Watson (2015). It gives a gentle introduction to the essentials of R programming and guides students in implementing the empirical applications presented throughout the textbook using the newly aquired skills. This is supported by interactive programming exercises generated with DataCamp Light and integration of interactive visualizations of central concepts which are based on the flexible JavaScript library D3.js." />
   <meta name="twitter:image" content="https://www.econometrics-with-r.org/images/cover.png" />
 
-<meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber and Martin Schmelzer">
+<meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber, and Martin Schmelzer" />
 
 
-<meta name="date" content="2019-03-12">
+<meta name="date" content="2020-07-28" />
 
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="2-6-aattggoe.html">
-<link rel="next" href="2-8-exercises.html">
+<link rel="prev" href="2-6-aattggoe.html"/>
+<link rel="next" href="2-8-exercises.html"/>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
@@ -41,6 +40,7 @@
 <link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
 
 
 
@@ -48,6 +48,9 @@
 
 
 
+
+
+<script src="libs/accessible-code-block-0.0.1/empty-anchor.js"></script>
 <!-- font families -->
 
 <link href="https://fonts.googleapis.com/css?family=PT+Sans|Pacifico|Source+Sans+Pro" rel="stylesheet">
@@ -82,26 +85,27 @@
 
 
 <style type="text/css">
-a.sourceLine { display: inline-block; line-height: 1.25; }
-a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-a.sourceLine:empty { height: 1.2em; }
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode { white-space: pre; position: relative; }
-div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
 code.sourceCode { white-space: pre-wrap; }
-a.sourceLine { text-indent: -1em; padding-left: 1em; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
-pre.numberSource a.sourceLine
-  { position: relative; left: -4em; }
-pre.numberSource a.sourceLine::before
-  { content: attr(data-line-number);
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
     position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; pointer-events: all; display: inline-block;
+    border: none; display: inline-block;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -110,9 +114,9 @@ pre.numberSource a.sourceLine::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  { background-color: #f8f8f8; }
+  {  background-color: #f8f8f8; }
 @media screen {
-a.sourceLine::before { text-decoration: underline; }
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ef2929; } /* Alert */
 code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
@@ -183,6 +187,7 @@ code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="2.7" data-path="2-7-scatterplots-sample-covariance-and-sample-correlation.html"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html"><i class="fa fa-check"></i><b>2.7</b> Scatterplots, Sample Covariance and Sample Correlation</a></li>
 <li class="chapter" data-level="2.8" data-path="2-8-exercises.html"><a href="2-8-exercises.html"><i class="fa fa-check"></i><b>2.8</b> Exercises</a></li>
 </ul></li>
+<li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
 
@@ -209,25 +214,25 @@ This book is in <b>Open Review</b>. We want your feedback to make the book bette
 <div id="scatterplots-sample-covariance-and-sample-correlation" class="section level2">
 <h2><span class="header-section-number">2.7</span> Scatterplots, Sample Covariance and Sample Correlation</h2>
 <p>A scatter plot represents two dimensional data, for example <span class="math inline">\(n\)</span> observation on <span class="math inline">\(X_i\)</span> and <span class="math inline">\(Y_i\)</span>, by points in a coordinate system. It is very easy to generate scatter plots using the <tt>plot()</tt> function in <tt>R</tt>. Let us generate some artificial data on age and earnings of workers and plot it.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># set random seed</span>
-<span class="kw">set.seed</span>(<span class="dv">123</span>)
-
-<span class="co"># generate dataset</span>
-X &lt;-<span class="st"> </span><span class="kw">runif</span>(<span class="dt">n =</span> <span class="dv">100</span>, 
-           <span class="dt">min =</span> <span class="dv">18</span>, 
-           <span class="dt">max =</span> <span class="dv">70</span>)
-
-Y &lt;-<span class="st"> </span>X <span class="op">+</span><span class="st"> </span><span class="kw">rnorm</span>(<span class="dt">n=</span><span class="dv">100</span>, <span class="dv">50</span>, <span class="dv">15</span>)
-
-<span class="co"># plot observations</span>
-<span class="kw">plot</span>(X, 
-     Y, 
-     <span class="dt">type =</span> <span class="st">&quot;p&quot;</span>,
-     <span class="dt">main =</span> <span class="st">&quot;A Scatterplot of X and Y&quot;</span>,
-     <span class="dt">xlab =</span> <span class="st">&quot;Age&quot;</span>,
-     <span class="dt">ylab =</span> <span class="st">&quot;Earnings&quot;</span>,
-     <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>,
-     <span class="dt">pch =</span> <span class="dv">19</span>)</code></pre>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb37-1"></a><span class="co"># set random seed</span></span>
+<span id="cb37-2"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb37-2"></a><span class="kw">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb37-3"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb37-3"></a></span>
+<span id="cb37-4"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb37-4"></a><span class="co"># generate dataset</span></span>
+<span id="cb37-5"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb37-5"></a>X &lt;-<span class="st"> </span><span class="kw">runif</span>(<span class="dt">n =</span> <span class="dv">100</span>, </span>
+<span id="cb37-6"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb37-6"></a>           <span class="dt">min =</span> <span class="dv">18</span>, </span>
+<span id="cb37-7"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb37-7"></a>           <span class="dt">max =</span> <span class="dv">70</span>)</span>
+<span id="cb37-8"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb37-8"></a></span>
+<span id="cb37-9"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb37-9"></a>Y &lt;-<span class="st"> </span>X <span class="op">+</span><span class="st"> </span><span class="kw">rnorm</span>(<span class="dt">n=</span><span class="dv">100</span>, <span class="dv">50</span>, <span class="dv">15</span>)</span>
+<span id="cb37-10"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb37-10"></a></span>
+<span id="cb37-11"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb37-11"></a><span class="co"># plot observations</span></span>
+<span id="cb37-12"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb37-12"></a><span class="kw">plot</span>(X, </span>
+<span id="cb37-13"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb37-13"></a>     Y, </span>
+<span id="cb37-14"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb37-14"></a>     <span class="dt">type =</span> <span class="st">&quot;p&quot;</span>,</span>
+<span id="cb37-15"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb37-15"></a>     <span class="dt">main =</span> <span class="st">&quot;A Scatterplot of X and Y&quot;</span>,</span>
+<span id="cb37-16"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb37-16"></a>     <span class="dt">xlab =</span> <span class="st">&quot;Age&quot;</span>,</span>
+<span id="cb37-17"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb37-17"></a>     <span class="dt">ylab =</span> <span class="st">&quot;Earnings&quot;</span>,</span>
+<span id="cb37-18"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb37-18"></a>     <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>,</span>
+<span id="cb37-19"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb37-19"></a>     <span class="dt">pch =</span> <span class="dv">19</span>)</span></code></pre></div>
 <p><img src="ITER_files/figure-html/unnamed-chunk-56-1.png" width="80%" style="display: block; margin: auto;" /></p>
 <p>The plot shows positive correlation between age and earnings. This is in line with the notion that older workers earn more than those who joined the working population recently.</p>
 <div id="sample-covariance-and-correlation" class="section level4 unnumbered">
@@ -240,62 +245,70 @@ Y &lt;-<span class="st"> </span>X <span class="op">+</span><span class="st"> </s
 <p><span class="math display">\[ r_{XY} = \frac{s_{XY}}{s_Xs_Y} \]</span>
 can be used to estimate the population correlation, a standardized measure for the strength of the linear relationship between <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span>. See Chapter 3.7 in the book for a more detailed treatment of these estimators.</p>
 <p>As for variance and standard deviation, these estimators are implemented as <tt>R</tt> functions in the <tt>stats</tt> package. We can use them to estimate population covariance and population correlation of the artificial data on age and earnings.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># compute sample covariance of X and Y</span>
-<span class="kw">cov</span>(X, Y)</code></pre>
-<pre><code>## [1] 213.934</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># compute sample correlation between X and Y</span>
-<span class="kw">cor</span>(X, Y)</code></pre>
-<pre><code>## [1] 0.706372</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># an equivalent way to compute the sample correlation</span>
-<span class="kw">cov</span>(X, Y) <span class="op">/</span><span class="st"> </span>(<span class="kw">sd</span>(X) <span class="op">*</span><span class="st"> </span><span class="kw">sd</span>(Y))</code></pre>
-<pre><code>## [1] 0.706372</code></pre>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb38-1"></a><span class="co"># compute sample covariance of X and Y</span></span>
+<span id="cb38-2"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb38-2"></a><span class="kw">cov</span>(X, Y)</span>
+<span id="cb38-3"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb38-3"></a><span class="co">#&gt; [1] 213.934</span></span>
+<span id="cb38-4"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb38-4"></a></span>
+<span id="cb38-5"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb38-5"></a><span class="co"># compute sample correlation between X and Y</span></span>
+<span id="cb38-6"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb38-6"></a><span class="kw">cor</span>(X, Y)</span>
+<span id="cb38-7"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb38-7"></a><span class="co">#&gt; [1] 0.706372</span></span>
+<span id="cb38-8"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb38-8"></a></span>
+<span id="cb38-9"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb38-9"></a><span class="co"># an equivalent way to compute the sample correlation</span></span>
+<span id="cb38-10"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb38-10"></a><span class="kw">cov</span>(X, Y) <span class="op">/</span><span class="st"> </span>(<span class="kw">sd</span>(X) <span class="op">*</span><span class="st"> </span><span class="kw">sd</span>(Y))</span>
+<span id="cb38-11"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb38-11"></a><span class="co">#&gt; [1] 0.706372</span></span></code></pre></div>
 <p>The estimates indicate that <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> are moderately correlated.</p>
-<p>The next code chunk uses the function <tt>mvnorm()</tt> from package <tt>MASS</tt> <span class="citation">(<span class="citeproc-not-found" data-reference-id="R-MASS"><strong>???</strong></span>)</span> to generate bivariate sample data with different degrees of correlation.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(MASS)
-
-<span class="co"># set random seed</span>
-<span class="kw">set.seed</span>(<span class="dv">1</span>)
-
-<span class="co"># positive correlation (0.81)</span>
-example1 &lt;-<span class="st"> </span><span class="kw">mvrnorm</span>(<span class="dv">100</span>,
-                    <span class="dt">mu =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>), 
-                    <span class="dt">Sigma =</span> <span class="kw">matrix</span>(<span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">3</span>), <span class="dt">ncol =</span> <span class="dv">2</span>),
-                    <span class="dt">empirical =</span> <span class="ot">TRUE</span>)
-
-<span class="co"># negative correlation (-0.81)</span>
-example2 &lt;-<span class="st"> </span><span class="kw">mvrnorm</span>(<span class="dv">100</span>,
-                    <span class="dt">mu =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>), 
-                    <span class="dt">Sigma =</span> <span class="kw">matrix</span>(<span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">-2</span>, <span class="dv">-2</span>, <span class="dv">3</span>), <span class="dt">ncol =</span> <span class="dv">2</span>),
-                    <span class="dt">empirical =</span> <span class="ot">TRUE</span>)
-
-<span class="co"># no correlation </span>
-example3 &lt;-<span class="st"> </span><span class="kw">mvrnorm</span>(<span class="dv">100</span>,
-                    <span class="dt">mu =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>), 
-                    <span class="dt">Sigma =</span> <span class="kw">matrix</span>(<span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>), <span class="dt">ncol =</span> <span class="dv">2</span>),
-                    <span class="dt">empirical =</span> <span class="ot">TRUE</span>)
-
-<span class="co"># no correlation (quadratic relationship)</span>
-X &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="op">-</span><span class="dv">3</span>, <span class="dv">3</span>, <span class="fl">0.01</span>)
-Y &lt;-<span class="st"> </span><span class="op">-</span><span class="st"> </span>X<span class="op">^</span><span class="dv">2</span> <span class="op">+</span><span class="st"> </span><span class="kw">rnorm</span>(<span class="kw">length</span>(X))
-
-example4 &lt;-<span class="st"> </span><span class="kw">cbind</span>(X, Y)
-
-<span class="co"># divide plot area as 2-by-2 array</span>
-<span class="kw">par</span>(<span class="dt">mfrow =</span> <span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">2</span>))
-
-<span class="co"># plot datasets</span>
-<span class="kw">plot</span>(example1, <span class="dt">col =</span> <span class="st">&#39;steelblue&#39;</span>, <span class="dt">pch =</span> <span class="dv">20</span>, <span class="dt">xlab =</span> <span class="st">&#39;X&#39;</span>, <span class="dt">ylab =</span> <span class="st">&#39;Y&#39;</span>, 
-     <span class="dt">main =</span> <span class="st">&quot;Correlation = 0.81&quot;</span>)
-
-<span class="kw">plot</span>(example2, <span class="dt">col =</span> <span class="st">&#39;steelblue&#39;</span>, <span class="dt">pch =</span> <span class="dv">20</span>, <span class="dt">xlab =</span> <span class="st">&#39;X&#39;</span>, <span class="dt">ylab =</span> <span class="st">&#39;Y&#39;</span>, 
-     <span class="dt">main =</span> <span class="st">&quot;Correlation = -0.81&quot;</span>)
-
-<span class="kw">plot</span>(example3, <span class="dt">col =</span> <span class="st">&#39;steelblue&#39;</span>, <span class="dt">pch =</span> <span class="dv">20</span>, <span class="dt">xlab =</span> <span class="st">&#39;X&#39;</span>, <span class="dt">ylab =</span> <span class="st">&#39;Y&#39;</span>, 
-     <span class="dt">main =</span> <span class="st">&quot;Correlation = 0&quot;</span>)
-
-<span class="kw">plot</span>(example4, <span class="dt">col =</span> <span class="st">&#39;steelblue&#39;</span>, <span class="dt">pch =</span> <span class="dv">20</span>, <span class="dt">xlab =</span> <span class="st">&#39;X&#39;</span>, <span class="dt">ylab =</span> <span class="st">&#39;Y&#39;</span>, 
-     <span class="dt">main =</span> <span class="st">&quot;Correlation = 0&quot;</span>)</code></pre>
+<p>The next code chunk uses the function <tt>mvnorm()</tt> from package <tt>MASS</tt> <span class="citation">(Ripley, <a href="#ref-R-MASS" role="doc-biblioref">2020</a>)</span> to generate bivariate sample data with different degrees of correlation.</p>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb39-1"></a><span class="kw">library</span>(MASS)</span>
+<span id="cb39-2"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb39-2"></a></span>
+<span id="cb39-3"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb39-3"></a><span class="co"># set random seed</span></span>
+<span id="cb39-4"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb39-4"></a><span class="kw">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb39-5"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb39-5"></a></span>
+<span id="cb39-6"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb39-6"></a><span class="co"># positive correlation (0.81)</span></span>
+<span id="cb39-7"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb39-7"></a>example1 &lt;-<span class="st"> </span><span class="kw">mvrnorm</span>(<span class="dv">100</span>,</span>
+<span id="cb39-8"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb39-8"></a>                    <span class="dt">mu =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>), </span>
+<span id="cb39-9"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb39-9"></a>                    <span class="dt">Sigma =</span> <span class="kw">matrix</span>(<span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">3</span>), <span class="dt">ncol =</span> <span class="dv">2</span>),</span>
+<span id="cb39-10"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb39-10"></a>                    <span class="dt">empirical =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb39-11"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb39-11"></a></span>
+<span id="cb39-12"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb39-12"></a><span class="co"># negative correlation (-0.81)</span></span>
+<span id="cb39-13"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb39-13"></a>example2 &lt;-<span class="st"> </span><span class="kw">mvrnorm</span>(<span class="dv">100</span>,</span>
+<span id="cb39-14"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb39-14"></a>                    <span class="dt">mu =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>), </span>
+<span id="cb39-15"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb39-15"></a>                    <span class="dt">Sigma =</span> <span class="kw">matrix</span>(<span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">-2</span>, <span class="dv">-2</span>, <span class="dv">3</span>), <span class="dt">ncol =</span> <span class="dv">2</span>),</span>
+<span id="cb39-16"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb39-16"></a>                    <span class="dt">empirical =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb39-17"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb39-17"></a></span>
+<span id="cb39-18"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb39-18"></a><span class="co"># no correlation </span></span>
+<span id="cb39-19"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb39-19"></a>example3 &lt;-<span class="st"> </span><span class="kw">mvrnorm</span>(<span class="dv">100</span>,</span>
+<span id="cb39-20"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb39-20"></a>                    <span class="dt">mu =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>), </span>
+<span id="cb39-21"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb39-21"></a>                    <span class="dt">Sigma =</span> <span class="kw">matrix</span>(<span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>), <span class="dt">ncol =</span> <span class="dv">2</span>),</span>
+<span id="cb39-22"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb39-22"></a>                    <span class="dt">empirical =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb39-23"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb39-23"></a></span>
+<span id="cb39-24"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb39-24"></a><span class="co"># no correlation (quadratic relationship)</span></span>
+<span id="cb39-25"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb39-25"></a>X &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="op">-</span><span class="dv">3</span>, <span class="dv">3</span>, <span class="fl">0.01</span>)</span>
+<span id="cb39-26"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb39-26"></a>Y &lt;-<span class="st"> </span><span class="op">-</span><span class="st"> </span>X<span class="op">^</span><span class="dv">2</span> <span class="op">+</span><span class="st"> </span><span class="kw">rnorm</span>(<span class="kw">length</span>(X))</span>
+<span id="cb39-27"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb39-27"></a></span>
+<span id="cb39-28"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb39-28"></a>example4 &lt;-<span class="st"> </span><span class="kw">cbind</span>(X, Y)</span>
+<span id="cb39-29"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb39-29"></a></span>
+<span id="cb39-30"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb39-30"></a><span class="co"># divide plot area as 2-by-2 array</span></span>
+<span id="cb39-31"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb39-31"></a><span class="kw">par</span>(<span class="dt">mfrow =</span> <span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">2</span>))</span>
+<span id="cb39-32"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb39-32"></a></span>
+<span id="cb39-33"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb39-33"></a><span class="co"># plot datasets</span></span>
+<span id="cb39-34"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb39-34"></a><span class="kw">plot</span>(example1, <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>, <span class="dt">pch =</span> <span class="dv">20</span>, <span class="dt">xlab =</span> <span class="st">&quot;X&quot;</span>, <span class="dt">ylab =</span> <span class="st">&quot;Y&quot;</span>, </span>
+<span id="cb39-35"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb39-35"></a>     <span class="dt">main =</span> <span class="st">&quot;Correlation = 0.81&quot;</span>)</span>
+<span id="cb39-36"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb39-36"></a></span>
+<span id="cb39-37"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb39-37"></a><span class="kw">plot</span>(example2, <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>, <span class="dt">pch =</span> <span class="dv">20</span>, <span class="dt">xlab =</span> <span class="st">&quot;X&quot;</span>, <span class="dt">ylab =</span> <span class="st">&quot;Y&quot;</span>, </span>
+<span id="cb39-38"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb39-38"></a>     <span class="dt">main =</span> <span class="st">&quot;Correlation = -0.81&quot;</span>)</span>
+<span id="cb39-39"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb39-39"></a></span>
+<span id="cb39-40"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb39-40"></a><span class="kw">plot</span>(example3, <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>, <span class="dt">pch =</span> <span class="dv">20</span>, <span class="dt">xlab =</span> <span class="st">&quot;X&quot;</span>, <span class="dt">ylab =</span> <span class="st">&quot;Y&quot;</span>, </span>
+<span id="cb39-41"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb39-41"></a>     <span class="dt">main =</span> <span class="st">&quot;Correlation = 0&quot;</span>)</span>
+<span id="cb39-42"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb39-42"></a></span>
+<span id="cb39-43"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb39-43"></a><span class="kw">plot</span>(example4, <span class="dt">col =</span> <span class="st">&quot;steelblue&quot;</span>, <span class="dt">pch =</span> <span class="dv">20</span>, <span class="dt">xlab =</span> <span class="st">&quot;X&quot;</span>, <span class="dt">ylab =</span> <span class="st">&quot;Y&quot;</span>, </span>
+<span id="cb39-44"><a href="2-7-scatterplots-sample-covariance-and-sample-correlation.html#cb39-44"></a>     <span class="dt">main =</span> <span class="st">&quot;Correlation = 0&quot;</span>)</span></code></pre></div>
 <p><img src="ITER_files/figure-html/unnamed-chunk-58-1.png" width="80%" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<h3>References</h3>
+<div id="refs" class="references">
+<div id="ref-R-MASS">
+<p>Ripley, B. (2020). MASS: Support Functions and Datasets for Venables and Ripley’s MASS (Version 7.3-51.6). Retrieved from <a href="https://CRAN.R-project.org/package=MASS">https://CRAN.R-project.org/package=MASS</a></p>
 </div>
 </div>
             </section>
@@ -309,11 +322,13 @@ example4 &lt;-<span class="st"> </span><span class="kw">cbind</span>(X, Y)
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
 <script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
 <script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
 <script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
 <script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
 <script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
 <script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
 <script>
 gitbook.require(["gitbook"], function(gitbook) {
 gitbook.start({
@@ -321,12 +336,11 @@ gitbook.start({
 "github": true,
 "facebook": true,
 "twitter": true,
-"google": false,
 "linkedin": true,
 "weibo": false,
 "instapaper": false,
 "vk": false,
-"all": ["facebook", "google", "twitter", "linkedin", "weibo", "instapaper"]
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
 },
 "fontsettings": {
 "theme": "white",
@@ -338,6 +352,10 @@ gitbook.start({
 "text": "Edit"
 },
 "history": {
+"link": null,
+"text": null
+},
+"view": {
 "link": null,
 "text": null
 },
@@ -357,8 +375,9 @@ gitbook.start({
     script.type = "text/javascript";
     var src = "true";
     if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
-    if (location.protocol !== "file:" && /^https?:/.test(src))
-      src = src.replace(/^https?:/, '');
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
     script.src = src;
     document.getElementsByTagName("head")[0].appendChild(script);
   })();
