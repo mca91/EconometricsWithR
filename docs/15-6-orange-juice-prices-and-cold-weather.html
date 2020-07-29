@@ -24,7 +24,7 @@
 <meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber, and Martin Schmelzer" />
 
 
-<meta name="date" content="2020-07-28" />
+<meta name="date" content="2020-07-29" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -174,7 +174,8 @@ code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warni
 <li class="divider"></li>
 <li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Preface</a></li>
 <li class="chapter" data-level="1" data-path="1-introduction.html"><a href="1-introduction.html"><i class="fa fa-check"></i><b>1</b> Introduction</a><ul>
-<li class="chapter" data-level="1.1" data-path="1-1-a-very-short-introduction-to-r-and-rstudio.html"><a href="1-1-a-very-short-introduction-to-r-and-rstudio.html"><i class="fa fa-check"></i><b>1.1</b> A Very Short Introduction to <tt>R</tt> and <em>RStudio</em></a></li>
+<li class="chapter" data-level="1.1" data-path="1-1-colophon.html"><a href="1-1-colophon.html"><i class="fa fa-check"></i><b>1.1</b> Colophon</a></li>
+<li class="chapter" data-level="1.2" data-path="1-2-a-very-short-introduction-to-r-and-rstudio.html"><a href="1-2-a-very-short-introduction-to-r-and-rstudio.html"><i class="fa fa-check"></i><b>1.2</b> A Very Short Introduction to <tt>R</tt> and <em>RStudio</em></a></li>
 </ul></li>
 <li class="chapter" data-level="2" data-path="2-pt.html"><a href="2-pt.html"><i class="fa fa-check"></i><b>2</b> Probability Theory</a><ul>
 <li class="chapter" data-level="2.1" data-path="2-1-random-variables-and-probability-distributions.html"><a href="2-1-random-variables-and-probability-distributions.html"><i class="fa fa-check"></i><b>2.1</b> Random Variables and Probability Distributions</a><ul>
@@ -498,10 +499,10 @@ To check for sensitivity of the standard errors to different choices of the trun
 <p>If the demand for orange juice is higher in winter, <span class="math inline">\(FDD_t\)</span> would be correlated with the error term since freezes occur rather in winter so we would face omitted variable bias. The third model estimate, <tt>FOJC_mod_CM2</tt>, accounts for this possible issue by using an additional set of 11 monthly dummies. For brevity, estimates of the dummy coefficients are excluded from the output produced by stargazer (this is achieved by setting <tt>omit = ‘season’</tt>). We may check that the dummy for January was omitted to prevent perfect multicollinearity.</p>
 <div class="sourceCode" id="cb436"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb436-1"><a href="15-6-orange-juice-prices-and-cold-weather.html#cb436-1"></a><span class="co"># estimates on mothly dummies</span></span>
 <span id="cb436-2"><a href="15-6-orange-juice-prices-and-cold-weather.html#cb436-2"></a>FOJC_mod_CM2<span class="op">$</span>coefficients[<span class="op">-</span><span class="kw">c</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">20</span>)]</span>
-<span id="cb436-3"><a href="15-6-orange-juice-prices-and-cold-weather.html#cb436-3"></a><span class="co">#&gt; season(FDD)Feb season(FDD)Mar season(FDD)Apr season(FDD)May season(FDD)Jun season(FDD)Jul season(FDD)Aug season(FDD)Sep season(FDD)Oct season(FDD)Nov </span></span>
-<span id="cb436-4"><a href="15-6-orange-juice-prices-and-cold-weather.html#cb436-4"></a><span class="co">#&gt;     -0.9565759     -0.6358007      0.5006770     -1.0801764      0.3195624      0.1951113      0.3644312     -0.4130969     -0.1566622      0.3116534 </span></span>
-<span id="cb436-5"><a href="15-6-orange-juice-prices-and-cold-weather.html#cb436-5"></a><span class="co">#&gt; season(FDD)Dec </span></span>
-<span id="cb436-6"><a href="15-6-orange-juice-prices-and-cold-weather.html#cb436-6"></a><span class="co">#&gt;      0.1481589</span></span></code></pre></div>
+<span id="cb436-3"><a href="15-6-orange-juice-prices-and-cold-weather.html#cb436-3"></a><span class="co">#&gt; season(FDD)Feb season(FDD)Mar season(FDD)Apr season(FDD)May season(FDD)Jun season(FDD)Jul season(FDD)Aug </span></span>
+<span id="cb436-4"><a href="15-6-orange-juice-prices-and-cold-weather.html#cb436-4"></a><span class="co">#&gt;     -0.9565759     -0.6358007      0.5006770     -1.0801764      0.3195624      0.1951113      0.3644312 </span></span>
+<span id="cb436-5"><a href="15-6-orange-juice-prices-and-cold-weather.html#cb436-5"></a><span class="co">#&gt; season(FDD)Sep season(FDD)Oct season(FDD)Nov season(FDD)Dec </span></span>
+<span id="cb436-6"><a href="15-6-orange-juice-prices-and-cold-weather.html#cb436-6"></a><span class="co">#&gt;     -0.4130969     -0.1566622      0.3116534      0.1481589</span></span></code></pre></div>
 <p>A comparison of the estimates presented in columns (3) and (4) indicates that adding monthly dummies has a negligible effect. Further evidence for this comes from a joint test of the hypothesis that the 11 dummy coefficients are zero. Instead of using <tt>linearHypothesis()</tt>, we use the function <tt>waldtest()</tt> and supply two model objects instead: <tt>unres_model</tt>, the unrestricted model object which is the same as <tt>FOJC_mod_CM2</tt> (except for the coefficient names since we have modified them above) and <tt>res_model</tt>, the model where the restriction that all dummy coefficients are zero is imposed. <tt>res_model</tt> is conveniently obtained using the function <tt>update()</tt>. It extracts the argument <tt>formula</tt> of a model object, updates it as specified and then re-fits the model. By setting <tt>formula = . ~ . - season(FDD)</tt> we impose that the monthly dummies do not enter the model.</p>
 <div class="sourceCode" id="cb437"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb437-1"><a href="15-6-orange-juice-prices-and-cold-weather.html#cb437-1"></a><span class="co"># test if coefficients on monthly dummies are zero</span></span>
 <span id="cb437-2"><a href="15-6-orange-juice-prices-and-cold-weather.html#cb437-2"></a>unres_model &lt;-<span class="st"> </span><span class="kw">dynlm</span>(FOJC_pctc <span class="op">~</span><span class="st"> </span><span class="kw">L</span>(<span class="kw">d</span>(FDD), <span class="dv">0</span><span class="op">:</span><span class="dv">17</span>) <span class="op">+</span><span class="st"> </span><span class="kw">L</span>(FDD, <span class="dv">18</span>) <span class="op">+</span><span class="st"> </span><span class="kw">season</span>(FDD))</span>
