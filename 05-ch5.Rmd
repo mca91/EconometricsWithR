@@ -174,7 +174,7 @@ The result is very close to the value provided by `r ttcode('summary()')`. Howev
 
 The difference is indeed negligible. These findings tell us that, if $H_0: \beta_1 = 0$ is true and we were to repeat the whole process of gathering observations and estimating the model, observing a $\hat\beta_1 \geq |-2.28|$ is very unlikely! 
 
-Using `r ttcode('R')` we may visualize how such a statement is made when using the normal approximation. This reflects the principles depicted in figure 5.1 in the book. Do not let the following code chunk deter you: the code is somewhat longer than the usual examples and looks unappealing but there is **a lot** of repetition since color shadings and annotations are added on both tails of the normal distribution. We recommend to execute the code step by step in order to see how the graph is augmented with the annotations.
+Using `r ttcode('R')` we may visualize how such a statement is made when using the normal approximation. This reflects the principles depicted in figure 5.1 in the book. Do not let the following code chunk deter you: the code is somewhat longer than the usual examples and looks unappealing but there is a lot of repetition since color shadings and annotations are added on both tails of the normal distribution. We recommend to execute the code step by step in order to see how the graph is augmented with the annotations.
 
 <div class="unfolded">
 ```{r, fig.align='center'}
@@ -190,7 +190,7 @@ plot(x = t,
      yaxs = "i", 
      axes = F, 
      ylab = "", 
-     main = expression("Calculating the p-value of a Two-sided Test when" ~ t^act ~ "=-0.47"), 
+     main = expression("Calculating the p-value of a Two-sided Test when" ~ t^act ~ "=-4.75"), 
      cex.lab = 0.7,
      cex.main = 1)
 
@@ -470,9 +470,9 @@ With $D$ as the regressor, it is not useful to think of $\beta_1$ as a slope par
 
 Therefore, the interpretation of the coefficients in this regression model is as follows:
 
-- $E(Y_i | D_i = 0) = \beta_0$, so $\beta_0$ is the expected test score in districts where $D_i=0$ where $STR$ is below $20$.
+- $E(Y_i | D_i = 0) = \beta_0$, so $\beta_0$ is the expected test score in districts where $D_i=0$ where $STR$ is above $20$.
 
-- $E(Y_i | D_i = 1) = \beta_0 + \beta_1$ or, using the result above, $\beta_1 = E(Y_i | D_i = 1) - E(Y_i | D_i = 0)$. Thus, $\beta_1$ is *the difference in group specific expectations*, i.e., the difference in expected test score between districts with $STR < 20$ and those with $STR \geq 20$. 
+- $E(Y_i | D_i = 1) = \beta_0 + \beta_1$ or, using the result above, $\beta_1 = E(Y_i | D_i = 1) - E(Y_i | D_i = 0)$. Thus, $\beta_1$ is *the difference in group-specific expectations*, i.e., the difference in expected test score between districts with $STR < 20$ and those with $STR \geq 20$. 
 
 We will now use `r ttcode('R')` to estimate the dummy regression model as defined by the equations (<a href="#mjx-eqn-5.2">5.2</a>) and (<a href="#mjx-eqn-5.3">5.3</a>) .
 
@@ -614,7 +614,7 @@ Think about the economic value of education: if there were no expected economic 
 
 $$ wage_i = \beta_0 + \beta_1 \cdot education_i + u_i. $$
 
-What can be presumed about this relation? It is likely that, on average, higher educated workers earn more than workers with less education, so we expect to estimate an upward sloping regression line. Also, it seems plausible that earnings of better educated workers have a higher dispersion then those of low-skilled workers: solid education is not a guarantee for a high salary so even highly qualified workers take on low-income jobs. However, they are more likely to meet the requirements for the well-paid jobs than workers with less education for whom opportunities in the labor market are much more limited.
+What can be presumed about this relation? It is likely that, on average, higher educated workers earn more than workers with less education, so we expect to estimate an upward sloping regression line. Also, it seems plausible that earnings of better educated workers have a higher dispersion than those of low-skilled workers: solid education is not a guarantee for a high salary so even highly qualified workers take on low-income jobs. However, they are more likely to meet the requirements for the well-paid jobs than workers with less education for whom opportunities in the labor market are much more limited.
 
 To verify this empirically we may use real data on hourly earnings and the number of years of education of employees. Such data can be found in `r ttcode('CPSSWEducation')`. This data set is part of the package `r ttcode('AER')` and comes from the Current Population Survey (CPS) which is conducted periodically by the [Bureau of Labor Statistics](http://www.bls.gov/) in the United States. 
 
@@ -678,17 +678,17 @@ Thus `r ttcode('summary()')` estimates the *homoskedasticity-only* standard erro
 
 This is in fact an estimator for the standard deviation of the estimator $\hat{\beta}_1$ that is *inconsistent* for the true value $\sigma^2_{\hat\beta_1}$ when there is heteroskedasticity. The implication is that $t$-statistics computed in the manner of Key Concept 5.1 do not follow a standard normal distribution, even in large samples. This issue may invalidate inference when using the previously treated tools for hypothesis testing: we should be cautious when making statements about the significance of regression coefficients on the basis of $t$-statistics as computed by `r ttcode('summary()')` or confidence intervals produced by `r ttcode('confint()')` if it is doubtful for the assumption of homoskedasticity to hold! 
 
-We will now use `r ttcode('R')` to compute the homoskedasticity-only standard error for $\hat{\beta}_1$ in the test score regression model `r ttcode('linear_model')` by hand and see that it matches the value produced by `r ttcode('summary()')`.
+We will now use `r ttcode('R')` to compute the homoskedasticity-only standard error for $\hat{\beta}_1$ in the test score regression model `r ttcode('labor_model')` by hand and see that it matches the value produced by `r ttcode('summary()')`.
 
 ```{r}
 # Store model summary in 'model'
-model <- summary(linear_model)
+model <- summary(labor_model)
 
 # Extract the standard error of the regression from model summary
 SER <- model$sigma
 
-# Compute the variation in 'size'
-V <- (nrow(CASchools)-1) * var(CASchools$STR)
+# Compute the variation in 'education'
+V <- (nrow(CPSSWEducation)-1) * var(education)
 
 # Compute the standard error of the slope parameter's estimator and print it
 SE.beta_1.hat <- sqrt(SER^2/V)
@@ -709,7 +709,7 @@ Consistent estimation of $\sigma_{\hat{\beta}_1}$ under heteroskedasticity is gr
 
 Standard error estimates computed this way are also referred to as [Eicker-Huber-White standard errors](https://en.wikipedia.org/wiki/Heteroscedasticity-consistent_standard_errors), the most frequently cited paper on this is @white1980.
 
-It can be quite cumbersome to do this calculation by hand. Luckily, there are `r ttcode('R')` function for that purpose. A convenient one named `r ttcode('vcovHC()')` is part of the package `r ttcode("sandwich")`.^[The package `r ttcode('sandwich')` is a dependency of the package `r ttcode('AER')`, meaning that it is attached automatically if you load `r ttcode('AER')`.] This function can compute a variety of standard errors. The one brought forward in (<a href="#mjx-eqn-5.6">5.6</a>) is computed when the argument `r ttcode('type')` is set to `r ttcode('"HC0"')`. Most of the examples presented in the book rely on a slightly different formula which is the default in the statistics package *STATA*:
+It can be quite cumbersome to do this calculation by hand. Luckily certain R functions exist, serving that purpose. A convenient one named `r ttcode('vcovHC()')` is part of the package `r ttcode("sandwich")`.^[The package `r ttcode('sandwich')` is a dependency of the package `r ttcode('AER')`, meaning that it is attached automatically if you load `r ttcode('AER')`.] This function can compute a variety of standard errors. The one brought forward in (<a href="#mjx-eqn-5.6">5.6</a>) is computed when the argument `r ttcode('type')` is set to `r ttcode('"HC0"')`. Most of the examples presented in the book rely on a slightly different formula which is the default in the statistics package *STATA*:
 
 \begin{align}
 SE(\hat{\beta}_1)_{HC1} = \sqrt{ \frac{1}{n} \cdot \frac{ \frac{1}{n-2} \sum_{i=1}^n (X_i - \overline{X})^2 \hat{u}_i^2 }{ \left[ \frac{1}{n} \sum_{i=1}^n (X_i - \overline{X})^2  \right]^2}} (\#eq:hc1)
@@ -767,7 +767,7 @@ $$ Y_i = \beta_1 \cdot X_i + u_i \ \ , \ \ u_i \overset{i.i.d.}{\sim} \mathcal{N
 
 with $\beta_1=1$ as the data generating process. Clearly, the assumption of homoskedasticity is violated here since the variance of the errors is a nonlinear, increasing function of $X_i$ but the errors have zero mean and are i.i.d. such that the assumptions made in Key Concept 4.3 are not violated. As before, we are interested in estimating $\beta_1$.
 
-```{r, echo=-1}
+```{r}
 set.seed(905)
 
 # generate heteroskedastic data 
@@ -798,7 +798,7 @@ abline(reg,
 The plot shows that the data are heteroskedastic as the variance of $Y$ grows with $X$. We next conduct a significance test of the (true) null hypothesis $H_0: \beta_1 = 1$ twice, once using the homoskedasticity-only standard error formula and once with the robust version (<a href="#mjx-eqn-5.6">5.6</a>). An easy way to do this in `r  ttcode('R')` is the function `r  ttcode('linearHypothesis()')` from the package `r  ttcode('car')`, see `?linearHypothesis`. It allows to test linear hypotheses about parameters in linear models in a similar way as done with a $t$-statistic and offers various robust covariance matrix estimators. We test by comparing the tests' $p$-values to the significance level of $5\%$.   
 
 ```{block2, linearhypothesis, type='rmdknit'}
-<tt>linearHypothesis()</tt> computes a test statistic that follows an $F$-distribution under the null hypothesis. We will not loose too much words on the underlying theory. In general, the idea of the $F$-test is to compare the fit of different models. When testing a hypothesis about a *single* coefficient using an $F$-test, one can show that the test statistic is simply the square of the corresponding $t$-statistic:
+<tt>linearHypothesis()</tt> computes a test statistic that follows an $F$-distribution under the null hypothesis. We will not focus on the details of the underlying theory. In general, the idea of the $F$-test is to compare the fit of different models. When testing a hypothesis about a *single* coefficient using an $F$-test, one can show that the test statistic is simply the square of the corresponding $t$-statistic:
 
 $$F = t^2 = \left(\frac{\hat\beta_i - \beta_{i,0}}{SE(\hat\beta_i)}\right)^2 \sim F_{1,n-k-1}$$
 
@@ -814,7 +814,7 @@ linearHypothesis(reg, hypothesis.matrix = "X = 1")$'Pr(>F)'[2] < 0.05
 linearHypothesis(reg, hypothesis.matrix = "X = 1", white.adjust = "hc1")$'Pr(>F)'[2] < 0.05
 ```
 
-This is a good example of what can go wrong if we ignore heteroskedasticity: for the data set at hand the default method rejects the null hypothesis $\beta_1 = 1$ although it is true. When using the robust standard error formula the test does not reject the null. Of course, we could this might just be a coincidence and both tests do equally well in maintaining the type I error rate of $5\%$. This can be further investigated by computing *Monte Carlo* estimates of the rejection frequencies of both tests on the basis of a large number of random samples. We proceed as follows:
+This is a good example of what can go wrong if we ignore heteroskedasticity: for the data set at hand the default method rejects the null hypothesis $\beta_1 = 1$ although it is true. When using the robust standard error formula the test does not reject the null. Of course, we could think this might just be a coincidence and both tests do equally well in maintaining the type I error rate of $5\%$. This can be further investigated by computing *Monte Carlo* estimates of the rejection frequencies of both tests on the basis of a large number of random samples. We proceed as follows:
 
 - initialize vectors `r  ttcode('t')` and `r  ttcode('t.rob')`.
 - Using a `r  ttcode('for()')` loop, we generate $10000$ heteroskedastic random samples of size $1000$, estimate the regression model and check whether the tests falsely reject the null at the level of $5\%$ using comparison operators. The results are stored in the respective vectors `r  ttcode('t')` and `r  ttcode('t.rob')`.
@@ -849,7 +849,7 @@ for (i in 1:10000) {
 round(cbind(t = mean(t), t.rob = mean(t.rob)), 3)
 ```
 
-These results reveal the increased risk of falsely rejecting the null using the homoskedasticity-only standard error for the testing problem at hand: with the common standard error estimator, $`r round(sum(t)/length(t)*100,3)`\%$ of all tests falsely reject the null hypothesis. In contrast, with the robust test statistic we are closer to the nominal level of $5\%$.
+These results reveal the increased risk of falsely rejecting the null using the homoskedasticity-only standard error for the testing problem at hand: with the common standard error, $`r round(sum(t)/length(t)*100,3)`\%$ of all tests falsely reject the null hypothesis. In contrast, with the robust test statistic we are closer to the nominal level of $5\%$.
  
 ## The Gauss-Markov Theorem
 
