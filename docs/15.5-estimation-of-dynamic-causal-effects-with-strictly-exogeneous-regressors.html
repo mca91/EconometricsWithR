@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>15.5 Estimation of Dynamic Causal Effects with Strictly Exogeneous Regressors | Introduction to Econometrics with R</title>
+  <meta name="description" content="Beginners with little background in statistics and econometrics often have a hard time understanding the benefits of having programming skills for learning and applying Econometrics. ‘Introduction to Econometrics with R’ is an interactive companion to the well-received textbook ‘Introduction to Econometrics’ by James H. Stock and Mark W. Watson (2015). It gives a gentle introduction to the essentials of R programming and guides students in implementing the empirical applications presented throughout the textbook using the newly aquired skills. This is supported by interactive programming exercises generated with DataCamp Light and integration of interactive visualizations of central concepts which are based on the flexible JavaScript library D3.js." />
+  <meta name="generator" content="bookdown 0.23 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="15.5 Estimation of Dynamic Causal Effects with Strictly Exogeneous Regressors | Introduction to Econometrics with R" />
+  <meta property="og:type" content="book" />
+  <meta property="og:url" content="https://www.econometrics-with-r.org/" />
+  <meta property="og:image" content="https://www.econometrics-with-r.org//images/cover.png" />
+  <meta property="og:description" content="Beginners with little background in statistics and econometrics often have a hard time understanding the benefits of having programming skills for learning and applying Econometrics. ‘Introduction to Econometrics with R’ is an interactive companion to the well-received textbook ‘Introduction to Econometrics’ by James H. Stock and Mark W. Watson (2015). It gives a gentle introduction to the essentials of R programming and guides students in implementing the empirical applications presented throughout the textbook using the newly aquired skills. This is supported by interactive programming exercises generated with DataCamp Light and integration of interactive visualizations of central concepts which are based on the flexible JavaScript library D3.js." />
+  <meta name="github-repo" content="mca91/EconometricsWithR" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="15.5 Estimation of Dynamic Causal Effects with Strictly Exogeneous Regressors | Introduction to Econometrics with R" />
+  
+  <meta name="twitter:description" content="Beginners with little background in statistics and econometrics often have a hard time understanding the benefits of having programming skills for learning and applying Econometrics. ‘Introduction to Econometrics with R’ is an interactive companion to the well-received textbook ‘Introduction to Econometrics’ by James H. Stock and Mark W. Watson (2015). It gives a gentle introduction to the essentials of R programming and guides students in implementing the empirical applications presented throughout the textbook using the newly aquired skills. This is supported by interactive programming exercises generated with DataCamp Light and integration of interactive visualizations of central concepts which are based on the flexible JavaScript library D3.js." />
+  <meta name="twitter:image" content="https://www.econometrics-with-r.org//images/cover.png" />
+
+<meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber, and Martin Schmelzer" />
+
+
+<meta name="date" content="2021-10-06" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="15.4-hac-standard-errors.html"/>
+<link rel="next" href="15.6-orange-juice-prices-and-cold-weather.html"/>
+<script src="libs/header-attrs-2.10/header-attrs.js"></script>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
+<script src="libs/htmlwidgets-1.5.3/htmlwidgets.js"></script>
+<script src="libs/plotly-binding-4.9.4.1/plotly.js"></script>
+<script src="libs/typedarray-0.1/typedarray.min.js"></script>
+<link href="libs/crosstalk-1.1.1/css/crosstalk.css" rel="stylesheet" />
+<script src="libs/crosstalk-1.1.1/js/crosstalk.min.js"></script>
+<link href="libs/plotly-htmlwidgets-css-1.57.1/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="libs/plotly-main-1.57.1/plotly-latest.min.js"></script>
+<!-- font families -->
+
+<link href="https://fonts.googleapis.com/css?family=PT+Sans|Pacifico|Source+Sans+Pro" rel="stylesheet">
+
+<script src="js/hideOutput.js"></script>
+
+<!-- Mathjax -->
+<script type="text/javascript" id="MathJax-script" async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+ <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        extensions: ["tex2jax.js", "TeX/AMSmath.js"],
+        tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+        jax: ["input/TeX","output/CommonHTML"]
+      });
+      MathJax.Hub.processSectionDelay = 0;
+  </script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-110299877-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-110299877-1');
+</script>
+
+<!-- open review block -->
+
+<script async defer src="https://hypothes.is/embed.js"></script>
+
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  background-color: #f8f8f8; }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ef2929; } /* Alert */
+code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #c4a000; } /* Attribute */
+code span.bn { color: #0000cf; } /* BaseN */
+code span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4e9a06; } /* Char */
+code span.cn { color: #000000; } /* Constant */
+code span.co { color: #8f5902; font-style: italic; } /* Comment */
+code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code span.dt { color: #204a87; } /* DataType */
+code span.dv { color: #0000cf; } /* DecVal */
+code span.er { color: #a40000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #0000cf; } /* Float */
+code span.fu { color: #000000; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code span.ot { color: #8f5902; } /* Other */
+code span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code span.sc { color: #000000; } /* SpecialChar */
+code span.ss { color: #4e9a06; } /* SpecialString */
+code span.st { color: #4e9a06; } /* String */
+code span.va { color: #000000; } /* Variable */
+code span.vs { color: #4e9a06; } /* VerbatimString */
+code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+/* Used with Pandoc 2.11+ new --citeproc when CSL is used */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+<link rel="stylesheet" href="toc.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><center><img src="images/logo.png" alt="logo" width="50%" height="50%"style="margin: 15px 0 0 0"></center></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Preface</a></li>
+<li class="chapter" data-level="1" data-path="1-introduction.html"><a href="1-introduction.html"><i class="fa fa-check"></i><b>1</b> Introduction</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="1.1-colophon.html"><a href="1.1-colophon.html"><i class="fa fa-check"></i><b>1.1</b> Colophon</a></li>
+<li class="chapter" data-level="1.2" data-path="1.2-a-very-short-introduction-to-r-and-rstudio.html"><a href="1.2-a-very-short-introduction-to-r-and-rstudio.html"><i class="fa fa-check"></i><b>1.2</b> A Very Short Introduction to <tt>R</tt> and <em>RStudio</em></a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="2-pt.html"><a href="2-pt.html"><i class="fa fa-check"></i><b>2</b> Probability Theory</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="2.1-random-variables-and-probability-distributions.html"><a href="2.1-random-variables-and-probability-distributions.html"><i class="fa fa-check"></i><b>2.1</b> Random Variables and Probability Distributions</a>
+<ul>
+<li class="chapter" data-level="" data-path="2.1-random-variables-and-probability-distributions.html"><a href="2.1-random-variables-and-probability-distributions.html#probability-distributions-of-discrete-random-variables"><i class="fa fa-check"></i>Probability Distributions of Discrete Random Variables</a></li>
+<li class="chapter" data-level="" data-path="2.1-random-variables-and-probability-distributions.html"><a href="2.1-random-variables-and-probability-distributions.html#bernoulli-trials"><i class="fa fa-check"></i>Bernoulli Trials</a></li>
+<li class="chapter" data-level="" data-path="2.1-random-variables-and-probability-distributions.html"><a href="2.1-random-variables-and-probability-distributions.html#expected-value-mean-and-variance"><i class="fa fa-check"></i>Expected Value, Mean and Variance</a></li>
+<li class="chapter" data-level="" data-path="2.1-random-variables-and-probability-distributions.html"><a href="2.1-random-variables-and-probability-distributions.html#probability-distributions-of-continuous-random-variables"><i class="fa fa-check"></i>Probability Distributions of Continuous Random Variables</a></li>
+<li class="chapter" data-level="" data-path="2.1-random-variables-and-probability-distributions.html"><a href="2.1-random-variables-and-probability-distributions.html#the-normal-distribution"><i class="fa fa-check"></i>The Normal Distribution</a></li>
+<li class="chapter" data-level="" data-path="2.1-random-variables-and-probability-distributions.html"><a href="2.1-random-variables-and-probability-distributions.html#the-chi-squared-distribution"><i class="fa fa-check"></i>The Chi-Squared Distribution</a></li>
+<li class="chapter" data-level="" data-path="2.1-random-variables-and-probability-distributions.html"><a href="2.1-random-variables-and-probability-distributions.html#thetdist"><i class="fa fa-check"></i>The Student t Distribution</a></li>
+<li class="chapter" data-level="" data-path="2.1-random-variables-and-probability-distributions.html"><a href="2.1-random-variables-and-probability-distributions.html#the-f-distribution"><i class="fa fa-check"></i>The F Distribution</a></li>
+</ul></li>
+<li class="chapter" data-level="2.2" data-path="2.2-RSATDOSA.html"><a href="2.2-RSATDOSA.html"><i class="fa fa-check"></i><b>2.2</b> Random Sampling and the Distribution of Sample Averages</a>
+<ul>
+<li class="chapter" data-level="" data-path="2.2-RSATDOSA.html"><a href="2.2-RSATDOSA.html#mean-and-variance-of-the-sample-mean"><i class="fa fa-check"></i>Mean and Variance of the Sample Mean</a></li>
+<li class="chapter" data-level="" data-path="2.2-RSATDOSA.html"><a href="2.2-RSATDOSA.html#large-sample-approximations-to-sampling-distributions"><i class="fa fa-check"></i>Large Sample Approximations to Sampling Distributions</a></li>
+</ul></li>
+<li class="chapter" data-level="2.3" data-path="2.3-exercises-2.html"><a href="2.3-exercises-2.html"><i class="fa fa-check"></i><b>2.3</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="3-arosur.html"><a href="3-arosur.html"><i class="fa fa-check"></i><b>3</b> A Review of Statistics using R</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="3.1-estimation-of-the-population-mean.html"><a href="3.1-estimation-of-the-population-mean.html"><i class="fa fa-check"></i><b>3.1</b> Estimation of the Population Mean</a></li>
+<li class="chapter" data-level="3.2" data-path="3.2-potsm.html"><a href="3.2-potsm.html"><i class="fa fa-check"></i><b>3.2</b> Properties of the Sample Mean</a></li>
+<li class="chapter" data-level="3.3" data-path="3.3-hypothesis-tests-concerning-the-population-mean.html"><a href="3.3-hypothesis-tests-concerning-the-population-mean.html"><i class="fa fa-check"></i><b>3.3</b> Hypothesis Tests Concerning the Population Mean</a>
+<ul>
+<li class="chapter" data-level="" data-path="3.3-hypothesis-tests-concerning-the-population-mean.html"><a href="3.3-hypothesis-tests-concerning-the-population-mean.html#the-p-value"><i class="fa fa-check"></i>The p-Value</a></li>
+<li class="chapter" data-level="" data-path="3.3-hypothesis-tests-concerning-the-population-mean.html"><a href="3.3-hypothesis-tests-concerning-the-population-mean.html#calculating-the-p-value-when-the-standard-deviation-is-known"><i class="fa fa-check"></i>Calculating the p-Value when the Standard Deviation is Known</a></li>
+<li class="chapter" data-level="" data-path="3.3-hypothesis-tests-concerning-the-population-mean.html"><a href="3.3-hypothesis-tests-concerning-the-population-mean.html#SVSSDASE"><i class="fa fa-check"></i>Sample Variance, Sample Standard Deviation and Standard Error</a></li>
+<li class="chapter" data-level="" data-path="3.3-hypothesis-tests-concerning-the-population-mean.html"><a href="3.3-hypothesis-tests-concerning-the-population-mean.html#calculating-the-p-value-when-the-standard-deviation-is-unknown"><i class="fa fa-check"></i>Calculating the p-value When the Standard Deviation is Unknown</a></li>
+<li class="chapter" data-level="" data-path="3.3-hypothesis-tests-concerning-the-population-mean.html"><a href="3.3-hypothesis-tests-concerning-the-population-mean.html#the-t-statistic"><i class="fa fa-check"></i>The t-statistic</a></li>
+<li class="chapter" data-level="" data-path="3.3-hypothesis-tests-concerning-the-population-mean.html"><a href="3.3-hypothesis-tests-concerning-the-population-mean.html#hypothesis-testing-with-a-prespecified-significance-level"><i class="fa fa-check"></i>Hypothesis Testing with a Prespecified Significance Level</a></li>
+<li class="chapter" data-level="" data-path="3.3-hypothesis-tests-concerning-the-population-mean.html"><a href="3.3-hypothesis-tests-concerning-the-population-mean.html#one-sided-alternatives"><i class="fa fa-check"></i>One-sided Alternatives</a></li>
+</ul></li>
+<li class="chapter" data-level="3.4" data-path="3.4-confidence-intervals-for-the-population-mean.html"><a href="3.4-confidence-intervals-for-the-population-mean.html"><i class="fa fa-check"></i><b>3.4</b> Confidence Intervals for the Population Mean</a></li>
+<li class="chapter" data-level="3.5" data-path="3.5-cmfdp.html"><a href="3.5-cmfdp.html"><i class="fa fa-check"></i><b>3.5</b> Comparing Means from Different Populations</a></li>
+<li class="chapter" data-level="3.6" data-path="3.6-aattggoe.html"><a href="3.6-aattggoe.html"><i class="fa fa-check"></i><b>3.6</b> An Application to the Gender Gap of Earnings</a></li>
+<li class="chapter" data-level="3.7" data-path="3.7-scatterplots-sample-covariance-and-sample-correlation.html"><a href="3.7-scatterplots-sample-covariance-and-sample-correlation.html"><i class="fa fa-check"></i><b>3.7</b> Scatterplots, Sample Covariance and Sample Correlation</a></li>
+<li class="chapter" data-level="3.8" data-path="3.8-exercises-3.html"><a href="3.8-exercises-3.html"><i class="fa fa-check"></i><b>3.8</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="4-lrwor.html"><a href="4-lrwor.html"><i class="fa fa-check"></i><b>4</b> Linear Regression with One Regressor</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="4.1-simple-linear-regression.html"><a href="4.1-simple-linear-regression.html"><i class="fa fa-check"></i><b>4.1</b> Simple Linear Regression</a></li>
+<li class="chapter" data-level="4.2" data-path="4.2-estimating-the-coefficients-of-the-linear-regression-model.html"><a href="4.2-estimating-the-coefficients-of-the-linear-regression-model.html"><i class="fa fa-check"></i><b>4.2</b> Estimating the Coefficients of the Linear Regression Model</a>
+<ul>
+<li class="chapter" data-level="" data-path="4.2-estimating-the-coefficients-of-the-linear-regression-model.html"><a href="4.2-estimating-the-coefficients-of-the-linear-regression-model.html#the-ordinary-least-squares-estimator"><i class="fa fa-check"></i>The Ordinary Least Squares Estimator</a></li>
+</ul></li>
+<li class="chapter" data-level="4.3" data-path="4.3-measures-of-fit.html"><a href="4.3-measures-of-fit.html"><i class="fa fa-check"></i><b>4.3</b> Measures of Fit</a>
+<ul>
+<li class="chapter" data-level="" data-path="4.3-measures-of-fit.html"><a href="4.3-measures-of-fit.html#the-coefficient-of-determination"><i class="fa fa-check"></i>The Coefficient of Determination</a></li>
+<li class="chapter" data-level="" data-path="4.3-measures-of-fit.html"><a href="4.3-measures-of-fit.html#the-standard-error-of-the-regression"><i class="fa fa-check"></i>The Standard Error of the Regression</a></li>
+<li class="chapter" data-level="" data-path="4.3-measures-of-fit.html"><a href="4.3-measures-of-fit.html#application-to-the-test-score-data"><i class="fa fa-check"></i>Application to the Test Score Data</a></li>
+</ul></li>
+<li class="chapter" data-level="4.4" data-path="4.4-tlsa.html"><a href="4.4-tlsa.html"><i class="fa fa-check"></i><b>4.4</b> The Least Squares Assumptions</a>
+<ul>
+<li class="chapter" data-level="" data-path="4.4-tlsa.html"><a href="4.4-tlsa.html#assumption-1-the-error-term-has-conditional-mean-of-zero"><i class="fa fa-check"></i>Assumption 1: The Error Term has Conditional Mean of Zero</a></li>
+<li class="chapter" data-level="" data-path="4.4-tlsa.html"><a href="4.4-tlsa.html#assumption-2-independently-and-identically-distributed-data"><i class="fa fa-check"></i>Assumption 2: Independently and Identically Distributed Data</a></li>
+<li class="chapter" data-level="" data-path="4.4-tlsa.html"><a href="4.4-tlsa.html#assumption-3-large-outliers-are-unlikely"><i class="fa fa-check"></i>Assumption 3: Large Outliers are Unlikely</a></li>
+</ul></li>
+<li class="chapter" data-level="4.5" data-path="4.5-tsdotoe.html"><a href="4.5-tsdotoe.html"><i class="fa fa-check"></i><b>4.5</b> The Sampling Distribution of the OLS Estimator</a>
+<ul>
+<li class="chapter" data-level="" data-path="4.5-tsdotoe.html"><a href="4.5-tsdotoe.html#simulation-study-1"><i class="fa fa-check"></i>Simulation Study 1</a></li>
+<li class="chapter" data-level="" data-path="4.5-tsdotoe.html"><a href="4.5-tsdotoe.html#simulation-study-2"><i class="fa fa-check"></i>Simulation Study 2</a></li>
+<li class="chapter" data-level="" data-path="4.5-tsdotoe.html"><a href="4.5-tsdotoe.html#simulation-study-3"><i class="fa fa-check"></i>Simulation Study 3</a></li>
+</ul></li>
+<li class="chapter" data-level="4.6" data-path="4.6-exercises-4.html"><a href="4.6-exercises-4.html"><i class="fa fa-check"></i><b>4.6</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="5-htaciitslrm.html"><a href="5-htaciitslrm.html"><i class="fa fa-check"></i><b>5</b> Hypothesis Tests and Confidence Intervals in the Simple Linear Regression Model</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="5.1-testing-two-sided-hypotheses-concerning-the-slope-coefficient.html"><a href="5.1-testing-two-sided-hypotheses-concerning-the-slope-coefficient.html"><i class="fa fa-check"></i><b>5.1</b> Testing Two-Sided Hypotheses Concerning the Slope Coefficient</a></li>
+<li class="chapter" data-level="5.2" data-path="5.2-cifrc.html"><a href="5.2-cifrc.html"><i class="fa fa-check"></i><b>5.2</b> Confidence Intervals for Regression Coefficients</a>
+<ul>
+<li class="chapter" data-level="" data-path="5.2-cifrc.html"><a href="5.2-cifrc.html#simulation-study-confidence-intervals"><i class="fa fa-check"></i>Simulation Study: Confidence Intervals</a></li>
+</ul></li>
+<li class="chapter" data-level="5.3" data-path="5.3-rwxiabv.html"><a href="5.3-rwxiabv.html"><i class="fa fa-check"></i><b>5.3</b> Regression when X is a Binary Variable</a></li>
+<li class="chapter" data-level="5.4" data-path="5.4-hah.html"><a href="5.4-hah.html"><i class="fa fa-check"></i><b>5.4</b> Heteroskedasticity and Homoskedasticity</a>
+<ul>
+<li class="chapter" data-level="" data-path="5.4-hah.html"><a href="5.4-hah.html#a-real-world-example-for-heteroskedasticity"><i class="fa fa-check"></i>A Real-World Example for Heteroskedasticity</a></li>
+<li class="chapter" data-level="" data-path="5.4-hah.html"><a href="5.4-hah.html#should-we-care-about-heteroskedasticity"><i class="fa fa-check"></i>Should We Care About Heteroskedasticity?</a></li>
+<li class="chapter" data-level="" data-path="5.4-hah.html"><a href="5.4-hah.html#computation-of-heteroskedasticity-robust-standard-errors"><i class="fa fa-check"></i>Computation of Heteroskedasticity-Robust Standard Errors</a></li>
+</ul></li>
+<li class="chapter" data-level="5.5" data-path="5.5-the-gauss-markov-theorem.html"><a href="5.5-the-gauss-markov-theorem.html"><i class="fa fa-check"></i><b>5.5</b> The Gauss-Markov Theorem</a>
+<ul>
+<li class="chapter" data-level="" data-path="5.5-the-gauss-markov-theorem.html"><a href="5.5-the-gauss-markov-theorem.html#simulation-study-blue-estimator"><i class="fa fa-check"></i>Simulation Study: BLUE Estimator</a></li>
+</ul></li>
+<li class="chapter" data-level="5.6" data-path="5.6-using-the-t-statistic-in-regression-when-the-sample-size-is-small.html"><a href="5.6-using-the-t-statistic-in-regression-when-the-sample-size-is-small.html"><i class="fa fa-check"></i><b>5.6</b> Using the t-Statistic in Regression When the Sample Size Is Small</a></li>
+<li class="chapter" data-level="5.7" data-path="5.7-exercises-5.html"><a href="5.7-exercises-5.html"><i class="fa fa-check"></i><b>5.7</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="6-rmwmr.html"><a href="6-rmwmr.html"><i class="fa fa-check"></i><b>6</b> Regression Models with Multiple Regressors</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="6.1-omitted-variable-bias.html"><a href="6.1-omitted-variable-bias.html"><i class="fa fa-check"></i><b>6.1</b> Omitted Variable Bias</a></li>
+<li class="chapter" data-level="6.2" data-path="6.2-tmrm.html"><a href="6.2-tmrm.html"><i class="fa fa-check"></i><b>6.2</b> The Multiple Regression Model</a></li>
+<li class="chapter" data-level="6.3" data-path="6.3-mofimr.html"><a href="6.3-mofimr.html"><i class="fa fa-check"></i><b>6.3</b> Measures of Fit in Multiple Regression</a></li>
+<li class="chapter" data-level="6.4" data-path="6.4-ols-assumptions-in-multiple-regression.html"><a href="6.4-ols-assumptions-in-multiple-regression.html"><i class="fa fa-check"></i><b>6.4</b> OLS Assumptions in Multiple Regression</a>
+<ul>
+<li class="chapter" data-level="" data-path="6.4-ols-assumptions-in-multiple-regression.html"><a href="6.4-ols-assumptions-in-multiple-regression.html#multicollinearity"><i class="fa fa-check"></i>Multicollinearity</a></li>
+<li class="chapter" data-level="" data-path="6.4-ols-assumptions-in-multiple-regression.html"><a href="6.4-ols-assumptions-in-multiple-regression.html#simulation-study-imperfect-multicollinearity"><i class="fa fa-check"></i>Simulation Study: Imperfect Multicollinearity</a></li>
+</ul></li>
+<li class="chapter" data-level="6.5" data-path="6.5-the-distribution-of-the-ols-estimators-in-multiple-regression.html"><a href="6.5-the-distribution-of-the-ols-estimators-in-multiple-regression.html"><i class="fa fa-check"></i><b>6.5</b> The Distribution of the OLS Estimators in Multiple Regression</a></li>
+<li class="chapter" data-level="6.6" data-path="6.6-exercises-6.html"><a href="6.6-exercises-6.html"><i class="fa fa-check"></i><b>6.6</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="7-htaciimr.html"><a href="7-htaciimr.html"><i class="fa fa-check"></i><b>7</b> Hypothesis Tests and Confidence Intervals in Multiple Regression</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="7.1-hypothesis-tests-and-confidence-intervals-for-a-single-coefficient.html"><a href="7.1-hypothesis-tests-and-confidence-intervals-for-a-single-coefficient.html"><i class="fa fa-check"></i><b>7.1</b> Hypothesis Tests and Confidence Intervals for a Single Coefficient</a></li>
+<li class="chapter" data-level="7.2" data-path="7.2-an-application-to-test-scores-and-the-student-teacher-ratio.html"><a href="7.2-an-application-to-test-scores-and-the-student-teacher-ratio.html"><i class="fa fa-check"></i><b>7.2</b> An Application to Test Scores and the Student-Teacher Ratio</a>
+<ul>
+<li class="chapter" data-level="" data-path="7.2-an-application-to-test-scores-and-the-student-teacher-ratio.html"><a href="7.2-an-application-to-test-scores-and-the-student-teacher-ratio.html#another-augmentation-of-the-model"><i class="fa fa-check"></i>Another Augmentation of the Model</a></li>
+</ul></li>
+<li class="chapter" data-level="7.3" data-path="7.3-joint-hypothesis-testing-using-the-f-statistic.html"><a href="7.3-joint-hypothesis-testing-using-the-f-statistic.html"><i class="fa fa-check"></i><b>7.3</b> Joint Hypothesis Testing Using the F-Statistic</a></li>
+<li class="chapter" data-level="7.4" data-path="7.4-confidence-sets-for-multiple-coefficients.html"><a href="7.4-confidence-sets-for-multiple-coefficients.html"><i class="fa fa-check"></i><b>7.4</b> Confidence Sets for Multiple Coefficients</a></li>
+<li class="chapter" data-level="7.5" data-path="7.5-model-specification-for-multiple-regression.html"><a href="7.5-model-specification-for-multiple-regression.html"><i class="fa fa-check"></i><b>7.5</b> Model Specification for Multiple Regression</a>
+<ul>
+<li class="chapter" data-level="" data-path="7.5-model-specification-for-multiple-regression.html"><a href="7.5-model-specification-for-multiple-regression.html#model-specification-in-theory-and-in-practice"><i class="fa fa-check"></i>Model Specification in Theory and in Practice</a></li>
+</ul></li>
+<li class="chapter" data-level="7.6" data-path="7.6-analysis-of-the-test-score-data-set.html"><a href="7.6-analysis-of-the-test-score-data-set.html"><i class="fa fa-check"></i><b>7.6</b> Analysis of the Test Score Data Set</a></li>
+<li class="chapter" data-level="7.7" data-path="7.7-exercises-7.html"><a href="7.7-exercises-7.html"><i class="fa fa-check"></i><b>7.7</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="8-nrf.html"><a href="8-nrf.html"><i class="fa fa-check"></i><b>8</b> Nonlinear Regression Functions</a>
+<ul>
+<li class="chapter" data-level="8.1" data-path="8.1-a-general-strategy-for-modelling-nonlinear-regression-functions.html"><a href="8.1-a-general-strategy-for-modelling-nonlinear-regression-functions.html"><i class="fa fa-check"></i><b>8.1</b> A General Strategy for Modelling Nonlinear Regression Functions</a></li>
+<li class="chapter" data-level="8.2" data-path="8.2-nfoasiv.html"><a href="8.2-nfoasiv.html"><i class="fa fa-check"></i><b>8.2</b> Nonlinear Functions of a Single Independent Variable</a>
+<ul>
+<li class="chapter" data-level="" data-path="8.2-nfoasiv.html"><a href="8.2-nfoasiv.html#polynomials"><i class="fa fa-check"></i>Polynomials</a></li>
+<li class="chapter" data-level="" data-path="8.2-nfoasiv.html"><a href="8.2-nfoasiv.html#logarithms"><i class="fa fa-check"></i>Logarithms</a></li>
+</ul></li>
+<li class="chapter" data-level="8.3" data-path="8.3-interactions-between-independent-variables.html"><a href="8.3-interactions-between-independent-variables.html"><i class="fa fa-check"></i><b>8.3</b> Interactions Between Independent Variables</a></li>
+<li class="chapter" data-level="8.4" data-path="8.4-nonlinear-effects-on-test-scores-of-the-student-teacher-ratio.html"><a href="8.4-nonlinear-effects-on-test-scores-of-the-student-teacher-ratio.html"><i class="fa fa-check"></i><b>8.4</b> Nonlinear Effects on Test Scores of the Student-Teacher Ratio</a></li>
+<li class="chapter" data-level="8.5" data-path="8.5-exercises-8.html"><a href="8.5-exercises-8.html"><i class="fa fa-check"></i><b>8.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="9-asbomr.html"><a href="9-asbomr.html"><i class="fa fa-check"></i><b>9</b> Assessing Studies Based on Multiple Regression</a>
+<ul>
+<li class="chapter" data-level="9.1" data-path="9.1-internal-and-external-validity.html"><a href="9.1-internal-and-external-validity.html"><i class="fa fa-check"></i><b>9.1</b> Internal and External Validity</a></li>
+<li class="chapter" data-level="9.2" data-path="9.2-ttivomra.html"><a href="9.2-ttivomra.html"><i class="fa fa-check"></i><b>9.2</b> Threats to Internal Validity of Multiple Regression Analysis</a></li>
+<li class="chapter" data-level="9.3" data-path="9.3-internal-and-external-validity-when-the-regression-is-used-for-forecasting.html"><a href="9.3-internal-and-external-validity-when-the-regression-is-used-for-forecasting.html"><i class="fa fa-check"></i><b>9.3</b> Internal and External Validity when the Regression is Used for Forecasting</a></li>
+<li class="chapter" data-level="9.4" data-path="9.4-etsacs.html"><a href="9.4-etsacs.html"><i class="fa fa-check"></i><b>9.4</b> Example: Test Scores and Class Size</a></li>
+<li class="chapter" data-level="9.5" data-path="9.5-exercises-9.html"><a href="9.5-exercises-9.html"><i class="fa fa-check"></i><b>9.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="10" data-path="10-rwpd.html"><a href="10-rwpd.html"><i class="fa fa-check"></i><b>10</b> Regression with Panel Data</a>
+<ul>
+<li class="chapter" data-level="10.1" data-path="10.1-panel-data.html"><a href="10.1-panel-data.html"><i class="fa fa-check"></i><b>10.1</b> Panel Data</a></li>
+<li class="chapter" data-level="10.2" data-path="10.2-PDWTTP.html"><a href="10.2-PDWTTP.html"><i class="fa fa-check"></i><b>10.2</b> Panel Data with Two Time Periods: “Before and After” Comparisons</a></li>
+<li class="chapter" data-level="10.3" data-path="10.3-fixed-effects-regression.html"><a href="10.3-fixed-effects-regression.html"><i class="fa fa-check"></i><b>10.3</b> Fixed Effects Regression</a>
+<ul>
+<li class="chapter" data-level="" data-path="10.3-fixed-effects-regression.html"><a href="10.3-fixed-effects-regression.html#estimation-and-inference"><i class="fa fa-check"></i>Estimation and Inference</a></li>
+<li class="chapter" data-level="" data-path="10.3-fixed-effects-regression.html"><a href="10.3-fixed-effects-regression.html#application-to-traffic-deaths"><i class="fa fa-check"></i>Application to Traffic Deaths</a></li>
+</ul></li>
+<li class="chapter" data-level="10.4" data-path="10.4-regression-with-time-fixed-effects.html"><a href="10.4-regression-with-time-fixed-effects.html"><i class="fa fa-check"></i><b>10.4</b> Regression with Time Fixed Effects</a></li>
+<li class="chapter" data-level="10.5" data-path="10.5-tferaaseffer.html"><a href="10.5-tferaaseffer.html"><i class="fa fa-check"></i><b>10.5</b> The Fixed Effects Regression Assumptions and Standard Errors for Fixed Effects Regression</a></li>
+<li class="chapter" data-level="10.6" data-path="10.6-drunk-driving-laws-and-traffic-deaths.html"><a href="10.6-drunk-driving-laws-and-traffic-deaths.html"><i class="fa fa-check"></i><b>10.6</b> Drunk Driving Laws and Traffic Deaths</a></li>
+<li class="chapter" data-level="10.7" data-path="10.7-exercises-10.html"><a href="10.7-exercises-10.html"><i class="fa fa-check"></i><b>10.7</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="11" data-path="11-rwabdv.html"><a href="11-rwabdv.html"><i class="fa fa-check"></i><b>11</b> Regression with a Binary Dependent Variable</a>
+<ul>
+<li class="chapter" data-level="11.1" data-path="11.1-binary-dependent-variables-and-the-linear-probability-model.html"><a href="11.1-binary-dependent-variables-and-the-linear-probability-model.html"><i class="fa fa-check"></i><b>11.1</b> Binary Dependent Variables and the Linear Probability Model</a></li>
+<li class="chapter" data-level="11.2" data-path="11.2-palr.html"><a href="11.2-palr.html"><i class="fa fa-check"></i><b>11.2</b> Probit and Logit Regression</a>
+<ul>
+<li class="chapter" data-level="" data-path="11.2-palr.html"><a href="11.2-palr.html#probit-regression"><i class="fa fa-check"></i>Probit Regression</a></li>
+<li class="chapter" data-level="" data-path="11.2-palr.html"><a href="11.2-palr.html#logit-regression"><i class="fa fa-check"></i>Logit Regression</a></li>
+</ul></li>
+<li class="chapter" data-level="11.3" data-path="11.3-estimation-and-inference-in-the-logit-and-probit-models.html"><a href="11.3-estimation-and-inference-in-the-logit-and-probit-models.html"><i class="fa fa-check"></i><b>11.3</b> Estimation and Inference in the Logit and Probit Models</a></li>
+<li class="chapter" data-level="11.4" data-path="11.4-application-to-the-boston-hmda-data.html"><a href="11.4-application-to-the-boston-hmda-data.html"><i class="fa fa-check"></i><b>11.4</b> Application to the Boston HMDA Data</a></li>
+<li class="chapter" data-level="11.5" data-path="11.5-exercises-11.html"><a href="11.5-exercises-11.html"><i class="fa fa-check"></i><b>11.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="12" data-path="12-ivr.html"><a href="12-ivr.html"><i class="fa fa-check"></i><b>12</b> Instrumental Variables Regression</a>
+<ul>
+<li class="chapter" data-level="12.1" data-path="12.1-TIVEWASRAASI.html"><a href="12.1-TIVEWASRAASI.html"><i class="fa fa-check"></i><b>12.1</b> The IV Estimator with a Single Regressor and a Single Instrument</a></li>
+<li class="chapter" data-level="12.2" data-path="12.2-TGIVRM.html"><a href="12.2-TGIVRM.html"><i class="fa fa-check"></i><b>12.2</b> The General IV Regression Model</a></li>
+<li class="chapter" data-level="12.3" data-path="12.3-civ.html"><a href="12.3-civ.html"><i class="fa fa-check"></i><b>12.3</b> Checking Instrument Validity</a></li>
+<li class="chapter" data-level="12.4" data-path="12.4-attdfc.html"><a href="12.4-attdfc.html"><i class="fa fa-check"></i><b>12.4</b> Application to the Demand for Cigarettes</a></li>
+<li class="chapter" data-level="12.5" data-path="12.5-where-do-valid-instruments-come-from.html"><a href="12.5-where-do-valid-instruments-come-from.html"><i class="fa fa-check"></i><b>12.5</b> Where Do Valid Instruments Come From?</a></li>
+<li class="chapter" data-level="12.6" data-path="12.6-exercises-12.html"><a href="12.6-exercises-12.html"><i class="fa fa-check"></i><b>12.6</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="13" data-path="13-eaqe.html"><a href="13-eaqe.html"><i class="fa fa-check"></i><b>13</b> Experiments and Quasi-Experiments</a>
+<ul>
+<li class="chapter" data-level="13.1" data-path="13.1-poceaie.html"><a href="13.1-poceaie.html"><i class="fa fa-check"></i><b>13.1</b> Potential Outcomes, Causal Effects and Idealized Experiments</a></li>
+<li class="chapter" data-level="13.2" data-path="13.2-threats-to-validity-of-experiments.html"><a href="13.2-threats-to-validity-of-experiments.html"><i class="fa fa-check"></i><b>13.2</b> Threats to Validity of Experiments</a></li>
+<li class="chapter" data-level="13.3" data-path="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html"><i class="fa fa-check"></i><b>13.3</b> Experimental Estimates of the Effect of Class Size Reductions</a>
+<ul>
+<li class="chapter" data-level="" data-path="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#experimental-design-and-the-data-set"><i class="fa fa-check"></i>Experimental Design and the Data Set</a></li>
+<li class="chapter" data-level="" data-path="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#analysis-of-the-star-data"><i class="fa fa-check"></i>Analysis of the STAR Data</a></li>
+</ul></li>
+<li class="chapter" data-level="13.4" data-path="13.4-qe.html"><a href="13.4-qe.html"><i class="fa fa-check"></i><b>13.4</b> Quasi Experiments</a>
+<ul>
+<li class="chapter" data-level="" data-path="13.4-qe.html"><a href="13.4-qe.html#the-differences-in-differences-estimator"><i class="fa fa-check"></i>The Differences-in-Differences Estimator</a></li>
+<li class="chapter" data-level="" data-path="13.4-qe.html"><a href="13.4-qe.html#regression-discontinuity-estimators"><i class="fa fa-check"></i>Regression Discontinuity Estimators</a></li>
+</ul></li>
+<li class="chapter" data-level="13.5" data-path="13.5-exercises-13.html"><a href="13.5-exercises-13.html"><i class="fa fa-check"></i><b>13.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="14" data-path="14-ittsraf.html"><a href="14-ittsraf.html"><i class="fa fa-check"></i><b>14</b> Introduction to Time Series Regression and Forecasting</a>
+<ul>
+<li class="chapter" data-level="14.1" data-path="14.1-using-regression-models-for-forecasting.html"><a href="14.1-using-regression-models-for-forecasting.html"><i class="fa fa-check"></i><b>14.1</b> Using Regression Models for Forecasting</a></li>
+<li class="chapter" data-level="14.2" data-path="14.2-tsdasc.html"><a href="14.2-tsdasc.html"><i class="fa fa-check"></i><b>14.2</b> Time Series Data and Serial Correlation</a>
+<ul>
+<li class="chapter" data-level="" data-path="14.2-tsdasc.html"><a href="14.2-tsdasc.html#notation-lags-differences-logarithms-and-growth-rates"><i class="fa fa-check"></i>Notation, Lags, Differences, Logarithms and Growth Rates</a></li>
+</ul></li>
+<li class="chapter" data-level="14.3" data-path="14.3-autoregressions.html"><a href="14.3-autoregressions.html"><i class="fa fa-check"></i><b>14.3</b> Autoregressions</a>
+<ul>
+<li><a href="14.3-autoregressions.html#autoregressive-models-of-order-p">Autoregressive Models of Order <span class="math inline">\(p\)</span></a></li>
+</ul></li>
+<li class="chapter" data-level="14.4" data-path="14.4-cybtmpi.html"><a href="14.4-cybtmpi.html"><i class="fa fa-check"></i><b>14.4</b> Can You Beat the Market? (Part I)</a></li>
+<li class="chapter" data-level="14.5" data-path="14.5-apatadlm.html"><a href="14.5-apatadlm.html"><i class="fa fa-check"></i><b>14.5</b> Additional Predictors and The ADL Model</a>
+<ul>
+<li class="chapter" data-level="" data-path="14.5-apatadlm.html"><a href="14.5-apatadlm.html#forecast-uncertainty-and-forecast-intervals"><i class="fa fa-check"></i>Forecast Uncertainty and Forecast Intervals</a></li>
+</ul></li>
+<li class="chapter" data-level="14.6" data-path="14.6-llsuic.html"><a href="14.6-llsuic.html"><i class="fa fa-check"></i><b>14.6</b> Lag Length Selection Using Information Criteria</a></li>
+<li class="chapter" data-level="14.7" data-path="14.7-nit.html"><a href="14.7-nit.html"><i class="fa fa-check"></i><b>14.7</b> Nonstationarity I: Trends</a></li>
+<li class="chapter" data-level="14.8" data-path="14.8-niib.html"><a href="14.8-niib.html"><i class="fa fa-check"></i><b>14.8</b> Nonstationarity II: Breaks</a></li>
+<li class="chapter" data-level="14.9" data-path="14.9-can-you-beat-the-market-part-ii.html"><a href="14.9-can-you-beat-the-market-part-ii.html"><i class="fa fa-check"></i><b>14.9</b> Can You Beat the Market? (Part II)</a></li>
+</ul></li>
+<li class="chapter" data-level="15" data-path="15-eodce.html"><a href="15-eodce.html"><i class="fa fa-check"></i><b>15</b> Estimation of Dynamic Causal Effects</a>
+<ul>
+<li class="chapter" data-level="15.1" data-path="15.1-the-orange-juice-data.html"><a href="15.1-the-orange-juice-data.html"><i class="fa fa-check"></i><b>15.1</b> The Orange Juice Data</a></li>
+<li class="chapter" data-level="15.2" data-path="15.2-dynamic-causal-effects.html"><a href="15.2-dynamic-causal-effects.html"><i class="fa fa-check"></i><b>15.2</b> Dynamic Causal Effects</a></li>
+<li class="chapter" data-level="15.3" data-path="15.3-dynamic-multipliers-and-cumulative-dynamic-multipliers.html"><a href="15.3-dynamic-multipliers-and-cumulative-dynamic-multipliers.html"><i class="fa fa-check"></i><b>15.3</b> Dynamic Multipliers and Cumulative Dynamic Multipliers</a></li>
+<li class="chapter" data-level="15.4" data-path="15.4-hac-standard-errors.html"><a href="15.4-hac-standard-errors.html"><i class="fa fa-check"></i><b>15.4</b> HAC Standard Errors</a></li>
+<li class="chapter" data-level="15.5" data-path="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html"><i class="fa fa-check"></i><b>15.5</b> Estimation of Dynamic Causal Effects with Strictly Exogeneous Regressors</a></li>
+<li class="chapter" data-level="15.6" data-path="15.6-orange-juice-prices-and-cold-weather.html"><a href="15.6-orange-juice-prices-and-cold-weather.html"><i class="fa fa-check"></i><b>15.6</b> Orange Juice Prices and Cold Weather</a></li>
+</ul></li>
+<li class="chapter" data-level="16" data-path="16-atitsr.html"><a href="16-atitsr.html"><i class="fa fa-check"></i><b>16</b> Additional Topics in Time Series Regression</a>
+<ul>
+<li class="chapter" data-level="16.1" data-path="16.1-vector-autoregressions.html"><a href="16.1-vector-autoregressions.html"><i class="fa fa-check"></i><b>16.1</b> Vector Autoregressions</a></li>
+<li class="chapter" data-level="16.2" data-path="16.2-ooiatdfglsurt.html"><a href="16.2-ooiatdfglsurt.html"><i class="fa fa-check"></i><b>16.2</b> Orders of Integration and the DF-GLS Unit Root Test</a></li>
+<li class="chapter" data-level="16.3" data-path="16.3-cointegration.html"><a href="16.3-cointegration.html"><i class="fa fa-check"></i><b>16.3</b> Cointegration</a></li>
+<li class="chapter" data-level="16.4" data-path="16.4-volatility-clustering-and-autoregressive-conditional-heteroskedasticity.html"><a href="16.4-volatility-clustering-and-autoregressive-conditional-heteroskedasticity.html"><i class="fa fa-check"></i><b>16.4</b> Volatility Clustering and Autoregressive Conditional Heteroskedasticity</a>
+<ul>
+<li class="chapter" data-level="" data-path="16.4-volatility-clustering-and-autoregressive-conditional-heteroskedasticity.html"><a href="16.4-volatility-clustering-and-autoregressive-conditional-heteroskedasticity.html#arch-and-garch-models"><i class="fa fa-check"></i>ARCH and GARCH Models</a></li>
+<li class="chapter" data-level="" data-path="16.4-volatility-clustering-and-autoregressive-conditional-heteroskedasticity.html"><a href="16.4-volatility-clustering-and-autoregressive-conditional-heteroskedasticity.html#application-to-stock-price-volatility"><i class="fa fa-check"></i>Application to Stock Price Volatility</a></li>
+<li class="chapter" data-level="" data-path="16.4-volatility-clustering-and-autoregressive-conditional-heteroskedasticity.html"><a href="16.4-volatility-clustering-and-autoregressive-conditional-heteroskedasticity.html#summary-8"><i class="fa fa-check"></i>Summary</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Introduction to Econometrics with R</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div class = rmdreview>
+This book is in <b>Open Review</b>. We want your feedback to make the book better for you and other students. You may annotate some text by <span style="background-color: #3297FD; color: white">selecting it with the cursor</span> and then click the <i class="h-icon-annotate"></i> on the pop-up menu. You can also see the annotations of others: click the <i class="h-icon-chevron-left"></i> in the upper right hand corner of the page <i class="fa fa-arrow-circle-right  fa-rotate-315" aria-hidden="true"></i>
+</div>
+<div id="estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors" class="section level2" number="15.5">
+<h2><span class="header-section-number">15.5</span> Estimation of Dynamic Causal Effects with Strictly Exogeneous Regressors</h2>
+<p>In general, the errors in a distributed lag model are correlated which necessitates usage of HAC standard errors for valid inference. If, however, the assumption of exogeneity (the first assumption stated in Key Concept 15.1) is replaced by strict exogeneity, that is <span class="math display">\[E(u_t\vert \dots, X_{t+1}, X_{t}, X_{t-1}, \dots) = 0,\]</span> more efficient approaches than OLS estimation of the coefficients are available. For a general distributed lag model with <span class="math inline">\(r\)</span> lags and AR(<span class="math inline">\(p\)</span>) errors, these approaches are summarized in Key Concept 15.4.</p>
+<div id="KC15.4" class="keyconcept">
+<h3 class="right">
+Key Concept 15.4
+</h3>
+<h3 class="left">
+Estimation of Dynamic Multipliers Under Strict Exogeneity
+</h3>
+<p>
+<p>Consider the general distributed lag model with <span class="math inline">\(r\)</span> lags and errors following an AR(<span class="math inline">\(p\)</span>) process,
+<span class="math display" id="eq:dlmarerrors" id="eq:dlmar">\[\begin{align}
+  Y_t =&amp; \, \beta_0 + \beta_1 X_t + \beta_2 X_{t-1} + \dots + \beta_{r+1} X_{t-r} + u_t \tag{15.7} \\
+  u_t =&amp; \, \phi_1 u_{t-1} + \phi u_{t-2} + \dots + \phi_p u_{t-p} + \overset{\sim}{u}_t. \tag{15.8}
+\end{align}\]</span>
+Under strict exogeneity of <span class="math inline">\(X_t\)</span>, one may rewrite the above model in the ADL specification
+<span class="math display">\[\begin{align*}
+  Y_t =&amp; \, \alpha_0 + \phi_1 Y_{t-1} + \phi_2 Y_{t-2} + \dots + \phi_p Y_{t-p} \\
+      &amp;+ \, \delta_0 X_t + \delta_1 X_{t-1} + \dots + \delta_q X_{t-q} + \overset{\sim}{u}_t
+\end{align*}\]</span>
+where <span class="math inline">\(q=r+p\)</span> and compute estimates of the dynamic multipliers <span class="math inline">\(\beta_1, \beta_2, \dots, \beta_{r+1}\)</span> using OLS estimates of <span class="math inline">\(\phi_1, \phi_2, \dots, \phi_p, \delta_0, \delta_1, \dots, \delta_q\)</span>.</p>
+<p>An alternative is to estimate the dynamic multipliers using feasible GLS, that is to apply the OLS estimator to a quasi-difference specification of <a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#eq:dlmar">(15.7)</a>. Under strict exogeneity, the feasible GLS approach is the BLUE estimator for the dynamic multipliers in large samples.</p>
+On the one hand, as demonstrated in Chapter 15.5 of the book, OLS estimation of the ADL representation can be beneficial for estimation of the dynamic multipliers in large distributed lag models because it allows for a more parsimonious model that may be a good approximation to the large model. On the other hand, the GLS approach is more efficient than the ADL estimator if the sample size is large.
+</p>
+</div>
+<p>We shortly review how the different representations of a small distributed lag model can be obtained and show how this specification can be estimated by OLS and GLS using <tt>R</tt>.</p>
+<p>The model is
+<span class="math display" id="eq:dldynamic">\[\begin{align}
+  Y_t = \beta_0 + \beta_1 X_t + \beta_2 X_{t-1} + u_t, \tag{15.9}
+\end{align}\]</span>
+so a change in <span class="math inline">\(X\)</span> is modeled to effect <span class="math inline">\(Y\)</span> contemporaneously (<span class="math inline">\(\beta_1\)</span>) and in the next period (<span class="math inline">\(\beta_2\)</span>). The error term <span class="math inline">\(u_t\)</span> is assumed to follow an AR(<span class="math inline">\(1\)</span>) process,<span class="math display">\[u_t = \phi_1 u_{t-1} + \overset{\sim}{u_t},\]</span> where <span class="math inline">\(\overset{\sim}{u_t}\)</span> is serially uncorrelated.</p>
+<p>One can show that the ADL representation of this model is
+<span class="math display" id="eq:adl21dynamic">\[\begin{align}
+  Y_t = \alpha_0 + \phi_1 Y_{t-1} + \delta_0 X_t + \delta_1 X_{t-1} + \delta_2 X_{t-2} + \overset{\sim}{u}_t, \tag{15.10}
+\end{align}\]</span>
+with the restrictions
+<span class="math display">\[\begin{align*}
+  \beta_1 =&amp; \, \delta_0, \\
+  \beta_2 =&amp; \, \delta_1 + \phi_1 \delta_0,
+\end{align*}\]</span>
+see p. 657 of the book.</p>
+<div id="quasi-differences" class="section level4 unnumbered">
+<h4>Quasi-Differences</h4>
+<p>Another way of writing the ADL(<span class="math inline">\(1\)</span>,<span class="math inline">\(2\)</span>) representation <a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#eq:adl21dynamic">(15.10)</a> is the <em>quasi-difference model</em>
+<span class="math display" id="eq:qdm">\[\begin{align}
+  \overset{\sim}{Y}_t = \alpha_0 + \beta_1 \overset{\sim}{X}_t + \beta_2   \overset{\sim}{X}_{t-1} + \overset{\sim}{u}_t, \tag{15.11}
+\end{align}\]</span>
+where <span class="math inline">\(\overset{\sim}{Y}_t = Y_t - \phi_1 Y_{t-1}\)</span> and <span class="math inline">\(\overset{\sim}{X}_t = X_t - \phi_1 X_{t-1}\)</span>. Notice that the error term <span class="math inline">\(\overset{\sim}{u}_t\)</span> is uncorrelated in both models and, as shown in Chapter 15.5 of the book, <span class="math display">\[E(u_t\vert X_{t+1}, X_t, X_{t-1}, \dots) = 0,\]</span> which is implied by the assumption of strict exogeneity.</p>
+<p>We continue by simulating a time series of <span class="math inline">\(500\)</span> observations using the model <a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#eq:dldynamic">(15.9)</a> with <span class="math inline">\(\beta_1 = 0.1\)</span>, <span class="math inline">\(\beta_2 = 0.25\)</span>, <span class="math inline">\(\phi = 0.5\)</span> and <span class="math inline">\(\overset{\sim}{u}_t \sim \mathcal{N}(0,1)\)</span> and estimate the different representations, starting with the distributed lag model <a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#eq:dldynamic">(15.9)</a>.</p>
+<div class="sourceCode" id="cb423"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb423-1"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb423-1" aria-hidden="true" tabindex="-1"></a><span class="co"># set seed for reproducibility</span></span>
+<span id="cb423-2"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb423-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb423-3"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb423-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb423-4"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb423-4" aria-hidden="true" tabindex="-1"></a><span class="co"># simulate a time series with serially correlated errors</span></span>
+<span id="cb423-5"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb423-5" aria-hidden="true" tabindex="-1"></a>obs <span class="ot">&lt;-</span> <span class="dv">501</span></span>
+<span id="cb423-6"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb423-6" aria-hidden="true" tabindex="-1"></a>eps <span class="ot">&lt;-</span> <span class="fu">arima.sim</span>(<span class="at">n =</span> obs<span class="dv">-1</span> , <span class="at">model =</span> <span class="fu">list</span>(<span class="at">ar =</span> <span class="fl">0.5</span>))</span>
+<span id="cb423-7"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb423-7" aria-hidden="true" tabindex="-1"></a>X <span class="ot">&lt;-</span> <span class="fu">arima.sim</span>(<span class="at">n =</span> obs, <span class="at">model =</span> <span class="fu">list</span>(<span class="at">ar =</span> <span class="fl">0.25</span>))</span>
+<span id="cb423-8"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb423-8" aria-hidden="true" tabindex="-1"></a>Y <span class="ot">&lt;-</span> <span class="fl">0.1</span> <span class="sc">*</span> X[<span class="sc">-</span><span class="dv">1</span>] <span class="sc">+</span> <span class="fl">0.25</span> <span class="sc">*</span> X[<span class="sc">-</span>obs] <span class="sc">+</span> eps</span>
+<span id="cb423-9"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb423-9" aria-hidden="true" tabindex="-1"></a>X <span class="ot">&lt;-</span> <span class="fu">ts</span>(X[<span class="sc">-</span><span class="dv">1</span>])</span>
+<span id="cb423-10"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb423-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb423-11"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb423-11" aria-hidden="true" tabindex="-1"></a><span class="co"># estimate the distributed lag model</span></span>
+<span id="cb423-12"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb423-12" aria-hidden="true" tabindex="-1"></a>dlm <span class="ot">&lt;-</span> <span class="fu">dynlm</span>(Y <span class="sc">~</span> X <span class="sc">+</span> <span class="fu">L</span>(X))</span></code></pre></div>
+<p>Let us check that the residuals of this model exhibit autocorrelation using <tt>acf()</tt>.</p>
+<div class="sourceCode" id="cb424"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb424-1"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb424-1" aria-hidden="true" tabindex="-1"></a><span class="co"># check that the residuals are serially correlated</span></span>
+<span id="cb424-2"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb424-2" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(<span class="fu">residuals</span>(dlm))</span></code></pre></div>
+<p><img src="ITER_files/figure-html/unnamed-chunk-687-1.png" width="80%" style="display: block; margin: auto;" /></p>
+<p>In particular, the pattern reveals that the residuals follow an autoregressive process, as the sample autocorrelation function decays quickly for the first few lags and is probably zero for higher lag orders. In any case, HAC standard errors should be used.</p>
+<div class="sourceCode" id="cb425"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb425-1"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb425-1" aria-hidden="true" tabindex="-1"></a><span class="co"># coefficient summary using the Newey-West SE estimates</span></span>
+<span id="cb425-2"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb425-2" aria-hidden="true" tabindex="-1"></a><span class="fu">coeftest</span>(dlm, <span class="at">vcov =</span> NeweyWest, <span class="at">prewhite =</span> F, <span class="at">adjust =</span> T)</span>
+<span id="cb425-3"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb425-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb425-4"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb425-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; t test of coefficients:</span></span>
+<span id="cb425-5"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb425-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb425-6"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb425-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;             Estimate Std. Error t value  Pr(&gt;|t|)    </span></span>
+<span id="cb425-7"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb425-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; (Intercept) 0.038340   0.073411  0.5223  0.601717    </span></span>
+<span id="cb425-8"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb425-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; X           0.123661   0.046710  2.6474  0.008368 ** </span></span>
+<span id="cb425-9"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb425-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; L(X)        0.247406   0.046377  5.3347 1.458e-07 ***</span></span>
+<span id="cb425-10"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb425-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ---</span></span>
+<span id="cb425-11"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb425-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span></code></pre></div>
+</div>
+<div id="ols-estimation-of-the-adl-model" class="section level4 unnumbered">
+<h4>OLS Estimation of the ADL Model</h4>
+<p>Next, we estimate the ADL(<span class="math inline">\(1\)</span>,<span class="math inline">\(2\)</span>) model <a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#eq:adl21dynamic">(15.10)</a> using OLS. The errors are uncorrelated in this representation of the model. This statement is supported by a plot of the sample autocorrelation function of the residual series.</p>
+<div class="sourceCode" id="cb426"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb426-1"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb426-1" aria-hidden="true" tabindex="-1"></a><span class="co"># estimate the ADL(2,1) representation of the distributed lag model</span></span>
+<span id="cb426-2"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb426-2" aria-hidden="true" tabindex="-1"></a>adl21_dynamic <span class="ot">&lt;-</span> <span class="fu">dynlm</span>(Y <span class="sc">~</span> <span class="fu">L</span>(Y) <span class="sc">+</span> X <span class="sc">+</span> <span class="fu">L</span>(X, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>))</span>
+<span id="cb426-3"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb426-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb426-4"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb426-4" aria-hidden="true" tabindex="-1"></a><span class="co"># plot the sample autocorrelaltions of residuals</span></span>
+<span id="cb426-5"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb426-5" aria-hidden="true" tabindex="-1"></a><span class="fu">acf</span>(adl21_dynamic<span class="sc">$</span>residuals)</span></code></pre></div>
+<p><img src="ITER_files/figure-html/unnamed-chunk-689-1.png" width="80%" style="display: block; margin: auto;" /></p>
+<p>The estimated coefficients of <code>adl21_dynamic$coefficients</code> are <em>not</em> the dynamic multipliers we are interested in, but instead can be computed according to the restrictions in <a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#eq:adl21dynamic">(15.10)</a>, where the true coefficients are replaced by the OLS estimates.</p>
+<div class="sourceCode" id="cb427"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb427-1"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb427-1" aria-hidden="true" tabindex="-1"></a><span class="co"># compute estimated dynamic effects using coefficient restrictions</span></span>
+<span id="cb427-2"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb427-2" aria-hidden="true" tabindex="-1"></a><span class="co"># in the ADL(2,1) representation</span></span>
+<span id="cb427-3"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb427-3" aria-hidden="true" tabindex="-1"></a>t <span class="ot">&lt;-</span> adl21_dynamic<span class="sc">$</span>coefficients</span>
+<span id="cb427-4"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb427-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb427-5"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb427-5" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="st">&quot;hat_beta_1&quot;</span> <span class="ot">=</span> t[<span class="dv">3</span>],</span>
+<span id="cb427-6"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb427-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;hat_beta_2&quot;</span> <span class="ot">=</span> t[<span class="dv">4</span>] <span class="sc">+</span> t[<span class="dv">3</span>] <span class="sc">*</span> t[<span class="dv">2</span>])</span>
+<span id="cb427-7"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb427-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;          hat_beta_1.X hat_beta_2.L(X, 1:2)1 </span></span>
+<span id="cb427-8"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb427-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;             0.1176425             0.2478484</span></span></code></pre></div>
+</div>
+<div id="gls-estimation" class="section level4 unnumbered">
+<h4>GLS Estimation</h4>
+<p>Strict exogeneity allows for OLS estimation of the quasi-difference model <a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#eq:qdm">(15.11)</a>. The idea of applying the OLS estimator to a model where the variables are linearly transformed, such that the model errors are uncorrelated and homoskedastic, is called <em>generalized least squares</em> (GLS).</p>
+<p>The OLS estimator in <a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#eq:qdm">(15.11)</a> is called the <em>infeasible GLS</em> estimator because <span class="math inline">\(\overset{\sim}{Y}\)</span> and <span class="math inline">\(\overset{\sim}{X}\)</span> cannot be computed without knowing <span class="math inline">\(\phi_1\)</span>, the autoregressive coefficient in the error AR(<span class="math inline">\(1\)</span>) model, which is generally unknown in practice.</p>
+<p>Assume we knew that <span class="math inline">\(\phi = 0.5\)</span>. We then may obtain the infeasible GLS estimates of the dynamic multipliers in <a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#eq:dldynamic">(15.9)</a> by applying OLS to the transformed data.</p>
+<div class="sourceCode" id="cb428"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb428-1"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb428-1" aria-hidden="true" tabindex="-1"></a><span class="co"># GLS: estimate quasi-differenced specification by OLS</span></span>
+<span id="cb428-2"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb428-2" aria-hidden="true" tabindex="-1"></a>iGLS_dynamic <span class="ot">&lt;-</span> <span class="fu">dynlm</span>(<span class="fu">I</span>(Y<span class="sc">-</span> <span class="fl">0.5</span> <span class="sc">*</span> <span class="fu">L</span>(Y)) <span class="sc">~</span> <span class="fu">I</span>(X <span class="sc">-</span> <span class="fl">0.5</span> <span class="sc">*</span> <span class="fu">L</span>(X)) <span class="sc">+</span> <span class="fu">I</span>(<span class="fu">L</span>(X) <span class="sc">-</span> <span class="fl">0.5</span> <span class="sc">*</span> <span class="fu">L</span>(X, <span class="dv">2</span>)))</span>
+<span id="cb428-3"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb428-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb428-4"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb428-4" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(iGLS_dynamic)</span>
+<span id="cb428-5"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb428-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb428-6"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb428-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Time series regression with &quot;ts&quot; data:</span></span>
+<span id="cb428-7"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb428-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Start = 3, End = 500</span></span>
+<span id="cb428-8"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb428-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb428-9"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb428-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Call:</span></span>
+<span id="cb428-10"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb428-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; dynlm(formula = I(Y - 0.5 * L(Y)) ~ I(X - 0.5 * L(X)) + I(L(X) - </span></span>
+<span id="cb428-11"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb428-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     0.5 * L(X, 2)))</span></span>
+<span id="cb428-12"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb428-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb428-13"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb428-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Residuals:</span></span>
+<span id="cb428-14"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb428-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     Min      1Q  Median      3Q     Max </span></span>
+<span id="cb428-15"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb428-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -3.0325 -0.6375 -0.0499  0.6658  3.7724 </span></span>
+<span id="cb428-16"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb428-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb428-17"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb428-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Coefficients:</span></span>
+<span id="cb428-18"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb428-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                         Estimate Std. Error t value Pr(&gt;|t|)    </span></span>
+<span id="cb428-19"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb428-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; (Intercept)              0.01620    0.04564   0.355  0.72273    </span></span>
+<span id="cb428-20"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb428-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; I(X - 0.5 * L(X))        0.12000    0.04237   2.832  0.00481 ** </span></span>
+<span id="cb428-21"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb428-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; I(L(X) - 0.5 * L(X, 2))  0.25266    0.04237   5.963 4.72e-09 ***</span></span>
+<span id="cb428-22"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb428-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ---</span></span>
+<span id="cb428-23"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb428-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span>
+<span id="cb428-24"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb428-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb428-25"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb428-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Residual standard error: 1.017 on 495 degrees of freedom</span></span>
+<span id="cb428-26"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb428-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Multiple R-squared:  0.07035,    Adjusted R-squared:  0.0666 </span></span>
+<span id="cb428-27"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb428-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; F-statistic: 18.73 on 2 and 495 DF,  p-value: 1.442e-08</span></span></code></pre></div>
+<p>The <em>feasible GLS</em> estimator uses preliminary estimation of the coefficients in the presumed error term model, computes the quasi-differenced data and then estimates the model using OLS. This idea was introduced by <span class="citation">Cochrane and Orcutt (<a href="#ref-cochrane1949" role="doc-biblioref">1949</a>)</span> and can be extended by continuing this process iteratively. Such a procedure is implemented in the function <tt>cochrane.orcutt()</tt> from the package <tt>orcutt</tt>.</p>
+<div class="sourceCode" id="cb429"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb429-1"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb429-1" aria-hidden="true" tabindex="-1"></a>X_t <span class="ot">&lt;-</span> <span class="fu">c</span>(X[<span class="sc">-</span><span class="dv">1</span>])</span>
+<span id="cb429-2"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb429-2" aria-hidden="true" tabindex="-1"></a><span class="co"># create first lag</span></span>
+<span id="cb429-3"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb429-3" aria-hidden="true" tabindex="-1"></a>X_l1 <span class="ot">&lt;-</span> <span class="fu">c</span>(X[<span class="sc">-</span><span class="dv">500</span>])</span>
+<span id="cb429-4"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb429-4" aria-hidden="true" tabindex="-1"></a>Y_t <span class="ot">&lt;-</span> <span class="fu">c</span>(Y[<span class="sc">-</span><span class="dv">1</span>])</span>
+<span id="cb429-5"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb429-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb429-6"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb429-6" aria-hidden="true" tabindex="-1"></a><span class="co"># iterated cochrane-orcutt procedure</span></span>
+<span id="cb429-7"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb429-7" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">cochrane.orcutt</span>(<span class="fu">lm</span>(Y_t <span class="sc">~</span> X_t <span class="sc">+</span> X_l1)))</span>
+<span id="cb429-8"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb429-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Call:</span></span>
+<span id="cb429-9"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb429-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; lm(formula = Y_t ~ X_t + X_l1)</span></span>
+<span id="cb429-10"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb429-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb429-11"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb429-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;             Estimate Std. Error t value  Pr(&gt;|t|)    </span></span>
+<span id="cb429-12"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb429-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; (Intercept) 0.032885   0.085163   0.386   0.69956    </span></span>
+<span id="cb429-13"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb429-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; X_t         0.120128   0.042534   2.824   0.00493 ** </span></span>
+<span id="cb429-14"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb429-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; X_l1        0.252406   0.042538   5.934 5.572e-09 ***</span></span>
+<span id="cb429-15"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb429-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ---</span></span>
+<span id="cb429-16"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb429-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span>
+<span id="cb429-17"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb429-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb429-18"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb429-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Residual standard error: 1.0165 on 495 degrees of freedom</span></span>
+<span id="cb429-19"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb429-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Multiple R-squared:  0.0704 ,  Adjusted R-squared:  0.0666</span></span>
+<span id="cb429-20"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb429-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; F-statistic: 18.7 on 2 and 495 DF,  p-value: &lt; 1.429e-08</span></span>
+<span id="cb429-21"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb429-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb429-22"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb429-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Durbin-Watson statistic </span></span>
+<span id="cb429-23"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb429-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; (original):    1.06907 , p-value: 1.05e-25</span></span>
+<span id="cb429-24"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb429-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; (transformed): 1.98192 , p-value: 4.246e-01</span></span></code></pre></div>
+<p>Some more sophisticated methods for GLS estimation are provided with the package <tt>nlme</tt>. The function <tt>gls()</tt> can be used to fit linear models by maximum likelihood estimation algorithms and allows to specify a correlation structure for the error term.</p>
+<div class="sourceCode" id="cb430"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb430-1"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb430-1" aria-hidden="true" tabindex="-1"></a><span class="co"># feasible GLS maximum likelihood estimation procedure</span></span>
+<span id="cb430-2"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb430-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">gls</span>(Y_t <span class="sc">~</span> X_t <span class="sc">+</span> X_l1, <span class="at">correlation =</span> <span class="fu">corAR1</span>()))</span>
+<span id="cb430-3"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb430-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Generalized least squares fit by REML</span></span>
+<span id="cb430-4"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb430-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   Model: Y_t ~ X_t + X_l1 </span></span>
+<span id="cb430-5"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb430-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   Data: NULL </span></span>
+<span id="cb430-6"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb430-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;        AIC     BIC    logLik</span></span>
+<span id="cb430-7"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb430-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   1451.847 1472.88 -720.9235</span></span>
+<span id="cb430-8"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb430-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb430-9"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb430-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Correlation Structure: AR(1)</span></span>
+<span id="cb430-10"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb430-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  Formula: ~1 </span></span>
+<span id="cb430-11"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb430-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  Parameter estimate(s):</span></span>
+<span id="cb430-12"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb430-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       Phi </span></span>
+<span id="cb430-13"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb430-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 0.4668343 </span></span>
+<span id="cb430-14"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb430-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb430-15"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb430-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Coefficients:</span></span>
+<span id="cb430-16"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb430-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                  Value  Std.Error  t-value p-value</span></span>
+<span id="cb430-17"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb430-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; (Intercept) 0.03929124 0.08530544 0.460595  0.6453</span></span>
+<span id="cb430-18"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb430-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; X_t         0.11986994 0.04252270 2.818963  0.0050</span></span>
+<span id="cb430-19"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb430-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; X_l1        0.25287471 0.04252497 5.946500  0.0000</span></span>
+<span id="cb430-20"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb430-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb430-21"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb430-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  Correlation: </span></span>
+<span id="cb430-22"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb430-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      (Intr) X_t  </span></span>
+<span id="cb430-23"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb430-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; X_t  0.039       </span></span>
+<span id="cb430-24"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb430-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; X_l1 0.037  0.230</span></span>
+<span id="cb430-25"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb430-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb430-26"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb430-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Standardized residuals:</span></span>
+<span id="cb430-27"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb430-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;         Min          Q1         Med          Q3         Max </span></span>
+<span id="cb430-28"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb430-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -3.00075518 -0.64255522 -0.05400347  0.69101814  3.28555793 </span></span>
+<span id="cb430-29"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb430-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb430-30"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb430-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Residual standard error: 1.14952 </span></span>
+<span id="cb430-31"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html#cb430-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Degrees of freedom: 499 total; 496 residual</span></span></code></pre></div>
+<p>Notice that in this example, the coefficient estimates produced by GLS are somewhat closer to their true values and that the standard errors are the smallest for the GLS estimator.</p>
+</div>
+</div>
+<h3>References</h3>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-cochrane1949" class="csl-entry">
+Cochrane, D., and G. H Orcutt. 1949. <span>“<span>A</span>pplication of <span>L</span>east <span>S</span>quares <span>R</span>egression to <span>R</span>elationships <span>C</span>ontaining <span>A</span>uto-<span>C</span>orrelated <span>E</span>rror <span>T</span>erms.”</span> <em><span>J</span>ournal of the <span>A</span>merican <span>S</span>tatistical <span>A</span>ssociation</em> 44 (245): 32–61. <a href="https://doi.org/10.1080/01621459.1949.10483290">https://doi.org/10.1080/01621459.1949.10483290</a>.
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="15.4-hac-standard-errors.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="15.6-orange-juice-prices-and-cold-weather.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": true,
+"facebook": true,
+"twitter": true,
+"linkedin": true,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "serif",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/mca91/EconometricsWithR/edit/master/15-ch15.Rmd",
+"text": "Edit"
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": ["ITER.pdf"],
+"search": {
+"engine": "lunr",
+"options": null
+},
+"toc": {
+"collapse": "subsection",
+"scroll_highlight": true
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

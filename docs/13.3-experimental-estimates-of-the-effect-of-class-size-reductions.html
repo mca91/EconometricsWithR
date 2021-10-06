@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>13.3 Experimental Estimates of the Effect of Class Size Reductions | Introduction to Econometrics with R</title>
+  <meta name="description" content="Beginners with little background in statistics and econometrics often have a hard time understanding the benefits of having programming skills for learning and applying Econometrics. ‘Introduction to Econometrics with R’ is an interactive companion to the well-received textbook ‘Introduction to Econometrics’ by James H. Stock and Mark W. Watson (2015). It gives a gentle introduction to the essentials of R programming and guides students in implementing the empirical applications presented throughout the textbook using the newly aquired skills. This is supported by interactive programming exercises generated with DataCamp Light and integration of interactive visualizations of central concepts which are based on the flexible JavaScript library D3.js." />
+  <meta name="generator" content="bookdown 0.23 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="13.3 Experimental Estimates of the Effect of Class Size Reductions | Introduction to Econometrics with R" />
+  <meta property="og:type" content="book" />
+  <meta property="og:url" content="https://www.econometrics-with-r.org/" />
+  <meta property="og:image" content="https://www.econometrics-with-r.org//images/cover.png" />
+  <meta property="og:description" content="Beginners with little background in statistics and econometrics often have a hard time understanding the benefits of having programming skills for learning and applying Econometrics. ‘Introduction to Econometrics with R’ is an interactive companion to the well-received textbook ‘Introduction to Econometrics’ by James H. Stock and Mark W. Watson (2015). It gives a gentle introduction to the essentials of R programming and guides students in implementing the empirical applications presented throughout the textbook using the newly aquired skills. This is supported by interactive programming exercises generated with DataCamp Light and integration of interactive visualizations of central concepts which are based on the flexible JavaScript library D3.js." />
+  <meta name="github-repo" content="mca91/EconometricsWithR" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="13.3 Experimental Estimates of the Effect of Class Size Reductions | Introduction to Econometrics with R" />
+  
+  <meta name="twitter:description" content="Beginners with little background in statistics and econometrics often have a hard time understanding the benefits of having programming skills for learning and applying Econometrics. ‘Introduction to Econometrics with R’ is an interactive companion to the well-received textbook ‘Introduction to Econometrics’ by James H. Stock and Mark W. Watson (2015). It gives a gentle introduction to the essentials of R programming and guides students in implementing the empirical applications presented throughout the textbook using the newly aquired skills. This is supported by interactive programming exercises generated with DataCamp Light and integration of interactive visualizations of central concepts which are based on the flexible JavaScript library D3.js." />
+  <meta name="twitter:image" content="https://www.econometrics-with-r.org//images/cover.png" />
+
+<meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber, and Martin Schmelzer" />
+
+
+<meta name="date" content="2021-10-06" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="13.2-threats-to-validity-of-experiments.html"/>
+<link rel="next" href="13.4-qe.html"/>
+<script src="libs/header-attrs-2.10/header-attrs.js"></script>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
+<script src="libs/htmlwidgets-1.5.3/htmlwidgets.js"></script>
+<script src="libs/plotly-binding-4.9.4.1/plotly.js"></script>
+<script src="libs/typedarray-0.1/typedarray.min.js"></script>
+<link href="libs/crosstalk-1.1.1/css/crosstalk.css" rel="stylesheet" />
+<script src="libs/crosstalk-1.1.1/js/crosstalk.min.js"></script>
+<link href="libs/plotly-htmlwidgets-css-1.57.1/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="libs/plotly-main-1.57.1/plotly-latest.min.js"></script>
+<!-- font families -->
+
+<link href="https://fonts.googleapis.com/css?family=PT+Sans|Pacifico|Source+Sans+Pro" rel="stylesheet">
+
+<script src="js/hideOutput.js"></script>
+
+<!-- Mathjax -->
+<script type="text/javascript" id="MathJax-script" async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+ <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        extensions: ["tex2jax.js", "TeX/AMSmath.js"],
+        tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+        jax: ["input/TeX","output/CommonHTML"]
+      });
+      MathJax.Hub.processSectionDelay = 0;
+  </script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-110299877-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-110299877-1');
+</script>
+
+<!-- open review block -->
+
+<script async defer src="https://hypothes.is/embed.js"></script>
+
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  background-color: #f8f8f8; }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ef2929; } /* Alert */
+code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #c4a000; } /* Attribute */
+code span.bn { color: #0000cf; } /* BaseN */
+code span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4e9a06; } /* Char */
+code span.cn { color: #000000; } /* Constant */
+code span.co { color: #8f5902; font-style: italic; } /* Comment */
+code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code span.dt { color: #204a87; } /* DataType */
+code span.dv { color: #0000cf; } /* DecVal */
+code span.er { color: #a40000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #0000cf; } /* Float */
+code span.fu { color: #000000; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code span.ot { color: #8f5902; } /* Other */
+code span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code span.sc { color: #000000; } /* SpecialChar */
+code span.ss { color: #4e9a06; } /* SpecialString */
+code span.st { color: #4e9a06; } /* String */
+code span.va { color: #000000; } /* Variable */
+code span.vs { color: #4e9a06; } /* VerbatimString */
+code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+/* Used with Pandoc 2.11+ new --citeproc when CSL is used */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+<link rel="stylesheet" href="toc.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><center><img src="images/logo.png" alt="logo" width="50%" height="50%"style="margin: 15px 0 0 0"></center></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Preface</a></li>
+<li class="chapter" data-level="1" data-path="1-introduction.html"><a href="1-introduction.html"><i class="fa fa-check"></i><b>1</b> Introduction</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="1.1-colophon.html"><a href="1.1-colophon.html"><i class="fa fa-check"></i><b>1.1</b> Colophon</a></li>
+<li class="chapter" data-level="1.2" data-path="1.2-a-very-short-introduction-to-r-and-rstudio.html"><a href="1.2-a-very-short-introduction-to-r-and-rstudio.html"><i class="fa fa-check"></i><b>1.2</b> A Very Short Introduction to <tt>R</tt> and <em>RStudio</em></a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="2-pt.html"><a href="2-pt.html"><i class="fa fa-check"></i><b>2</b> Probability Theory</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="2.1-random-variables-and-probability-distributions.html"><a href="2.1-random-variables-and-probability-distributions.html"><i class="fa fa-check"></i><b>2.1</b> Random Variables and Probability Distributions</a>
+<ul>
+<li class="chapter" data-level="" data-path="2.1-random-variables-and-probability-distributions.html"><a href="2.1-random-variables-and-probability-distributions.html#probability-distributions-of-discrete-random-variables"><i class="fa fa-check"></i>Probability Distributions of Discrete Random Variables</a></li>
+<li class="chapter" data-level="" data-path="2.1-random-variables-and-probability-distributions.html"><a href="2.1-random-variables-and-probability-distributions.html#bernoulli-trials"><i class="fa fa-check"></i>Bernoulli Trials</a></li>
+<li class="chapter" data-level="" data-path="2.1-random-variables-and-probability-distributions.html"><a href="2.1-random-variables-and-probability-distributions.html#expected-value-mean-and-variance"><i class="fa fa-check"></i>Expected Value, Mean and Variance</a></li>
+<li class="chapter" data-level="" data-path="2.1-random-variables-and-probability-distributions.html"><a href="2.1-random-variables-and-probability-distributions.html#probability-distributions-of-continuous-random-variables"><i class="fa fa-check"></i>Probability Distributions of Continuous Random Variables</a></li>
+<li class="chapter" data-level="" data-path="2.1-random-variables-and-probability-distributions.html"><a href="2.1-random-variables-and-probability-distributions.html#the-normal-distribution"><i class="fa fa-check"></i>The Normal Distribution</a></li>
+<li class="chapter" data-level="" data-path="2.1-random-variables-and-probability-distributions.html"><a href="2.1-random-variables-and-probability-distributions.html#the-chi-squared-distribution"><i class="fa fa-check"></i>The Chi-Squared Distribution</a></li>
+<li class="chapter" data-level="" data-path="2.1-random-variables-and-probability-distributions.html"><a href="2.1-random-variables-and-probability-distributions.html#thetdist"><i class="fa fa-check"></i>The Student t Distribution</a></li>
+<li class="chapter" data-level="" data-path="2.1-random-variables-and-probability-distributions.html"><a href="2.1-random-variables-and-probability-distributions.html#the-f-distribution"><i class="fa fa-check"></i>The F Distribution</a></li>
+</ul></li>
+<li class="chapter" data-level="2.2" data-path="2.2-RSATDOSA.html"><a href="2.2-RSATDOSA.html"><i class="fa fa-check"></i><b>2.2</b> Random Sampling and the Distribution of Sample Averages</a>
+<ul>
+<li class="chapter" data-level="" data-path="2.2-RSATDOSA.html"><a href="2.2-RSATDOSA.html#mean-and-variance-of-the-sample-mean"><i class="fa fa-check"></i>Mean and Variance of the Sample Mean</a></li>
+<li class="chapter" data-level="" data-path="2.2-RSATDOSA.html"><a href="2.2-RSATDOSA.html#large-sample-approximations-to-sampling-distributions"><i class="fa fa-check"></i>Large Sample Approximations to Sampling Distributions</a></li>
+</ul></li>
+<li class="chapter" data-level="2.3" data-path="2.3-exercises-2.html"><a href="2.3-exercises-2.html"><i class="fa fa-check"></i><b>2.3</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="3-arosur.html"><a href="3-arosur.html"><i class="fa fa-check"></i><b>3</b> A Review of Statistics using R</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="3.1-estimation-of-the-population-mean.html"><a href="3.1-estimation-of-the-population-mean.html"><i class="fa fa-check"></i><b>3.1</b> Estimation of the Population Mean</a></li>
+<li class="chapter" data-level="3.2" data-path="3.2-potsm.html"><a href="3.2-potsm.html"><i class="fa fa-check"></i><b>3.2</b> Properties of the Sample Mean</a></li>
+<li class="chapter" data-level="3.3" data-path="3.3-hypothesis-tests-concerning-the-population-mean.html"><a href="3.3-hypothesis-tests-concerning-the-population-mean.html"><i class="fa fa-check"></i><b>3.3</b> Hypothesis Tests Concerning the Population Mean</a>
+<ul>
+<li class="chapter" data-level="" data-path="3.3-hypothesis-tests-concerning-the-population-mean.html"><a href="3.3-hypothesis-tests-concerning-the-population-mean.html#the-p-value"><i class="fa fa-check"></i>The p-Value</a></li>
+<li class="chapter" data-level="" data-path="3.3-hypothesis-tests-concerning-the-population-mean.html"><a href="3.3-hypothesis-tests-concerning-the-population-mean.html#calculating-the-p-value-when-the-standard-deviation-is-known"><i class="fa fa-check"></i>Calculating the p-Value when the Standard Deviation is Known</a></li>
+<li class="chapter" data-level="" data-path="3.3-hypothesis-tests-concerning-the-population-mean.html"><a href="3.3-hypothesis-tests-concerning-the-population-mean.html#SVSSDASE"><i class="fa fa-check"></i>Sample Variance, Sample Standard Deviation and Standard Error</a></li>
+<li class="chapter" data-level="" data-path="3.3-hypothesis-tests-concerning-the-population-mean.html"><a href="3.3-hypothesis-tests-concerning-the-population-mean.html#calculating-the-p-value-when-the-standard-deviation-is-unknown"><i class="fa fa-check"></i>Calculating the p-value When the Standard Deviation is Unknown</a></li>
+<li class="chapter" data-level="" data-path="3.3-hypothesis-tests-concerning-the-population-mean.html"><a href="3.3-hypothesis-tests-concerning-the-population-mean.html#the-t-statistic"><i class="fa fa-check"></i>The t-statistic</a></li>
+<li class="chapter" data-level="" data-path="3.3-hypothesis-tests-concerning-the-population-mean.html"><a href="3.3-hypothesis-tests-concerning-the-population-mean.html#hypothesis-testing-with-a-prespecified-significance-level"><i class="fa fa-check"></i>Hypothesis Testing with a Prespecified Significance Level</a></li>
+<li class="chapter" data-level="" data-path="3.3-hypothesis-tests-concerning-the-population-mean.html"><a href="3.3-hypothesis-tests-concerning-the-population-mean.html#one-sided-alternatives"><i class="fa fa-check"></i>One-sided Alternatives</a></li>
+</ul></li>
+<li class="chapter" data-level="3.4" data-path="3.4-confidence-intervals-for-the-population-mean.html"><a href="3.4-confidence-intervals-for-the-population-mean.html"><i class="fa fa-check"></i><b>3.4</b> Confidence Intervals for the Population Mean</a></li>
+<li class="chapter" data-level="3.5" data-path="3.5-cmfdp.html"><a href="3.5-cmfdp.html"><i class="fa fa-check"></i><b>3.5</b> Comparing Means from Different Populations</a></li>
+<li class="chapter" data-level="3.6" data-path="3.6-aattggoe.html"><a href="3.6-aattggoe.html"><i class="fa fa-check"></i><b>3.6</b> An Application to the Gender Gap of Earnings</a></li>
+<li class="chapter" data-level="3.7" data-path="3.7-scatterplots-sample-covariance-and-sample-correlation.html"><a href="3.7-scatterplots-sample-covariance-and-sample-correlation.html"><i class="fa fa-check"></i><b>3.7</b> Scatterplots, Sample Covariance and Sample Correlation</a></li>
+<li class="chapter" data-level="3.8" data-path="3.8-exercises-3.html"><a href="3.8-exercises-3.html"><i class="fa fa-check"></i><b>3.8</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="4-lrwor.html"><a href="4-lrwor.html"><i class="fa fa-check"></i><b>4</b> Linear Regression with One Regressor</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="4.1-simple-linear-regression.html"><a href="4.1-simple-linear-regression.html"><i class="fa fa-check"></i><b>4.1</b> Simple Linear Regression</a></li>
+<li class="chapter" data-level="4.2" data-path="4.2-estimating-the-coefficients-of-the-linear-regression-model.html"><a href="4.2-estimating-the-coefficients-of-the-linear-regression-model.html"><i class="fa fa-check"></i><b>4.2</b> Estimating the Coefficients of the Linear Regression Model</a>
+<ul>
+<li class="chapter" data-level="" data-path="4.2-estimating-the-coefficients-of-the-linear-regression-model.html"><a href="4.2-estimating-the-coefficients-of-the-linear-regression-model.html#the-ordinary-least-squares-estimator"><i class="fa fa-check"></i>The Ordinary Least Squares Estimator</a></li>
+</ul></li>
+<li class="chapter" data-level="4.3" data-path="4.3-measures-of-fit.html"><a href="4.3-measures-of-fit.html"><i class="fa fa-check"></i><b>4.3</b> Measures of Fit</a>
+<ul>
+<li class="chapter" data-level="" data-path="4.3-measures-of-fit.html"><a href="4.3-measures-of-fit.html#the-coefficient-of-determination"><i class="fa fa-check"></i>The Coefficient of Determination</a></li>
+<li class="chapter" data-level="" data-path="4.3-measures-of-fit.html"><a href="4.3-measures-of-fit.html#the-standard-error-of-the-regression"><i class="fa fa-check"></i>The Standard Error of the Regression</a></li>
+<li class="chapter" data-level="" data-path="4.3-measures-of-fit.html"><a href="4.3-measures-of-fit.html#application-to-the-test-score-data"><i class="fa fa-check"></i>Application to the Test Score Data</a></li>
+</ul></li>
+<li class="chapter" data-level="4.4" data-path="4.4-tlsa.html"><a href="4.4-tlsa.html"><i class="fa fa-check"></i><b>4.4</b> The Least Squares Assumptions</a>
+<ul>
+<li class="chapter" data-level="" data-path="4.4-tlsa.html"><a href="4.4-tlsa.html#assumption-1-the-error-term-has-conditional-mean-of-zero"><i class="fa fa-check"></i>Assumption 1: The Error Term has Conditional Mean of Zero</a></li>
+<li class="chapter" data-level="" data-path="4.4-tlsa.html"><a href="4.4-tlsa.html#assumption-2-independently-and-identically-distributed-data"><i class="fa fa-check"></i>Assumption 2: Independently and Identically Distributed Data</a></li>
+<li class="chapter" data-level="" data-path="4.4-tlsa.html"><a href="4.4-tlsa.html#assumption-3-large-outliers-are-unlikely"><i class="fa fa-check"></i>Assumption 3: Large Outliers are Unlikely</a></li>
+</ul></li>
+<li class="chapter" data-level="4.5" data-path="4.5-tsdotoe.html"><a href="4.5-tsdotoe.html"><i class="fa fa-check"></i><b>4.5</b> The Sampling Distribution of the OLS Estimator</a>
+<ul>
+<li class="chapter" data-level="" data-path="4.5-tsdotoe.html"><a href="4.5-tsdotoe.html#simulation-study-1"><i class="fa fa-check"></i>Simulation Study 1</a></li>
+<li class="chapter" data-level="" data-path="4.5-tsdotoe.html"><a href="4.5-tsdotoe.html#simulation-study-2"><i class="fa fa-check"></i>Simulation Study 2</a></li>
+<li class="chapter" data-level="" data-path="4.5-tsdotoe.html"><a href="4.5-tsdotoe.html#simulation-study-3"><i class="fa fa-check"></i>Simulation Study 3</a></li>
+</ul></li>
+<li class="chapter" data-level="4.6" data-path="4.6-exercises-4.html"><a href="4.6-exercises-4.html"><i class="fa fa-check"></i><b>4.6</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="5-htaciitslrm.html"><a href="5-htaciitslrm.html"><i class="fa fa-check"></i><b>5</b> Hypothesis Tests and Confidence Intervals in the Simple Linear Regression Model</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="5.1-testing-two-sided-hypotheses-concerning-the-slope-coefficient.html"><a href="5.1-testing-two-sided-hypotheses-concerning-the-slope-coefficient.html"><i class="fa fa-check"></i><b>5.1</b> Testing Two-Sided Hypotheses Concerning the Slope Coefficient</a></li>
+<li class="chapter" data-level="5.2" data-path="5.2-cifrc.html"><a href="5.2-cifrc.html"><i class="fa fa-check"></i><b>5.2</b> Confidence Intervals for Regression Coefficients</a>
+<ul>
+<li class="chapter" data-level="" data-path="5.2-cifrc.html"><a href="5.2-cifrc.html#simulation-study-confidence-intervals"><i class="fa fa-check"></i>Simulation Study: Confidence Intervals</a></li>
+</ul></li>
+<li class="chapter" data-level="5.3" data-path="5.3-rwxiabv.html"><a href="5.3-rwxiabv.html"><i class="fa fa-check"></i><b>5.3</b> Regression when X is a Binary Variable</a></li>
+<li class="chapter" data-level="5.4" data-path="5.4-hah.html"><a href="5.4-hah.html"><i class="fa fa-check"></i><b>5.4</b> Heteroskedasticity and Homoskedasticity</a>
+<ul>
+<li class="chapter" data-level="" data-path="5.4-hah.html"><a href="5.4-hah.html#a-real-world-example-for-heteroskedasticity"><i class="fa fa-check"></i>A Real-World Example for Heteroskedasticity</a></li>
+<li class="chapter" data-level="" data-path="5.4-hah.html"><a href="5.4-hah.html#should-we-care-about-heteroskedasticity"><i class="fa fa-check"></i>Should We Care About Heteroskedasticity?</a></li>
+<li class="chapter" data-level="" data-path="5.4-hah.html"><a href="5.4-hah.html#computation-of-heteroskedasticity-robust-standard-errors"><i class="fa fa-check"></i>Computation of Heteroskedasticity-Robust Standard Errors</a></li>
+</ul></li>
+<li class="chapter" data-level="5.5" data-path="5.5-the-gauss-markov-theorem.html"><a href="5.5-the-gauss-markov-theorem.html"><i class="fa fa-check"></i><b>5.5</b> The Gauss-Markov Theorem</a>
+<ul>
+<li class="chapter" data-level="" data-path="5.5-the-gauss-markov-theorem.html"><a href="5.5-the-gauss-markov-theorem.html#simulation-study-blue-estimator"><i class="fa fa-check"></i>Simulation Study: BLUE Estimator</a></li>
+</ul></li>
+<li class="chapter" data-level="5.6" data-path="5.6-using-the-t-statistic-in-regression-when-the-sample-size-is-small.html"><a href="5.6-using-the-t-statistic-in-regression-when-the-sample-size-is-small.html"><i class="fa fa-check"></i><b>5.6</b> Using the t-Statistic in Regression When the Sample Size Is Small</a></li>
+<li class="chapter" data-level="5.7" data-path="5.7-exercises-5.html"><a href="5.7-exercises-5.html"><i class="fa fa-check"></i><b>5.7</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="6-rmwmr.html"><a href="6-rmwmr.html"><i class="fa fa-check"></i><b>6</b> Regression Models with Multiple Regressors</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="6.1-omitted-variable-bias.html"><a href="6.1-omitted-variable-bias.html"><i class="fa fa-check"></i><b>6.1</b> Omitted Variable Bias</a></li>
+<li class="chapter" data-level="6.2" data-path="6.2-tmrm.html"><a href="6.2-tmrm.html"><i class="fa fa-check"></i><b>6.2</b> The Multiple Regression Model</a></li>
+<li class="chapter" data-level="6.3" data-path="6.3-mofimr.html"><a href="6.3-mofimr.html"><i class="fa fa-check"></i><b>6.3</b> Measures of Fit in Multiple Regression</a></li>
+<li class="chapter" data-level="6.4" data-path="6.4-ols-assumptions-in-multiple-regression.html"><a href="6.4-ols-assumptions-in-multiple-regression.html"><i class="fa fa-check"></i><b>6.4</b> OLS Assumptions in Multiple Regression</a>
+<ul>
+<li class="chapter" data-level="" data-path="6.4-ols-assumptions-in-multiple-regression.html"><a href="6.4-ols-assumptions-in-multiple-regression.html#multicollinearity"><i class="fa fa-check"></i>Multicollinearity</a></li>
+<li class="chapter" data-level="" data-path="6.4-ols-assumptions-in-multiple-regression.html"><a href="6.4-ols-assumptions-in-multiple-regression.html#simulation-study-imperfect-multicollinearity"><i class="fa fa-check"></i>Simulation Study: Imperfect Multicollinearity</a></li>
+</ul></li>
+<li class="chapter" data-level="6.5" data-path="6.5-the-distribution-of-the-ols-estimators-in-multiple-regression.html"><a href="6.5-the-distribution-of-the-ols-estimators-in-multiple-regression.html"><i class="fa fa-check"></i><b>6.5</b> The Distribution of the OLS Estimators in Multiple Regression</a></li>
+<li class="chapter" data-level="6.6" data-path="6.6-exercises-6.html"><a href="6.6-exercises-6.html"><i class="fa fa-check"></i><b>6.6</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="7-htaciimr.html"><a href="7-htaciimr.html"><i class="fa fa-check"></i><b>7</b> Hypothesis Tests and Confidence Intervals in Multiple Regression</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="7.1-hypothesis-tests-and-confidence-intervals-for-a-single-coefficient.html"><a href="7.1-hypothesis-tests-and-confidence-intervals-for-a-single-coefficient.html"><i class="fa fa-check"></i><b>7.1</b> Hypothesis Tests and Confidence Intervals for a Single Coefficient</a></li>
+<li class="chapter" data-level="7.2" data-path="7.2-an-application-to-test-scores-and-the-student-teacher-ratio.html"><a href="7.2-an-application-to-test-scores-and-the-student-teacher-ratio.html"><i class="fa fa-check"></i><b>7.2</b> An Application to Test Scores and the Student-Teacher Ratio</a>
+<ul>
+<li class="chapter" data-level="" data-path="7.2-an-application-to-test-scores-and-the-student-teacher-ratio.html"><a href="7.2-an-application-to-test-scores-and-the-student-teacher-ratio.html#another-augmentation-of-the-model"><i class="fa fa-check"></i>Another Augmentation of the Model</a></li>
+</ul></li>
+<li class="chapter" data-level="7.3" data-path="7.3-joint-hypothesis-testing-using-the-f-statistic.html"><a href="7.3-joint-hypothesis-testing-using-the-f-statistic.html"><i class="fa fa-check"></i><b>7.3</b> Joint Hypothesis Testing Using the F-Statistic</a></li>
+<li class="chapter" data-level="7.4" data-path="7.4-confidence-sets-for-multiple-coefficients.html"><a href="7.4-confidence-sets-for-multiple-coefficients.html"><i class="fa fa-check"></i><b>7.4</b> Confidence Sets for Multiple Coefficients</a></li>
+<li class="chapter" data-level="7.5" data-path="7.5-model-specification-for-multiple-regression.html"><a href="7.5-model-specification-for-multiple-regression.html"><i class="fa fa-check"></i><b>7.5</b> Model Specification for Multiple Regression</a>
+<ul>
+<li class="chapter" data-level="" data-path="7.5-model-specification-for-multiple-regression.html"><a href="7.5-model-specification-for-multiple-regression.html#model-specification-in-theory-and-in-practice"><i class="fa fa-check"></i>Model Specification in Theory and in Practice</a></li>
+</ul></li>
+<li class="chapter" data-level="7.6" data-path="7.6-analysis-of-the-test-score-data-set.html"><a href="7.6-analysis-of-the-test-score-data-set.html"><i class="fa fa-check"></i><b>7.6</b> Analysis of the Test Score Data Set</a></li>
+<li class="chapter" data-level="7.7" data-path="7.7-exercises-7.html"><a href="7.7-exercises-7.html"><i class="fa fa-check"></i><b>7.7</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="8-nrf.html"><a href="8-nrf.html"><i class="fa fa-check"></i><b>8</b> Nonlinear Regression Functions</a>
+<ul>
+<li class="chapter" data-level="8.1" data-path="8.1-a-general-strategy-for-modelling-nonlinear-regression-functions.html"><a href="8.1-a-general-strategy-for-modelling-nonlinear-regression-functions.html"><i class="fa fa-check"></i><b>8.1</b> A General Strategy for Modelling Nonlinear Regression Functions</a></li>
+<li class="chapter" data-level="8.2" data-path="8.2-nfoasiv.html"><a href="8.2-nfoasiv.html"><i class="fa fa-check"></i><b>8.2</b> Nonlinear Functions of a Single Independent Variable</a>
+<ul>
+<li class="chapter" data-level="" data-path="8.2-nfoasiv.html"><a href="8.2-nfoasiv.html#polynomials"><i class="fa fa-check"></i>Polynomials</a></li>
+<li class="chapter" data-level="" data-path="8.2-nfoasiv.html"><a href="8.2-nfoasiv.html#logarithms"><i class="fa fa-check"></i>Logarithms</a></li>
+</ul></li>
+<li class="chapter" data-level="8.3" data-path="8.3-interactions-between-independent-variables.html"><a href="8.3-interactions-between-independent-variables.html"><i class="fa fa-check"></i><b>8.3</b> Interactions Between Independent Variables</a></li>
+<li class="chapter" data-level="8.4" data-path="8.4-nonlinear-effects-on-test-scores-of-the-student-teacher-ratio.html"><a href="8.4-nonlinear-effects-on-test-scores-of-the-student-teacher-ratio.html"><i class="fa fa-check"></i><b>8.4</b> Nonlinear Effects on Test Scores of the Student-Teacher Ratio</a></li>
+<li class="chapter" data-level="8.5" data-path="8.5-exercises-8.html"><a href="8.5-exercises-8.html"><i class="fa fa-check"></i><b>8.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="9-asbomr.html"><a href="9-asbomr.html"><i class="fa fa-check"></i><b>9</b> Assessing Studies Based on Multiple Regression</a>
+<ul>
+<li class="chapter" data-level="9.1" data-path="9.1-internal-and-external-validity.html"><a href="9.1-internal-and-external-validity.html"><i class="fa fa-check"></i><b>9.1</b> Internal and External Validity</a></li>
+<li class="chapter" data-level="9.2" data-path="9.2-ttivomra.html"><a href="9.2-ttivomra.html"><i class="fa fa-check"></i><b>9.2</b> Threats to Internal Validity of Multiple Regression Analysis</a></li>
+<li class="chapter" data-level="9.3" data-path="9.3-internal-and-external-validity-when-the-regression-is-used-for-forecasting.html"><a href="9.3-internal-and-external-validity-when-the-regression-is-used-for-forecasting.html"><i class="fa fa-check"></i><b>9.3</b> Internal and External Validity when the Regression is Used for Forecasting</a></li>
+<li class="chapter" data-level="9.4" data-path="9.4-etsacs.html"><a href="9.4-etsacs.html"><i class="fa fa-check"></i><b>9.4</b> Example: Test Scores and Class Size</a></li>
+<li class="chapter" data-level="9.5" data-path="9.5-exercises-9.html"><a href="9.5-exercises-9.html"><i class="fa fa-check"></i><b>9.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="10" data-path="10-rwpd.html"><a href="10-rwpd.html"><i class="fa fa-check"></i><b>10</b> Regression with Panel Data</a>
+<ul>
+<li class="chapter" data-level="10.1" data-path="10.1-panel-data.html"><a href="10.1-panel-data.html"><i class="fa fa-check"></i><b>10.1</b> Panel Data</a></li>
+<li class="chapter" data-level="10.2" data-path="10.2-PDWTTP.html"><a href="10.2-PDWTTP.html"><i class="fa fa-check"></i><b>10.2</b> Panel Data with Two Time Periods: “Before and After” Comparisons</a></li>
+<li class="chapter" data-level="10.3" data-path="10.3-fixed-effects-regression.html"><a href="10.3-fixed-effects-regression.html"><i class="fa fa-check"></i><b>10.3</b> Fixed Effects Regression</a>
+<ul>
+<li class="chapter" data-level="" data-path="10.3-fixed-effects-regression.html"><a href="10.3-fixed-effects-regression.html#estimation-and-inference"><i class="fa fa-check"></i>Estimation and Inference</a></li>
+<li class="chapter" data-level="" data-path="10.3-fixed-effects-regression.html"><a href="10.3-fixed-effects-regression.html#application-to-traffic-deaths"><i class="fa fa-check"></i>Application to Traffic Deaths</a></li>
+</ul></li>
+<li class="chapter" data-level="10.4" data-path="10.4-regression-with-time-fixed-effects.html"><a href="10.4-regression-with-time-fixed-effects.html"><i class="fa fa-check"></i><b>10.4</b> Regression with Time Fixed Effects</a></li>
+<li class="chapter" data-level="10.5" data-path="10.5-tferaaseffer.html"><a href="10.5-tferaaseffer.html"><i class="fa fa-check"></i><b>10.5</b> The Fixed Effects Regression Assumptions and Standard Errors for Fixed Effects Regression</a></li>
+<li class="chapter" data-level="10.6" data-path="10.6-drunk-driving-laws-and-traffic-deaths.html"><a href="10.6-drunk-driving-laws-and-traffic-deaths.html"><i class="fa fa-check"></i><b>10.6</b> Drunk Driving Laws and Traffic Deaths</a></li>
+<li class="chapter" data-level="10.7" data-path="10.7-exercises-10.html"><a href="10.7-exercises-10.html"><i class="fa fa-check"></i><b>10.7</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="11" data-path="11-rwabdv.html"><a href="11-rwabdv.html"><i class="fa fa-check"></i><b>11</b> Regression with a Binary Dependent Variable</a>
+<ul>
+<li class="chapter" data-level="11.1" data-path="11.1-binary-dependent-variables-and-the-linear-probability-model.html"><a href="11.1-binary-dependent-variables-and-the-linear-probability-model.html"><i class="fa fa-check"></i><b>11.1</b> Binary Dependent Variables and the Linear Probability Model</a></li>
+<li class="chapter" data-level="11.2" data-path="11.2-palr.html"><a href="11.2-palr.html"><i class="fa fa-check"></i><b>11.2</b> Probit and Logit Regression</a>
+<ul>
+<li class="chapter" data-level="" data-path="11.2-palr.html"><a href="11.2-palr.html#probit-regression"><i class="fa fa-check"></i>Probit Regression</a></li>
+<li class="chapter" data-level="" data-path="11.2-palr.html"><a href="11.2-palr.html#logit-regression"><i class="fa fa-check"></i>Logit Regression</a></li>
+</ul></li>
+<li class="chapter" data-level="11.3" data-path="11.3-estimation-and-inference-in-the-logit-and-probit-models.html"><a href="11.3-estimation-and-inference-in-the-logit-and-probit-models.html"><i class="fa fa-check"></i><b>11.3</b> Estimation and Inference in the Logit and Probit Models</a></li>
+<li class="chapter" data-level="11.4" data-path="11.4-application-to-the-boston-hmda-data.html"><a href="11.4-application-to-the-boston-hmda-data.html"><i class="fa fa-check"></i><b>11.4</b> Application to the Boston HMDA Data</a></li>
+<li class="chapter" data-level="11.5" data-path="11.5-exercises-11.html"><a href="11.5-exercises-11.html"><i class="fa fa-check"></i><b>11.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="12" data-path="12-ivr.html"><a href="12-ivr.html"><i class="fa fa-check"></i><b>12</b> Instrumental Variables Regression</a>
+<ul>
+<li class="chapter" data-level="12.1" data-path="12.1-TIVEWASRAASI.html"><a href="12.1-TIVEWASRAASI.html"><i class="fa fa-check"></i><b>12.1</b> The IV Estimator with a Single Regressor and a Single Instrument</a></li>
+<li class="chapter" data-level="12.2" data-path="12.2-TGIVRM.html"><a href="12.2-TGIVRM.html"><i class="fa fa-check"></i><b>12.2</b> The General IV Regression Model</a></li>
+<li class="chapter" data-level="12.3" data-path="12.3-civ.html"><a href="12.3-civ.html"><i class="fa fa-check"></i><b>12.3</b> Checking Instrument Validity</a></li>
+<li class="chapter" data-level="12.4" data-path="12.4-attdfc.html"><a href="12.4-attdfc.html"><i class="fa fa-check"></i><b>12.4</b> Application to the Demand for Cigarettes</a></li>
+<li class="chapter" data-level="12.5" data-path="12.5-where-do-valid-instruments-come-from.html"><a href="12.5-where-do-valid-instruments-come-from.html"><i class="fa fa-check"></i><b>12.5</b> Where Do Valid Instruments Come From?</a></li>
+<li class="chapter" data-level="12.6" data-path="12.6-exercises-12.html"><a href="12.6-exercises-12.html"><i class="fa fa-check"></i><b>12.6</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="13" data-path="13-eaqe.html"><a href="13-eaqe.html"><i class="fa fa-check"></i><b>13</b> Experiments and Quasi-Experiments</a>
+<ul>
+<li class="chapter" data-level="13.1" data-path="13.1-poceaie.html"><a href="13.1-poceaie.html"><i class="fa fa-check"></i><b>13.1</b> Potential Outcomes, Causal Effects and Idealized Experiments</a></li>
+<li class="chapter" data-level="13.2" data-path="13.2-threats-to-validity-of-experiments.html"><a href="13.2-threats-to-validity-of-experiments.html"><i class="fa fa-check"></i><b>13.2</b> Threats to Validity of Experiments</a></li>
+<li class="chapter" data-level="13.3" data-path="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html"><i class="fa fa-check"></i><b>13.3</b> Experimental Estimates of the Effect of Class Size Reductions</a>
+<ul>
+<li class="chapter" data-level="" data-path="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#experimental-design-and-the-data-set"><i class="fa fa-check"></i>Experimental Design and the Data Set</a></li>
+<li class="chapter" data-level="" data-path="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#analysis-of-the-star-data"><i class="fa fa-check"></i>Analysis of the STAR Data</a></li>
+</ul></li>
+<li class="chapter" data-level="13.4" data-path="13.4-qe.html"><a href="13.4-qe.html"><i class="fa fa-check"></i><b>13.4</b> Quasi Experiments</a>
+<ul>
+<li class="chapter" data-level="" data-path="13.4-qe.html"><a href="13.4-qe.html#the-differences-in-differences-estimator"><i class="fa fa-check"></i>The Differences-in-Differences Estimator</a></li>
+<li class="chapter" data-level="" data-path="13.4-qe.html"><a href="13.4-qe.html#regression-discontinuity-estimators"><i class="fa fa-check"></i>Regression Discontinuity Estimators</a></li>
+</ul></li>
+<li class="chapter" data-level="13.5" data-path="13.5-exercises-13.html"><a href="13.5-exercises-13.html"><i class="fa fa-check"></i><b>13.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="14" data-path="14-ittsraf.html"><a href="14-ittsraf.html"><i class="fa fa-check"></i><b>14</b> Introduction to Time Series Regression and Forecasting</a>
+<ul>
+<li class="chapter" data-level="14.1" data-path="14.1-using-regression-models-for-forecasting.html"><a href="14.1-using-regression-models-for-forecasting.html"><i class="fa fa-check"></i><b>14.1</b> Using Regression Models for Forecasting</a></li>
+<li class="chapter" data-level="14.2" data-path="14.2-tsdasc.html"><a href="14.2-tsdasc.html"><i class="fa fa-check"></i><b>14.2</b> Time Series Data and Serial Correlation</a>
+<ul>
+<li class="chapter" data-level="" data-path="14.2-tsdasc.html"><a href="14.2-tsdasc.html#notation-lags-differences-logarithms-and-growth-rates"><i class="fa fa-check"></i>Notation, Lags, Differences, Logarithms and Growth Rates</a></li>
+</ul></li>
+<li class="chapter" data-level="14.3" data-path="14.3-autoregressions.html"><a href="14.3-autoregressions.html"><i class="fa fa-check"></i><b>14.3</b> Autoregressions</a>
+<ul>
+<li><a href="14.3-autoregressions.html#autoregressive-models-of-order-p">Autoregressive Models of Order <span class="math inline">\(p\)</span></a></li>
+</ul></li>
+<li class="chapter" data-level="14.4" data-path="14.4-cybtmpi.html"><a href="14.4-cybtmpi.html"><i class="fa fa-check"></i><b>14.4</b> Can You Beat the Market? (Part I)</a></li>
+<li class="chapter" data-level="14.5" data-path="14.5-apatadlm.html"><a href="14.5-apatadlm.html"><i class="fa fa-check"></i><b>14.5</b> Additional Predictors and The ADL Model</a>
+<ul>
+<li class="chapter" data-level="" data-path="14.5-apatadlm.html"><a href="14.5-apatadlm.html#forecast-uncertainty-and-forecast-intervals"><i class="fa fa-check"></i>Forecast Uncertainty and Forecast Intervals</a></li>
+</ul></li>
+<li class="chapter" data-level="14.6" data-path="14.6-llsuic.html"><a href="14.6-llsuic.html"><i class="fa fa-check"></i><b>14.6</b> Lag Length Selection Using Information Criteria</a></li>
+<li class="chapter" data-level="14.7" data-path="14.7-nit.html"><a href="14.7-nit.html"><i class="fa fa-check"></i><b>14.7</b> Nonstationarity I: Trends</a></li>
+<li class="chapter" data-level="14.8" data-path="14.8-niib.html"><a href="14.8-niib.html"><i class="fa fa-check"></i><b>14.8</b> Nonstationarity II: Breaks</a></li>
+<li class="chapter" data-level="14.9" data-path="14.9-can-you-beat-the-market-part-ii.html"><a href="14.9-can-you-beat-the-market-part-ii.html"><i class="fa fa-check"></i><b>14.9</b> Can You Beat the Market? (Part II)</a></li>
+</ul></li>
+<li class="chapter" data-level="15" data-path="15-eodce.html"><a href="15-eodce.html"><i class="fa fa-check"></i><b>15</b> Estimation of Dynamic Causal Effects</a>
+<ul>
+<li class="chapter" data-level="15.1" data-path="15.1-the-orange-juice-data.html"><a href="15.1-the-orange-juice-data.html"><i class="fa fa-check"></i><b>15.1</b> The Orange Juice Data</a></li>
+<li class="chapter" data-level="15.2" data-path="15.2-dynamic-causal-effects.html"><a href="15.2-dynamic-causal-effects.html"><i class="fa fa-check"></i><b>15.2</b> Dynamic Causal Effects</a></li>
+<li class="chapter" data-level="15.3" data-path="15.3-dynamic-multipliers-and-cumulative-dynamic-multipliers.html"><a href="15.3-dynamic-multipliers-and-cumulative-dynamic-multipliers.html"><i class="fa fa-check"></i><b>15.3</b> Dynamic Multipliers and Cumulative Dynamic Multipliers</a></li>
+<li class="chapter" data-level="15.4" data-path="15.4-hac-standard-errors.html"><a href="15.4-hac-standard-errors.html"><i class="fa fa-check"></i><b>15.4</b> HAC Standard Errors</a></li>
+<li class="chapter" data-level="15.5" data-path="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html"><i class="fa fa-check"></i><b>15.5</b> Estimation of Dynamic Causal Effects with Strictly Exogeneous Regressors</a></li>
+<li class="chapter" data-level="15.6" data-path="15.6-orange-juice-prices-and-cold-weather.html"><a href="15.6-orange-juice-prices-and-cold-weather.html"><i class="fa fa-check"></i><b>15.6</b> Orange Juice Prices and Cold Weather</a></li>
+</ul></li>
+<li class="chapter" data-level="16" data-path="16-atitsr.html"><a href="16-atitsr.html"><i class="fa fa-check"></i><b>16</b> Additional Topics in Time Series Regression</a>
+<ul>
+<li class="chapter" data-level="16.1" data-path="16.1-vector-autoregressions.html"><a href="16.1-vector-autoregressions.html"><i class="fa fa-check"></i><b>16.1</b> Vector Autoregressions</a></li>
+<li class="chapter" data-level="16.2" data-path="16.2-ooiatdfglsurt.html"><a href="16.2-ooiatdfglsurt.html"><i class="fa fa-check"></i><b>16.2</b> Orders of Integration and the DF-GLS Unit Root Test</a></li>
+<li class="chapter" data-level="16.3" data-path="16.3-cointegration.html"><a href="16.3-cointegration.html"><i class="fa fa-check"></i><b>16.3</b> Cointegration</a></li>
+<li class="chapter" data-level="16.4" data-path="16.4-volatility-clustering-and-autoregressive-conditional-heteroskedasticity.html"><a href="16.4-volatility-clustering-and-autoregressive-conditional-heteroskedasticity.html"><i class="fa fa-check"></i><b>16.4</b> Volatility Clustering and Autoregressive Conditional Heteroskedasticity</a>
+<ul>
+<li class="chapter" data-level="" data-path="16.4-volatility-clustering-and-autoregressive-conditional-heteroskedasticity.html"><a href="16.4-volatility-clustering-and-autoregressive-conditional-heteroskedasticity.html#arch-and-garch-models"><i class="fa fa-check"></i>ARCH and GARCH Models</a></li>
+<li class="chapter" data-level="" data-path="16.4-volatility-clustering-and-autoregressive-conditional-heteroskedasticity.html"><a href="16.4-volatility-clustering-and-autoregressive-conditional-heteroskedasticity.html#application-to-stock-price-volatility"><i class="fa fa-check"></i>Application to Stock Price Volatility</a></li>
+<li class="chapter" data-level="" data-path="16.4-volatility-clustering-and-autoregressive-conditional-heteroskedasticity.html"><a href="16.4-volatility-clustering-and-autoregressive-conditional-heteroskedasticity.html#summary-8"><i class="fa fa-check"></i>Summary</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Introduction to Econometrics with R</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div class = rmdreview>
+This book is in <b>Open Review</b>. We want your feedback to make the book better for you and other students. You may annotate some text by <span style="background-color: #3297FD; color: white">selecting it with the cursor</span> and then click the <i class="h-icon-annotate"></i> on the pop-up menu. You can also see the annotations of others: click the <i class="h-icon-chevron-left"></i> in the upper right hand corner of the page <i class="fa fa-arrow-circle-right  fa-rotate-315" aria-hidden="true"></i>
+</div>
+<div id="experimental-estimates-of-the-effect-of-class-size-reductions" class="section level2" number="13.3">
+<h2><span class="header-section-number">13.3</span> Experimental Estimates of the Effect of Class Size Reductions</h2>
+<div id="experimental-design-and-the-data-set" class="section level3 unnumbered">
+<h3>Experimental Design and the Data Set</h3>
+<p>The Project <em>Student-Teacher Achievement Ratio</em> (STAR) was a large randomized controlled experiment with the aim of asserting whether a class size reduction is effective in improving education outcomes. It has been conducted in 80 Tennessee elementary schools over a period of four years during the 1980s by the State Department of Education.</p>
+<p>In the first year, about 6400 students were randomly assigned into one of three interventions: small class (13 to 17 students per teacher), regular class (22 to 25 students per teacher), and regular-with-aide class (22 to 25 students with a full-time teacher’s aide). Teachers were also randomly assigned to the classes they taught. The interventions were initiated as the students entered school in kindergarten and continued through to third grade. Control and treatment groups across grades are summarized in Table <a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#tab:starstructure">13.1</a>.</p>
+<table>
+<caption><span id="tab:starstructure">Table 13.1: </span> Control and treatment groups in the STAR experiment</caption>
+<colgroup>
+<col width="16%" />
+<col width="20%" />
+<col width="20%" />
+<col width="20%" />
+<col width="20%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th>K</th>
+<th>1</th>
+<th>2</th>
+<th>3</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Treatment 1</td>
+<td>Small class</td>
+<td>Small class</td>
+<td>Small class</td>
+<td>Small class</td>
+</tr>
+<tr class="even">
+<td>Treatment 2</td>
+<td>Regular class + aide</td>
+<td>Regular class + aide</td>
+<td>Regular class + aide</td>
+<td>Regular class + aide</td>
+</tr>
+<tr class="odd">
+<td>Control</td>
+<td>Regular class</td>
+<td>Regular class</td>
+<td>Regular class</td>
+<td>Regular class</td>
+</tr>
+</tbody>
+</table>
+<p>Each year, the students’ learning progress was assessed using the sum of the points scored on the math and reading parts of a standardized test (the <a href="https://en.wikipedia.org/wiki/Stanford_Achievement_Test_Series">Stanford Achievement Test</a>).</p>
+<p>The STAR data set is part of the package <tt>AER</tt>.</p>
+<div class="sourceCode" id="cb308"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb308-1"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb308-1" aria-hidden="true" tabindex="-1"></a><span class="co"># load the package AER and the STAR dataset</span></span>
+<span id="cb308-2"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb308-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(AER)</span>
+<span id="cb308-3"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb308-3" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(STAR)</span></code></pre></div>
+<p><tt>head(STAR)</tt> shows that there is a variety of factor variables that describe student and teacher characteristics as well as various school indicators, all of which are separately recorded for the four different grades. The data is in <em>wide format</em>. That is, each variable has its own column and for each student, the rows contain observations on these variables. Using <tt>dim(STAR)</tt> we find that there are a total of 11598 observations on 47 variables.</p>
+<div class="sourceCode" id="cb309"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb309-1"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb309-1" aria-hidden="true" tabindex="-1"></a><span class="co"># get an overview</span></span>
+<span id="cb309-2"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb309-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(STAR, <span class="dv">2</span>)</span>
+<span id="cb309-3"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb309-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      gender ethnicity   birth stark star1 star2   star3 readk read1 read2 read3 mathk math1 math2 math3   lunchk lunch1</span></span>
+<span id="cb309-4"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb309-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1122 female      afam 1979 Q3  &lt;NA&gt;  &lt;NA&gt;  &lt;NA&gt; regular    NA    NA    NA   580    NA    NA    NA   564     &lt;NA&gt;   &lt;NA&gt;</span></span>
+<span id="cb309-5"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb309-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1137 female      cauc 1980 Q1 small small small   small   447   507   568   587   473   538   579   593 non-free   free</span></span>
+<span id="cb309-6"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb309-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;        lunch2 lunch3 schoolk school1 school2  school3  degreek  degree1  degree2  degree3 ladderk ladder1    ladder2</span></span>
+<span id="cb309-7"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb309-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1122     &lt;NA&gt;   free    &lt;NA&gt;    &lt;NA&gt;    &lt;NA&gt; suburban     &lt;NA&gt;     &lt;NA&gt;     &lt;NA&gt; bachelor    &lt;NA&gt;    &lt;NA&gt;       &lt;NA&gt;</span></span>
+<span id="cb309-8"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb309-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1137 non-free   free   rural   rural   rural    rural bachelor bachelor bachelor bachelor  level1  level1 apprentice</span></span>
+<span id="cb309-9"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb309-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;         ladder3 experiencek experience1 experience2 experience3 tethnicityk tethnicity1 tethnicity2 tethnicity3 systemk</span></span>
+<span id="cb309-10"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb309-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1122     level1          NA          NA          NA          30        &lt;NA&gt;        &lt;NA&gt;        &lt;NA&gt;        cauc    &lt;NA&gt;</span></span>
+<span id="cb309-11"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb309-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1137 apprentice           7           7           3           1        cauc        cauc        cauc        cauc      30</span></span>
+<span id="cb309-12"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb309-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      system1 system2 system3 schoolidk schoolid1 schoolid2 schoolid3</span></span>
+<span id="cb309-13"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb309-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1122    &lt;NA&gt;    &lt;NA&gt;      22      &lt;NA&gt;      &lt;NA&gt;      &lt;NA&gt;        54</span></span>
+<span id="cb309-14"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb309-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1137      30      30      30        63        63        63        63</span></span>
+<span id="cb309-15"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb309-15" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(STAR)</span>
+<span id="cb309-16"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb309-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 11598    47</span></span></code></pre></div>
+<div class="sourceCode" id="cb310"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb310-1"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb310-1" aria-hidden="true" tabindex="-1"></a><span class="co"># get variable names</span></span>
+<span id="cb310-2"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb310-2" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(STAR)</span>
+<span id="cb310-3"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb310-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;gender&quot;      &quot;ethnicity&quot;   &quot;birth&quot;       &quot;stark&quot;       &quot;star1&quot;       &quot;star2&quot;       &quot;star3&quot;       &quot;readk&quot;      </span></span>
+<span id="cb310-4"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb310-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [9] &quot;read1&quot;       &quot;read2&quot;       &quot;read3&quot;       &quot;mathk&quot;       &quot;math1&quot;       &quot;math2&quot;       &quot;math3&quot;       &quot;lunchk&quot;     </span></span>
+<span id="cb310-5"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb310-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [17] &quot;lunch1&quot;      &quot;lunch2&quot;      &quot;lunch3&quot;      &quot;schoolk&quot;     &quot;school1&quot;     &quot;school2&quot;     &quot;school3&quot;     &quot;degreek&quot;    </span></span>
+<span id="cb310-6"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb310-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [25] &quot;degree1&quot;     &quot;degree2&quot;     &quot;degree3&quot;     &quot;ladderk&quot;     &quot;ladder1&quot;     &quot;ladder2&quot;     &quot;ladder3&quot;     &quot;experiencek&quot;</span></span>
+<span id="cb310-7"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb310-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [33] &quot;experience1&quot; &quot;experience2&quot; &quot;experience3&quot; &quot;tethnicityk&quot; &quot;tethnicity1&quot; &quot;tethnicity2&quot; &quot;tethnicity3&quot; &quot;systemk&quot;    </span></span>
+<span id="cb310-8"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb310-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [41] &quot;system1&quot;     &quot;system2&quot;     &quot;system3&quot;     &quot;schoolidk&quot;   &quot;schoolid1&quot;   &quot;schoolid2&quot;   &quot;schoolid3&quot;</span></span></code></pre></div>
+<p>A majority of the variable names contain a suffix (<tt>k</tt>, <tt>1</tt>, <tt>2</tt> or <tt>3</tt>) stating the grade which the respective variable is referring to. This facilitates regression analysis because it allows to adjust the <tt>formula</tt> argument in <tt>lm()</tt> for each grade by simply changing the variables’ suffixes accordingly.</p>
+<p>The outcome produced by <tt>head()</tt> shows that some values recorded are <tt>NA</tt> and <tt><NA></tt>, i.e., there is no data on this variable for the student under consideration. This lies in the nature of the data: for example, take the first observation <code>STAR[1,]</code>.</p>
+<p>In the output of <code>head(STAR, 2)</code> we find that the student entered the experiment in third grade in a regular class, which is why the class size is recorded in <tt>star3</tt> and the other class type indicator variables are <tt><NA></tt>. For the same reason there are no recordings of her math and reading score but for the third grade. It is straightforward to only get her non-<tt>NA</tt>/<tt><NA></tt> recordings: simply drop the <tt>NA</tt>s using <tt>!is.na()</tt>.</p>
+<div class="sourceCode" id="cb311"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb311-1"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb311-1" aria-hidden="true" tabindex="-1"></a><span class="co"># drop NA recordings for the first observation and print to the console</span></span>
+<span id="cb311-2"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb311-2" aria-hidden="true" tabindex="-1"></a>STAR[<span class="dv">1</span>, <span class="sc">!</span><span class="fu">is.na</span>(STAR[<span class="dv">1</span>, ])]</span>
+<span id="cb311-3"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb311-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      gender ethnicity   birth   star3 read3 math3 lunch3  school3  degree3 ladder3 experience3 tethnicity3 system3 schoolid3</span></span>
+<span id="cb311-4"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb311-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1122 female      afam 1979 Q3 regular   580   564   free suburban bachelor  level1          30        cauc      22        54</span></span></code></pre></div>
+<p><code>is.na(STAR[1, ])</code> returns a logical vector with <tt>TRUE</tt> at positions that correspond to <tt><NA></tt> entries for the first observation. The <tt>!</tt> operator is used to invert the result such that we obtain only non-<tt><NA></tt> entries for the first observations.</p>
+<p>In general it is not necessary to remove rows with missing data because <tt>lm()</tt> does so by default. Missing data may imply a small sample size and thus may lead to imprecise estimation and wrong inference This is, however, not an issue for the study at hand since, as we will see below, sample sizes lie beyond 5000 observations for each regression conducted.</p>
+</div>
+<div id="analysis-of-the-star-data" class="section level3 unnumbered">
+<h3>Analysis of the STAR Data</h3>
+<p>As can be seen from Table <a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#tab:starstructure">13.1</a> there are two treatment groups in each grade, small classes with only 13 to 17 students and regular classes with 22 to 25 students and a teaching aide. Thus, two binary variables, each being an indicator for the respective treatment group, are introduced for the differences estimator to capture the treatment effect for each treatment group separately. This yields the population regression model
+<span class="math display" id="eq:starpopreg">\[\begin{align}
+  Y_i = \beta_0 + \beta_1 SmallClass_i + \beta_2 RegAide_i + u_i, \tag{13.3}
+\end{align}\]</span>
+with test score <span class="math inline">\(Y_i\)</span>, the small class indicator <span class="math inline">\(SmallClass_i\)</span> and <span class="math inline">\(RegAide_i\)</span>, the indicator for a regular class with aide.</p>
+<p>We reproduce the results presented in Table 13.1 of the book by performing the regression <a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#eq:starpopreg">(13.3)</a> for each grade separately. For each student, the dependent variable is simply the sum of the points scored in the math and reading parts, constructed using <tt>I()</tt>.</p>
+<div class="sourceCode" id="cb312"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb312-1"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb312-1" aria-hidden="true" tabindex="-1"></a><span class="co"># compute differences Estimates for each grades</span></span>
+<span id="cb312-2"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb312-2" aria-hidden="true" tabindex="-1"></a>fmk <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">I</span>(readk <span class="sc">+</span> mathk) <span class="sc">~</span> stark, <span class="at">data =</span> STAR)</span>
+<span id="cb312-3"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb312-3" aria-hidden="true" tabindex="-1"></a>fm1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">I</span>(read1 <span class="sc">+</span> math1) <span class="sc">~</span> star1, <span class="at">data =</span> STAR)</span>
+<span id="cb312-4"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb312-4" aria-hidden="true" tabindex="-1"></a>fm2 <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">I</span>(read2 <span class="sc">+</span> math2) <span class="sc">~</span> star2, <span class="at">data =</span> STAR)</span>
+<span id="cb312-5"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb312-5" aria-hidden="true" tabindex="-1"></a>fm3 <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">I</span>(read3 <span class="sc">+</span> math3) <span class="sc">~</span> star3, <span class="at">data =</span> STAR)</span></code></pre></div>
+<div class="sourceCode" id="cb313"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb313-1"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb313-1" aria-hidden="true" tabindex="-1"></a><span class="co"># obtain coefficient matrix using robust standard errors</span></span>
+<span id="cb313-2"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb313-2" aria-hidden="true" tabindex="-1"></a><span class="fu">coeftest</span>(fmk, <span class="at">vcov =</span> vcovHC, <span class="at">type=</span> <span class="st">&quot;HC1&quot;</span>)</span>
+<span id="cb313-3"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb313-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb313-4"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb313-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; t test of coefficients:</span></span>
+<span id="cb313-5"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb313-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb313-6"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb313-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                    Estimate Std. Error  t value  Pr(&gt;|t|)    </span></span>
+<span id="cb313-7"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb313-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; (Intercept)       918.04289    1.63339 562.0473 &lt; 2.2e-16 ***</span></span>
+<span id="cb313-8"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb313-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; starksmall         13.89899    2.45409   5.6636 1.554e-08 ***</span></span>
+<span id="cb313-9"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb313-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; starkregular+aide   0.31394    2.27098   0.1382    0.8901    </span></span>
+<span id="cb313-10"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb313-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ---</span></span>
+<span id="cb313-11"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb313-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span>
+<span id="cb313-12"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb313-12" aria-hidden="true" tabindex="-1"></a><span class="fu">coeftest</span>(fm1, <span class="at">vcov =</span> vcovHC, <span class="at">type=</span> <span class="st">&quot;HC1&quot;</span>)</span>
+<span id="cb313-13"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb313-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb313-14"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb313-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; t test of coefficients:</span></span>
+<span id="cb313-15"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb313-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb313-16"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb313-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                    Estimate Std. Error  t value  Pr(&gt;|t|)    </span></span>
+<span id="cb313-17"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb313-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; (Intercept)       1039.3926     1.7846 582.4321 &lt; 2.2e-16 ***</span></span>
+<span id="cb313-18"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb313-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; star1small          29.7808     2.8311  10.5190 &lt; 2.2e-16 ***</span></span>
+<span id="cb313-19"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb313-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; star1regular+aide   11.9587     2.6520   4.5093  6.62e-06 ***</span></span>
+<span id="cb313-20"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb313-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ---</span></span>
+<span id="cb313-21"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb313-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span>
+<span id="cb313-22"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb313-22" aria-hidden="true" tabindex="-1"></a><span class="fu">coeftest</span>(fm2, <span class="at">vcov =</span> vcovHC, <span class="at">type=</span> <span class="st">&quot;HC1&quot;</span>)</span>
+<span id="cb313-23"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb313-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb313-24"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb313-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; t test of coefficients:</span></span>
+<span id="cb313-25"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb313-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb313-26"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb313-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                    Estimate Std. Error  t value  Pr(&gt;|t|)    </span></span>
+<span id="cb313-27"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb313-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; (Intercept)       1157.8066     1.8151 637.8820 &lt; 2.2e-16 ***</span></span>
+<span id="cb313-28"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb313-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; star2small          19.3944     2.7117   7.1522  9.55e-13 ***</span></span>
+<span id="cb313-29"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb313-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; star2regular+aide    3.4791     2.5447   1.3672    0.1716    </span></span>
+<span id="cb313-30"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb313-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ---</span></span>
+<span id="cb313-31"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb313-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span>
+<span id="cb313-32"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb313-32" aria-hidden="true" tabindex="-1"></a><span class="fu">coeftest</span>(fm3, <span class="at">vcov =</span> vcovHC, <span class="at">type=</span> <span class="st">&quot;HC1&quot;</span>)</span>
+<span id="cb313-33"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb313-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb313-34"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb313-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; t test of coefficients:</span></span>
+<span id="cb313-35"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb313-35" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb313-36"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb313-36" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                     Estimate Std. Error  t value  Pr(&gt;|t|)    </span></span>
+<span id="cb313-37"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb313-37" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; (Intercept)       1228.50636    1.68001 731.2483 &lt; 2.2e-16 ***</span></span>
+<span id="cb313-38"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb313-38" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; star3small          15.58660    2.39604   6.5051 8.393e-11 ***</span></span>
+<span id="cb313-39"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb313-39" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; star3regular+aide   -0.29094    2.27271  -0.1280    0.8981    </span></span>
+<span id="cb313-40"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb313-40" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ---</span></span>
+<span id="cb313-41"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb313-41" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span></code></pre></div>
+<p>We gather the results and present them in a table using <tt>stargazer()</tt>.</p>
+<div class="sourceCode" id="cb314"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb314-1"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb314-1" aria-hidden="true" tabindex="-1"></a><span class="co"># compute robust standard errors for each model and gather them in a list</span></span>
+<span id="cb314-2"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb314-2" aria-hidden="true" tabindex="-1"></a>rob_se_1 <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="fu">sqrt</span>(<span class="fu">diag</span>(<span class="fu">vcovHC</span>(fmk, <span class="at">type =</span> <span class="st">&quot;HC1&quot;</span>))),</span>
+<span id="cb314-3"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb314-3" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">sqrt</span>(<span class="fu">diag</span>(<span class="fu">vcovHC</span>(fm1, <span class="at">type =</span> <span class="st">&quot;HC1&quot;</span>))),</span>
+<span id="cb314-4"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb314-4" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">sqrt</span>(<span class="fu">diag</span>(<span class="fu">vcovHC</span>(fm2, <span class="at">type =</span> <span class="st">&quot;HC1&quot;</span>))),</span>
+<span id="cb314-5"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb314-5" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">sqrt</span>(<span class="fu">diag</span>(<span class="fu">vcovHC</span>(fm2, <span class="at">type =</span> <span class="st">&quot;HC1&quot;</span>))))</span></code></pre></div>
+<div class="sourceCode" id="cb315"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb315-1"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb315-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(stargazer)</span>
+<span id="cb315-2"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb315-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb315-3"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb315-3" aria-hidden="true" tabindex="-1"></a><span class="fu">stargazer</span>(fmk,fm1,fm2,fm3,</span>
+<span id="cb315-4"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb315-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">title =</span> <span class="st">&quot;Project STAR: Differences Estimates&quot;</span>,</span>
+<span id="cb315-5"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb315-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">header =</span> <span class="cn">FALSE</span>, </span>
+<span id="cb315-6"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb315-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">type =</span> <span class="st">&quot;latex&quot;</span>,</span>
+<span id="cb315-7"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb315-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">model.numbers =</span> F,</span>
+<span id="cb315-8"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb315-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">omit.table.layout =</span> <span class="st">&quot;n&quot;</span>,</span>
+<span id="cb315-9"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb315-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">digits =</span> <span class="dv">3</span>, </span>
+<span id="cb315-10"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb315-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">column.labels =</span> <span class="fu">c</span>(<span class="st">&quot;K&quot;</span>, <span class="st">&quot;1&quot;</span>, <span class="st">&quot;2&quot;</span>, <span class="st">&quot;3&quot;</span>),</span>
+<span id="cb315-11"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb315-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">dep.var.caption  =</span> <span class="st">&quot;Dependent Variable: Grade&quot;</span>,</span>
+<span id="cb315-12"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb315-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">dep.var.labels.include =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb315-13"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb315-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">se =</span> rob_se_1)</span></code></pre></div>
+
+
+
+<table style="text-align:center"><tr><td colspan="5" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left"></td><td colspan="4">Dependent Variable: Grade</td></tr>
+<tr><td></td><td colspan="4" style="border-bottom: 1px solid black"></td></tr>
+<tr><td style="text-align:left"></td><td>K</td><td>1</td><td>2</td><td>3</td></tr>
+<tr><td colspan="5" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left">starksmall</td><td>13.90<sup>***</sup></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left"></td><td>(2.45)</td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">starkregular+aide</td><td>0.31</td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left"></td><td>(2.27)</td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">star1small</td><td></td><td>29.78<sup>***</sup></td><td></td><td></td></tr>
+<tr><td style="text-align:left"></td><td></td><td>(2.83)</td><td></td><td></td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">star1regular+aide</td><td></td><td>11.96<sup>***</sup></td><td></td><td></td></tr>
+<tr><td style="text-align:left"></td><td></td><td>(2.65)</td><td></td><td></td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">star2small</td><td></td><td></td><td>19.39<sup>***</sup></td><td></td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td>(2.71)</td><td></td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">star2regular+aide</td><td></td><td></td><td>3.48</td><td></td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td>(2.54)</td><td></td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">star3small</td><td></td><td></td><td></td><td>15.59</td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">star3regular+aide</td><td></td><td></td><td></td><td>-0.29</td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">Constant</td><td>918.04<sup>***</sup></td><td>1,039.39<sup>***</sup></td><td>1,157.81<sup>***</sup></td><td>1,228.51<sup>***</sup></td></tr>
+<tr><td style="text-align:left"></td><td>(1.63)</td><td>(1.78)</td><td>(1.82)</td><td>(1.82)</td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td colspan="5" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left">Observations</td><td>5,786</td><td>6,379</td><td>6,049</td><td>5,967</td></tr>
+<tr><td style="text-align:left">R<sup>2</sup></td><td>0.01</td><td>0.02</td><td>0.01</td><td>0.01</td></tr>
+<tr><td style="text-align:left">Adjusted R<sup>2</sup></td><td>0.01</td><td>0.02</td><td>0.01</td><td>0.01</td></tr>
+<tr><td style="text-align:left">Residual Std. Error</td><td>73.49 (df = 5783)</td><td>90.50 (df = 6376)</td><td>83.69 (df = 6046)</td><td>72.91 (df = 5964)</td></tr>
+<tr><td style="text-align:left">F Statistic</td><td>21.26<sup>***</sup> (df = 2; 5783)</td><td>56.34<sup>***</sup> (df = 2; 6376)</td><td>28.71<sup>***</sup> (df = 2; 6046)</td><td>30.25<sup>***</sup> (df = 2; 5964)</td></tr>
+<tr><td colspan="5" style="border-bottom: 1px solid black"></td></tr></table>
+<caption><p style='text-align:center'><span id="tab:psde">Table 13.2: </span> Project STAR - Differences Estimates</p></caption>
+
+
+<p>The estimates presented in Table <a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#tab:psde">13.2</a> suggest that the class size reduction improves student performance. Except for grade 1, the estimates of the coefficient on <span class="math inline">\(SmallClass\)</span> are roughly of the same magnitude (the estimates lie between 13.90 and 19.39 points) and they are statistically significant at <span class="math inline">\(1\%\)</span>. Furthermore, a teaching aide has little, possibly zero, effect on the performance of the students.</p>
+<p>Following the book, we augment the regression model <a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#eq:starpopreg">(13.3)</a> by different sets of regressors for two reasons:</p>
+<ol style="list-style-type: decimal">
+<li>If the additional regressors explain some of the observed variation in the dependent variable, we obtain more efficient estimates of the coefficients of interest.</li>
+<li>If the treatment is not received at random due to failures to follow the treatment protocol (see Chapter 13.3 of the book), the estimates obtained using <a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#eq:starpopreg">(13.3)</a> may be biased. Adding additional regressors may solve or mitigate this problem.</li>
+</ol>
+<p>In particular, we consider the following student and teacher characteristics</p>
+<ul>
+<li><span class="math inline">\(experience\)</span> — Teacher’s years of experience</li>
+<li><span class="math inline">\(boy\)</span> — Student is a boy (dummy)</li>
+<li><span class="math inline">\(lunch\)</span> — Free lunch eligibility (dummy)</li>
+<li><span class="math inline">\(black\)</span> — Student is African-American (dummy)</li>
+<li><span class="math inline">\(race\)</span> — Student’s race is other than black or white (dummy)</li>
+<li><span class="math inline">\(\text{schoolid}\)</span> — School indicator variables</li>
+</ul>
+<p>in the four population regression specifications
+<span class="math display" id="eq:augstarpopreg3" id="eq:augstarpopreg2" id="eq:augstarpopreg1">\[\begin{align}
+Y_i =&amp; \beta_0 + \beta_1 SmallClass_i + \beta_2 RegAide_i + u_i, \tag{13.4} \\
+Y_i =&amp; \beta_0 + \beta_1 SmallClass_i + \beta_2 RegAide_i + \beta_3 experience_i + u_i, \tag{13.5} \\
+Y_i =&amp; \beta_0 + \beta_1 SmallClass_i + \beta_2 RegAide_i + \beta_3 experience_i + schoolid + u_i, \tag{13.6}
+\end{align}\]</span>
+and
+<span class="math display" id="eq:augstarpopreg4">\[\begin{align}
+Y_i =&amp; \beta_0 + \beta_1 SmallClass_i + \beta_2 RegAide_i + \beta_3 experience_i + \beta_4 boy + \beta_5 lunch \\ 
+&amp; + \beta_6 black + \beta_7 race + schoolid + u_i. \tag{13.7}
+\end{align}\]</span></p>
+<p>Prior to estimation, we perform some subsetting and data wrangling using functions from the packages <tt>dplyr</tt> and <tt>tidyr</tt>. These are both part of <tt>tidyverse</tt>, a collection of <tt>R</tt> packages designed for data science and handling big datasets (see the <a href="https://www.tidyverse.org/">official site</a> for more on <tt>tidyverse</tt> packages). The functions <tt>%&gt;%</tt>, <tt>transmute()</tt> and <tt>mutate()</tt> are sufficient for us here:</p>
+<ul>
+<li><tt>%&gt;%</tt> allows to chain function calls.</li>
+<li><tt>transmute()</tt> allows to subset the data set by naming the variables to be kept.</li>
+<li><tt>mutate()</tt> is convenient for adding new variables based on existing ones while preserving the latter.</li>
+</ul>
+<p>The regression models <a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#eq:augstarpopreg1">(13.4)</a> to <a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#eq:augstarpopreg4">(13.7)</a> require the variables <tt>gender</tt>, <tt>ethnicity</tt>, <tt>stark</tt>, <tt>readk</tt>, <tt>mathk</tt>, <tt>lunchk</tt>, <tt>experiencek</tt> and <tt>schoolidk</tt>. After dropping the remaining variables using <tt>transmute()</tt>, we use <tt>mutate()</tt> to add three additional binary variables which are derivatives of existing ones: <tt>black</tt>, <tt>race</tt> and <tt>boy</tt>. They are generated using logical statements within the function <tt>ifelse()</tt>.</p>
+<div class="sourceCode" id="cb316"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb316-1"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb316-1" aria-hidden="true" tabindex="-1"></a><span class="co"># load packages &#39;dplyr&#39; and &#39;tidyr&#39; for data wrangling functionalities</span></span>
+<span id="cb316-2"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb316-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb316-3"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb316-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyr)</span>
+<span id="cb316-4"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb316-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb316-5"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb316-5" aria-hidden="true" tabindex="-1"></a><span class="co"># generate subset with kindergarten data</span></span>
+<span id="cb316-6"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb316-6" aria-hidden="true" tabindex="-1"></a>STARK <span class="ot">&lt;-</span> STAR <span class="sc">%&gt;%</span> </span>
+<span id="cb316-7"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb316-7" aria-hidden="true" tabindex="-1"></a>      <span class="fu">transmute</span>(gender,</span>
+<span id="cb316-8"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb316-8" aria-hidden="true" tabindex="-1"></a>                ethnicity,</span>
+<span id="cb316-9"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb316-9" aria-hidden="true" tabindex="-1"></a>                stark,</span>
+<span id="cb316-10"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb316-10" aria-hidden="true" tabindex="-1"></a>                readk,</span>
+<span id="cb316-11"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb316-11" aria-hidden="true" tabindex="-1"></a>                mathk,</span>
+<span id="cb316-12"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb316-12" aria-hidden="true" tabindex="-1"></a>                lunchk,</span>
+<span id="cb316-13"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb316-13" aria-hidden="true" tabindex="-1"></a>                experiencek,</span>
+<span id="cb316-14"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb316-14" aria-hidden="true" tabindex="-1"></a>                schoolidk) <span class="sc">%&gt;%</span> </span>
+<span id="cb316-15"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb316-15" aria-hidden="true" tabindex="-1"></a>      <span class="fu">mutate</span>(<span class="at">black =</span> <span class="fu">ifelse</span>(ethnicity <span class="sc">==</span> <span class="st">&quot;afam&quot;</span>, <span class="dv">1</span>, <span class="dv">0</span>),</span>
+<span id="cb316-16"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb316-16" aria-hidden="true" tabindex="-1"></a>             <span class="at">race =</span> <span class="fu">ifelse</span>(ethnicity <span class="sc">==</span> <span class="st">&quot;afam&quot;</span> <span class="sc">|</span> ethnicity <span class="sc">==</span> <span class="st">&quot;cauc&quot;</span>, <span class="dv">1</span>, <span class="dv">0</span>),</span>
+<span id="cb316-17"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb316-17" aria-hidden="true" tabindex="-1"></a>             <span class="at">boy =</span> <span class="fu">ifelse</span>(gender <span class="sc">==</span> <span class="st">&quot;male&quot;</span>, <span class="dv">1</span>, <span class="dv">0</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb317"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb317-1"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb317-1" aria-hidden="true" tabindex="-1"></a><span class="co"># estimate the models </span></span>
+<span id="cb317-2"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb317-2" aria-hidden="true" tabindex="-1"></a>gradeK1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">I</span>(mathk <span class="sc">+</span> readk) <span class="sc">~</span> stark <span class="sc">+</span> experiencek, </span>
+<span id="cb317-3"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb317-3" aria-hidden="true" tabindex="-1"></a>              <span class="at">data =</span> STARK)</span>
+<span id="cb317-4"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb317-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb317-5"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb317-5" aria-hidden="true" tabindex="-1"></a>gradeK2 <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">I</span>(mathk <span class="sc">+</span> readk) <span class="sc">~</span> stark <span class="sc">+</span> experiencek <span class="sc">+</span> schoolidk, </span>
+<span id="cb317-6"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb317-6" aria-hidden="true" tabindex="-1"></a>              <span class="at">data =</span> STARK)</span>
+<span id="cb317-7"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb317-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb317-8"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb317-8" aria-hidden="true" tabindex="-1"></a>gradeK3 <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">I</span>(mathk <span class="sc">+</span> readk) <span class="sc">~</span> stark <span class="sc">+</span> experiencek <span class="sc">+</span> boy <span class="sc">+</span> lunchk </span>
+<span id="cb317-9"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb317-9" aria-hidden="true" tabindex="-1"></a>              <span class="sc">+</span> black <span class="sc">+</span> race <span class="sc">+</span> schoolidk, </span>
+<span id="cb317-10"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb317-10" aria-hidden="true" tabindex="-1"></a>              <span class="at">data =</span> STARK)</span></code></pre></div>
+<p>For brevity, we exclude the coefficients for the indicator dummies in <tt>coeftest()</tt>’s output by subsetting the matrices.</p>
+<div class="sourceCode" id="cb318"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb318-1"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb318-1" aria-hidden="true" tabindex="-1"></a><span class="co"># obtain robust inference on the significance of coefficients</span></span>
+<span id="cb318-2"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb318-2" aria-hidden="true" tabindex="-1"></a><span class="fu">coeftest</span>(gradeK1, <span class="at">vcov. =</span> vcovHC, <span class="at">type =</span> <span class="st">&quot;HC1&quot;</span>)</span>
+<span id="cb318-3"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb318-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb318-4"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb318-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; t test of coefficients:</span></span>
+<span id="cb318-5"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb318-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb318-6"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb318-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                    Estimate Std. Error  t value  Pr(&gt;|t|)    </span></span>
+<span id="cb318-7"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb318-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; (Intercept)       904.72124    2.22235 407.1020 &lt; 2.2e-16 ***</span></span>
+<span id="cb318-8"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb318-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; starksmall         14.00613    2.44704   5.7237 1.095e-08 ***</span></span>
+<span id="cb318-9"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb318-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; starkregular+aide  -0.60058    2.25430  -0.2664    0.7899    </span></span>
+<span id="cb318-10"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb318-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; experiencek         1.46903    0.16929   8.6778 &lt; 2.2e-16 ***</span></span>
+<span id="cb318-11"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb318-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ---</span></span>
+<span id="cb318-12"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb318-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span>
+<span id="cb318-13"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb318-13" aria-hidden="true" tabindex="-1"></a><span class="fu">coeftest</span>(gradeK2, <span class="at">vcov. =</span> vcovHC, <span class="at">type =</span> <span class="st">&quot;HC1&quot;</span>)[<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, ]</span>
+<span id="cb318-14"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb318-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                      Estimate Std. Error     t value     Pr(&gt;|t|)</span></span>
+<span id="cb318-15"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb318-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; (Intercept)       925.6748750  7.6527218 120.9602155 0.000000e+00</span></span>
+<span id="cb318-16"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb318-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; starksmall         15.9330822  2.2411750   7.1092540 1.310324e-12</span></span>
+<span id="cb318-17"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb318-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; starkregular+aide   1.2151960  2.0353415   0.5970477 5.504993e-01</span></span>
+<span id="cb318-18"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb318-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; experiencek         0.7431059  0.1697619   4.3773429 1.222880e-05</span></span>
+<span id="cb318-19"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb318-19" aria-hidden="true" tabindex="-1"></a><span class="fu">coeftest</span>(gradeK3, <span class="at">vcov. =</span> vcovHC, <span class="at">type =</span> <span class="st">&quot;HC1&quot;</span>)[<span class="dv">1</span><span class="sc">:</span><span class="dv">7</span>, ]</span>
+<span id="cb318-20"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb318-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                      Estimate Std. Error     t value     Pr(&gt;|t|)</span></span>
+<span id="cb318-21"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb318-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; (Intercept)       937.6831330 14.3726687  65.2407117 0.000000e+00</span></span>
+<span id="cb318-22"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb318-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; starksmall         15.8900507  2.1551817   7.3729516 1.908960e-13</span></span>
+<span id="cb318-23"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb318-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; starkregular+aide   1.7869378  1.9614592   0.9110247 3.623211e-01</span></span>
+<span id="cb318-24"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb318-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; experiencek         0.6627251  0.1659298   3.9940097 6.578846e-05</span></span>
+<span id="cb318-25"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb318-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; boy               -12.0905123  1.6726331  -7.2284306 5.533119e-13</span></span>
+<span id="cb318-26"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb318-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; lunchkfree        -34.7033021  1.9870366 -17.4648529 1.437931e-66</span></span>
+<span id="cb318-27"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb318-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; black             -25.4305130  3.4986918  -7.2685776 4.125252e-13</span></span></code></pre></div>
+<p>We now use <tt>stargazer()</tt> to gather all relevant information in a structured table.</p>
+<div class="sourceCode" id="cb319"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb319-1"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb319-1" aria-hidden="true" tabindex="-1"></a><span class="co"># compute robust standard errors for each model and gather them in a list</span></span>
+<span id="cb319-2"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb319-2" aria-hidden="true" tabindex="-1"></a>rob_se_2 <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="fu">sqrt</span>(<span class="fu">diag</span>(<span class="fu">vcovHC</span>(fmk, <span class="at">type =</span> <span class="st">&quot;HC1&quot;</span>))),</span>
+<span id="cb319-3"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb319-3" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">sqrt</span>(<span class="fu">diag</span>(<span class="fu">vcovHC</span>(gradeK1, <span class="at">type =</span> <span class="st">&quot;HC1&quot;</span>))),</span>
+<span id="cb319-4"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb319-4" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">sqrt</span>(<span class="fu">diag</span>(<span class="fu">vcovHC</span>(gradeK2, <span class="at">type =</span> <span class="st">&quot;HC1&quot;</span>))),</span>
+<span id="cb319-5"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb319-5" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">sqrt</span>(<span class="fu">diag</span>(<span class="fu">vcovHC</span>(gradeK3, <span class="at">type =</span> <span class="st">&quot;HC1&quot;</span>))))</span></code></pre></div>
+<div class="sourceCode" id="cb320"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb320-1"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb320-1" aria-hidden="true" tabindex="-1"></a><span class="fu">stargazer</span>(fmk, fm1, fm2, fm3,</span>
+<span id="cb320-2"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb320-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">title =</span> <span class="st">&quot;Project STAR - Differences Estimates with </span></span>
+<span id="cb320-3"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb320-3" aria-hidden="true" tabindex="-1"></a><span class="st">  Additional Regressors for Kindergarten&quot;</span>,</span>
+<span id="cb320-4"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb320-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">header =</span> <span class="cn">FALSE</span>, </span>
+<span id="cb320-5"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb320-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">type =</span> <span class="st">&quot;latex&quot;</span>,</span>
+<span id="cb320-6"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb320-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">model.numbers =</span> F,</span>
+<span id="cb320-7"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb320-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">omit.table.layout =</span> <span class="st">&quot;n&quot;</span>,</span>
+<span id="cb320-8"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb320-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">digits =</span> <span class="dv">3</span>, </span>
+<span id="cb320-9"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb320-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">column.labels =</span> <span class="fu">c</span>(<span class="st">&quot;(1)&quot;</span>, <span class="st">&quot;(2)&quot;</span>, <span class="st">&quot;(3)&quot;</span>, <span class="st">&quot;(4)&quot;</span>),</span>
+<span id="cb320-10"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb320-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">dep.var.caption  =</span> <span class="st">&quot;Dependent Variable: Test Score in Kindergarten&quot;</span>,</span>
+<span id="cb320-11"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb320-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">dep.var.labels.include =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb320-12"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb320-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">se =</span> rob_se_2) </span></code></pre></div>
+
+
+
+<table style="text-align:center"><tr><td colspan="5" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left"></td><td colspan="4">Dependent Variable: Test Score in Kindergarten</td></tr>
+<tr><td></td><td colspan="4" style="border-bottom: 1px solid black"></td></tr>
+<tr><td style="text-align:left"></td><td>(1)</td><td>(2)</td><td>(3)</td><td>(4)</td></tr>
+<tr><td colspan="5" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left">starksmall</td><td>13.899<sup>***</sup></td><td>14.006<sup>***</sup></td><td>15.933<sup>***</sup></td><td>15.890<sup>***</sup></td></tr>
+<tr><td style="text-align:left"></td><td>(2.454)</td><td>(2.447)</td><td>(2.241)</td><td>(2.155)</td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">starkregular+aide</td><td>0.314</td><td>-0.601</td><td>1.215</td><td>1.787</td></tr>
+<tr><td style="text-align:left"></td><td>(2.271)</td><td>(2.254)</td><td>(2.035)</td><td>(1.961)</td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">experiencek</td><td></td><td>1.469<sup>***</sup></td><td>0.743<sup>***</sup></td><td>0.663<sup>***</sup></td></tr>
+<tr><td style="text-align:left"></td><td></td><td>(0.169)</td><td>(0.170)</td><td>(0.166)</td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">boy</td><td></td><td></td><td></td><td>-12.091<sup>***</sup></td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td>(1.673)</td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">lunchkfree</td><td></td><td></td><td></td><td>-34.703<sup>***</sup></td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td>(1.987)</td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">black</td><td></td><td></td><td></td><td>-25.431<sup>***</sup></td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td>(3.499)</td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">race</td><td></td><td></td><td></td><td>8.501</td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td>(12.520)</td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">Constant</td><td>918.043<sup>***</sup></td><td>904.721<sup>***</sup></td><td>925.675<sup>***</sup></td><td>937.683<sup>***</sup></td></tr>
+<tr><td style="text-align:left"></td><td>(1.633)</td><td>(2.222)</td><td>(7.653)</td><td>(14.373)</td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td colspan="5" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left">School indicators?</td><td>no</td><td>no</td><td>yes</td><td>yes</td></tr>
+<tr><td style="text-align:left">Observations</td><td>5,786</td><td>5,766</td><td>5,766</td><td>5,748</td></tr>
+<tr><td style="text-align:left">R<sup>2</sup></td><td>0.007</td><td>0.020</td><td>0.234</td><td>0.291</td></tr>
+<tr><td style="text-align:left">Adjusted R<sup>2</sup></td><td>0.007</td><td>0.020</td><td>0.223</td><td>0.281</td></tr>
+<tr><td style="text-align:left">Residual Std. Error</td><td>73.490 (df = 5783)</td><td>73.085 (df = 5762)</td><td>65.075 (df = 5684)</td><td>62.663 (df = 5662)</td></tr>
+<tr><td style="text-align:left">F Statistic</td><td>21.263<sup>***</sup> (df = 2; 5783)</td><td>39.861<sup>***</sup> (df = 3; 5762)</td><td>21.413<sup>***</sup> (df = 81; 5684)</td><td>27.364<sup>***</sup> (df = 85; 5662)</td></tr>
+<tr><td colspan="5" style="border-bottom: 1px solid black"></td></tr></table>
+<caption><p style='text-align:center'><span id="tab:psdewarfk">Table 13.3: </span> Project STAR - Differences Estimates with Additional Regressors for Kindergarten</p></caption>
+
+
+<p>The results in column (1) of Table <a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#tab:psdewarfk">13.3</a> just a repeat the results obtained for <a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#eq:starpopreg">(13.3)</a>. Columns (2) to (4) reveal that adding student characteristics and school fixed effects does not lead to substantially different estimates of the treatment effects. This result makes it more plausible that the estimates of the effects obtained using model <a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#eq:starpopreg">(13.3)</a> do not suffer from failure of random assignment. There is some decrease in the standard errors and some increase in <span class="math inline">\(\bar{R}^2\)</span>, implying that the estimates are more precise.</p>
+<p>Because teachers were randomly assigned to classes, inclusion of school fixed effect allows us to estimate the causal effect of a teacher’s experience on test scores of students in kindergarten. Regression (3) predicts the average effect of 10 years experience on test scores to be <span class="math inline">\(10\cdot 0.74=7.4\)</span> points. Be aware that the other estimates on student characteristics in regression (4) <em>do not</em> have causal interpretation due to nonrandom assignment (see Chapter 13.3 of the book for a detailed discussion).</p>
+<p>Are the estimated effects presented in Table <a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#tab:psdewarfk">13.3</a> large or small in a practical sense? Let us translate the predicted changes in test scores to units of standard deviation in order to allow for a comparison (see Section <a href="9.4-etsacs.html#etsacs">9.4</a> for a similar argument).</p>
+<div class="sourceCode" id="cb321"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb321-1"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb321-1" aria-hidden="true" tabindex="-1"></a><span class="co"># compute the sample standard deviations of test scores</span></span>
+<span id="cb321-2"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb321-2" aria-hidden="true" tabindex="-1"></a>SSD <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;K&quot;</span> <span class="ot">=</span> <span class="fu">sd</span>(<span class="fu">na.omit</span>(STAR<span class="sc">$</span>readk <span class="sc">+</span> STAR<span class="sc">$</span>mathk)),</span>
+<span id="cb321-3"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb321-3" aria-hidden="true" tabindex="-1"></a>         <span class="st">&quot;1&quot;</span> <span class="ot">=</span> <span class="fu">sd</span>(<span class="fu">na.omit</span>(STAR<span class="sc">$</span>read1 <span class="sc">+</span> STAR<span class="sc">$</span>math1)),</span>
+<span id="cb321-4"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb321-4" aria-hidden="true" tabindex="-1"></a>         <span class="st">&quot;2&quot;</span> <span class="ot">=</span> <span class="fu">sd</span>(<span class="fu">na.omit</span>(STAR<span class="sc">$</span>read2 <span class="sc">+</span> STAR<span class="sc">$</span>math2)),</span>
+<span id="cb321-5"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb321-5" aria-hidden="true" tabindex="-1"></a>         <span class="st">&quot;3&quot;</span> <span class="ot">=</span> <span class="fu">sd</span>(<span class="fu">na.omit</span>(STAR<span class="sc">$</span>read3 <span class="sc">+</span> STAR<span class="sc">$</span>math3)))</span>
+<span id="cb321-6"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb321-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb321-7"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb321-7" aria-hidden="true" tabindex="-1"></a><span class="co"># translate the effects of small classes to standard deviations</span></span>
+<span id="cb321-8"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb321-8" aria-hidden="true" tabindex="-1"></a>Small <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;K&quot;</span> <span class="ot">=</span> <span class="fu">as.numeric</span>(<span class="fu">coef</span>(fmk)[<span class="dv">2</span>]<span class="sc">/</span>SSD[<span class="dv">1</span>]),</span>
+<span id="cb321-9"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb321-9" aria-hidden="true" tabindex="-1"></a>           <span class="st">&quot;1&quot;</span> <span class="ot">=</span> <span class="fu">as.numeric</span>(<span class="fu">coef</span>(fm1)[<span class="dv">2</span>]<span class="sc">/</span>SSD[<span class="dv">2</span>]),</span>
+<span id="cb321-10"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb321-10" aria-hidden="true" tabindex="-1"></a>           <span class="st">&quot;2&quot;</span> <span class="ot">=</span> <span class="fu">as.numeric</span>(<span class="fu">coef</span>(fm2)[<span class="dv">2</span>]<span class="sc">/</span>SSD[<span class="dv">3</span>]),</span>
+<span id="cb321-11"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb321-11" aria-hidden="true" tabindex="-1"></a>           <span class="st">&quot;3&quot;</span> <span class="ot">=</span> <span class="fu">as.numeric</span>(<span class="fu">coef</span>(fm3)[<span class="dv">2</span>]<span class="sc">/</span>SSD[<span class="dv">4</span>]))</span>
+<span id="cb321-12"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb321-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb321-13"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb321-13" aria-hidden="true" tabindex="-1"></a><span class="co"># adjust the standard errors</span></span>
+<span id="cb321-14"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb321-14" aria-hidden="true" tabindex="-1"></a>SmallSE <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;K&quot;</span> <span class="ot">=</span> <span class="fu">as.numeric</span>(rob_se_1[[<span class="dv">1</span>]][<span class="dv">2</span>]<span class="sc">/</span>SSD[<span class="dv">1</span>]),</span>
+<span id="cb321-15"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb321-15" aria-hidden="true" tabindex="-1"></a>             <span class="st">&quot;1&quot;</span> <span class="ot">=</span> <span class="fu">as.numeric</span>(rob_se_1[[<span class="dv">2</span>]][<span class="dv">2</span>]<span class="sc">/</span>SSD[<span class="dv">2</span>]),</span>
+<span id="cb321-16"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb321-16" aria-hidden="true" tabindex="-1"></a>             <span class="st">&quot;2&quot;</span> <span class="ot">=</span> <span class="fu">as.numeric</span>(rob_se_1[[<span class="dv">3</span>]][<span class="dv">2</span>]<span class="sc">/</span>SSD[<span class="dv">3</span>]),</span>
+<span id="cb321-17"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb321-17" aria-hidden="true" tabindex="-1"></a>             <span class="st">&quot;3&quot;</span> <span class="ot">=</span> <span class="fu">as.numeric</span>(rob_se_1[[<span class="dv">4</span>]][<span class="dv">2</span>]<span class="sc">/</span>SSD[<span class="dv">4</span>]))</span>
+<span id="cb321-18"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb321-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb321-19"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb321-19" aria-hidden="true" tabindex="-1"></a><span class="co"># translate the effects of regular classes with aide to standard deviations</span></span>
+<span id="cb321-20"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb321-20" aria-hidden="true" tabindex="-1"></a>RegAide<span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;K&quot;</span> <span class="ot">=</span> <span class="fu">as.numeric</span>(<span class="fu">coef</span>(fmk)[<span class="dv">3</span>]<span class="sc">/</span>SSD[<span class="dv">1</span>]),</span>
+<span id="cb321-21"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb321-21" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;1&quot;</span> <span class="ot">=</span> <span class="fu">as.numeric</span>(<span class="fu">coef</span>(fm1)[<span class="dv">3</span>]<span class="sc">/</span>SSD[<span class="dv">2</span>]),</span>
+<span id="cb321-22"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb321-22" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;2&quot;</span> <span class="ot">=</span> <span class="fu">as.numeric</span>(<span class="fu">coef</span>(fm2)[<span class="dv">3</span>]<span class="sc">/</span>SSD[<span class="dv">3</span>]),</span>
+<span id="cb321-23"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb321-23" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;3&quot;</span> <span class="ot">=</span> <span class="fu">as.numeric</span>(<span class="fu">coef</span>(fm3)[<span class="dv">3</span>]<span class="sc">/</span>SSD[<span class="dv">4</span>]))</span>
+<span id="cb321-24"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb321-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb321-25"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb321-25" aria-hidden="true" tabindex="-1"></a><span class="co"># adjust the standard errors</span></span>
+<span id="cb321-26"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb321-26" aria-hidden="true" tabindex="-1"></a>RegAideSE <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;K&quot;</span> <span class="ot">=</span> <span class="fu">as.numeric</span>(rob_se_1[[<span class="dv">1</span>]][<span class="dv">3</span>]<span class="sc">/</span>SSD[<span class="dv">1</span>]),</span>
+<span id="cb321-27"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb321-27" aria-hidden="true" tabindex="-1"></a>               <span class="st">&quot;1&quot;</span> <span class="ot">=</span> <span class="fu">as.numeric</span>(rob_se_1[[<span class="dv">2</span>]][<span class="dv">3</span>]<span class="sc">/</span>SSD[<span class="dv">2</span>]),</span>
+<span id="cb321-28"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb321-28" aria-hidden="true" tabindex="-1"></a>               <span class="st">&quot;2&quot;</span> <span class="ot">=</span> <span class="fu">as.numeric</span>(rob_se_1[[<span class="dv">3</span>]][<span class="dv">3</span>]<span class="sc">/</span>SSD[<span class="dv">3</span>]),</span>
+<span id="cb321-29"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb321-29" aria-hidden="true" tabindex="-1"></a>               <span class="st">&quot;3&quot;</span> <span class="ot">=</span> <span class="fu">as.numeric</span>(rob_se_1[[<span class="dv">4</span>]][<span class="dv">3</span>]<span class="sc">/</span>SSD[<span class="dv">4</span>]))</span>
+<span id="cb321-30"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb321-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb321-31"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb321-31" aria-hidden="true" tabindex="-1"></a><span class="co"># gather the results in a data.frame and round</span></span>
+<span id="cb321-32"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb321-32" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">round</span>(<span class="fu">data.frame</span>(</span>
+<span id="cb321-33"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb321-33" aria-hidden="true" tabindex="-1"></a>                        Small, SmallSE, RegAide, RegAideSE, SSD),</span>
+<span id="cb321-34"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb321-34" aria-hidden="true" tabindex="-1"></a>                        <span class="at">digits =</span>  <span class="dv">2</span>))</span></code></pre></div>
+<p>It is fairly easy to turn the <tt>data.frame</tt> <tt>df</tt> into a table.</p>
+<div class="sourceCode" id="cb322"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb322-1"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb322-1" aria-hidden="true" tabindex="-1"></a><span class="co"># generate a simple table using stargazer</span></span>
+<span id="cb322-2"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb322-2" aria-hidden="true" tabindex="-1"></a><span class="fu">stargazer</span>(df,</span>
+<span id="cb322-3"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb322-3" aria-hidden="true" tabindex="-1"></a>          <span class="at">title =</span> <span class="st">&quot;Estimated Class Size Effects </span></span>
+<span id="cb322-4"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb322-4" aria-hidden="true" tabindex="-1"></a><span class="st">          (in Units of Standard Deviations)&quot;</span>,</span>
+<span id="cb322-5"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb322-5" aria-hidden="true" tabindex="-1"></a>          <span class="at">type =</span> <span class="st">&quot;html&quot;</span>, </span>
+<span id="cb322-6"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb322-6" aria-hidden="true" tabindex="-1"></a>          <span class="at">summary =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb322-7"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb322-7" aria-hidden="true" tabindex="-1"></a>          <span class="at">header =</span> <span class="cn">FALSE</span></span>
+<span id="cb322-8"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb322-8" aria-hidden="true" tabindex="-1"></a>          )</span></code></pre></div>
+
+
+
+<table style="text-align:center"><tr><td colspan="5" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left"></td><td>K</td><td>1</td><td>2</td><td>3</td></tr>
+<tr><td colspan="5" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left">Small</td><td>0.190</td><td>0.330</td><td>0.230</td><td>0.210</td></tr>
+<tr><td style="text-align:left">SmallSE</td><td>0.030</td><td>0.030</td><td>0.030</td><td>0.040</td></tr>
+<tr><td style="text-align:left">RegAide</td><td>0</td><td>0.130</td><td>0.040</td><td>0</td></tr>
+<tr><td style="text-align:left">RegAideSE</td><td>0.030</td><td>0.030</td><td>0.030</td><td>0.030</td></tr>
+<tr><td style="text-align:left">SSD</td><td>73.750</td><td>91.280</td><td>84.080</td><td>73.270</td></tr>
+<tr><td colspan="5" style="border-bottom: 1px solid black"></td></tr></table>
+<caption><p style='text-align:center'><span id="tab:ecse">Table 13.4: </span> Estimated Class Size Effects 
+          (in Units of Standard Deviations)</p></caption>
+
+
+<p>The estimated effect of a small classes is largest for grade 1. As pointed out in the book, this is probably because students in the control group for grade 1 did poorly on the test for some unknown reason or simply due to random variation. The difference between the estimated effect of being in a small class and being in a regular classes with an aide is roughly 0.2 standard deviations for all grades. This leads to the conclusion that the effect of being in a regular sized class with an aide is zero and the effect of being in a small class is roughly the same for all grades.</p>
+<p>The remainder of Chapter 13.3 in the book discusses to what extent these experimental estimates are comparable with observational estimates obtained using data on school districts in California and Massachusetts in Chapter <a href="9-asbomr.html#asbomr">9</a>. It turns out that the estimates are indeed very similar. Please refer to the aforementioned section in the book for a more detailed discussion.</p>
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="13.2-threats-to-validity-of-experiments.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="13.4-qe.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": true,
+"facebook": true,
+"twitter": true,
+"linkedin": true,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "serif",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/mca91/EconometricsWithR/edit/master/13-ch13.Rmd",
+"text": "Edit"
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": ["ITER.pdf"],
+"search": {
+"engine": "lunr",
+"options": null
+},
+"toc": {
+"collapse": "subsection",
+"scroll_highlight": true
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

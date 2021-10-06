@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>16.3 Cointegration | Introduction to Econometrics with R</title>
+  <meta name="description" content="Beginners with little background in statistics and econometrics often have a hard time understanding the benefits of having programming skills for learning and applying Econometrics. ‘Introduction to Econometrics with R’ is an interactive companion to the well-received textbook ‘Introduction to Econometrics’ by James H. Stock and Mark W. Watson (2015). It gives a gentle introduction to the essentials of R programming and guides students in implementing the empirical applications presented throughout the textbook using the newly aquired skills. This is supported by interactive programming exercises generated with DataCamp Light and integration of interactive visualizations of central concepts which are based on the flexible JavaScript library D3.js." />
+  <meta name="generator" content="bookdown 0.23 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="16.3 Cointegration | Introduction to Econometrics with R" />
+  <meta property="og:type" content="book" />
+  <meta property="og:url" content="https://www.econometrics-with-r.org/" />
+  <meta property="og:image" content="https://www.econometrics-with-r.org//images/cover.png" />
+  <meta property="og:description" content="Beginners with little background in statistics and econometrics often have a hard time understanding the benefits of having programming skills for learning and applying Econometrics. ‘Introduction to Econometrics with R’ is an interactive companion to the well-received textbook ‘Introduction to Econometrics’ by James H. Stock and Mark W. Watson (2015). It gives a gentle introduction to the essentials of R programming and guides students in implementing the empirical applications presented throughout the textbook using the newly aquired skills. This is supported by interactive programming exercises generated with DataCamp Light and integration of interactive visualizations of central concepts which are based on the flexible JavaScript library D3.js." />
+  <meta name="github-repo" content="mca91/EconometricsWithR" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="16.3 Cointegration | Introduction to Econometrics with R" />
+  
+  <meta name="twitter:description" content="Beginners with little background in statistics and econometrics often have a hard time understanding the benefits of having programming skills for learning and applying Econometrics. ‘Introduction to Econometrics with R’ is an interactive companion to the well-received textbook ‘Introduction to Econometrics’ by James H. Stock and Mark W. Watson (2015). It gives a gentle introduction to the essentials of R programming and guides students in implementing the empirical applications presented throughout the textbook using the newly aquired skills. This is supported by interactive programming exercises generated with DataCamp Light and integration of interactive visualizations of central concepts which are based on the flexible JavaScript library D3.js." />
+  <meta name="twitter:image" content="https://www.econometrics-with-r.org//images/cover.png" />
+
+<meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber, and Martin Schmelzer" />
+
+
+<meta name="date" content="2021-10-06" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="16.2-ooiatdfglsurt.html"/>
+<link rel="next" href="16.4-volatility-clustering-and-autoregressive-conditional-heteroskedasticity.html"/>
+<script src="libs/header-attrs-2.10/header-attrs.js"></script>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
+<script src="libs/htmlwidgets-1.5.3/htmlwidgets.js"></script>
+<script src="libs/plotly-binding-4.9.4.1/plotly.js"></script>
+<script src="libs/typedarray-0.1/typedarray.min.js"></script>
+<link href="libs/crosstalk-1.1.1/css/crosstalk.css" rel="stylesheet" />
+<script src="libs/crosstalk-1.1.1/js/crosstalk.min.js"></script>
+<link href="libs/plotly-htmlwidgets-css-1.57.1/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="libs/plotly-main-1.57.1/plotly-latest.min.js"></script>
+<!-- font families -->
+
+<link href="https://fonts.googleapis.com/css?family=PT+Sans|Pacifico|Source+Sans+Pro" rel="stylesheet">
+
+<script src="js/hideOutput.js"></script>
+
+<!-- Mathjax -->
+<script type="text/javascript" id="MathJax-script" async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+ <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        extensions: ["tex2jax.js", "TeX/AMSmath.js"],
+        tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+        jax: ["input/TeX","output/CommonHTML"]
+      });
+      MathJax.Hub.processSectionDelay = 0;
+  </script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-110299877-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-110299877-1');
+</script>
+
+<!-- open review block -->
+
+<script async defer src="https://hypothes.is/embed.js"></script>
+
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  background-color: #f8f8f8; }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ef2929; } /* Alert */
+code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #c4a000; } /* Attribute */
+code span.bn { color: #0000cf; } /* BaseN */
+code span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4e9a06; } /* Char */
+code span.cn { color: #000000; } /* Constant */
+code span.co { color: #8f5902; font-style: italic; } /* Comment */
+code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code span.dt { color: #204a87; } /* DataType */
+code span.dv { color: #0000cf; } /* DecVal */
+code span.er { color: #a40000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #0000cf; } /* Float */
+code span.fu { color: #000000; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code span.ot { color: #8f5902; } /* Other */
+code span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code span.sc { color: #000000; } /* SpecialChar */
+code span.ss { color: #4e9a06; } /* SpecialString */
+code span.st { color: #4e9a06; } /* String */
+code span.va { color: #000000; } /* Variable */
+code span.vs { color: #4e9a06; } /* VerbatimString */
+code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+/* Used with Pandoc 2.11+ new --citeproc when CSL is used */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+<link rel="stylesheet" href="toc.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><center><img src="images/logo.png" alt="logo" width="50%" height="50%"style="margin: 15px 0 0 0"></center></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Preface</a></li>
+<li class="chapter" data-level="1" data-path="1-introduction.html"><a href="1-introduction.html"><i class="fa fa-check"></i><b>1</b> Introduction</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="1.1-colophon.html"><a href="1.1-colophon.html"><i class="fa fa-check"></i><b>1.1</b> Colophon</a></li>
+<li class="chapter" data-level="1.2" data-path="1.2-a-very-short-introduction-to-r-and-rstudio.html"><a href="1.2-a-very-short-introduction-to-r-and-rstudio.html"><i class="fa fa-check"></i><b>1.2</b> A Very Short Introduction to <tt>R</tt> and <em>RStudio</em></a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="2-pt.html"><a href="2-pt.html"><i class="fa fa-check"></i><b>2</b> Probability Theory</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="2.1-random-variables-and-probability-distributions.html"><a href="2.1-random-variables-and-probability-distributions.html"><i class="fa fa-check"></i><b>2.1</b> Random Variables and Probability Distributions</a>
+<ul>
+<li class="chapter" data-level="" data-path="2.1-random-variables-and-probability-distributions.html"><a href="2.1-random-variables-and-probability-distributions.html#probability-distributions-of-discrete-random-variables"><i class="fa fa-check"></i>Probability Distributions of Discrete Random Variables</a></li>
+<li class="chapter" data-level="" data-path="2.1-random-variables-and-probability-distributions.html"><a href="2.1-random-variables-and-probability-distributions.html#bernoulli-trials"><i class="fa fa-check"></i>Bernoulli Trials</a></li>
+<li class="chapter" data-level="" data-path="2.1-random-variables-and-probability-distributions.html"><a href="2.1-random-variables-and-probability-distributions.html#expected-value-mean-and-variance"><i class="fa fa-check"></i>Expected Value, Mean and Variance</a></li>
+<li class="chapter" data-level="" data-path="2.1-random-variables-and-probability-distributions.html"><a href="2.1-random-variables-and-probability-distributions.html#probability-distributions-of-continuous-random-variables"><i class="fa fa-check"></i>Probability Distributions of Continuous Random Variables</a></li>
+<li class="chapter" data-level="" data-path="2.1-random-variables-and-probability-distributions.html"><a href="2.1-random-variables-and-probability-distributions.html#the-normal-distribution"><i class="fa fa-check"></i>The Normal Distribution</a></li>
+<li class="chapter" data-level="" data-path="2.1-random-variables-and-probability-distributions.html"><a href="2.1-random-variables-and-probability-distributions.html#the-chi-squared-distribution"><i class="fa fa-check"></i>The Chi-Squared Distribution</a></li>
+<li class="chapter" data-level="" data-path="2.1-random-variables-and-probability-distributions.html"><a href="2.1-random-variables-and-probability-distributions.html#thetdist"><i class="fa fa-check"></i>The Student t Distribution</a></li>
+<li class="chapter" data-level="" data-path="2.1-random-variables-and-probability-distributions.html"><a href="2.1-random-variables-and-probability-distributions.html#the-f-distribution"><i class="fa fa-check"></i>The F Distribution</a></li>
+</ul></li>
+<li class="chapter" data-level="2.2" data-path="2.2-RSATDOSA.html"><a href="2.2-RSATDOSA.html"><i class="fa fa-check"></i><b>2.2</b> Random Sampling and the Distribution of Sample Averages</a>
+<ul>
+<li class="chapter" data-level="" data-path="2.2-RSATDOSA.html"><a href="2.2-RSATDOSA.html#mean-and-variance-of-the-sample-mean"><i class="fa fa-check"></i>Mean and Variance of the Sample Mean</a></li>
+<li class="chapter" data-level="" data-path="2.2-RSATDOSA.html"><a href="2.2-RSATDOSA.html#large-sample-approximations-to-sampling-distributions"><i class="fa fa-check"></i>Large Sample Approximations to Sampling Distributions</a></li>
+</ul></li>
+<li class="chapter" data-level="2.3" data-path="2.3-exercises-2.html"><a href="2.3-exercises-2.html"><i class="fa fa-check"></i><b>2.3</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="3-arosur.html"><a href="3-arosur.html"><i class="fa fa-check"></i><b>3</b> A Review of Statistics using R</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="3.1-estimation-of-the-population-mean.html"><a href="3.1-estimation-of-the-population-mean.html"><i class="fa fa-check"></i><b>3.1</b> Estimation of the Population Mean</a></li>
+<li class="chapter" data-level="3.2" data-path="3.2-potsm.html"><a href="3.2-potsm.html"><i class="fa fa-check"></i><b>3.2</b> Properties of the Sample Mean</a></li>
+<li class="chapter" data-level="3.3" data-path="3.3-hypothesis-tests-concerning-the-population-mean.html"><a href="3.3-hypothesis-tests-concerning-the-population-mean.html"><i class="fa fa-check"></i><b>3.3</b> Hypothesis Tests Concerning the Population Mean</a>
+<ul>
+<li class="chapter" data-level="" data-path="3.3-hypothesis-tests-concerning-the-population-mean.html"><a href="3.3-hypothesis-tests-concerning-the-population-mean.html#the-p-value"><i class="fa fa-check"></i>The p-Value</a></li>
+<li class="chapter" data-level="" data-path="3.3-hypothesis-tests-concerning-the-population-mean.html"><a href="3.3-hypothesis-tests-concerning-the-population-mean.html#calculating-the-p-value-when-the-standard-deviation-is-known"><i class="fa fa-check"></i>Calculating the p-Value when the Standard Deviation is Known</a></li>
+<li class="chapter" data-level="" data-path="3.3-hypothesis-tests-concerning-the-population-mean.html"><a href="3.3-hypothesis-tests-concerning-the-population-mean.html#SVSSDASE"><i class="fa fa-check"></i>Sample Variance, Sample Standard Deviation and Standard Error</a></li>
+<li class="chapter" data-level="" data-path="3.3-hypothesis-tests-concerning-the-population-mean.html"><a href="3.3-hypothesis-tests-concerning-the-population-mean.html#calculating-the-p-value-when-the-standard-deviation-is-unknown"><i class="fa fa-check"></i>Calculating the p-value When the Standard Deviation is Unknown</a></li>
+<li class="chapter" data-level="" data-path="3.3-hypothesis-tests-concerning-the-population-mean.html"><a href="3.3-hypothesis-tests-concerning-the-population-mean.html#the-t-statistic"><i class="fa fa-check"></i>The t-statistic</a></li>
+<li class="chapter" data-level="" data-path="3.3-hypothesis-tests-concerning-the-population-mean.html"><a href="3.3-hypothesis-tests-concerning-the-population-mean.html#hypothesis-testing-with-a-prespecified-significance-level"><i class="fa fa-check"></i>Hypothesis Testing with a Prespecified Significance Level</a></li>
+<li class="chapter" data-level="" data-path="3.3-hypothesis-tests-concerning-the-population-mean.html"><a href="3.3-hypothesis-tests-concerning-the-population-mean.html#one-sided-alternatives"><i class="fa fa-check"></i>One-sided Alternatives</a></li>
+</ul></li>
+<li class="chapter" data-level="3.4" data-path="3.4-confidence-intervals-for-the-population-mean.html"><a href="3.4-confidence-intervals-for-the-population-mean.html"><i class="fa fa-check"></i><b>3.4</b> Confidence Intervals for the Population Mean</a></li>
+<li class="chapter" data-level="3.5" data-path="3.5-cmfdp.html"><a href="3.5-cmfdp.html"><i class="fa fa-check"></i><b>3.5</b> Comparing Means from Different Populations</a></li>
+<li class="chapter" data-level="3.6" data-path="3.6-aattggoe.html"><a href="3.6-aattggoe.html"><i class="fa fa-check"></i><b>3.6</b> An Application to the Gender Gap of Earnings</a></li>
+<li class="chapter" data-level="3.7" data-path="3.7-scatterplots-sample-covariance-and-sample-correlation.html"><a href="3.7-scatterplots-sample-covariance-and-sample-correlation.html"><i class="fa fa-check"></i><b>3.7</b> Scatterplots, Sample Covariance and Sample Correlation</a></li>
+<li class="chapter" data-level="3.8" data-path="3.8-exercises-3.html"><a href="3.8-exercises-3.html"><i class="fa fa-check"></i><b>3.8</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="4-lrwor.html"><a href="4-lrwor.html"><i class="fa fa-check"></i><b>4</b> Linear Regression with One Regressor</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="4.1-simple-linear-regression.html"><a href="4.1-simple-linear-regression.html"><i class="fa fa-check"></i><b>4.1</b> Simple Linear Regression</a></li>
+<li class="chapter" data-level="4.2" data-path="4.2-estimating-the-coefficients-of-the-linear-regression-model.html"><a href="4.2-estimating-the-coefficients-of-the-linear-regression-model.html"><i class="fa fa-check"></i><b>4.2</b> Estimating the Coefficients of the Linear Regression Model</a>
+<ul>
+<li class="chapter" data-level="" data-path="4.2-estimating-the-coefficients-of-the-linear-regression-model.html"><a href="4.2-estimating-the-coefficients-of-the-linear-regression-model.html#the-ordinary-least-squares-estimator"><i class="fa fa-check"></i>The Ordinary Least Squares Estimator</a></li>
+</ul></li>
+<li class="chapter" data-level="4.3" data-path="4.3-measures-of-fit.html"><a href="4.3-measures-of-fit.html"><i class="fa fa-check"></i><b>4.3</b> Measures of Fit</a>
+<ul>
+<li class="chapter" data-level="" data-path="4.3-measures-of-fit.html"><a href="4.3-measures-of-fit.html#the-coefficient-of-determination"><i class="fa fa-check"></i>The Coefficient of Determination</a></li>
+<li class="chapter" data-level="" data-path="4.3-measures-of-fit.html"><a href="4.3-measures-of-fit.html#the-standard-error-of-the-regression"><i class="fa fa-check"></i>The Standard Error of the Regression</a></li>
+<li class="chapter" data-level="" data-path="4.3-measures-of-fit.html"><a href="4.3-measures-of-fit.html#application-to-the-test-score-data"><i class="fa fa-check"></i>Application to the Test Score Data</a></li>
+</ul></li>
+<li class="chapter" data-level="4.4" data-path="4.4-tlsa.html"><a href="4.4-tlsa.html"><i class="fa fa-check"></i><b>4.4</b> The Least Squares Assumptions</a>
+<ul>
+<li class="chapter" data-level="" data-path="4.4-tlsa.html"><a href="4.4-tlsa.html#assumption-1-the-error-term-has-conditional-mean-of-zero"><i class="fa fa-check"></i>Assumption 1: The Error Term has Conditional Mean of Zero</a></li>
+<li class="chapter" data-level="" data-path="4.4-tlsa.html"><a href="4.4-tlsa.html#assumption-2-independently-and-identically-distributed-data"><i class="fa fa-check"></i>Assumption 2: Independently and Identically Distributed Data</a></li>
+<li class="chapter" data-level="" data-path="4.4-tlsa.html"><a href="4.4-tlsa.html#assumption-3-large-outliers-are-unlikely"><i class="fa fa-check"></i>Assumption 3: Large Outliers are Unlikely</a></li>
+</ul></li>
+<li class="chapter" data-level="4.5" data-path="4.5-tsdotoe.html"><a href="4.5-tsdotoe.html"><i class="fa fa-check"></i><b>4.5</b> The Sampling Distribution of the OLS Estimator</a>
+<ul>
+<li class="chapter" data-level="" data-path="4.5-tsdotoe.html"><a href="4.5-tsdotoe.html#simulation-study-1"><i class="fa fa-check"></i>Simulation Study 1</a></li>
+<li class="chapter" data-level="" data-path="4.5-tsdotoe.html"><a href="4.5-tsdotoe.html#simulation-study-2"><i class="fa fa-check"></i>Simulation Study 2</a></li>
+<li class="chapter" data-level="" data-path="4.5-tsdotoe.html"><a href="4.5-tsdotoe.html#simulation-study-3"><i class="fa fa-check"></i>Simulation Study 3</a></li>
+</ul></li>
+<li class="chapter" data-level="4.6" data-path="4.6-exercises-4.html"><a href="4.6-exercises-4.html"><i class="fa fa-check"></i><b>4.6</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="5-htaciitslrm.html"><a href="5-htaciitslrm.html"><i class="fa fa-check"></i><b>5</b> Hypothesis Tests and Confidence Intervals in the Simple Linear Regression Model</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="5.1-testing-two-sided-hypotheses-concerning-the-slope-coefficient.html"><a href="5.1-testing-two-sided-hypotheses-concerning-the-slope-coefficient.html"><i class="fa fa-check"></i><b>5.1</b> Testing Two-Sided Hypotheses Concerning the Slope Coefficient</a></li>
+<li class="chapter" data-level="5.2" data-path="5.2-cifrc.html"><a href="5.2-cifrc.html"><i class="fa fa-check"></i><b>5.2</b> Confidence Intervals for Regression Coefficients</a>
+<ul>
+<li class="chapter" data-level="" data-path="5.2-cifrc.html"><a href="5.2-cifrc.html#simulation-study-confidence-intervals"><i class="fa fa-check"></i>Simulation Study: Confidence Intervals</a></li>
+</ul></li>
+<li class="chapter" data-level="5.3" data-path="5.3-rwxiabv.html"><a href="5.3-rwxiabv.html"><i class="fa fa-check"></i><b>5.3</b> Regression when X is a Binary Variable</a></li>
+<li class="chapter" data-level="5.4" data-path="5.4-hah.html"><a href="5.4-hah.html"><i class="fa fa-check"></i><b>5.4</b> Heteroskedasticity and Homoskedasticity</a>
+<ul>
+<li class="chapter" data-level="" data-path="5.4-hah.html"><a href="5.4-hah.html#a-real-world-example-for-heteroskedasticity"><i class="fa fa-check"></i>A Real-World Example for Heteroskedasticity</a></li>
+<li class="chapter" data-level="" data-path="5.4-hah.html"><a href="5.4-hah.html#should-we-care-about-heteroskedasticity"><i class="fa fa-check"></i>Should We Care About Heteroskedasticity?</a></li>
+<li class="chapter" data-level="" data-path="5.4-hah.html"><a href="5.4-hah.html#computation-of-heteroskedasticity-robust-standard-errors"><i class="fa fa-check"></i>Computation of Heteroskedasticity-Robust Standard Errors</a></li>
+</ul></li>
+<li class="chapter" data-level="5.5" data-path="5.5-the-gauss-markov-theorem.html"><a href="5.5-the-gauss-markov-theorem.html"><i class="fa fa-check"></i><b>5.5</b> The Gauss-Markov Theorem</a>
+<ul>
+<li class="chapter" data-level="" data-path="5.5-the-gauss-markov-theorem.html"><a href="5.5-the-gauss-markov-theorem.html#simulation-study-blue-estimator"><i class="fa fa-check"></i>Simulation Study: BLUE Estimator</a></li>
+</ul></li>
+<li class="chapter" data-level="5.6" data-path="5.6-using-the-t-statistic-in-regression-when-the-sample-size-is-small.html"><a href="5.6-using-the-t-statistic-in-regression-when-the-sample-size-is-small.html"><i class="fa fa-check"></i><b>5.6</b> Using the t-Statistic in Regression When the Sample Size Is Small</a></li>
+<li class="chapter" data-level="5.7" data-path="5.7-exercises-5.html"><a href="5.7-exercises-5.html"><i class="fa fa-check"></i><b>5.7</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="6-rmwmr.html"><a href="6-rmwmr.html"><i class="fa fa-check"></i><b>6</b> Regression Models with Multiple Regressors</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="6.1-omitted-variable-bias.html"><a href="6.1-omitted-variable-bias.html"><i class="fa fa-check"></i><b>6.1</b> Omitted Variable Bias</a></li>
+<li class="chapter" data-level="6.2" data-path="6.2-tmrm.html"><a href="6.2-tmrm.html"><i class="fa fa-check"></i><b>6.2</b> The Multiple Regression Model</a></li>
+<li class="chapter" data-level="6.3" data-path="6.3-mofimr.html"><a href="6.3-mofimr.html"><i class="fa fa-check"></i><b>6.3</b> Measures of Fit in Multiple Regression</a></li>
+<li class="chapter" data-level="6.4" data-path="6.4-ols-assumptions-in-multiple-regression.html"><a href="6.4-ols-assumptions-in-multiple-regression.html"><i class="fa fa-check"></i><b>6.4</b> OLS Assumptions in Multiple Regression</a>
+<ul>
+<li class="chapter" data-level="" data-path="6.4-ols-assumptions-in-multiple-regression.html"><a href="6.4-ols-assumptions-in-multiple-regression.html#multicollinearity"><i class="fa fa-check"></i>Multicollinearity</a></li>
+<li class="chapter" data-level="" data-path="6.4-ols-assumptions-in-multiple-regression.html"><a href="6.4-ols-assumptions-in-multiple-regression.html#simulation-study-imperfect-multicollinearity"><i class="fa fa-check"></i>Simulation Study: Imperfect Multicollinearity</a></li>
+</ul></li>
+<li class="chapter" data-level="6.5" data-path="6.5-the-distribution-of-the-ols-estimators-in-multiple-regression.html"><a href="6.5-the-distribution-of-the-ols-estimators-in-multiple-regression.html"><i class="fa fa-check"></i><b>6.5</b> The Distribution of the OLS Estimators in Multiple Regression</a></li>
+<li class="chapter" data-level="6.6" data-path="6.6-exercises-6.html"><a href="6.6-exercises-6.html"><i class="fa fa-check"></i><b>6.6</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="7-htaciimr.html"><a href="7-htaciimr.html"><i class="fa fa-check"></i><b>7</b> Hypothesis Tests and Confidence Intervals in Multiple Regression</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="7.1-hypothesis-tests-and-confidence-intervals-for-a-single-coefficient.html"><a href="7.1-hypothesis-tests-and-confidence-intervals-for-a-single-coefficient.html"><i class="fa fa-check"></i><b>7.1</b> Hypothesis Tests and Confidence Intervals for a Single Coefficient</a></li>
+<li class="chapter" data-level="7.2" data-path="7.2-an-application-to-test-scores-and-the-student-teacher-ratio.html"><a href="7.2-an-application-to-test-scores-and-the-student-teacher-ratio.html"><i class="fa fa-check"></i><b>7.2</b> An Application to Test Scores and the Student-Teacher Ratio</a>
+<ul>
+<li class="chapter" data-level="" data-path="7.2-an-application-to-test-scores-and-the-student-teacher-ratio.html"><a href="7.2-an-application-to-test-scores-and-the-student-teacher-ratio.html#another-augmentation-of-the-model"><i class="fa fa-check"></i>Another Augmentation of the Model</a></li>
+</ul></li>
+<li class="chapter" data-level="7.3" data-path="7.3-joint-hypothesis-testing-using-the-f-statistic.html"><a href="7.3-joint-hypothesis-testing-using-the-f-statistic.html"><i class="fa fa-check"></i><b>7.3</b> Joint Hypothesis Testing Using the F-Statistic</a></li>
+<li class="chapter" data-level="7.4" data-path="7.4-confidence-sets-for-multiple-coefficients.html"><a href="7.4-confidence-sets-for-multiple-coefficients.html"><i class="fa fa-check"></i><b>7.4</b> Confidence Sets for Multiple Coefficients</a></li>
+<li class="chapter" data-level="7.5" data-path="7.5-model-specification-for-multiple-regression.html"><a href="7.5-model-specification-for-multiple-regression.html"><i class="fa fa-check"></i><b>7.5</b> Model Specification for Multiple Regression</a>
+<ul>
+<li class="chapter" data-level="" data-path="7.5-model-specification-for-multiple-regression.html"><a href="7.5-model-specification-for-multiple-regression.html#model-specification-in-theory-and-in-practice"><i class="fa fa-check"></i>Model Specification in Theory and in Practice</a></li>
+</ul></li>
+<li class="chapter" data-level="7.6" data-path="7.6-analysis-of-the-test-score-data-set.html"><a href="7.6-analysis-of-the-test-score-data-set.html"><i class="fa fa-check"></i><b>7.6</b> Analysis of the Test Score Data Set</a></li>
+<li class="chapter" data-level="7.7" data-path="7.7-exercises-7.html"><a href="7.7-exercises-7.html"><i class="fa fa-check"></i><b>7.7</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="8-nrf.html"><a href="8-nrf.html"><i class="fa fa-check"></i><b>8</b> Nonlinear Regression Functions</a>
+<ul>
+<li class="chapter" data-level="8.1" data-path="8.1-a-general-strategy-for-modelling-nonlinear-regression-functions.html"><a href="8.1-a-general-strategy-for-modelling-nonlinear-regression-functions.html"><i class="fa fa-check"></i><b>8.1</b> A General Strategy for Modelling Nonlinear Regression Functions</a></li>
+<li class="chapter" data-level="8.2" data-path="8.2-nfoasiv.html"><a href="8.2-nfoasiv.html"><i class="fa fa-check"></i><b>8.2</b> Nonlinear Functions of a Single Independent Variable</a>
+<ul>
+<li class="chapter" data-level="" data-path="8.2-nfoasiv.html"><a href="8.2-nfoasiv.html#polynomials"><i class="fa fa-check"></i>Polynomials</a></li>
+<li class="chapter" data-level="" data-path="8.2-nfoasiv.html"><a href="8.2-nfoasiv.html#logarithms"><i class="fa fa-check"></i>Logarithms</a></li>
+</ul></li>
+<li class="chapter" data-level="8.3" data-path="8.3-interactions-between-independent-variables.html"><a href="8.3-interactions-between-independent-variables.html"><i class="fa fa-check"></i><b>8.3</b> Interactions Between Independent Variables</a></li>
+<li class="chapter" data-level="8.4" data-path="8.4-nonlinear-effects-on-test-scores-of-the-student-teacher-ratio.html"><a href="8.4-nonlinear-effects-on-test-scores-of-the-student-teacher-ratio.html"><i class="fa fa-check"></i><b>8.4</b> Nonlinear Effects on Test Scores of the Student-Teacher Ratio</a></li>
+<li class="chapter" data-level="8.5" data-path="8.5-exercises-8.html"><a href="8.5-exercises-8.html"><i class="fa fa-check"></i><b>8.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="9-asbomr.html"><a href="9-asbomr.html"><i class="fa fa-check"></i><b>9</b> Assessing Studies Based on Multiple Regression</a>
+<ul>
+<li class="chapter" data-level="9.1" data-path="9.1-internal-and-external-validity.html"><a href="9.1-internal-and-external-validity.html"><i class="fa fa-check"></i><b>9.1</b> Internal and External Validity</a></li>
+<li class="chapter" data-level="9.2" data-path="9.2-ttivomra.html"><a href="9.2-ttivomra.html"><i class="fa fa-check"></i><b>9.2</b> Threats to Internal Validity of Multiple Regression Analysis</a></li>
+<li class="chapter" data-level="9.3" data-path="9.3-internal-and-external-validity-when-the-regression-is-used-for-forecasting.html"><a href="9.3-internal-and-external-validity-when-the-regression-is-used-for-forecasting.html"><i class="fa fa-check"></i><b>9.3</b> Internal and External Validity when the Regression is Used for Forecasting</a></li>
+<li class="chapter" data-level="9.4" data-path="9.4-etsacs.html"><a href="9.4-etsacs.html"><i class="fa fa-check"></i><b>9.4</b> Example: Test Scores and Class Size</a></li>
+<li class="chapter" data-level="9.5" data-path="9.5-exercises-9.html"><a href="9.5-exercises-9.html"><i class="fa fa-check"></i><b>9.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="10" data-path="10-rwpd.html"><a href="10-rwpd.html"><i class="fa fa-check"></i><b>10</b> Regression with Panel Data</a>
+<ul>
+<li class="chapter" data-level="10.1" data-path="10.1-panel-data.html"><a href="10.1-panel-data.html"><i class="fa fa-check"></i><b>10.1</b> Panel Data</a></li>
+<li class="chapter" data-level="10.2" data-path="10.2-PDWTTP.html"><a href="10.2-PDWTTP.html"><i class="fa fa-check"></i><b>10.2</b> Panel Data with Two Time Periods: “Before and After” Comparisons</a></li>
+<li class="chapter" data-level="10.3" data-path="10.3-fixed-effects-regression.html"><a href="10.3-fixed-effects-regression.html"><i class="fa fa-check"></i><b>10.3</b> Fixed Effects Regression</a>
+<ul>
+<li class="chapter" data-level="" data-path="10.3-fixed-effects-regression.html"><a href="10.3-fixed-effects-regression.html#estimation-and-inference"><i class="fa fa-check"></i>Estimation and Inference</a></li>
+<li class="chapter" data-level="" data-path="10.3-fixed-effects-regression.html"><a href="10.3-fixed-effects-regression.html#application-to-traffic-deaths"><i class="fa fa-check"></i>Application to Traffic Deaths</a></li>
+</ul></li>
+<li class="chapter" data-level="10.4" data-path="10.4-regression-with-time-fixed-effects.html"><a href="10.4-regression-with-time-fixed-effects.html"><i class="fa fa-check"></i><b>10.4</b> Regression with Time Fixed Effects</a></li>
+<li class="chapter" data-level="10.5" data-path="10.5-tferaaseffer.html"><a href="10.5-tferaaseffer.html"><i class="fa fa-check"></i><b>10.5</b> The Fixed Effects Regression Assumptions and Standard Errors for Fixed Effects Regression</a></li>
+<li class="chapter" data-level="10.6" data-path="10.6-drunk-driving-laws-and-traffic-deaths.html"><a href="10.6-drunk-driving-laws-and-traffic-deaths.html"><i class="fa fa-check"></i><b>10.6</b> Drunk Driving Laws and Traffic Deaths</a></li>
+<li class="chapter" data-level="10.7" data-path="10.7-exercises-10.html"><a href="10.7-exercises-10.html"><i class="fa fa-check"></i><b>10.7</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="11" data-path="11-rwabdv.html"><a href="11-rwabdv.html"><i class="fa fa-check"></i><b>11</b> Regression with a Binary Dependent Variable</a>
+<ul>
+<li class="chapter" data-level="11.1" data-path="11.1-binary-dependent-variables-and-the-linear-probability-model.html"><a href="11.1-binary-dependent-variables-and-the-linear-probability-model.html"><i class="fa fa-check"></i><b>11.1</b> Binary Dependent Variables and the Linear Probability Model</a></li>
+<li class="chapter" data-level="11.2" data-path="11.2-palr.html"><a href="11.2-palr.html"><i class="fa fa-check"></i><b>11.2</b> Probit and Logit Regression</a>
+<ul>
+<li class="chapter" data-level="" data-path="11.2-palr.html"><a href="11.2-palr.html#probit-regression"><i class="fa fa-check"></i>Probit Regression</a></li>
+<li class="chapter" data-level="" data-path="11.2-palr.html"><a href="11.2-palr.html#logit-regression"><i class="fa fa-check"></i>Logit Regression</a></li>
+</ul></li>
+<li class="chapter" data-level="11.3" data-path="11.3-estimation-and-inference-in-the-logit-and-probit-models.html"><a href="11.3-estimation-and-inference-in-the-logit-and-probit-models.html"><i class="fa fa-check"></i><b>11.3</b> Estimation and Inference in the Logit and Probit Models</a></li>
+<li class="chapter" data-level="11.4" data-path="11.4-application-to-the-boston-hmda-data.html"><a href="11.4-application-to-the-boston-hmda-data.html"><i class="fa fa-check"></i><b>11.4</b> Application to the Boston HMDA Data</a></li>
+<li class="chapter" data-level="11.5" data-path="11.5-exercises-11.html"><a href="11.5-exercises-11.html"><i class="fa fa-check"></i><b>11.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="12" data-path="12-ivr.html"><a href="12-ivr.html"><i class="fa fa-check"></i><b>12</b> Instrumental Variables Regression</a>
+<ul>
+<li class="chapter" data-level="12.1" data-path="12.1-TIVEWASRAASI.html"><a href="12.1-TIVEWASRAASI.html"><i class="fa fa-check"></i><b>12.1</b> The IV Estimator with a Single Regressor and a Single Instrument</a></li>
+<li class="chapter" data-level="12.2" data-path="12.2-TGIVRM.html"><a href="12.2-TGIVRM.html"><i class="fa fa-check"></i><b>12.2</b> The General IV Regression Model</a></li>
+<li class="chapter" data-level="12.3" data-path="12.3-civ.html"><a href="12.3-civ.html"><i class="fa fa-check"></i><b>12.3</b> Checking Instrument Validity</a></li>
+<li class="chapter" data-level="12.4" data-path="12.4-attdfc.html"><a href="12.4-attdfc.html"><i class="fa fa-check"></i><b>12.4</b> Application to the Demand for Cigarettes</a></li>
+<li class="chapter" data-level="12.5" data-path="12.5-where-do-valid-instruments-come-from.html"><a href="12.5-where-do-valid-instruments-come-from.html"><i class="fa fa-check"></i><b>12.5</b> Where Do Valid Instruments Come From?</a></li>
+<li class="chapter" data-level="12.6" data-path="12.6-exercises-12.html"><a href="12.6-exercises-12.html"><i class="fa fa-check"></i><b>12.6</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="13" data-path="13-eaqe.html"><a href="13-eaqe.html"><i class="fa fa-check"></i><b>13</b> Experiments and Quasi-Experiments</a>
+<ul>
+<li class="chapter" data-level="13.1" data-path="13.1-poceaie.html"><a href="13.1-poceaie.html"><i class="fa fa-check"></i><b>13.1</b> Potential Outcomes, Causal Effects and Idealized Experiments</a></li>
+<li class="chapter" data-level="13.2" data-path="13.2-threats-to-validity-of-experiments.html"><a href="13.2-threats-to-validity-of-experiments.html"><i class="fa fa-check"></i><b>13.2</b> Threats to Validity of Experiments</a></li>
+<li class="chapter" data-level="13.3" data-path="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html"><i class="fa fa-check"></i><b>13.3</b> Experimental Estimates of the Effect of Class Size Reductions</a>
+<ul>
+<li class="chapter" data-level="" data-path="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#experimental-design-and-the-data-set"><i class="fa fa-check"></i>Experimental Design and the Data Set</a></li>
+<li class="chapter" data-level="" data-path="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#analysis-of-the-star-data"><i class="fa fa-check"></i>Analysis of the STAR Data</a></li>
+</ul></li>
+<li class="chapter" data-level="13.4" data-path="13.4-qe.html"><a href="13.4-qe.html"><i class="fa fa-check"></i><b>13.4</b> Quasi Experiments</a>
+<ul>
+<li class="chapter" data-level="" data-path="13.4-qe.html"><a href="13.4-qe.html#the-differences-in-differences-estimator"><i class="fa fa-check"></i>The Differences-in-Differences Estimator</a></li>
+<li class="chapter" data-level="" data-path="13.4-qe.html"><a href="13.4-qe.html#regression-discontinuity-estimators"><i class="fa fa-check"></i>Regression Discontinuity Estimators</a></li>
+</ul></li>
+<li class="chapter" data-level="13.5" data-path="13.5-exercises-13.html"><a href="13.5-exercises-13.html"><i class="fa fa-check"></i><b>13.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="14" data-path="14-ittsraf.html"><a href="14-ittsraf.html"><i class="fa fa-check"></i><b>14</b> Introduction to Time Series Regression and Forecasting</a>
+<ul>
+<li class="chapter" data-level="14.1" data-path="14.1-using-regression-models-for-forecasting.html"><a href="14.1-using-regression-models-for-forecasting.html"><i class="fa fa-check"></i><b>14.1</b> Using Regression Models for Forecasting</a></li>
+<li class="chapter" data-level="14.2" data-path="14.2-tsdasc.html"><a href="14.2-tsdasc.html"><i class="fa fa-check"></i><b>14.2</b> Time Series Data and Serial Correlation</a>
+<ul>
+<li class="chapter" data-level="" data-path="14.2-tsdasc.html"><a href="14.2-tsdasc.html#notation-lags-differences-logarithms-and-growth-rates"><i class="fa fa-check"></i>Notation, Lags, Differences, Logarithms and Growth Rates</a></li>
+</ul></li>
+<li class="chapter" data-level="14.3" data-path="14.3-autoregressions.html"><a href="14.3-autoregressions.html"><i class="fa fa-check"></i><b>14.3</b> Autoregressions</a>
+<ul>
+<li><a href="14.3-autoregressions.html#autoregressive-models-of-order-p">Autoregressive Models of Order <span class="math inline">\(p\)</span></a></li>
+</ul></li>
+<li class="chapter" data-level="14.4" data-path="14.4-cybtmpi.html"><a href="14.4-cybtmpi.html"><i class="fa fa-check"></i><b>14.4</b> Can You Beat the Market? (Part I)</a></li>
+<li class="chapter" data-level="14.5" data-path="14.5-apatadlm.html"><a href="14.5-apatadlm.html"><i class="fa fa-check"></i><b>14.5</b> Additional Predictors and The ADL Model</a>
+<ul>
+<li class="chapter" data-level="" data-path="14.5-apatadlm.html"><a href="14.5-apatadlm.html#forecast-uncertainty-and-forecast-intervals"><i class="fa fa-check"></i>Forecast Uncertainty and Forecast Intervals</a></li>
+</ul></li>
+<li class="chapter" data-level="14.6" data-path="14.6-llsuic.html"><a href="14.6-llsuic.html"><i class="fa fa-check"></i><b>14.6</b> Lag Length Selection Using Information Criteria</a></li>
+<li class="chapter" data-level="14.7" data-path="14.7-nit.html"><a href="14.7-nit.html"><i class="fa fa-check"></i><b>14.7</b> Nonstationarity I: Trends</a></li>
+<li class="chapter" data-level="14.8" data-path="14.8-niib.html"><a href="14.8-niib.html"><i class="fa fa-check"></i><b>14.8</b> Nonstationarity II: Breaks</a></li>
+<li class="chapter" data-level="14.9" data-path="14.9-can-you-beat-the-market-part-ii.html"><a href="14.9-can-you-beat-the-market-part-ii.html"><i class="fa fa-check"></i><b>14.9</b> Can You Beat the Market? (Part II)</a></li>
+</ul></li>
+<li class="chapter" data-level="15" data-path="15-eodce.html"><a href="15-eodce.html"><i class="fa fa-check"></i><b>15</b> Estimation of Dynamic Causal Effects</a>
+<ul>
+<li class="chapter" data-level="15.1" data-path="15.1-the-orange-juice-data.html"><a href="15.1-the-orange-juice-data.html"><i class="fa fa-check"></i><b>15.1</b> The Orange Juice Data</a></li>
+<li class="chapter" data-level="15.2" data-path="15.2-dynamic-causal-effects.html"><a href="15.2-dynamic-causal-effects.html"><i class="fa fa-check"></i><b>15.2</b> Dynamic Causal Effects</a></li>
+<li class="chapter" data-level="15.3" data-path="15.3-dynamic-multipliers-and-cumulative-dynamic-multipliers.html"><a href="15.3-dynamic-multipliers-and-cumulative-dynamic-multipliers.html"><i class="fa fa-check"></i><b>15.3</b> Dynamic Multipliers and Cumulative Dynamic Multipliers</a></li>
+<li class="chapter" data-level="15.4" data-path="15.4-hac-standard-errors.html"><a href="15.4-hac-standard-errors.html"><i class="fa fa-check"></i><b>15.4</b> HAC Standard Errors</a></li>
+<li class="chapter" data-level="15.5" data-path="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html"><i class="fa fa-check"></i><b>15.5</b> Estimation of Dynamic Causal Effects with Strictly Exogeneous Regressors</a></li>
+<li class="chapter" data-level="15.6" data-path="15.6-orange-juice-prices-and-cold-weather.html"><a href="15.6-orange-juice-prices-and-cold-weather.html"><i class="fa fa-check"></i><b>15.6</b> Orange Juice Prices and Cold Weather</a></li>
+</ul></li>
+<li class="chapter" data-level="16" data-path="16-atitsr.html"><a href="16-atitsr.html"><i class="fa fa-check"></i><b>16</b> Additional Topics in Time Series Regression</a>
+<ul>
+<li class="chapter" data-level="16.1" data-path="16.1-vector-autoregressions.html"><a href="16.1-vector-autoregressions.html"><i class="fa fa-check"></i><b>16.1</b> Vector Autoregressions</a></li>
+<li class="chapter" data-level="16.2" data-path="16.2-ooiatdfglsurt.html"><a href="16.2-ooiatdfglsurt.html"><i class="fa fa-check"></i><b>16.2</b> Orders of Integration and the DF-GLS Unit Root Test</a></li>
+<li class="chapter" data-level="16.3" data-path="16.3-cointegration.html"><a href="16.3-cointegration.html"><i class="fa fa-check"></i><b>16.3</b> Cointegration</a></li>
+<li class="chapter" data-level="16.4" data-path="16.4-volatility-clustering-and-autoregressive-conditional-heteroskedasticity.html"><a href="16.4-volatility-clustering-and-autoregressive-conditional-heteroskedasticity.html"><i class="fa fa-check"></i><b>16.4</b> Volatility Clustering and Autoregressive Conditional Heteroskedasticity</a>
+<ul>
+<li class="chapter" data-level="" data-path="16.4-volatility-clustering-and-autoregressive-conditional-heteroskedasticity.html"><a href="16.4-volatility-clustering-and-autoregressive-conditional-heteroskedasticity.html#arch-and-garch-models"><i class="fa fa-check"></i>ARCH and GARCH Models</a></li>
+<li class="chapter" data-level="" data-path="16.4-volatility-clustering-and-autoregressive-conditional-heteroskedasticity.html"><a href="16.4-volatility-clustering-and-autoregressive-conditional-heteroskedasticity.html#application-to-stock-price-volatility"><i class="fa fa-check"></i>Application to Stock Price Volatility</a></li>
+<li class="chapter" data-level="" data-path="16.4-volatility-clustering-and-autoregressive-conditional-heteroskedasticity.html"><a href="16.4-volatility-clustering-and-autoregressive-conditional-heteroskedasticity.html#summary-8"><i class="fa fa-check"></i>Summary</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Introduction to Econometrics with R</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div class = rmdreview>
+This book is in <b>Open Review</b>. We want your feedback to make the book better for you and other students. You may annotate some text by <span style="background-color: #3297FD; color: white">selecting it with the cursor</span> and then click the <i class="h-icon-annotate"></i> on the pop-up menu. You can also see the annotations of others: click the <i class="h-icon-chevron-left"></i> in the upper right hand corner of the page <i class="fa fa-arrow-circle-right  fa-rotate-315" aria-hidden="true"></i>
+</div>
+<div id="cointegration" class="section level2" number="16.3">
+<h2><span class="header-section-number">16.3</span> Cointegration</h2>
+<div id="KC16.5" class="keyconcept">
+<h3 class="right">
+Key Concept <br> 16.5
+</h3>
+<h3 class="left">
+Cointegration
+</h3>
+<p>
+<p>When <span class="math inline">\(X_t\)</span> and <span class="math inline">\(Y_t\)</span> are <span class="math inline">\(I(1)\)</span> and if there is a <span class="math inline">\(\theta\)</span> such that <span class="math inline">\(Y_t - \theta X_t\)</span> is <span class="math inline">\(I(0)\)</span>, <span class="math inline">\(X_t\)</span> and <span class="math inline">\(Y_t\)</span> are cointegrated. Put differently, cointegration of <span class="math inline">\(X_t\)</span> and <span class="math inline">\(Y_t\)</span> means that <span class="math inline">\(X_t\)</span> and <span class="math inline">\(Y_t\)</span> have the same or a common stochastic trend and that this trend can be eliminated by taking a specific difference of the series such that the resulting series is stationary.</p>
+<p><tt>R</tt> functions for cointegration analysis are implemented in the package <tt>urca</tt>.</p>
+</p>
+</div>
+<p>As an example, reconsider the the relation between short- and long-term interest rates by the example of U.S. 3-month treasury bills, U.S. 10-years treasury bonds and the spread in their interest rates which have been introduced in Chapter <a href="14.4-cybtmpi.html#cybtmpi">14.4</a>. The next code chunk shows how to reproduce Figure 16.2 of the book.</p>
+<div class="sourceCode" id="cb456"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb456-1"><a href="16.3-cointegration.html#cb456-1" aria-hidden="true" tabindex="-1"></a><span class="co"># reproduce Figure 16.2 of the book</span></span>
+<span id="cb456-2"><a href="16.3-cointegration.html#cb456-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb456-3"><a href="16.3-cointegration.html#cb456-3" aria-hidden="true" tabindex="-1"></a><span class="co"># plot both interest series</span></span>
+<span id="cb456-4"><a href="16.3-cointegration.html#cb456-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">merge</span>(<span class="fu">as.zoo</span>(TB3MS), <span class="fu">as.zoo</span>(TB10YS)), </span>
+<span id="cb456-5"><a href="16.3-cointegration.html#cb456-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">plot.type =</span> <span class="st">&quot;single&quot;</span>, </span>
+<span id="cb456-6"><a href="16.3-cointegration.html#cb456-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">lty =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">1</span>),</span>
+<span id="cb456-7"><a href="16.3-cointegration.html#cb456-7" aria-hidden="true" tabindex="-1"></a>     <span class="at">lwd =</span> <span class="dv">2</span>,</span>
+<span id="cb456-8"><a href="16.3-cointegration.html#cb456-8" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">&quot;Date&quot;</span>,</span>
+<span id="cb456-9"><a href="16.3-cointegration.html#cb456-9" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">&quot;Percent per annum&quot;</span>,</span>
+<span id="cb456-10"><a href="16.3-cointegration.html#cb456-10" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">5</span>, <span class="dv">17</span>),</span>
+<span id="cb456-11"><a href="16.3-cointegration.html#cb456-11" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">&quot;Interest Rates&quot;</span>)</span>
+<span id="cb456-12"><a href="16.3-cointegration.html#cb456-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb456-13"><a href="16.3-cointegration.html#cb456-13" aria-hidden="true" tabindex="-1"></a><span class="co"># add the term spread series</span></span>
+<span id="cb456-14"><a href="16.3-cointegration.html#cb456-14" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">as.zoo</span>(TSpread), </span>
+<span id="cb456-15"><a href="16.3-cointegration.html#cb456-15" aria-hidden="true" tabindex="-1"></a>     <span class="at">col =</span> <span class="st">&quot;steelblue&quot;</span>,</span>
+<span id="cb456-16"><a href="16.3-cointegration.html#cb456-16" aria-hidden="true" tabindex="-1"></a>     <span class="at">lwd =</span> <span class="dv">2</span>,</span>
+<span id="cb456-17"><a href="16.3-cointegration.html#cb456-17" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">&quot;Date&quot;</span>,</span>
+<span id="cb456-18"><a href="16.3-cointegration.html#cb456-18" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">&quot;Percent per annum&quot;</span>,</span>
+<span id="cb456-19"><a href="16.3-cointegration.html#cb456-19" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">&quot;Term Spread&quot;</span>)</span>
+<span id="cb456-20"><a href="16.3-cointegration.html#cb456-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb456-21"><a href="16.3-cointegration.html#cb456-21" aria-hidden="true" tabindex="-1"></a><span class="co"># shade the term spread</span></span>
+<span id="cb456-22"><a href="16.3-cointegration.html#cb456-22" aria-hidden="true" tabindex="-1"></a><span class="fu">polygon</span>(<span class="fu">c</span>(<span class="fu">time</span>(TB3MS), <span class="fu">rev</span>(<span class="fu">time</span>(TB3MS))), </span>
+<span id="cb456-23"><a href="16.3-cointegration.html#cb456-23" aria-hidden="true" tabindex="-1"></a>        <span class="fu">c</span>(TB10YS, <span class="fu">rev</span>(TB3MS)),</span>
+<span id="cb456-24"><a href="16.3-cointegration.html#cb456-24" aria-hidden="true" tabindex="-1"></a>        <span class="at">col =</span> <span class="fu">alpha</span>(<span class="st">&quot;steelblue&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.3</span>),</span>
+<span id="cb456-25"><a href="16.3-cointegration.html#cb456-25" aria-hidden="true" tabindex="-1"></a>        <span class="at">border =</span> <span class="cn">NA</span>)</span>
+<span id="cb456-26"><a href="16.3-cointegration.html#cb456-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb456-27"><a href="16.3-cointegration.html#cb456-27" aria-hidden="true" tabindex="-1"></a><span class="co"># add horizontal line add 0</span></span>
+<span id="cb456-28"><a href="16.3-cointegration.html#cb456-28" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="dv">0</span>, <span class="dv">0</span>)</span>
+<span id="cb456-29"><a href="16.3-cointegration.html#cb456-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb456-30"><a href="16.3-cointegration.html#cb456-30" aria-hidden="true" tabindex="-1"></a><span class="co"># add a legend</span></span>
+<span id="cb456-31"><a href="16.3-cointegration.html#cb456-31" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">&quot;topright&quot;</span>, </span>
+<span id="cb456-32"><a href="16.3-cointegration.html#cb456-32" aria-hidden="true" tabindex="-1"></a>       <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">&quot;TB3MS&quot;</span>, <span class="st">&quot;TB10YS&quot;</span>, <span class="st">&quot;Term Spread&quot;</span>),</span>
+<span id="cb456-33"><a href="16.3-cointegration.html#cb456-33" aria-hidden="true" tabindex="-1"></a>       <span class="at">col =</span> <span class="fu">c</span>(<span class="st">&quot;black&quot;</span>, <span class="st">&quot;black&quot;</span>, <span class="st">&quot;steelblue&quot;</span>),</span>
+<span id="cb456-34"><a href="16.3-cointegration.html#cb456-34" aria-hidden="true" tabindex="-1"></a>       <span class="at">lwd =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">2</span>),</span>
+<span id="cb456-35"><a href="16.3-cointegration.html#cb456-35" aria-hidden="true" tabindex="-1"></a>       <span class="at">lty =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">1</span>))</span></code></pre></div>
+<p><img src="ITER_files/figure-html/unnamed-chunk-730-1.png" width="80%" style="display: block; margin: auto;" /></p>
+<p>The plot suggests that long-term and short-term interest rates are cointegrated: both interest series seem to have the same long-run behavior. They share a common stochastic trend. The term spread, which is obtained by taking the difference between long-term and short-term interest rates, seems to be stationary. In fact, the expectations theory of the term structure suggests the cointegrating coefficient <span class="math inline">\(\theta\)</span> to be 1. This is consistent with the visual result.</p>
+<div id="testing-for-cointegration" class="section level4 unnumbered">
+<h4>Testing for Cointegration</h4>
+<p>Following Key Concept 16.5, it seems natural to construct a test for cointegration of two series in the following manner: if two series <span class="math inline">\(X_t\)</span> and <span class="math inline">\(Y_t\)</span> are cointegrated, the series obtained by taking the difference <span class="math inline">\(Y_t - \theta X_t\)</span> must be stationary. If the series are not cointegrated, <span class="math inline">\(Y_t - \theta X_t\)</span> is nonstationary. This is an assumption that can be tested using a unit root test. We have to distinguish between two cases:</p>
+<ol style="list-style-type: decimal">
+<li><p><strong><span class="math inline">\(\theta\)</span> is known.</strong></p>
+<p>Knowledge of <span class="math inline">\(\theta\)</span> enables us to compute differences <span class="math inline">\(z_t = Y_t - \theta X_t\)</span> so that Dickey-Fuller and DF-GLS unit root tests can be applied to <span class="math inline">\(z_t\)</span>. For these tests, the critical values are the critical values of the ADF or DF-GLS test.</p></li>
+<li><p><strong><span class="math inline">\(\theta\)</span> is unknown.</strong></p>
+<p>If <span class="math inline">\(\theta\)</span> is unknown, it must be estimated before the unit root test can be applied. This is done by estimating the regression <span class="math display">\[Y_t = \alpha + \theta X_t + z_t\]</span> using OLS (this is refered to as the first-stage regression). Then, a Dickey-Fuller test is used for testing the hypothesis that <span class="math inline">\(z_t\)</span> is a nonstationary series. This is known as the Engle-Granger Augmented Dickey-Fuller test for cointegration (or <em>EG-ADF test</em>) after <span class="citation">Engle and Granger (<a href="#ref-engle1987" role="doc-biblioref">1987</a>)</span>. The critical values for this test are special as the associated null distribution is nonnormal and depends on the number of <span class="math inline">\(I(1)\)</span> variables used as regressors in the first stage regression. You may look them up in Table 16.2 of the book. When there are only two presumably cointegrated variables (and thus a single <span class="math inline">\(I(1)\)</span> variable is used in the first stage OLS regression) the critical values for the levels <span class="math inline">\(10\%\)</span>, <span class="math inline">\(5\%\)</span> and <span class="math inline">\(1\%\)</span> are <span class="math inline">\(-3.12\)</span>, <span class="math inline">\(-3.41\)</span> and <span class="math inline">\(-3.96\)</span>.</p></li>
+</ol>
+</div>
+<div id="application-to-interest-rates" class="section level4 unnumbered">
+<h4>Application to Interest Rates</h4>
+<p>As has been mentioned above, the theory of the term structure suggests that long-term and short-term interest rates are cointegrated with a cointegration coefficient of <span class="math inline">\(\theta = 1\)</span>. In the previous section we have seen that there is visual evidence for this conjecture since the spread of 10-year and 3-month interest rates looks stationary.</p>
+<p>We continue by using formal tests (the ADF and the DF-GLS test) to see whether the individual interest rate series are integrated and if their difference is stationary (for now, we assume that <span class="math inline">\(\theta = 1\)</span> is known). Both is conveniently done by using the functions <tt>ur.df()</tt> for computation of the ADF test and <tt>ur.ers</tt> for conducting the DF-GLS test. Following the book we use data from 1962:Q1 to 2012:Q4 and employ models that include a drift term. We set the maximum lag order to <span class="math inline">\(6\)</span> and use the <span class="math inline">\(AIC\)</span> for selection of the optimal lag length.</p>
+<div class="sourceCode" id="cb457"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb457-1"><a href="16.3-cointegration.html#cb457-1" aria-hidden="true" tabindex="-1"></a><span class="co"># test for nonstationarity of 3-month treasury bills using ADF test</span></span>
+<span id="cb457-2"><a href="16.3-cointegration.html#cb457-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ur.df</span>(<span class="fu">window</span>(TB3MS, <span class="fu">c</span>(<span class="dv">1962</span>, <span class="dv">1</span>), <span class="fu">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>)), </span>
+<span id="cb457-3"><a href="16.3-cointegration.html#cb457-3" aria-hidden="true" tabindex="-1"></a>      <span class="at">lags =</span> <span class="dv">6</span>, </span>
+<span id="cb457-4"><a href="16.3-cointegration.html#cb457-4" aria-hidden="true" tabindex="-1"></a>      <span class="at">selectlags =</span> <span class="st">&quot;AIC&quot;</span>, </span>
+<span id="cb457-5"><a href="16.3-cointegration.html#cb457-5" aria-hidden="true" tabindex="-1"></a>      <span class="at">type =</span> <span class="st">&quot;drift&quot;</span>)</span>
+<span id="cb457-6"><a href="16.3-cointegration.html#cb457-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb457-7"><a href="16.3-cointegration.html#cb457-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ############################################################### </span></span>
+<span id="cb457-8"><a href="16.3-cointegration.html#cb457-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # Augmented Dickey-Fuller Test Unit Root / Cointegration Test # </span></span>
+<span id="cb457-9"><a href="16.3-cointegration.html#cb457-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ############################################################### </span></span>
+<span id="cb457-10"><a href="16.3-cointegration.html#cb457-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb457-11"><a href="16.3-cointegration.html#cb457-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; The value of the test statistic is: -2.1004 2.2385</span></span>
+<span id="cb457-12"><a href="16.3-cointegration.html#cb457-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb457-13"><a href="16.3-cointegration.html#cb457-13" aria-hidden="true" tabindex="-1"></a><span class="co"># test for nonstationarity of 10-years treasury bonds using ADF test</span></span>
+<span id="cb457-14"><a href="16.3-cointegration.html#cb457-14" aria-hidden="true" tabindex="-1"></a><span class="fu">ur.df</span>(<span class="fu">window</span>(TB10YS, <span class="fu">c</span>(<span class="dv">1962</span>, <span class="dv">1</span>), <span class="fu">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>)), </span>
+<span id="cb457-15"><a href="16.3-cointegration.html#cb457-15" aria-hidden="true" tabindex="-1"></a>      <span class="at">lags =</span> <span class="dv">6</span>, </span>
+<span id="cb457-16"><a href="16.3-cointegration.html#cb457-16" aria-hidden="true" tabindex="-1"></a>      <span class="at">selectlags =</span> <span class="st">&quot;AIC&quot;</span>, </span>
+<span id="cb457-17"><a href="16.3-cointegration.html#cb457-17" aria-hidden="true" tabindex="-1"></a>      <span class="at">type =</span> <span class="st">&quot;drift&quot;</span>)</span>
+<span id="cb457-18"><a href="16.3-cointegration.html#cb457-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb457-19"><a href="16.3-cointegration.html#cb457-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ############################################################### </span></span>
+<span id="cb457-20"><a href="16.3-cointegration.html#cb457-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # Augmented Dickey-Fuller Test Unit Root / Cointegration Test # </span></span>
+<span id="cb457-21"><a href="16.3-cointegration.html#cb457-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ############################################################### </span></span>
+<span id="cb457-22"><a href="16.3-cointegration.html#cb457-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb457-23"><a href="16.3-cointegration.html#cb457-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; The value of the test statistic is: -1.0079 0.5501</span></span>
+<span id="cb457-24"><a href="16.3-cointegration.html#cb457-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb457-25"><a href="16.3-cointegration.html#cb457-25" aria-hidden="true" tabindex="-1"></a><span class="co"># test for nonstationarity of 3-month treasury bills using DF-GLS test</span></span>
+<span id="cb457-26"><a href="16.3-cointegration.html#cb457-26" aria-hidden="true" tabindex="-1"></a><span class="fu">ur.ers</span>(<span class="fu">window</span>(TB3MS, <span class="fu">c</span>(<span class="dv">1962</span>, <span class="dv">1</span>), <span class="fu">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>)),</span>
+<span id="cb457-27"><a href="16.3-cointegration.html#cb457-27" aria-hidden="true" tabindex="-1"></a>       <span class="at">model =</span> <span class="st">&quot;constant&quot;</span>, </span>
+<span id="cb457-28"><a href="16.3-cointegration.html#cb457-28" aria-hidden="true" tabindex="-1"></a>       <span class="at">lag.max =</span> <span class="dv">6</span>)</span>
+<span id="cb457-29"><a href="16.3-cointegration.html#cb457-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb457-30"><a href="16.3-cointegration.html#cb457-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ############################################################### </span></span>
+<span id="cb457-31"><a href="16.3-cointegration.html#cb457-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # Elliot, Rothenberg and Stock Unit Root / Cointegration Test # </span></span>
+<span id="cb457-32"><a href="16.3-cointegration.html#cb457-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ############################################################### </span></span>
+<span id="cb457-33"><a href="16.3-cointegration.html#cb457-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb457-34"><a href="16.3-cointegration.html#cb457-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; The value of the test statistic is: -1.8042</span></span>
+<span id="cb457-35"><a href="16.3-cointegration.html#cb457-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb457-36"><a href="16.3-cointegration.html#cb457-36" aria-hidden="true" tabindex="-1"></a><span class="co"># test for nonstationarity of 10-years treasury bonds using DF-GLS test</span></span>
+<span id="cb457-37"><a href="16.3-cointegration.html#cb457-37" aria-hidden="true" tabindex="-1"></a><span class="fu">ur.ers</span>(<span class="fu">window</span>(TB10YS, <span class="fu">c</span>(<span class="dv">1962</span>, <span class="dv">1</span>), <span class="fu">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>)),</span>
+<span id="cb457-38"><a href="16.3-cointegration.html#cb457-38" aria-hidden="true" tabindex="-1"></a>       <span class="at">model =</span> <span class="st">&quot;constant&quot;</span>, </span>
+<span id="cb457-39"><a href="16.3-cointegration.html#cb457-39" aria-hidden="true" tabindex="-1"></a>       <span class="at">lag.max =</span> <span class="dv">6</span>)</span>
+<span id="cb457-40"><a href="16.3-cointegration.html#cb457-40" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb457-41"><a href="16.3-cointegration.html#cb457-41" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ############################################################### </span></span>
+<span id="cb457-42"><a href="16.3-cointegration.html#cb457-42" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # Elliot, Rothenberg and Stock Unit Root / Cointegration Test # </span></span>
+<span id="cb457-43"><a href="16.3-cointegration.html#cb457-43" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ############################################################### </span></span>
+<span id="cb457-44"><a href="16.3-cointegration.html#cb457-44" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb457-45"><a href="16.3-cointegration.html#cb457-45" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; The value of the test statistic is: -0.942</span></span></code></pre></div>
+<p>The corresponding <span class="math inline">\(10\%\)</span> critical value for both tests is <span class="math inline">\(-2.57\)</span> so we cannot reject the null hypotheses of nonstationary for either series, even at the <span class="math inline">\(10\%\)</span> level of significance.<a href="#fn12" class="footnote-ref" id="fnref12"><sup>12</sup></a> We conclude that it is plausible to model both interest rate series as <span class="math inline">\(I(1)\)</span>.</p>
+<p>Next, we apply the ADF and the DF-GLS test to test for nonstationarity of the term spread series, which means we test for non-cointegration of long- and short-term interest rates.</p>
+<div class="sourceCode" id="cb458"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb458-1"><a href="16.3-cointegration.html#cb458-1" aria-hidden="true" tabindex="-1"></a><span class="co"># test if term spread is stationairy (cointegration of interest rates) using ADF</span></span>
+<span id="cb458-2"><a href="16.3-cointegration.html#cb458-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ur.df</span>(<span class="fu">window</span>(TB10YS, <span class="fu">c</span>(<span class="dv">1962</span>, <span class="dv">1</span>), <span class="fu">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>)) <span class="sc">-</span> <span class="fu">window</span>(TB3MS, <span class="fu">c</span>(<span class="dv">1962</span>, <span class="dv">1</span>), <span class="fu">c</span>(<span class="dv">2012</span> ,<span class="dv">4</span>)), </span>
+<span id="cb458-3"><a href="16.3-cointegration.html#cb458-3" aria-hidden="true" tabindex="-1"></a>      <span class="at">lags =</span> <span class="dv">6</span>, </span>
+<span id="cb458-4"><a href="16.3-cointegration.html#cb458-4" aria-hidden="true" tabindex="-1"></a>      <span class="at">selectlags =</span> <span class="st">&quot;AIC&quot;</span>, </span>
+<span id="cb458-5"><a href="16.3-cointegration.html#cb458-5" aria-hidden="true" tabindex="-1"></a>      <span class="at">type =</span> <span class="st">&quot;drift&quot;</span>)</span>
+<span id="cb458-6"><a href="16.3-cointegration.html#cb458-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb458-7"><a href="16.3-cointegration.html#cb458-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ############################################################### </span></span>
+<span id="cb458-8"><a href="16.3-cointegration.html#cb458-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # Augmented Dickey-Fuller Test Unit Root / Cointegration Test # </span></span>
+<span id="cb458-9"><a href="16.3-cointegration.html#cb458-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ############################################################### </span></span>
+<span id="cb458-10"><a href="16.3-cointegration.html#cb458-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb458-11"><a href="16.3-cointegration.html#cb458-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; The value of the test statistic is: -3.9308 7.7362</span></span>
+<span id="cb458-12"><a href="16.3-cointegration.html#cb458-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb458-13"><a href="16.3-cointegration.html#cb458-13" aria-hidden="true" tabindex="-1"></a><span class="co"># test if term spread is stationairy (cointegration of interest rates) using DF-GLS test</span></span>
+<span id="cb458-14"><a href="16.3-cointegration.html#cb458-14" aria-hidden="true" tabindex="-1"></a><span class="fu">ur.ers</span>(<span class="fu">window</span>(TB10YS, <span class="fu">c</span>(<span class="dv">1962</span>, <span class="dv">1</span>), <span class="fu">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>)) <span class="sc">-</span> <span class="fu">window</span>(TB3MS, <span class="fu">c</span>(<span class="dv">1962</span>, <span class="dv">1</span>), <span class="fu">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>)),</span>
+<span id="cb458-15"><a href="16.3-cointegration.html#cb458-15" aria-hidden="true" tabindex="-1"></a>       <span class="at">model =</span> <span class="st">&quot;constant&quot;</span>, </span>
+<span id="cb458-16"><a href="16.3-cointegration.html#cb458-16" aria-hidden="true" tabindex="-1"></a>       <span class="at">lag.max =</span> <span class="dv">6</span>)</span>
+<span id="cb458-17"><a href="16.3-cointegration.html#cb458-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb458-18"><a href="16.3-cointegration.html#cb458-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ############################################################### </span></span>
+<span id="cb458-19"><a href="16.3-cointegration.html#cb458-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # Elliot, Rothenberg and Stock Unit Root / Cointegration Test # </span></span>
+<span id="cb458-20"><a href="16.3-cointegration.html#cb458-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ############################################################### </span></span>
+<span id="cb458-21"><a href="16.3-cointegration.html#cb458-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb458-22"><a href="16.3-cointegration.html#cb458-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; The value of the test statistic is: -3.8576</span></span></code></pre></div>
+<p>Table <a href="16.3-cointegration.html#tab:spreadcoint">16.1</a> summarizes the results.</p>
+<table>
+<caption><span id="tab:spreadcoint">Table 16.1: </span> ADF and DF-GLS Test Statistics for Interest Rate Series</caption>
+<thead>
+<tr class="header">
+<th>Series</th>
+<th align="center">ADF Test Statistic</th>
+<th align="center">DF-GLS Test Statistic</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>TB3MS</td>
+<td align="center"><span class="math inline">\(-2.10\)</span></td>
+<td align="center"><span class="math inline">\(-1.80\)</span></td>
+</tr>
+<tr class="even">
+<td>TB10YS</td>
+<td align="center"><span class="math inline">\(-1.01\)</span></td>
+<td align="center"><span class="math inline">\(-0.94\)</span></td>
+</tr>
+<tr class="odd">
+<td>TB10YS - TB3MS</td>
+<td align="center"><span class="math inline">\(-3.93\)</span></td>
+<td align="center"><span class="math inline">\(-3.86\)</span></td>
+</tr>
+</tbody>
+</table>
+<p>Both tests reject the hypothesis of nonstationarity of the term spread series at the <span class="math inline">\(1\%\)</span> level of significance, which is strong evidence in favor of the hypothesis that the term spread is stationary, implying cointegration of long- and short-term interest rates.</p>
+<p>Since theory suggests that <span class="math inline">\(\theta=1\)</span>, there is no need to estimate <span class="math inline">\(\theta\)</span> so it is not necessary to use the EG-ADF test which allows <span class="math inline">\(\theta\)</span> to be unknown. However, since it is instructive to do so, we follow the book and compute this test statistic. The first-stage OLS regression is <span class="math display">\[TB10YS_t = \beta_0 + \beta_1 TB3MS_t + z_t.\]</span></p>
+<div class="sourceCode" id="cb459"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb459-1"><a href="16.3-cointegration.html#cb459-1" aria-hidden="true" tabindex="-1"></a><span class="co"># estimate first-stage regression of EG-ADF test</span></span>
+<span id="cb459-2"><a href="16.3-cointegration.html#cb459-2" aria-hidden="true" tabindex="-1"></a>FS_EGADF <span class="ot">&lt;-</span> <span class="fu">dynlm</span>(<span class="fu">window</span>(TB10YS, <span class="fu">c</span>(<span class="dv">1962</span>, <span class="dv">1</span>), <span class="fu">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>)) <span class="sc">~</span> <span class="fu">window</span>(TB3MS, <span class="fu">c</span>(<span class="dv">1962</span>, <span class="dv">1</span>), <span class="fu">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>)))</span>
+<span id="cb459-3"><a href="16.3-cointegration.html#cb459-3" aria-hidden="true" tabindex="-1"></a>FS_EGADF</span>
+<span id="cb459-4"><a href="16.3-cointegration.html#cb459-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb459-5"><a href="16.3-cointegration.html#cb459-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Time series regression with &quot;ts&quot; data:</span></span>
+<span id="cb459-6"><a href="16.3-cointegration.html#cb459-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Start = 1962(1), End = 2012(4)</span></span>
+<span id="cb459-7"><a href="16.3-cointegration.html#cb459-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb459-8"><a href="16.3-cointegration.html#cb459-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Call:</span></span>
+<span id="cb459-9"><a href="16.3-cointegration.html#cb459-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; dynlm(formula = window(TB10YS, c(1962, 1), c(2012, 4)) ~ window(TB3MS, </span></span>
+<span id="cb459-10"><a href="16.3-cointegration.html#cb459-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     c(1962, 1), c(2012, 4)))</span></span>
+<span id="cb459-11"><a href="16.3-cointegration.html#cb459-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb459-12"><a href="16.3-cointegration.html#cb459-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Coefficients:</span></span>
+<span id="cb459-13"><a href="16.3-cointegration.html#cb459-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                           (Intercept)  window(TB3MS, c(1962, 1), c(2012, 4))  </span></span>
+<span id="cb459-14"><a href="16.3-cointegration.html#cb459-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                2.4642                                 0.8147</span></span></code></pre></div>
+<p>Thus we have
+<span class="math display">\[\begin{align*}
+  \widehat{TB10YS}_t = 2.46 + 0.81 \cdot TB3MS_t,
+\end{align*}\]</span>
+where <span class="math inline">\(\widehat{\theta} = 0.81\)</span>. Next, we take the residual series <span class="math inline">\(\{\widehat{z_t}\}\)</span> and compute the ADF test statistic.</p>
+<div class="sourceCode" id="cb460"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb460-1"><a href="16.3-cointegration.html#cb460-1" aria-hidden="true" tabindex="-1"></a><span class="co"># compute the residuals</span></span>
+<span id="cb460-2"><a href="16.3-cointegration.html#cb460-2" aria-hidden="true" tabindex="-1"></a>z_hat <span class="ot">&lt;-</span> <span class="fu">resid</span>(FS_EGADF)</span>
+<span id="cb460-3"><a href="16.3-cointegration.html#cb460-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb460-4"><a href="16.3-cointegration.html#cb460-4" aria-hidden="true" tabindex="-1"></a><span class="co"># compute the ADF test statistic</span></span>
+<span id="cb460-5"><a href="16.3-cointegration.html#cb460-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ur.df</span>(z_hat, <span class="at">lags =</span> <span class="dv">6</span>, <span class="at">type =</span> <span class="st">&quot;none&quot;</span>, <span class="at">selectlags =</span> <span class="st">&quot;AIC&quot;</span>)</span>
+<span id="cb460-6"><a href="16.3-cointegration.html#cb460-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb460-7"><a href="16.3-cointegration.html#cb460-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ############################################################### </span></span>
+<span id="cb460-8"><a href="16.3-cointegration.html#cb460-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # Augmented Dickey-Fuller Test Unit Root / Cointegration Test # </span></span>
+<span id="cb460-9"><a href="16.3-cointegration.html#cb460-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ############################################################### </span></span>
+<span id="cb460-10"><a href="16.3-cointegration.html#cb460-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb460-11"><a href="16.3-cointegration.html#cb460-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; The value of the test statistic is: -3.1935</span></span></code></pre></div>
+<p>The test statistic is <span class="math inline">\(-3.19\)</span> which is smaller than the <span class="math inline">\(10\%\)</span> critical value but larger than the <span class="math inline">\(5\%\)</span> critical value (see Table 16.2 of the book). Thus, the null hypothesis of no cointegration can be rejected at the <span class="math inline">\(10\%\)</span> level but not at the <span class="math inline">\(5\%\)</span> level. This indicates lower power of the EG-ADF test due to the estimation of <span class="math inline">\(\theta\)</span>: when <span class="math inline">\(\theta=1\)</span> is the correct value, we expect the power of the ADF test for a unit root in the residuals series <span class="math inline">\(\widehat{z} = TB10YS - TB3MS\)</span> to be higher than when some estimate <span class="math inline">\(\widehat{\theta}\)</span> is used.</p>
+<div id="a-vector-error-correction-model-for-tb10ys_t-and-tb3ms" class="section level5 unnumbered">
+<h5>A Vector Error Correction Model for <span class="math inline">\(TB10YS_t\)</span> and <span class="math inline">\(TB3MS\)</span></h5>
+<p>If two <span class="math inline">\(I(1)\)</span> time series <span class="math inline">\(X_t\)</span> and <span class="math inline">\(Y_t\)</span> are cointegrated, their differences are stationary and can be modeled in a VAR which is augmented by the regressor <span class="math inline">\(Y_{t-1} - \theta X_{t-1}\)</span>. This is called a <em>vector error correction model</em> (VECM) and <span class="math inline">\(Y_{t} - \theta X_{t}\)</span> is called the <em>error correction term</em>. Lagged values of the error correction term are useful for predicting <span class="math inline">\(\Delta X_t\)</span> and/or <span class="math inline">\(\Delta Y_t\)</span>.</p>
+<p>A VECM can be used to model the two interest rates considered in the previous sections. Following the book we specify the VECM to include two lags of both series as regressors and choose <span class="math inline">\(\theta = 1\)</span>, as theory suggests (see above).</p>
+<div class="sourceCode" id="cb461"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb461-1"><a href="16.3-cointegration.html#cb461-1" aria-hidden="true" tabindex="-1"></a>TB10YS <span class="ot">&lt;-</span> <span class="fu">window</span>(TB10YS, <span class="fu">c</span>(<span class="dv">1962</span>, <span class="dv">1</span>), <span class="fu">c</span>(<span class="dv">2012</span> ,<span class="dv">4</span>))</span>
+<span id="cb461-2"><a href="16.3-cointegration.html#cb461-2" aria-hidden="true" tabindex="-1"></a>TB3MS <span class="ot">&lt;-</span> <span class="fu">window</span>(TB3MS, <span class="fu">c</span>(<span class="dv">1962</span>, <span class="dv">1</span>), <span class="fu">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>))</span>
+<span id="cb461-3"><a href="16.3-cointegration.html#cb461-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb461-4"><a href="16.3-cointegration.html#cb461-4" aria-hidden="true" tabindex="-1"></a><span class="co"># set up error correction term</span></span>
+<span id="cb461-5"><a href="16.3-cointegration.html#cb461-5" aria-hidden="true" tabindex="-1"></a>VECM_ECT <span class="ot">&lt;-</span> TB10YS <span class="sc">-</span> TB3MS</span>
+<span id="cb461-6"><a href="16.3-cointegration.html#cb461-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb461-7"><a href="16.3-cointegration.html#cb461-7" aria-hidden="true" tabindex="-1"></a><span class="co"># estimate both equations of the VECM using &#39;dynlm()&#39;</span></span>
+<span id="cb461-8"><a href="16.3-cointegration.html#cb461-8" aria-hidden="true" tabindex="-1"></a>VECM_EQ1 <span class="ot">&lt;-</span> <span class="fu">dynlm</span>(<span class="fu">d</span>(TB10YS) <span class="sc">~</span> <span class="fu">L</span>(<span class="fu">d</span>(TB3MS), <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>) <span class="sc">+</span> <span class="fu">L</span>(<span class="fu">d</span>(TB10YS), <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>) <span class="sc">+</span> <span class="fu">L</span>(VECM_ECT))</span>
+<span id="cb461-9"><a href="16.3-cointegration.html#cb461-9" aria-hidden="true" tabindex="-1"></a>VECM_EQ2 <span class="ot">&lt;-</span> <span class="fu">dynlm</span>(<span class="fu">d</span>(TB3MS) <span class="sc">~</span> <span class="fu">L</span>(<span class="fu">d</span>(TB3MS), <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>) <span class="sc">+</span> <span class="fu">L</span>(<span class="fu">d</span>(TB10YS), <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>) <span class="sc">+</span> <span class="fu">L</span>(VECM_ECT))</span>
+<span id="cb461-10"><a href="16.3-cointegration.html#cb461-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb461-11"><a href="16.3-cointegration.html#cb461-11" aria-hidden="true" tabindex="-1"></a><span class="co"># rename regressors for better readability</span></span>
+<span id="cb461-12"><a href="16.3-cointegration.html#cb461-12" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(VECM_EQ1<span class="sc">$</span>coefficients) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Intercept&quot;</span>, <span class="st">&quot;D_TB3MS_l1&quot;</span>, <span class="st">&quot;D_TB3MS_l2&quot;</span>,</span>
+<span id="cb461-13"><a href="16.3-cointegration.html#cb461-13" aria-hidden="true" tabindex="-1"></a>                                  <span class="st">&quot;D_TB10YS_l1&quot;</span>, <span class="st">&quot;D_TB10YS_l2&quot;</span>, <span class="st">&quot;ect_l1&quot;</span>)</span>
+<span id="cb461-14"><a href="16.3-cointegration.html#cb461-14" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(VECM_EQ2<span class="sc">$</span>coefficients) <span class="ot">&lt;-</span> <span class="fu">names</span>(VECM_EQ1<span class="sc">$</span>coefficients)</span>
+<span id="cb461-15"><a href="16.3-cointegration.html#cb461-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb461-16"><a href="16.3-cointegration.html#cb461-16" aria-hidden="true" tabindex="-1"></a><span class="co"># coefficient summaries using HAC standard errors</span></span>
+<span id="cb461-17"><a href="16.3-cointegration.html#cb461-17" aria-hidden="true" tabindex="-1"></a><span class="fu">coeftest</span>(VECM_EQ1, <span class="at">vcov. =</span> <span class="fu">NeweyWest</span>(VECM_EQ1, <span class="at">prewhite =</span> F, <span class="at">adjust =</span> T))</span>
+<span id="cb461-18"><a href="16.3-cointegration.html#cb461-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb461-19"><a href="16.3-cointegration.html#cb461-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; t test of coefficients:</span></span>
+<span id="cb461-20"><a href="16.3-cointegration.html#cb461-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb461-21"><a href="16.3-cointegration.html#cb461-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;               Estimate Std. Error t value Pr(&gt;|t|)   </span></span>
+<span id="cb461-22"><a href="16.3-cointegration.html#cb461-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Intercept    0.1227089  0.0551419  2.2253 0.027205 * </span></span>
+<span id="cb461-23"><a href="16.3-cointegration.html#cb461-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; D_TB3MS_l1  -0.0016601  0.0727060 -0.0228 0.981807   </span></span>
+<span id="cb461-24"><a href="16.3-cointegration.html#cb461-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; D_TB3MS_l2  -0.0680845  0.0435059 -1.5649 0.119216   </span></span>
+<span id="cb461-25"><a href="16.3-cointegration.html#cb461-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; D_TB10YS_l1  0.2264878  0.0957071  2.3665 0.018939 * </span></span>
+<span id="cb461-26"><a href="16.3-cointegration.html#cb461-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; D_TB10YS_l2 -0.0734486  0.0703476 -1.0441 0.297740   </span></span>
+<span id="cb461-27"><a href="16.3-cointegration.html#cb461-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ect_l1      -0.0878871  0.0285644 -3.0768 0.002393 **</span></span>
+<span id="cb461-28"><a href="16.3-cointegration.html#cb461-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ---</span></span>
+<span id="cb461-29"><a href="16.3-cointegration.html#cb461-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span>
+<span id="cb461-30"><a href="16.3-cointegration.html#cb461-30" aria-hidden="true" tabindex="-1"></a><span class="fu">coeftest</span>(VECM_EQ2, <span class="at">vcov. =</span> <span class="fu">NeweyWest</span>(VECM_EQ2, <span class="at">prewhite =</span> F, <span class="at">adjust =</span> T))</span>
+<span id="cb461-31"><a href="16.3-cointegration.html#cb461-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb461-32"><a href="16.3-cointegration.html#cb461-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; t test of coefficients:</span></span>
+<span id="cb461-33"><a href="16.3-cointegration.html#cb461-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb461-34"><a href="16.3-cointegration.html#cb461-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;              Estimate Std. Error t value Pr(&gt;|t|)  </span></span>
+<span id="cb461-35"><a href="16.3-cointegration.html#cb461-35" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Intercept   -0.060746   0.107937 -0.5628  0.57422  </span></span>
+<span id="cb461-36"><a href="16.3-cointegration.html#cb461-36" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; D_TB3MS_l1   0.240003   0.111611  2.1504  0.03276 *</span></span>
+<span id="cb461-37"><a href="16.3-cointegration.html#cb461-37" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; D_TB3MS_l2  -0.155883   0.153845 -1.0132  0.31220  </span></span>
+<span id="cb461-38"><a href="16.3-cointegration.html#cb461-38" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; D_TB10YS_l1  0.113740   0.125571  0.9058  0.36617  </span></span>
+<span id="cb461-39"><a href="16.3-cointegration.html#cb461-39" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; D_TB10YS_l2 -0.147519   0.112630 -1.3098  0.19182  </span></span>
+<span id="cb461-40"><a href="16.3-cointegration.html#cb461-40" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ect_l1       0.031506   0.050519  0.6236  0.53359  </span></span>
+<span id="cb461-41"><a href="16.3-cointegration.html#cb461-41" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ---</span></span>
+<span id="cb461-42"><a href="16.3-cointegration.html#cb461-42" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span></code></pre></div>
+<p>Thus the two estimated equations of the VECM are
+<span class="math display">\[\begin{align*}
+ \widehat{\Delta TB3MS}_t =&amp; \, -\underset{(0.11)}{0.06} + \underset{(0.11)}{0.24} \Delta TB3MS_{t-1} -\underset{(0.15)}{0.16} \Delta TB3MS_{t-2} \\ &amp;+ \underset{(0.13)}{0.11} \Delta TB10YS_{t-1} -\underset{(0.11)}{0.15} \Delta TB10YS_{t-2} + \underset{(0.05)}{0.03} ECT_{t-1} \\
+ \widehat{\Delta TB10YS}_t =&amp; \, \underset{(0.06)}{0.12} -\underset{(0.07)}{0.00} \Delta TB3MS_{t-1} -\underset{(0.04)}{0.07} \Delta TB3MS_{t-2} \\ &amp;+ \underset{(0.10)}{0.23} \Delta TB10YS_{t-1} -\underset{(0.07)}{0.07} \Delta TB10YS_{t-2} -\underset{(0.03)}{0.09} ECT_{t-1}.
+\end{align*}\]</span></p>
+<p>The output produced by <tt>coeftest()</tt> shows that there is little evidence that lagged values of the differenced interest series are useful for prediction. This finding is more pronounced for the equation of the differenced series of the 3-month treasury bill rate, where the error correction term (the lagged term spread) is not significantly different from zero at any common level of significance. However, for the differenced 10-years treasury bonds rate the error correction term is statistically significant at <span class="math inline">\(1\%\)</span> with an estimate of <span class="math inline">\(-0.09\)</span>. This can be interpreted as follows: although both interest rates are nonstationary, their conintegrating relationship allows to predict the <em>change</em> in the 10-years treasury bonds rate using the VECM. In particular, the negative estimate of the coefficient on the error correction term indicates that there will be a negative change in the next period’s 10-years treasury bonds rate when the 10-years treasury bonds rate is unusually high relative to the 3-month treasury bill rate in the current period.</p>
+</div>
+</div>
+</div>
+<h3>References</h3>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-engle1987" class="csl-entry">
+Engle, Robert, and Clive Granger. 1987. <span>“<span class="nocase">Co-integration and Error Correction: Representation, Estimation and Testing</span>.”</span> <em>Econometrica</em> 55 (2): 251–76.
+</div>
+</div>
+<div class="footnotes">
+<hr />
+<ol start="12">
+<li id="fn12"><p>Note: <tt>ur.df()</tt> reports two test statistics when there is a drift in the ADF regression. The first of which (the one we are interested in here) is the <span class="math inline">\(t\)</span>-statistic for the test that the coefficient on the first lag of the series is 0. The second one is the <span class="math inline">\(t\)</span>-statistic for the hypothesis test that the drift term equals <span class="math inline">\(0\)</span>.<a href="16.3-cointegration.html#fnref12" class="footnote-back">↩︎</a></p></li>
+</ol>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="16.2-ooiatdfglsurt.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="16.4-volatility-clustering-and-autoregressive-conditional-heteroskedasticity.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": true,
+"facebook": true,
+"twitter": true,
+"linkedin": true,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "serif",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/mca91/EconometricsWithR/edit/master/16-ch16.Rmd",
+"text": "Edit"
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": ["ITER.pdf"],
+"search": {
+"engine": "lunr",
+"options": null
+},
+"toc": {
+"collapse": "subsection",
+"scroll_highlight": true
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

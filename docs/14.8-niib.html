@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>14.8 Nonstationarity II: Breaks | Introduction to Econometrics with R</title>
+  <meta name="description" content="Beginners with little background in statistics and econometrics often have a hard time understanding the benefits of having programming skills for learning and applying Econometrics. ‘Introduction to Econometrics with R’ is an interactive companion to the well-received textbook ‘Introduction to Econometrics’ by James H. Stock and Mark W. Watson (2015). It gives a gentle introduction to the essentials of R programming and guides students in implementing the empirical applications presented throughout the textbook using the newly aquired skills. This is supported by interactive programming exercises generated with DataCamp Light and integration of interactive visualizations of central concepts which are based on the flexible JavaScript library D3.js." />
+  <meta name="generator" content="bookdown 0.23 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="14.8 Nonstationarity II: Breaks | Introduction to Econometrics with R" />
+  <meta property="og:type" content="book" />
+  <meta property="og:url" content="https://www.econometrics-with-r.org/" />
+  <meta property="og:image" content="https://www.econometrics-with-r.org//images/cover.png" />
+  <meta property="og:description" content="Beginners with little background in statistics and econometrics often have a hard time understanding the benefits of having programming skills for learning and applying Econometrics. ‘Introduction to Econometrics with R’ is an interactive companion to the well-received textbook ‘Introduction to Econometrics’ by James H. Stock and Mark W. Watson (2015). It gives a gentle introduction to the essentials of R programming and guides students in implementing the empirical applications presented throughout the textbook using the newly aquired skills. This is supported by interactive programming exercises generated with DataCamp Light and integration of interactive visualizations of central concepts which are based on the flexible JavaScript library D3.js." />
+  <meta name="github-repo" content="mca91/EconometricsWithR" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="14.8 Nonstationarity II: Breaks | Introduction to Econometrics with R" />
+  
+  <meta name="twitter:description" content="Beginners with little background in statistics and econometrics often have a hard time understanding the benefits of having programming skills for learning and applying Econometrics. ‘Introduction to Econometrics with R’ is an interactive companion to the well-received textbook ‘Introduction to Econometrics’ by James H. Stock and Mark W. Watson (2015). It gives a gentle introduction to the essentials of R programming and guides students in implementing the empirical applications presented throughout the textbook using the newly aquired skills. This is supported by interactive programming exercises generated with DataCamp Light and integration of interactive visualizations of central concepts which are based on the flexible JavaScript library D3.js." />
+  <meta name="twitter:image" content="https://www.econometrics-with-r.org//images/cover.png" />
+
+<meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber, and Martin Schmelzer" />
+
+
+<meta name="date" content="2021-10-06" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="14.7-nit.html"/>
+<link rel="next" href="14.9-can-you-beat-the-market-part-ii.html"/>
+<script src="libs/header-attrs-2.10/header-attrs.js"></script>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
+<script src="libs/htmlwidgets-1.5.3/htmlwidgets.js"></script>
+<script src="libs/plotly-binding-4.9.4.1/plotly.js"></script>
+<script src="libs/typedarray-0.1/typedarray.min.js"></script>
+<link href="libs/crosstalk-1.1.1/css/crosstalk.css" rel="stylesheet" />
+<script src="libs/crosstalk-1.1.1/js/crosstalk.min.js"></script>
+<link href="libs/plotly-htmlwidgets-css-1.57.1/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="libs/plotly-main-1.57.1/plotly-latest.min.js"></script>
+<!-- font families -->
+
+<link href="https://fonts.googleapis.com/css?family=PT+Sans|Pacifico|Source+Sans+Pro" rel="stylesheet">
+
+<script src="js/hideOutput.js"></script>
+
+<!-- Mathjax -->
+<script type="text/javascript" id="MathJax-script" async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+ <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        extensions: ["tex2jax.js", "TeX/AMSmath.js"],
+        tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+        jax: ["input/TeX","output/CommonHTML"]
+      });
+      MathJax.Hub.processSectionDelay = 0;
+  </script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-110299877-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-110299877-1');
+</script>
+
+<!-- open review block -->
+
+<script async defer src="https://hypothes.is/embed.js"></script>
+
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  background-color: #f8f8f8; }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ef2929; } /* Alert */
+code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #c4a000; } /* Attribute */
+code span.bn { color: #0000cf; } /* BaseN */
+code span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4e9a06; } /* Char */
+code span.cn { color: #000000; } /* Constant */
+code span.co { color: #8f5902; font-style: italic; } /* Comment */
+code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code span.dt { color: #204a87; } /* DataType */
+code span.dv { color: #0000cf; } /* DecVal */
+code span.er { color: #a40000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #0000cf; } /* Float */
+code span.fu { color: #000000; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code span.ot { color: #8f5902; } /* Other */
+code span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code span.sc { color: #000000; } /* SpecialChar */
+code span.ss { color: #4e9a06; } /* SpecialString */
+code span.st { color: #4e9a06; } /* String */
+code span.va { color: #000000; } /* Variable */
+code span.vs { color: #4e9a06; } /* VerbatimString */
+code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+/* Used with Pandoc 2.11+ new --citeproc when CSL is used */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+<link rel="stylesheet" href="toc.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><center><img src="images/logo.png" alt="logo" width="50%" height="50%"style="margin: 15px 0 0 0"></center></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Preface</a></li>
+<li class="chapter" data-level="1" data-path="1-introduction.html"><a href="1-introduction.html"><i class="fa fa-check"></i><b>1</b> Introduction</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="1.1-colophon.html"><a href="1.1-colophon.html"><i class="fa fa-check"></i><b>1.1</b> Colophon</a></li>
+<li class="chapter" data-level="1.2" data-path="1.2-a-very-short-introduction-to-r-and-rstudio.html"><a href="1.2-a-very-short-introduction-to-r-and-rstudio.html"><i class="fa fa-check"></i><b>1.2</b> A Very Short Introduction to <tt>R</tt> and <em>RStudio</em></a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="2-pt.html"><a href="2-pt.html"><i class="fa fa-check"></i><b>2</b> Probability Theory</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="2.1-random-variables-and-probability-distributions.html"><a href="2.1-random-variables-and-probability-distributions.html"><i class="fa fa-check"></i><b>2.1</b> Random Variables and Probability Distributions</a>
+<ul>
+<li class="chapter" data-level="" data-path="2.1-random-variables-and-probability-distributions.html"><a href="2.1-random-variables-and-probability-distributions.html#probability-distributions-of-discrete-random-variables"><i class="fa fa-check"></i>Probability Distributions of Discrete Random Variables</a></li>
+<li class="chapter" data-level="" data-path="2.1-random-variables-and-probability-distributions.html"><a href="2.1-random-variables-and-probability-distributions.html#bernoulli-trials"><i class="fa fa-check"></i>Bernoulli Trials</a></li>
+<li class="chapter" data-level="" data-path="2.1-random-variables-and-probability-distributions.html"><a href="2.1-random-variables-and-probability-distributions.html#expected-value-mean-and-variance"><i class="fa fa-check"></i>Expected Value, Mean and Variance</a></li>
+<li class="chapter" data-level="" data-path="2.1-random-variables-and-probability-distributions.html"><a href="2.1-random-variables-and-probability-distributions.html#probability-distributions-of-continuous-random-variables"><i class="fa fa-check"></i>Probability Distributions of Continuous Random Variables</a></li>
+<li class="chapter" data-level="" data-path="2.1-random-variables-and-probability-distributions.html"><a href="2.1-random-variables-and-probability-distributions.html#the-normal-distribution"><i class="fa fa-check"></i>The Normal Distribution</a></li>
+<li class="chapter" data-level="" data-path="2.1-random-variables-and-probability-distributions.html"><a href="2.1-random-variables-and-probability-distributions.html#the-chi-squared-distribution"><i class="fa fa-check"></i>The Chi-Squared Distribution</a></li>
+<li class="chapter" data-level="" data-path="2.1-random-variables-and-probability-distributions.html"><a href="2.1-random-variables-and-probability-distributions.html#thetdist"><i class="fa fa-check"></i>The Student t Distribution</a></li>
+<li class="chapter" data-level="" data-path="2.1-random-variables-and-probability-distributions.html"><a href="2.1-random-variables-and-probability-distributions.html#the-f-distribution"><i class="fa fa-check"></i>The F Distribution</a></li>
+</ul></li>
+<li class="chapter" data-level="2.2" data-path="2.2-RSATDOSA.html"><a href="2.2-RSATDOSA.html"><i class="fa fa-check"></i><b>2.2</b> Random Sampling and the Distribution of Sample Averages</a>
+<ul>
+<li class="chapter" data-level="" data-path="2.2-RSATDOSA.html"><a href="2.2-RSATDOSA.html#mean-and-variance-of-the-sample-mean"><i class="fa fa-check"></i>Mean and Variance of the Sample Mean</a></li>
+<li class="chapter" data-level="" data-path="2.2-RSATDOSA.html"><a href="2.2-RSATDOSA.html#large-sample-approximations-to-sampling-distributions"><i class="fa fa-check"></i>Large Sample Approximations to Sampling Distributions</a></li>
+</ul></li>
+<li class="chapter" data-level="2.3" data-path="2.3-exercises-2.html"><a href="2.3-exercises-2.html"><i class="fa fa-check"></i><b>2.3</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="3-arosur.html"><a href="3-arosur.html"><i class="fa fa-check"></i><b>3</b> A Review of Statistics using R</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="3.1-estimation-of-the-population-mean.html"><a href="3.1-estimation-of-the-population-mean.html"><i class="fa fa-check"></i><b>3.1</b> Estimation of the Population Mean</a></li>
+<li class="chapter" data-level="3.2" data-path="3.2-potsm.html"><a href="3.2-potsm.html"><i class="fa fa-check"></i><b>3.2</b> Properties of the Sample Mean</a></li>
+<li class="chapter" data-level="3.3" data-path="3.3-hypothesis-tests-concerning-the-population-mean.html"><a href="3.3-hypothesis-tests-concerning-the-population-mean.html"><i class="fa fa-check"></i><b>3.3</b> Hypothesis Tests Concerning the Population Mean</a>
+<ul>
+<li class="chapter" data-level="" data-path="3.3-hypothesis-tests-concerning-the-population-mean.html"><a href="3.3-hypothesis-tests-concerning-the-population-mean.html#the-p-value"><i class="fa fa-check"></i>The p-Value</a></li>
+<li class="chapter" data-level="" data-path="3.3-hypothesis-tests-concerning-the-population-mean.html"><a href="3.3-hypothesis-tests-concerning-the-population-mean.html#calculating-the-p-value-when-the-standard-deviation-is-known"><i class="fa fa-check"></i>Calculating the p-Value when the Standard Deviation is Known</a></li>
+<li class="chapter" data-level="" data-path="3.3-hypothesis-tests-concerning-the-population-mean.html"><a href="3.3-hypothesis-tests-concerning-the-population-mean.html#SVSSDASE"><i class="fa fa-check"></i>Sample Variance, Sample Standard Deviation and Standard Error</a></li>
+<li class="chapter" data-level="" data-path="3.3-hypothesis-tests-concerning-the-population-mean.html"><a href="3.3-hypothesis-tests-concerning-the-population-mean.html#calculating-the-p-value-when-the-standard-deviation-is-unknown"><i class="fa fa-check"></i>Calculating the p-value When the Standard Deviation is Unknown</a></li>
+<li class="chapter" data-level="" data-path="3.3-hypothesis-tests-concerning-the-population-mean.html"><a href="3.3-hypothesis-tests-concerning-the-population-mean.html#the-t-statistic"><i class="fa fa-check"></i>The t-statistic</a></li>
+<li class="chapter" data-level="" data-path="3.3-hypothesis-tests-concerning-the-population-mean.html"><a href="3.3-hypothesis-tests-concerning-the-population-mean.html#hypothesis-testing-with-a-prespecified-significance-level"><i class="fa fa-check"></i>Hypothesis Testing with a Prespecified Significance Level</a></li>
+<li class="chapter" data-level="" data-path="3.3-hypothesis-tests-concerning-the-population-mean.html"><a href="3.3-hypothesis-tests-concerning-the-population-mean.html#one-sided-alternatives"><i class="fa fa-check"></i>One-sided Alternatives</a></li>
+</ul></li>
+<li class="chapter" data-level="3.4" data-path="3.4-confidence-intervals-for-the-population-mean.html"><a href="3.4-confidence-intervals-for-the-population-mean.html"><i class="fa fa-check"></i><b>3.4</b> Confidence Intervals for the Population Mean</a></li>
+<li class="chapter" data-level="3.5" data-path="3.5-cmfdp.html"><a href="3.5-cmfdp.html"><i class="fa fa-check"></i><b>3.5</b> Comparing Means from Different Populations</a></li>
+<li class="chapter" data-level="3.6" data-path="3.6-aattggoe.html"><a href="3.6-aattggoe.html"><i class="fa fa-check"></i><b>3.6</b> An Application to the Gender Gap of Earnings</a></li>
+<li class="chapter" data-level="3.7" data-path="3.7-scatterplots-sample-covariance-and-sample-correlation.html"><a href="3.7-scatterplots-sample-covariance-and-sample-correlation.html"><i class="fa fa-check"></i><b>3.7</b> Scatterplots, Sample Covariance and Sample Correlation</a></li>
+<li class="chapter" data-level="3.8" data-path="3.8-exercises-3.html"><a href="3.8-exercises-3.html"><i class="fa fa-check"></i><b>3.8</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="4-lrwor.html"><a href="4-lrwor.html"><i class="fa fa-check"></i><b>4</b> Linear Regression with One Regressor</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="4.1-simple-linear-regression.html"><a href="4.1-simple-linear-regression.html"><i class="fa fa-check"></i><b>4.1</b> Simple Linear Regression</a></li>
+<li class="chapter" data-level="4.2" data-path="4.2-estimating-the-coefficients-of-the-linear-regression-model.html"><a href="4.2-estimating-the-coefficients-of-the-linear-regression-model.html"><i class="fa fa-check"></i><b>4.2</b> Estimating the Coefficients of the Linear Regression Model</a>
+<ul>
+<li class="chapter" data-level="" data-path="4.2-estimating-the-coefficients-of-the-linear-regression-model.html"><a href="4.2-estimating-the-coefficients-of-the-linear-regression-model.html#the-ordinary-least-squares-estimator"><i class="fa fa-check"></i>The Ordinary Least Squares Estimator</a></li>
+</ul></li>
+<li class="chapter" data-level="4.3" data-path="4.3-measures-of-fit.html"><a href="4.3-measures-of-fit.html"><i class="fa fa-check"></i><b>4.3</b> Measures of Fit</a>
+<ul>
+<li class="chapter" data-level="" data-path="4.3-measures-of-fit.html"><a href="4.3-measures-of-fit.html#the-coefficient-of-determination"><i class="fa fa-check"></i>The Coefficient of Determination</a></li>
+<li class="chapter" data-level="" data-path="4.3-measures-of-fit.html"><a href="4.3-measures-of-fit.html#the-standard-error-of-the-regression"><i class="fa fa-check"></i>The Standard Error of the Regression</a></li>
+<li class="chapter" data-level="" data-path="4.3-measures-of-fit.html"><a href="4.3-measures-of-fit.html#application-to-the-test-score-data"><i class="fa fa-check"></i>Application to the Test Score Data</a></li>
+</ul></li>
+<li class="chapter" data-level="4.4" data-path="4.4-tlsa.html"><a href="4.4-tlsa.html"><i class="fa fa-check"></i><b>4.4</b> The Least Squares Assumptions</a>
+<ul>
+<li class="chapter" data-level="" data-path="4.4-tlsa.html"><a href="4.4-tlsa.html#assumption-1-the-error-term-has-conditional-mean-of-zero"><i class="fa fa-check"></i>Assumption 1: The Error Term has Conditional Mean of Zero</a></li>
+<li class="chapter" data-level="" data-path="4.4-tlsa.html"><a href="4.4-tlsa.html#assumption-2-independently-and-identically-distributed-data"><i class="fa fa-check"></i>Assumption 2: Independently and Identically Distributed Data</a></li>
+<li class="chapter" data-level="" data-path="4.4-tlsa.html"><a href="4.4-tlsa.html#assumption-3-large-outliers-are-unlikely"><i class="fa fa-check"></i>Assumption 3: Large Outliers are Unlikely</a></li>
+</ul></li>
+<li class="chapter" data-level="4.5" data-path="4.5-tsdotoe.html"><a href="4.5-tsdotoe.html"><i class="fa fa-check"></i><b>4.5</b> The Sampling Distribution of the OLS Estimator</a>
+<ul>
+<li class="chapter" data-level="" data-path="4.5-tsdotoe.html"><a href="4.5-tsdotoe.html#simulation-study-1"><i class="fa fa-check"></i>Simulation Study 1</a></li>
+<li class="chapter" data-level="" data-path="4.5-tsdotoe.html"><a href="4.5-tsdotoe.html#simulation-study-2"><i class="fa fa-check"></i>Simulation Study 2</a></li>
+<li class="chapter" data-level="" data-path="4.5-tsdotoe.html"><a href="4.5-tsdotoe.html#simulation-study-3"><i class="fa fa-check"></i>Simulation Study 3</a></li>
+</ul></li>
+<li class="chapter" data-level="4.6" data-path="4.6-exercises-4.html"><a href="4.6-exercises-4.html"><i class="fa fa-check"></i><b>4.6</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="5-htaciitslrm.html"><a href="5-htaciitslrm.html"><i class="fa fa-check"></i><b>5</b> Hypothesis Tests and Confidence Intervals in the Simple Linear Regression Model</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="5.1-testing-two-sided-hypotheses-concerning-the-slope-coefficient.html"><a href="5.1-testing-two-sided-hypotheses-concerning-the-slope-coefficient.html"><i class="fa fa-check"></i><b>5.1</b> Testing Two-Sided Hypotheses Concerning the Slope Coefficient</a></li>
+<li class="chapter" data-level="5.2" data-path="5.2-cifrc.html"><a href="5.2-cifrc.html"><i class="fa fa-check"></i><b>5.2</b> Confidence Intervals for Regression Coefficients</a>
+<ul>
+<li class="chapter" data-level="" data-path="5.2-cifrc.html"><a href="5.2-cifrc.html#simulation-study-confidence-intervals"><i class="fa fa-check"></i>Simulation Study: Confidence Intervals</a></li>
+</ul></li>
+<li class="chapter" data-level="5.3" data-path="5.3-rwxiabv.html"><a href="5.3-rwxiabv.html"><i class="fa fa-check"></i><b>5.3</b> Regression when X is a Binary Variable</a></li>
+<li class="chapter" data-level="5.4" data-path="5.4-hah.html"><a href="5.4-hah.html"><i class="fa fa-check"></i><b>5.4</b> Heteroskedasticity and Homoskedasticity</a>
+<ul>
+<li class="chapter" data-level="" data-path="5.4-hah.html"><a href="5.4-hah.html#a-real-world-example-for-heteroskedasticity"><i class="fa fa-check"></i>A Real-World Example for Heteroskedasticity</a></li>
+<li class="chapter" data-level="" data-path="5.4-hah.html"><a href="5.4-hah.html#should-we-care-about-heteroskedasticity"><i class="fa fa-check"></i>Should We Care About Heteroskedasticity?</a></li>
+<li class="chapter" data-level="" data-path="5.4-hah.html"><a href="5.4-hah.html#computation-of-heteroskedasticity-robust-standard-errors"><i class="fa fa-check"></i>Computation of Heteroskedasticity-Robust Standard Errors</a></li>
+</ul></li>
+<li class="chapter" data-level="5.5" data-path="5.5-the-gauss-markov-theorem.html"><a href="5.5-the-gauss-markov-theorem.html"><i class="fa fa-check"></i><b>5.5</b> The Gauss-Markov Theorem</a>
+<ul>
+<li class="chapter" data-level="" data-path="5.5-the-gauss-markov-theorem.html"><a href="5.5-the-gauss-markov-theorem.html#simulation-study-blue-estimator"><i class="fa fa-check"></i>Simulation Study: BLUE Estimator</a></li>
+</ul></li>
+<li class="chapter" data-level="5.6" data-path="5.6-using-the-t-statistic-in-regression-when-the-sample-size-is-small.html"><a href="5.6-using-the-t-statistic-in-regression-when-the-sample-size-is-small.html"><i class="fa fa-check"></i><b>5.6</b> Using the t-Statistic in Regression When the Sample Size Is Small</a></li>
+<li class="chapter" data-level="5.7" data-path="5.7-exercises-5.html"><a href="5.7-exercises-5.html"><i class="fa fa-check"></i><b>5.7</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="6-rmwmr.html"><a href="6-rmwmr.html"><i class="fa fa-check"></i><b>6</b> Regression Models with Multiple Regressors</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="6.1-omitted-variable-bias.html"><a href="6.1-omitted-variable-bias.html"><i class="fa fa-check"></i><b>6.1</b> Omitted Variable Bias</a></li>
+<li class="chapter" data-level="6.2" data-path="6.2-tmrm.html"><a href="6.2-tmrm.html"><i class="fa fa-check"></i><b>6.2</b> The Multiple Regression Model</a></li>
+<li class="chapter" data-level="6.3" data-path="6.3-mofimr.html"><a href="6.3-mofimr.html"><i class="fa fa-check"></i><b>6.3</b> Measures of Fit in Multiple Regression</a></li>
+<li class="chapter" data-level="6.4" data-path="6.4-ols-assumptions-in-multiple-regression.html"><a href="6.4-ols-assumptions-in-multiple-regression.html"><i class="fa fa-check"></i><b>6.4</b> OLS Assumptions in Multiple Regression</a>
+<ul>
+<li class="chapter" data-level="" data-path="6.4-ols-assumptions-in-multiple-regression.html"><a href="6.4-ols-assumptions-in-multiple-regression.html#multicollinearity"><i class="fa fa-check"></i>Multicollinearity</a></li>
+<li class="chapter" data-level="" data-path="6.4-ols-assumptions-in-multiple-regression.html"><a href="6.4-ols-assumptions-in-multiple-regression.html#simulation-study-imperfect-multicollinearity"><i class="fa fa-check"></i>Simulation Study: Imperfect Multicollinearity</a></li>
+</ul></li>
+<li class="chapter" data-level="6.5" data-path="6.5-the-distribution-of-the-ols-estimators-in-multiple-regression.html"><a href="6.5-the-distribution-of-the-ols-estimators-in-multiple-regression.html"><i class="fa fa-check"></i><b>6.5</b> The Distribution of the OLS Estimators in Multiple Regression</a></li>
+<li class="chapter" data-level="6.6" data-path="6.6-exercises-6.html"><a href="6.6-exercises-6.html"><i class="fa fa-check"></i><b>6.6</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="7-htaciimr.html"><a href="7-htaciimr.html"><i class="fa fa-check"></i><b>7</b> Hypothesis Tests and Confidence Intervals in Multiple Regression</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="7.1-hypothesis-tests-and-confidence-intervals-for-a-single-coefficient.html"><a href="7.1-hypothesis-tests-and-confidence-intervals-for-a-single-coefficient.html"><i class="fa fa-check"></i><b>7.1</b> Hypothesis Tests and Confidence Intervals for a Single Coefficient</a></li>
+<li class="chapter" data-level="7.2" data-path="7.2-an-application-to-test-scores-and-the-student-teacher-ratio.html"><a href="7.2-an-application-to-test-scores-and-the-student-teacher-ratio.html"><i class="fa fa-check"></i><b>7.2</b> An Application to Test Scores and the Student-Teacher Ratio</a>
+<ul>
+<li class="chapter" data-level="" data-path="7.2-an-application-to-test-scores-and-the-student-teacher-ratio.html"><a href="7.2-an-application-to-test-scores-and-the-student-teacher-ratio.html#another-augmentation-of-the-model"><i class="fa fa-check"></i>Another Augmentation of the Model</a></li>
+</ul></li>
+<li class="chapter" data-level="7.3" data-path="7.3-joint-hypothesis-testing-using-the-f-statistic.html"><a href="7.3-joint-hypothesis-testing-using-the-f-statistic.html"><i class="fa fa-check"></i><b>7.3</b> Joint Hypothesis Testing Using the F-Statistic</a></li>
+<li class="chapter" data-level="7.4" data-path="7.4-confidence-sets-for-multiple-coefficients.html"><a href="7.4-confidence-sets-for-multiple-coefficients.html"><i class="fa fa-check"></i><b>7.4</b> Confidence Sets for Multiple Coefficients</a></li>
+<li class="chapter" data-level="7.5" data-path="7.5-model-specification-for-multiple-regression.html"><a href="7.5-model-specification-for-multiple-regression.html"><i class="fa fa-check"></i><b>7.5</b> Model Specification for Multiple Regression</a>
+<ul>
+<li class="chapter" data-level="" data-path="7.5-model-specification-for-multiple-regression.html"><a href="7.5-model-specification-for-multiple-regression.html#model-specification-in-theory-and-in-practice"><i class="fa fa-check"></i>Model Specification in Theory and in Practice</a></li>
+</ul></li>
+<li class="chapter" data-level="7.6" data-path="7.6-analysis-of-the-test-score-data-set.html"><a href="7.6-analysis-of-the-test-score-data-set.html"><i class="fa fa-check"></i><b>7.6</b> Analysis of the Test Score Data Set</a></li>
+<li class="chapter" data-level="7.7" data-path="7.7-exercises-7.html"><a href="7.7-exercises-7.html"><i class="fa fa-check"></i><b>7.7</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="8-nrf.html"><a href="8-nrf.html"><i class="fa fa-check"></i><b>8</b> Nonlinear Regression Functions</a>
+<ul>
+<li class="chapter" data-level="8.1" data-path="8.1-a-general-strategy-for-modelling-nonlinear-regression-functions.html"><a href="8.1-a-general-strategy-for-modelling-nonlinear-regression-functions.html"><i class="fa fa-check"></i><b>8.1</b> A General Strategy for Modelling Nonlinear Regression Functions</a></li>
+<li class="chapter" data-level="8.2" data-path="8.2-nfoasiv.html"><a href="8.2-nfoasiv.html"><i class="fa fa-check"></i><b>8.2</b> Nonlinear Functions of a Single Independent Variable</a>
+<ul>
+<li class="chapter" data-level="" data-path="8.2-nfoasiv.html"><a href="8.2-nfoasiv.html#polynomials"><i class="fa fa-check"></i>Polynomials</a></li>
+<li class="chapter" data-level="" data-path="8.2-nfoasiv.html"><a href="8.2-nfoasiv.html#logarithms"><i class="fa fa-check"></i>Logarithms</a></li>
+</ul></li>
+<li class="chapter" data-level="8.3" data-path="8.3-interactions-between-independent-variables.html"><a href="8.3-interactions-between-independent-variables.html"><i class="fa fa-check"></i><b>8.3</b> Interactions Between Independent Variables</a></li>
+<li class="chapter" data-level="8.4" data-path="8.4-nonlinear-effects-on-test-scores-of-the-student-teacher-ratio.html"><a href="8.4-nonlinear-effects-on-test-scores-of-the-student-teacher-ratio.html"><i class="fa fa-check"></i><b>8.4</b> Nonlinear Effects on Test Scores of the Student-Teacher Ratio</a></li>
+<li class="chapter" data-level="8.5" data-path="8.5-exercises-8.html"><a href="8.5-exercises-8.html"><i class="fa fa-check"></i><b>8.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="9-asbomr.html"><a href="9-asbomr.html"><i class="fa fa-check"></i><b>9</b> Assessing Studies Based on Multiple Regression</a>
+<ul>
+<li class="chapter" data-level="9.1" data-path="9.1-internal-and-external-validity.html"><a href="9.1-internal-and-external-validity.html"><i class="fa fa-check"></i><b>9.1</b> Internal and External Validity</a></li>
+<li class="chapter" data-level="9.2" data-path="9.2-ttivomra.html"><a href="9.2-ttivomra.html"><i class="fa fa-check"></i><b>9.2</b> Threats to Internal Validity of Multiple Regression Analysis</a></li>
+<li class="chapter" data-level="9.3" data-path="9.3-internal-and-external-validity-when-the-regression-is-used-for-forecasting.html"><a href="9.3-internal-and-external-validity-when-the-regression-is-used-for-forecasting.html"><i class="fa fa-check"></i><b>9.3</b> Internal and External Validity when the Regression is Used for Forecasting</a></li>
+<li class="chapter" data-level="9.4" data-path="9.4-etsacs.html"><a href="9.4-etsacs.html"><i class="fa fa-check"></i><b>9.4</b> Example: Test Scores and Class Size</a></li>
+<li class="chapter" data-level="9.5" data-path="9.5-exercises-9.html"><a href="9.5-exercises-9.html"><i class="fa fa-check"></i><b>9.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="10" data-path="10-rwpd.html"><a href="10-rwpd.html"><i class="fa fa-check"></i><b>10</b> Regression with Panel Data</a>
+<ul>
+<li class="chapter" data-level="10.1" data-path="10.1-panel-data.html"><a href="10.1-panel-data.html"><i class="fa fa-check"></i><b>10.1</b> Panel Data</a></li>
+<li class="chapter" data-level="10.2" data-path="10.2-PDWTTP.html"><a href="10.2-PDWTTP.html"><i class="fa fa-check"></i><b>10.2</b> Panel Data with Two Time Periods: “Before and After” Comparisons</a></li>
+<li class="chapter" data-level="10.3" data-path="10.3-fixed-effects-regression.html"><a href="10.3-fixed-effects-regression.html"><i class="fa fa-check"></i><b>10.3</b> Fixed Effects Regression</a>
+<ul>
+<li class="chapter" data-level="" data-path="10.3-fixed-effects-regression.html"><a href="10.3-fixed-effects-regression.html#estimation-and-inference"><i class="fa fa-check"></i>Estimation and Inference</a></li>
+<li class="chapter" data-level="" data-path="10.3-fixed-effects-regression.html"><a href="10.3-fixed-effects-regression.html#application-to-traffic-deaths"><i class="fa fa-check"></i>Application to Traffic Deaths</a></li>
+</ul></li>
+<li class="chapter" data-level="10.4" data-path="10.4-regression-with-time-fixed-effects.html"><a href="10.4-regression-with-time-fixed-effects.html"><i class="fa fa-check"></i><b>10.4</b> Regression with Time Fixed Effects</a></li>
+<li class="chapter" data-level="10.5" data-path="10.5-tferaaseffer.html"><a href="10.5-tferaaseffer.html"><i class="fa fa-check"></i><b>10.5</b> The Fixed Effects Regression Assumptions and Standard Errors for Fixed Effects Regression</a></li>
+<li class="chapter" data-level="10.6" data-path="10.6-drunk-driving-laws-and-traffic-deaths.html"><a href="10.6-drunk-driving-laws-and-traffic-deaths.html"><i class="fa fa-check"></i><b>10.6</b> Drunk Driving Laws and Traffic Deaths</a></li>
+<li class="chapter" data-level="10.7" data-path="10.7-exercises-10.html"><a href="10.7-exercises-10.html"><i class="fa fa-check"></i><b>10.7</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="11" data-path="11-rwabdv.html"><a href="11-rwabdv.html"><i class="fa fa-check"></i><b>11</b> Regression with a Binary Dependent Variable</a>
+<ul>
+<li class="chapter" data-level="11.1" data-path="11.1-binary-dependent-variables-and-the-linear-probability-model.html"><a href="11.1-binary-dependent-variables-and-the-linear-probability-model.html"><i class="fa fa-check"></i><b>11.1</b> Binary Dependent Variables and the Linear Probability Model</a></li>
+<li class="chapter" data-level="11.2" data-path="11.2-palr.html"><a href="11.2-palr.html"><i class="fa fa-check"></i><b>11.2</b> Probit and Logit Regression</a>
+<ul>
+<li class="chapter" data-level="" data-path="11.2-palr.html"><a href="11.2-palr.html#probit-regression"><i class="fa fa-check"></i>Probit Regression</a></li>
+<li class="chapter" data-level="" data-path="11.2-palr.html"><a href="11.2-palr.html#logit-regression"><i class="fa fa-check"></i>Logit Regression</a></li>
+</ul></li>
+<li class="chapter" data-level="11.3" data-path="11.3-estimation-and-inference-in-the-logit-and-probit-models.html"><a href="11.3-estimation-and-inference-in-the-logit-and-probit-models.html"><i class="fa fa-check"></i><b>11.3</b> Estimation and Inference in the Logit and Probit Models</a></li>
+<li class="chapter" data-level="11.4" data-path="11.4-application-to-the-boston-hmda-data.html"><a href="11.4-application-to-the-boston-hmda-data.html"><i class="fa fa-check"></i><b>11.4</b> Application to the Boston HMDA Data</a></li>
+<li class="chapter" data-level="11.5" data-path="11.5-exercises-11.html"><a href="11.5-exercises-11.html"><i class="fa fa-check"></i><b>11.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="12" data-path="12-ivr.html"><a href="12-ivr.html"><i class="fa fa-check"></i><b>12</b> Instrumental Variables Regression</a>
+<ul>
+<li class="chapter" data-level="12.1" data-path="12.1-TIVEWASRAASI.html"><a href="12.1-TIVEWASRAASI.html"><i class="fa fa-check"></i><b>12.1</b> The IV Estimator with a Single Regressor and a Single Instrument</a></li>
+<li class="chapter" data-level="12.2" data-path="12.2-TGIVRM.html"><a href="12.2-TGIVRM.html"><i class="fa fa-check"></i><b>12.2</b> The General IV Regression Model</a></li>
+<li class="chapter" data-level="12.3" data-path="12.3-civ.html"><a href="12.3-civ.html"><i class="fa fa-check"></i><b>12.3</b> Checking Instrument Validity</a></li>
+<li class="chapter" data-level="12.4" data-path="12.4-attdfc.html"><a href="12.4-attdfc.html"><i class="fa fa-check"></i><b>12.4</b> Application to the Demand for Cigarettes</a></li>
+<li class="chapter" data-level="12.5" data-path="12.5-where-do-valid-instruments-come-from.html"><a href="12.5-where-do-valid-instruments-come-from.html"><i class="fa fa-check"></i><b>12.5</b> Where Do Valid Instruments Come From?</a></li>
+<li class="chapter" data-level="12.6" data-path="12.6-exercises-12.html"><a href="12.6-exercises-12.html"><i class="fa fa-check"></i><b>12.6</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="13" data-path="13-eaqe.html"><a href="13-eaqe.html"><i class="fa fa-check"></i><b>13</b> Experiments and Quasi-Experiments</a>
+<ul>
+<li class="chapter" data-level="13.1" data-path="13.1-poceaie.html"><a href="13.1-poceaie.html"><i class="fa fa-check"></i><b>13.1</b> Potential Outcomes, Causal Effects and Idealized Experiments</a></li>
+<li class="chapter" data-level="13.2" data-path="13.2-threats-to-validity-of-experiments.html"><a href="13.2-threats-to-validity-of-experiments.html"><i class="fa fa-check"></i><b>13.2</b> Threats to Validity of Experiments</a></li>
+<li class="chapter" data-level="13.3" data-path="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html"><i class="fa fa-check"></i><b>13.3</b> Experimental Estimates of the Effect of Class Size Reductions</a>
+<ul>
+<li class="chapter" data-level="" data-path="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#experimental-design-and-the-data-set"><i class="fa fa-check"></i>Experimental Design and the Data Set</a></li>
+<li class="chapter" data-level="" data-path="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#analysis-of-the-star-data"><i class="fa fa-check"></i>Analysis of the STAR Data</a></li>
+</ul></li>
+<li class="chapter" data-level="13.4" data-path="13.4-qe.html"><a href="13.4-qe.html"><i class="fa fa-check"></i><b>13.4</b> Quasi Experiments</a>
+<ul>
+<li class="chapter" data-level="" data-path="13.4-qe.html"><a href="13.4-qe.html#the-differences-in-differences-estimator"><i class="fa fa-check"></i>The Differences-in-Differences Estimator</a></li>
+<li class="chapter" data-level="" data-path="13.4-qe.html"><a href="13.4-qe.html#regression-discontinuity-estimators"><i class="fa fa-check"></i>Regression Discontinuity Estimators</a></li>
+</ul></li>
+<li class="chapter" data-level="13.5" data-path="13.5-exercises-13.html"><a href="13.5-exercises-13.html"><i class="fa fa-check"></i><b>13.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="14" data-path="14-ittsraf.html"><a href="14-ittsraf.html"><i class="fa fa-check"></i><b>14</b> Introduction to Time Series Regression and Forecasting</a>
+<ul>
+<li class="chapter" data-level="14.1" data-path="14.1-using-regression-models-for-forecasting.html"><a href="14.1-using-regression-models-for-forecasting.html"><i class="fa fa-check"></i><b>14.1</b> Using Regression Models for Forecasting</a></li>
+<li class="chapter" data-level="14.2" data-path="14.2-tsdasc.html"><a href="14.2-tsdasc.html"><i class="fa fa-check"></i><b>14.2</b> Time Series Data and Serial Correlation</a>
+<ul>
+<li class="chapter" data-level="" data-path="14.2-tsdasc.html"><a href="14.2-tsdasc.html#notation-lags-differences-logarithms-and-growth-rates"><i class="fa fa-check"></i>Notation, Lags, Differences, Logarithms and Growth Rates</a></li>
+</ul></li>
+<li class="chapter" data-level="14.3" data-path="14.3-autoregressions.html"><a href="14.3-autoregressions.html"><i class="fa fa-check"></i><b>14.3</b> Autoregressions</a>
+<ul>
+<li><a href="14.3-autoregressions.html#autoregressive-models-of-order-p">Autoregressive Models of Order <span class="math inline">\(p\)</span></a></li>
+</ul></li>
+<li class="chapter" data-level="14.4" data-path="14.4-cybtmpi.html"><a href="14.4-cybtmpi.html"><i class="fa fa-check"></i><b>14.4</b> Can You Beat the Market? (Part I)</a></li>
+<li class="chapter" data-level="14.5" data-path="14.5-apatadlm.html"><a href="14.5-apatadlm.html"><i class="fa fa-check"></i><b>14.5</b> Additional Predictors and The ADL Model</a>
+<ul>
+<li class="chapter" data-level="" data-path="14.5-apatadlm.html"><a href="14.5-apatadlm.html#forecast-uncertainty-and-forecast-intervals"><i class="fa fa-check"></i>Forecast Uncertainty and Forecast Intervals</a></li>
+</ul></li>
+<li class="chapter" data-level="14.6" data-path="14.6-llsuic.html"><a href="14.6-llsuic.html"><i class="fa fa-check"></i><b>14.6</b> Lag Length Selection Using Information Criteria</a></li>
+<li class="chapter" data-level="14.7" data-path="14.7-nit.html"><a href="14.7-nit.html"><i class="fa fa-check"></i><b>14.7</b> Nonstationarity I: Trends</a></li>
+<li class="chapter" data-level="14.8" data-path="14.8-niib.html"><a href="14.8-niib.html"><i class="fa fa-check"></i><b>14.8</b> Nonstationarity II: Breaks</a></li>
+<li class="chapter" data-level="14.9" data-path="14.9-can-you-beat-the-market-part-ii.html"><a href="14.9-can-you-beat-the-market-part-ii.html"><i class="fa fa-check"></i><b>14.9</b> Can You Beat the Market? (Part II)</a></li>
+</ul></li>
+<li class="chapter" data-level="15" data-path="15-eodce.html"><a href="15-eodce.html"><i class="fa fa-check"></i><b>15</b> Estimation of Dynamic Causal Effects</a>
+<ul>
+<li class="chapter" data-level="15.1" data-path="15.1-the-orange-juice-data.html"><a href="15.1-the-orange-juice-data.html"><i class="fa fa-check"></i><b>15.1</b> The Orange Juice Data</a></li>
+<li class="chapter" data-level="15.2" data-path="15.2-dynamic-causal-effects.html"><a href="15.2-dynamic-causal-effects.html"><i class="fa fa-check"></i><b>15.2</b> Dynamic Causal Effects</a></li>
+<li class="chapter" data-level="15.3" data-path="15.3-dynamic-multipliers-and-cumulative-dynamic-multipliers.html"><a href="15.3-dynamic-multipliers-and-cumulative-dynamic-multipliers.html"><i class="fa fa-check"></i><b>15.3</b> Dynamic Multipliers and Cumulative Dynamic Multipliers</a></li>
+<li class="chapter" data-level="15.4" data-path="15.4-hac-standard-errors.html"><a href="15.4-hac-standard-errors.html"><i class="fa fa-check"></i><b>15.4</b> HAC Standard Errors</a></li>
+<li class="chapter" data-level="15.5" data-path="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html"><i class="fa fa-check"></i><b>15.5</b> Estimation of Dynamic Causal Effects with Strictly Exogeneous Regressors</a></li>
+<li class="chapter" data-level="15.6" data-path="15.6-orange-juice-prices-and-cold-weather.html"><a href="15.6-orange-juice-prices-and-cold-weather.html"><i class="fa fa-check"></i><b>15.6</b> Orange Juice Prices and Cold Weather</a></li>
+</ul></li>
+<li class="chapter" data-level="16" data-path="16-atitsr.html"><a href="16-atitsr.html"><i class="fa fa-check"></i><b>16</b> Additional Topics in Time Series Regression</a>
+<ul>
+<li class="chapter" data-level="16.1" data-path="16.1-vector-autoregressions.html"><a href="16.1-vector-autoregressions.html"><i class="fa fa-check"></i><b>16.1</b> Vector Autoregressions</a></li>
+<li class="chapter" data-level="16.2" data-path="16.2-ooiatdfglsurt.html"><a href="16.2-ooiatdfglsurt.html"><i class="fa fa-check"></i><b>16.2</b> Orders of Integration and the DF-GLS Unit Root Test</a></li>
+<li class="chapter" data-level="16.3" data-path="16.3-cointegration.html"><a href="16.3-cointegration.html"><i class="fa fa-check"></i><b>16.3</b> Cointegration</a></li>
+<li class="chapter" data-level="16.4" data-path="16.4-volatility-clustering-and-autoregressive-conditional-heteroskedasticity.html"><a href="16.4-volatility-clustering-and-autoregressive-conditional-heteroskedasticity.html"><i class="fa fa-check"></i><b>16.4</b> Volatility Clustering and Autoregressive Conditional Heteroskedasticity</a>
+<ul>
+<li class="chapter" data-level="" data-path="16.4-volatility-clustering-and-autoregressive-conditional-heteroskedasticity.html"><a href="16.4-volatility-clustering-and-autoregressive-conditional-heteroskedasticity.html#arch-and-garch-models"><i class="fa fa-check"></i>ARCH and GARCH Models</a></li>
+<li class="chapter" data-level="" data-path="16.4-volatility-clustering-and-autoregressive-conditional-heteroskedasticity.html"><a href="16.4-volatility-clustering-and-autoregressive-conditional-heteroskedasticity.html#application-to-stock-price-volatility"><i class="fa fa-check"></i>Application to Stock Price Volatility</a></li>
+<li class="chapter" data-level="" data-path="16.4-volatility-clustering-and-autoregressive-conditional-heteroskedasticity.html"><a href="16.4-volatility-clustering-and-autoregressive-conditional-heteroskedasticity.html#summary-8"><i class="fa fa-check"></i>Summary</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Introduction to Econometrics with R</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div class = rmdreview>
+This book is in <b>Open Review</b>. We want your feedback to make the book better for you and other students. You may annotate some text by <span style="background-color: #3297FD; color: white">selecting it with the cursor</span> and then click the <i class="h-icon-annotate"></i> on the pop-up menu. You can also see the annotations of others: click the <i class="h-icon-chevron-left"></i> in the upper right hand corner of the page <i class="fa fa-arrow-circle-right  fa-rotate-315" aria-hidden="true"></i>
+</div>
+<div id="niib" class="section level2" number="14.8">
+<h2><span class="header-section-number">14.8</span> Nonstationarity II: Breaks</h2>
+<p>When there are discrete (at a distinct date) or gradual (over time) changes in the population regression coefficients, the series is nonstationary. These changes are called <em>breaks</em>. There is a variety of reasons why breaks can occur in macroeconomic time series but most often they are related to changes in economic policy or major changes in the structure of the economy. See Chapter 14.7 of the book for some examples.</p>
+<p>If breaks are not accounted for in the regression model, OLS estimates will reflect the average relationship. Since these estimates might be strongly misleading and result in poor forecast quality, we are interested in testing for breaks. One distinguishes between testing for a break when the date is known and testing for a break with an unknown break date.</p>
+<p>Let <span class="math inline">\(\tau\)</span> denote a known break date and let <span class="math inline">\(D_t(\tau)\)</span> be a binary variable indicating time periods before and after the break. Incorporating the break in an ADL(<span class="math inline">\(1\)</span>,<span class="math inline">\(1\)</span>) regression model yields
+<span class="math display">\[\begin{align*}
+  Y_t =&amp; \beta_0 + \beta_1 Y_{t-1} + \delta_1 X_{t-1} + \gamma_0 D_t(\tau) + \gamma_1\left[D_t(\tau) \cdot Y_{t-1}\right] \\ 
+  &amp;+ \, \gamma_2\left[ D_t(\tau) \cdot X_{t-1} \right] + u_t,
+\end{align*}\]</span>
+where we allow for discrete changes in <span class="math inline">\(\beta_0\)</span>, <span class="math inline">\(\beta_1\)</span> and <span class="math inline">\(\beta_2\)</span> at the break date <span class="math inline">\(\tau\)</span>. The null hypothesis of no break, <span class="math display">\[H_0: \gamma_0=\gamma_1=\gamma_2=0,\]</span> can be tested against the alternative that at least one of the <span class="math inline">\(\gamma\)</span>’s is not zero using an <span class="math inline">\(F\)</span>-Test. This idea is called a Chow test after Gregory <span class="citation">Chow (<a href="#ref-chow1960" role="doc-biblioref">1960</a>)</span>.</p>
+<p>When the break date is unknown the <em>Quandt likelihood ratio</em> (QLR) <em>test</em> <span class="citation">(<a href="#ref-quandt1960" role="doc-biblioref">Quandt 1960</a>)</span> may be used. It is a modified version of the Chow test which uses the largest of all <span class="math inline">\(F\)</span>-statistics obtained when applying the Chow test for all possible break dates in a predetermined range <span class="math inline">\(\left[\tau_0,\tau_1\right]\)</span>. The QLR test is summarized in Key Concept 14.9.</p>
+<div id="KC14.9" class="keyconcept">
+<h3 class="right">
+Key Concept 14.9
+</h3>
+<h3 class="left">
+The QLR Test for Coefficient Stability
+</h3>
+<p>
+The QLR test can be used to test for a break in the population regression function if the date of the break is unknown. The QLR test statistic is the largest (Chow) <span class="math inline">\(F(\tau)\)</span> statistic computed over a range of eligible break dates <span class="math inline">\(\tau_0 \leq \tau \leq \tau_1\)</span>:
+<span class="math display" id="eq:QLRstatistic">\[\begin{align}
+  QLR = \max\left[F(\tau_0),F(\tau_0 +1),\dots,F(\tau_1)\right]. \tag{14.14}
+\end{align}\]</span>
+</p>
+<p>The most important properties are:</p>
+<ul>
+<li><p>The QLR test can be applied to test whether a subset of the coefficients in the population regression function breaks but the test also rejects if there is a slow evolution of the regression function.</p></li>
+<li><p>When there is a single discrete break in the population regression function that lying at a date within the range tested, the <span class="math inline">\(QLR\)</span> test statistic is <span class="math inline">\(F(\widehat{\tau})\)</span> and <span class="math inline">\(\widehat{\tau}/T\)</span> is a consistent estimator of fraction of the sample at which the break is.</p></li>
+<li><p>The large-sample distribution of <span class="math inline">\(QLR\)</span> depends on <span class="math inline">\(q\)</span>, the number of restrictions being tested and both ratios of end points to the sample size, <span class="math inline">\(\tau_0/T, \tau_1/T\)</span>.</p></li>
+<li><p>Similar to the ADF test, the large-sample distribution of <span class="math inline">\(QLR\)</span> is nonstandard. Critical values are presented in Table 14.5 of the book.</p></li>
+</ul>
+</div>
+<div id="has-the-predictive-power-of-the-term-spread-been-stable" class="section level4 unnumbered">
+<h4>Has the Predictive Power of the term spread been stable?</h4>
+<p>Using the QLR statistic we may test whether there is a break in the coefficients on the lags of the term spread in <a href="14.5-apatadlm.html#eq:gdpgradl22">(14.5)</a>, the ADL(<span class="math inline">\(2\)</span>,<span class="math inline">\(2\)</span>) regression model of GDP growth. Following Key Concept 14.9 we modify the specification of <a href="14.5-apatadlm.html#eq:gdpgradl22">(14.5)</a> by adding a break dummy <span class="math inline">\(D(\tau)\)</span> and its interactions with both lags of term spread and choose the range of break points to be tested as 1970:Q1 - 2005:Q2 (these periods are the center 70% of the sample data from 1962:Q2 - 2012:Q4). Thus, the model becomes
+<span class="math display">\[\begin{align*}
+    GDPGR_t =&amp;\, \beta_0 + \beta_1 GDPGR_{t-1} + \beta_2 GDPGR_{t-2} \\
+            &amp;+\,  \beta_3  TSpread_{t-1} + \beta_4 TSpread_{t-2} \\
+            &amp;+\, \gamma_1 D(\tau) + \gamma_2 (D(\tau) \cdot TSpread_{t-1}) \\
+            &amp;+\, \gamma_3 (D(\tau) \cdot TSpread_{t-2}) \\
+            &amp;+\, u_t.
+\end{align*}\]</span></p>
+<p>Next, we estimate the model for each break point and compute the <span class="math inline">\(F\)</span>-statistic corresponding to the null hypothesis <span class="math inline">\(H_0: \gamma_1=\gamma_2=\gamma_3=0\)</span>. The <span class="math inline">\(QLR\)</span>-statistic is the largest of the <span class="math inline">\(F\)</span>-statistics obtained in this manner.</p>
+<div class="sourceCode" id="cb394"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb394-1"><a href="14.8-niib.html#cb394-1" aria-hidden="true" tabindex="-1"></a><span class="co"># set up a range of possible break dates</span></span>
+<span id="cb394-2"><a href="14.8-niib.html#cb394-2" aria-hidden="true" tabindex="-1"></a>tau <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">1970</span>, <span class="dv">2005</span>, <span class="fl">0.25</span>)</span>
+<span id="cb394-3"><a href="14.8-niib.html#cb394-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb394-4"><a href="14.8-niib.html#cb394-4" aria-hidden="true" tabindex="-1"></a><span class="co"># initialize vector of F-statistics</span></span>
+<span id="cb394-5"><a href="14.8-niib.html#cb394-5" aria-hidden="true" tabindex="-1"></a>Fstats <span class="ot">&lt;-</span> <span class="fu">numeric</span>(<span class="fu">length</span>(tau))</span>
+<span id="cb394-6"><a href="14.8-niib.html#cb394-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb394-7"><a href="14.8-niib.html#cb394-7" aria-hidden="true" tabindex="-1"></a><span class="co"># estimation loop over break dates</span></span>
+<span id="cb394-8"><a href="14.8-niib.html#cb394-8" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(tau)) {</span>
+<span id="cb394-9"><a href="14.8-niib.html#cb394-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb394-10"><a href="14.8-niib.html#cb394-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># set up dummy variable</span></span>
+<span id="cb394-11"><a href="14.8-niib.html#cb394-11" aria-hidden="true" tabindex="-1"></a>  D <span class="ot">&lt;-</span> <span class="fu">time</span>(GDPGrowth_ts) <span class="sc">&gt;</span> tau[i]</span>
+<span id="cb394-12"><a href="14.8-niib.html#cb394-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb394-13"><a href="14.8-niib.html#cb394-13" aria-hidden="true" tabindex="-1"></a>  <span class="co"># estimate ADL(2,2) model with intercations</span></span>
+<span id="cb394-14"><a href="14.8-niib.html#cb394-14" aria-hidden="true" tabindex="-1"></a>  test <span class="ot">&lt;-</span> <span class="fu">dynlm</span>(GDPGrowth_ts <span class="sc">~</span> <span class="fu">L</span>(GDPGrowth_ts) <span class="sc">+</span> <span class="fu">L</span>(GDPGrowth_ts, <span class="dv">2</span>) <span class="sc">+</span> </span>
+<span id="cb394-15"><a href="14.8-niib.html#cb394-15" aria-hidden="true" tabindex="-1"></a>                D<span class="sc">*</span><span class="fu">L</span>(TSpread_ts) <span class="sc">+</span> D<span class="sc">*</span><span class="fu">L</span>(TSpread_ts, <span class="dv">2</span>),</span>
+<span id="cb394-16"><a href="14.8-niib.html#cb394-16" aria-hidden="true" tabindex="-1"></a>                <span class="at">start =</span> <span class="fu">c</span>(<span class="dv">1962</span>, <span class="dv">1</span>), </span>
+<span id="cb394-17"><a href="14.8-niib.html#cb394-17" aria-hidden="true" tabindex="-1"></a>                <span class="at">end =</span> <span class="fu">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>))</span>
+<span id="cb394-18"><a href="14.8-niib.html#cb394-18" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb394-19"><a href="14.8-niib.html#cb394-19" aria-hidden="true" tabindex="-1"></a>  <span class="co"># compute and save the F-statistic</span></span>
+<span id="cb394-20"><a href="14.8-niib.html#cb394-20" aria-hidden="true" tabindex="-1"></a>  Fstats[i] <span class="ot">&lt;-</span> <span class="fu">linearHypothesis</span>(test, </span>
+<span id="cb394-21"><a href="14.8-niib.html#cb394-21" aria-hidden="true" tabindex="-1"></a>                                <span class="fu">c</span>(<span class="st">&quot;DTRUE=0&quot;</span>, <span class="st">&quot;DTRUE:L(TSpread_ts)&quot;</span>, </span>
+<span id="cb394-22"><a href="14.8-niib.html#cb394-22" aria-hidden="true" tabindex="-1"></a>                                  <span class="st">&quot;DTRUE:L(TSpread_ts, 2)&quot;</span>),</span>
+<span id="cb394-23"><a href="14.8-niib.html#cb394-23" aria-hidden="true" tabindex="-1"></a>                                <span class="at">vcov. =</span> sandwich)<span class="sc">$</span>F[<span class="dv">2</span>]</span>
+<span id="cb394-24"><a href="14.8-niib.html#cb394-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb394-25"><a href="14.8-niib.html#cb394-25" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<p>We determine the <span class="math inline">\(QLR\)</span> statistic using <tt>max()</tt>.</p>
+<div class="sourceCode" id="cb395"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb395-1"><a href="14.8-niib.html#cb395-1" aria-hidden="true" tabindex="-1"></a><span class="co"># identify QLR statistic</span></span>
+<span id="cb395-2"><a href="14.8-niib.html#cb395-2" aria-hidden="true" tabindex="-1"></a>QLR <span class="ot">&lt;-</span> <span class="fu">max</span>(Fstats)</span>
+<span id="cb395-3"><a href="14.8-niib.html#cb395-3" aria-hidden="true" tabindex="-1"></a>QLR</span>
+<span id="cb395-4"><a href="14.8-niib.html#cb395-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 6.651156</span></span></code></pre></div>
+<p>Let us check that the <span class="math inline">\(QLR\)</span>-statistic is the <span class="math inline">\(F\)</span>-statistic obtained for the regression where 1980:Q4 is chosen as the break date.</p>
+<div class="sourceCode" id="cb396"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb396-1"><a href="14.8-niib.html#cb396-1" aria-hidden="true" tabindex="-1"></a><span class="co"># identify the time period where the QLR-statistic is observed</span></span>
+<span id="cb396-2"><a href="14.8-niib.html#cb396-2" aria-hidden="true" tabindex="-1"></a><span class="fu">as.yearqtr</span>(tau[<span class="fu">which.max</span>(Fstats)])</span>
+<span id="cb396-3"><a href="14.8-niib.html#cb396-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;1980 Q4&quot;</span></span></code></pre></div>
+<p>Since <span class="math inline">\(q=3\)</span> hypotheses are tested and the central <span class="math inline">\(70\%\)</span> of the sample are considered to contain breaks, the corresponding <span class="math inline">\(1\%\)</span> critical value of the <span class="math inline">\(QLR\)</span> test is <span class="math inline">\(6.02\)</span>. We reject the null hypothesis that all coefficients (the coefficients on both lags of term spread and the intercept) are stable since the computed <span class="math inline">\(QLR\)</span>-statistic exceeds this threshold. Thus evidence from the <span class="math inline">\(QLR\)</span> test suggests that there is a break in the ADL(<span class="math inline">\(2\)</span>,<span class="math inline">\(2\)</span>) model of GDP growth in the early 1980s.</p>
+<p>To reproduce Figure 14.5 of the book, we convert the vector of sequential break-point <span class="math inline">\(F\)</span>-statistics into a time series object and then generate a simple plot with some annotations.</p>
+<div class="sourceCode" id="cb397"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb397-1"><a href="14.8-niib.html#cb397-1" aria-hidden="true" tabindex="-1"></a><span class="co"># series of F-statistics</span></span>
+<span id="cb397-2"><a href="14.8-niib.html#cb397-2" aria-hidden="true" tabindex="-1"></a>Fstatsseries <span class="ot">&lt;-</span> <span class="fu">ts</span>(Fstats, </span>
+<span id="cb397-3"><a href="14.8-niib.html#cb397-3" aria-hidden="true" tabindex="-1"></a>                   <span class="at">start =</span> tau[<span class="dv">1</span>], </span>
+<span id="cb397-4"><a href="14.8-niib.html#cb397-4" aria-hidden="true" tabindex="-1"></a>                   <span class="at">end =</span> tau[<span class="fu">length</span>(tau)], </span>
+<span id="cb397-5"><a href="14.8-niib.html#cb397-5" aria-hidden="true" tabindex="-1"></a>                   <span class="at">frequency =</span> <span class="dv">4</span>)</span>
+<span id="cb397-6"><a href="14.8-niib.html#cb397-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb397-7"><a href="14.8-niib.html#cb397-7" aria-hidden="true" tabindex="-1"></a><span class="co"># plot the F-statistics </span></span>
+<span id="cb397-8"><a href="14.8-niib.html#cb397-8" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(Fstatsseries, </span>
+<span id="cb397-9"><a href="14.8-niib.html#cb397-9" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlim =</span> <span class="fu">c</span>(<span class="dv">1960</span>, <span class="dv">2015</span>),</span>
+<span id="cb397-10"><a href="14.8-niib.html#cb397-10" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="fl">7.5</span>),</span>
+<span id="cb397-11"><a href="14.8-niib.html#cb397-11" aria-hidden="true" tabindex="-1"></a>     <span class="at">lwd =</span> <span class="dv">2</span>,</span>
+<span id="cb397-12"><a href="14.8-niib.html#cb397-12" aria-hidden="true" tabindex="-1"></a>     <span class="at">col =</span> <span class="st">&quot;steelblue&quot;</span>,</span>
+<span id="cb397-13"><a href="14.8-niib.html#cb397-13" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">&quot;F-Statistic&quot;</span>,</span>
+<span id="cb397-14"><a href="14.8-niib.html#cb397-14" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">&quot;Break Date&quot;</span>,</span>
+<span id="cb397-15"><a href="14.8-niib.html#cb397-15" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">&quot;Testing for a Break in GDP ADL(2,2) Regression at Different Dates&quot;</span>)</span>
+<span id="cb397-16"><a href="14.8-niib.html#cb397-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb397-17"><a href="14.8-niib.html#cb397-17" aria-hidden="true" tabindex="-1"></a><span class="co"># dashed horizontal lines for critical values and QLR statistic</span></span>
+<span id="cb397-18"><a href="14.8-niib.html#cb397-18" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h =</span> <span class="fl">4.71</span>, <span class="at">lty =</span> <span class="dv">2</span>)</span>
+<span id="cb397-19"><a href="14.8-niib.html#cb397-19" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h =</span> <span class="fl">6.02</span>, <span class="at">lty =</span> <span class="dv">2</span>)</span>
+<span id="cb397-20"><a href="14.8-niib.html#cb397-20" aria-hidden="true" tabindex="-1"></a><span class="fu">segments</span>(<span class="dv">0</span>, QLR, <span class="fl">1980.75</span>, QLR, <span class="at">col =</span> <span class="st">&quot;darkred&quot;</span>)</span>
+<span id="cb397-21"><a href="14.8-niib.html#cb397-21" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="dv">2010</span>, <span class="fl">6.2</span>, <span class="st">&quot;1% Critical Value&quot;</span>)</span>
+<span id="cb397-22"><a href="14.8-niib.html#cb397-22" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="dv">2010</span>, <span class="fl">4.9</span>, <span class="st">&quot;5% Critical Value&quot;</span>)</span>
+<span id="cb397-23"><a href="14.8-niib.html#cb397-23" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="fl">1980.75</span>, QLR<span class="fl">+0.2</span>, <span class="st">&quot;QLR Statistic&quot;</span>)</span></code></pre></div>
+<p><img src="ITER_files/figure-html/unnamed-chunk-650-1.png" width="80%" style="display: block; margin: auto;" /></p>
+</div>
+<div id="pseudo-out-of-sample-forecasting" class="section level4 unnumbered">
+<h4>Pseudo Out-of-Sample Forecasting</h4>
+<p>Pseudo out-of-sample forecasts are used to simulate the out-of-sample performance (the real time forecast performance) of a time series regression model. In particular, pseudo out-of-sample forecasts allow estimation of the <span class="math inline">\(RMSFE\)</span> of the model and enable researchers to compare different model specifications with respect to their predictive power. Key Concept 14.10 summarizes this idea.</p>
+<div id="KC14.10" class="keyconcept">
+<h3 class="right">
+Key Concept 14.10
+</h3>
+<h3 class="left">
+Pseudo Out-of-Sample Forecasting
+</h3>
+<ol style="list-style-type: decimal">
+<li><p>Divide the sample data into <span class="math inline">\(s=T-P\)</span> and <span class="math inline">\(P\)</span> subsequent observations. The <span class="math inline">\(P\)</span> observations are used as pseudo-out-of-sample observations.</p></li>
+<li><p>Estimate the model using the first <span class="math inline">\(s\)</span> observations.</p></li>
+<li><p>Compute the pseudo-forecast <span class="math inline">\(\overset{\sim}{Y}_{s+1\vert s}\)</span>.</p></li>
+<li><p>Compute the pseudo-forecast-error <span class="math inline">\(\overset{\sim}{u}_{s+1} = Y_{s+1} - \overset{\sim}{Y}_{s+1\vert s}\)</span>.</p></li>
+<li><p>Repeat steps 2 trough 4 for all remaining pseudo-out-of-sample dates.</p></li>
+</ol>
+</div>
+</div>
+<div id="did-the-predictive-power-of-the-term-spread-change-during-the-2000s" class="section level4 unnumbered">
+<h4>Did the Predictive Power of the Term Spread Change During the 2000s?</h4>
+<p>The insight gained in the previous section gives reason to presume that the pseudo-out-of-sample performance of ADL(<span class="math inline">\(2\)</span>,<span class="math inline">\(2\)</span>) models estimated using data <em>after</em> the break in the early 1980s should not deteriorate relative to using the whole sample: provided that the coefficients of the population regression function are stable after the potential break in 1980:Q4, these models should have good predictive power. We check this by computing pseudo-out-of-sample forecasts for the period 2003:Q1 - 2012:Q4, a range covering 40 periods, where the forecast for 2003:Q1 is done using data from 1981:Q1 - 2002:Q4, the forecast for 2003:Q2 is based on data from 1981:Q1 - 2003:Q1 and so on.</p>
+<p>Similarly as for the <span class="math inline">\(QLR\)</span>-test we use a <tt>for()</tt> loop for estimation of all 40 models and gather their <span class="math inline">\(SER\)</span>s and the obtained forecasts in a vector which is then used to compute pseudo-out-of-sample forecast errors.</p>
+<div class="sourceCode" id="cb398"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb398-1"><a href="14.8-niib.html#cb398-1" aria-hidden="true" tabindex="-1"></a><span class="co"># end of sample dates</span></span>
+<span id="cb398-2"><a href="14.8-niib.html#cb398-2" aria-hidden="true" tabindex="-1"></a>EndOfSample <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="fl">2002.75</span>, <span class="fl">2012.5</span>, <span class="fl">0.25</span>)</span>
+<span id="cb398-3"><a href="14.8-niib.html#cb398-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb398-4"><a href="14.8-niib.html#cb398-4" aria-hidden="true" tabindex="-1"></a><span class="co"># initialize matrix forecasts</span></span>
+<span id="cb398-5"><a href="14.8-niib.html#cb398-5" aria-hidden="true" tabindex="-1"></a>forecasts <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="at">nrow =</span> <span class="dv">1</span>, </span>
+<span id="cb398-6"><a href="14.8-niib.html#cb398-6" aria-hidden="true" tabindex="-1"></a>                    <span class="at">ncol =</span> <span class="fu">length</span>(EndOfSample))</span>
+<span id="cb398-7"><a href="14.8-niib.html#cb398-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb398-8"><a href="14.8-niib.html#cb398-8" aria-hidden="true" tabindex="-1"></a><span class="co"># initialize vector SER</span></span>
+<span id="cb398-9"><a href="14.8-niib.html#cb398-9" aria-hidden="true" tabindex="-1"></a>SER  <span class="ot">&lt;-</span> <span class="fu">numeric</span>(<span class="fu">length</span>(EndOfSample))</span>
+<span id="cb398-10"><a href="14.8-niib.html#cb398-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb398-11"><a href="14.8-niib.html#cb398-11" aria-hidden="true" tabindex="-1"></a><span class="co"># estimation loop over end of sample dates</span></span>
+<span id="cb398-12"><a href="14.8-niib.html#cb398-12" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(EndOfSample)) {</span>
+<span id="cb398-13"><a href="14.8-niib.html#cb398-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb398-14"><a href="14.8-niib.html#cb398-14" aria-hidden="true" tabindex="-1"></a>  <span class="co"># estimate ADL(2,2) model</span></span>
+<span id="cb398-15"><a href="14.8-niib.html#cb398-15" aria-hidden="true" tabindex="-1"></a>  m <span class="ot">&lt;-</span> <span class="fu">dynlm</span>(GDPGrowth_ts <span class="sc">~</span> <span class="fu">L</span>(GDPGrowth_ts) <span class="sc">+</span> <span class="fu">L</span>(GDPGrowth_ts, <span class="dv">2</span>) </span>
+<span id="cb398-16"><a href="14.8-niib.html#cb398-16" aria-hidden="true" tabindex="-1"></a>                          <span class="sc">+</span> <span class="fu">L</span>(TSpread_ts) <span class="sc">+</span> <span class="fu">L</span>(TSpread_ts, <span class="dv">2</span>), </span>
+<span id="cb398-17"><a href="14.8-niib.html#cb398-17" aria-hidden="true" tabindex="-1"></a>                <span class="at">start =</span> <span class="fu">c</span>(<span class="dv">1981</span>, <span class="dv">1</span>), </span>
+<span id="cb398-18"><a href="14.8-niib.html#cb398-18" aria-hidden="true" tabindex="-1"></a>                <span class="at">end =</span> EndOfSample[i])</span>
+<span id="cb398-19"><a href="14.8-niib.html#cb398-19" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb398-20"><a href="14.8-niib.html#cb398-20" aria-hidden="true" tabindex="-1"></a>  SER[i] <span class="ot">&lt;-</span> <span class="fu">summary</span>(m)<span class="sc">$</span>sigma</span>
+<span id="cb398-21"><a href="14.8-niib.html#cb398-21" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb398-22"><a href="14.8-niib.html#cb398-22" aria-hidden="true" tabindex="-1"></a>  <span class="co"># sample data for one-period ahead forecast</span></span>
+<span id="cb398-23"><a href="14.8-niib.html#cb398-23" aria-hidden="true" tabindex="-1"></a>  s <span class="ot">&lt;-</span> <span class="fu">window</span>(ADLdata, EndOfSample[i] <span class="sc">-</span> <span class="fl">0.25</span>, EndOfSample[i])</span>
+<span id="cb398-24"><a href="14.8-niib.html#cb398-24" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb398-25"><a href="14.8-niib.html#cb398-25" aria-hidden="true" tabindex="-1"></a>  <span class="co"># compute forecast</span></span>
+<span id="cb398-26"><a href="14.8-niib.html#cb398-26" aria-hidden="true" tabindex="-1"></a>  forecasts[i] <span class="ot">&lt;-</span> <span class="fu">coef</span>(m) <span class="sc">%*%</span> <span class="fu">c</span>(<span class="dv">1</span>, s[<span class="dv">1</span>, <span class="dv">1</span>], s[<span class="dv">2</span>, <span class="dv">1</span>], s[<span class="dv">1</span>, <span class="dv">2</span>], s[<span class="dv">2</span>, <span class="dv">2</span>]) </span>
+<span id="cb398-27"><a href="14.8-niib.html#cb398-27" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb399"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb399-1"><a href="14.8-niib.html#cb399-1" aria-hidden="true" tabindex="-1"></a><span class="co"># compute psuedo-out-of-sample forecast errors</span></span>
+<span id="cb399-2"><a href="14.8-niib.html#cb399-2" aria-hidden="true" tabindex="-1"></a>POOSFCE <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">window</span>(GDPGrowth_ts, <span class="fu">c</span>(<span class="dv">2003</span>, <span class="dv">1</span>), <span class="fu">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>))) <span class="sc">-</span> forecasts</span></code></pre></div>
+<p>We next translate the pseudo-out-of-sample forecasts into an object of class <tt>ts</tt> and plot the real GDP growth rate against the forecasted series.</p>
+<div class="sourceCode" id="cb400"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb400-1"><a href="14.8-niib.html#cb400-1" aria-hidden="true" tabindex="-1"></a><span class="co"># series of pseudo-out-of-sample forecasts</span></span>
+<span id="cb400-2"><a href="14.8-niib.html#cb400-2" aria-hidden="true" tabindex="-1"></a>PSOSSFc <span class="ot">&lt;-</span> <span class="fu">ts</span>(<span class="fu">c</span>(forecasts), </span>
+<span id="cb400-3"><a href="14.8-niib.html#cb400-3" aria-hidden="true" tabindex="-1"></a>              <span class="at">start =</span> <span class="dv">2003</span>, </span>
+<span id="cb400-4"><a href="14.8-niib.html#cb400-4" aria-hidden="true" tabindex="-1"></a>              <span class="at">end =</span> <span class="fl">2012.75</span>, </span>
+<span id="cb400-5"><a href="14.8-niib.html#cb400-5" aria-hidden="true" tabindex="-1"></a>              <span class="at">frequency =</span> <span class="dv">4</span>)</span>
+<span id="cb400-6"><a href="14.8-niib.html#cb400-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb400-7"><a href="14.8-niib.html#cb400-7" aria-hidden="true" tabindex="-1"></a><span class="co"># plot the GDP growth time series</span></span>
+<span id="cb400-8"><a href="14.8-niib.html#cb400-8" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">window</span>(GDPGrowth_ts, <span class="fu">c</span>(<span class="dv">2003</span>, <span class="dv">1</span>), <span class="fu">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>)),</span>
+<span id="cb400-9"><a href="14.8-niib.html#cb400-9" aria-hidden="true" tabindex="-1"></a>     <span class="at">col =</span> <span class="st">&quot;steelblue&quot;</span>,</span>
+<span id="cb400-10"><a href="14.8-niib.html#cb400-10" aria-hidden="true" tabindex="-1"></a>     <span class="at">lwd =</span> <span class="dv">2</span>,</span>
+<span id="cb400-11"><a href="14.8-niib.html#cb400-11" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">&quot;Percent&quot;</span>,</span>
+<span id="cb400-12"><a href="14.8-niib.html#cb400-12" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">&quot;Pseudo-Out-Of-Sample Forecasts of GDP Growth&quot;</span>)</span>
+<span id="cb400-13"><a href="14.8-niib.html#cb400-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb400-14"><a href="14.8-niib.html#cb400-14" aria-hidden="true" tabindex="-1"></a><span class="co"># add the series of pseudo-out-of-sample forecasts</span></span>
+<span id="cb400-15"><a href="14.8-niib.html#cb400-15" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(PSOSSFc, </span>
+<span id="cb400-16"><a href="14.8-niib.html#cb400-16" aria-hidden="true" tabindex="-1"></a>      <span class="at">lwd =</span> <span class="dv">2</span>, </span>
+<span id="cb400-17"><a href="14.8-niib.html#cb400-17" aria-hidden="true" tabindex="-1"></a>      <span class="at">lty =</span> <span class="dv">2</span>)</span>
+<span id="cb400-18"><a href="14.8-niib.html#cb400-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb400-19"><a href="14.8-niib.html#cb400-19" aria-hidden="true" tabindex="-1"></a><span class="co"># shade area between curves (the pseudo forecast error)</span></span>
+<span id="cb400-20"><a href="14.8-niib.html#cb400-20" aria-hidden="true" tabindex="-1"></a><span class="fu">polygon</span>(<span class="fu">c</span>(<span class="fu">time</span>(PSOSSFc), <span class="fu">rev</span>(<span class="fu">time</span>(PSOSSFc))), </span>
+<span id="cb400-21"><a href="14.8-niib.html#cb400-21" aria-hidden="true" tabindex="-1"></a>        <span class="fu">c</span>(<span class="fu">window</span>(GDPGrowth_ts, <span class="fu">c</span>(<span class="dv">2003</span>, <span class="dv">1</span>), <span class="fu">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>)), <span class="fu">rev</span>(PSOSSFc)),</span>
+<span id="cb400-22"><a href="14.8-niib.html#cb400-22" aria-hidden="true" tabindex="-1"></a>        <span class="at">col =</span> <span class="fu">alpha</span>(<span class="st">&quot;blue&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.3</span>),</span>
+<span id="cb400-23"><a href="14.8-niib.html#cb400-23" aria-hidden="true" tabindex="-1"></a>        <span class="at">border =</span> <span class="cn">NA</span>)</span>
+<span id="cb400-24"><a href="14.8-niib.html#cb400-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb400-25"><a href="14.8-niib.html#cb400-25" aria-hidden="true" tabindex="-1"></a><span class="co"># add a legend</span></span>
+<span id="cb400-26"><a href="14.8-niib.html#cb400-26" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">&quot;bottomleft&quot;</span>, </span>
+<span id="cb400-27"><a href="14.8-niib.html#cb400-27" aria-hidden="true" tabindex="-1"></a>       <span class="at">lty =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">1</span>),</span>
+<span id="cb400-28"><a href="14.8-niib.html#cb400-28" aria-hidden="true" tabindex="-1"></a>       <span class="at">lwd =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">10</span>),</span>
+<span id="cb400-29"><a href="14.8-niib.html#cb400-29" aria-hidden="true" tabindex="-1"></a>       <span class="at">col =</span> <span class="fu">c</span>(<span class="st">&quot;steelblue&quot;</span>, <span class="st">&quot;black&quot;</span>, <span class="fu">alpha</span>(<span class="st">&quot;blue&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.3</span>)), </span>
+<span id="cb400-30"><a href="14.8-niib.html#cb400-30" aria-hidden="true" tabindex="-1"></a>       <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">&quot;Actual GDP growth rate&quot;</span>,</span>
+<span id="cb400-31"><a href="14.8-niib.html#cb400-31" aria-hidden="true" tabindex="-1"></a>         <span class="st">&quot;Forecasted GDP growth rate&quot;</span>,</span>
+<span id="cb400-32"><a href="14.8-niib.html#cb400-32" aria-hidden="true" tabindex="-1"></a>         <span class="st">&quot;Pseudo forecast Error&quot;</span>))</span></code></pre></div>
+<p><img src="ITER_files/figure-html/unnamed-chunk-655-1.png" width="80%" style="display: block; margin: auto;" /></p>
+<p>Apparently, the pseudo forecasts track the actual GDP growth rate quite well, except for the kink in 2009 which can be attributed to the recent financial crisis.</p>
+<p>The <span class="math inline">\(SER\)</span> of the first model (estimated using data from 1981:Q1 to 2002:Q4) is <span class="math inline">\(2.39\)</span> so based on the in-sample fit we would expect the out of sample forecast errors to have mean zero and a root mean squared forecast error of about <span class="math inline">\(2.39\)</span>.</p>
+<div class="sourceCode" id="cb401"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb401-1"><a href="14.8-niib.html#cb401-1" aria-hidden="true" tabindex="-1"></a><span class="co"># SER of ADL(2,2) mode using data from 1981:Q1 - 2002:Q4</span></span>
+<span id="cb401-2"><a href="14.8-niib.html#cb401-2" aria-hidden="true" tabindex="-1"></a>SER[<span class="dv">1</span>]</span>
+<span id="cb401-3"><a href="14.8-niib.html#cb401-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 2.389773</span></span></code></pre></div>
+<p>The root mean squared forecast error of the pseudo-out-of-sample forecasts is somewhat larger.</p>
+<div class="sourceCode" id="cb402"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb402-1"><a href="14.8-niib.html#cb402-1" aria-hidden="true" tabindex="-1"></a><span class="co"># compute root mean squared forecast error</span></span>
+<span id="cb402-2"><a href="14.8-niib.html#cb402-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sd</span>(POOSFCE)</span>
+<span id="cb402-3"><a href="14.8-niib.html#cb402-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 2.667612</span></span></code></pre></div>
+<p>An interesting hypothesis is whether the mean forecast error is zero, that is the ADL(<span class="math inline">\(2\)</span>,<span class="math inline">\(2\)</span>) forecasts are right, on average. This hypothesis is easily tested using the function <tt>t.test()</tt>.</p>
+<div class="sourceCode" id="cb403"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb403-1"><a href="14.8-niib.html#cb403-1" aria-hidden="true" tabindex="-1"></a><span class="co"># test if mean forecast error is zero</span></span>
+<span id="cb403-2"><a href="14.8-niib.html#cb403-2" aria-hidden="true" tabindex="-1"></a><span class="fu">t.test</span>(POOSFCE)</span>
+<span id="cb403-3"><a href="14.8-niib.html#cb403-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb403-4"><a href="14.8-niib.html#cb403-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  One Sample t-test</span></span>
+<span id="cb403-5"><a href="14.8-niib.html#cb403-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb403-6"><a href="14.8-niib.html#cb403-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; data:  POOSFCE</span></span>
+<span id="cb403-7"><a href="14.8-niib.html#cb403-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; t = -1.5523, df = 39, p-value = 0.1287</span></span>
+<span id="cb403-8"><a href="14.8-niib.html#cb403-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; alternative hypothesis: true mean is not equal to 0</span></span>
+<span id="cb403-9"><a href="14.8-niib.html#cb403-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 95 percent confidence interval:</span></span>
+<span id="cb403-10"><a href="14.8-niib.html#cb403-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  -1.5078876  0.1984001</span></span>
+<span id="cb403-11"><a href="14.8-niib.html#cb403-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; sample estimates:</span></span>
+<span id="cb403-12"><a href="14.8-niib.html#cb403-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  mean of x </span></span>
+<span id="cb403-13"><a href="14.8-niib.html#cb403-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -0.6547438</span></span></code></pre></div>
+<p>The hypothesis cannot be rejected at the <span class="math inline">\(10\%\)</span> significance level. Altogether the analysis suggests that the ADL(<span class="math inline">\(2\)</span>,<span class="math inline">\(2\)</span>) model coefficients have been stable since the presumed break in the early 1980s.</p>
+</div>
+</div>
+<h3>References</h3>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-chow1960" class="csl-entry">
+Chow, Gregory C. 1960. <span>“<span>T</span>ests of <span>E</span>quality <span>B</span>etween <span>S</span>ets of <span>C</span>oefficients in <span>T</span>wo <span>L</span>inear <span>R</span>egressions.”</span> <em><span>E</span>conometrica</em> 28 (3): 591–605.
+</div>
+<div id="ref-quandt1960" class="csl-entry">
+Quandt, Richard E. 1960. <span>“<span>T</span>ests of the <span>H</span>ypothesis <span>T</span>hat a <span>L</span>inear <span>R</span>egression <span>S</span>ystem <span>O</span>beys <span>T</span>wo <span>S</span>eparate <span>R</span>egimes.”</span> <em><span>J</span>ournal of the <span>A</span>merican <span>S</span>tatistical <span>A</span>ssociation</em> 55 (290): 324–30. <a href="https://doi.org/10.1080/01621459.1960.10482067">https://doi.org/10.1080/01621459.1960.10482067</a>.
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="14.7-nit.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="14.9-can-you-beat-the-market-part-ii.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": true,
+"facebook": true,
+"twitter": true,
+"linkedin": true,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "serif",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/mca91/EconometricsWithR/edit/master/14-ch14.Rmd",
+"text": "Edit"
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": ["ITER.pdf"],
+"search": {
+"engine": "lunr",
+"options": null
+},
+"toc": {
+"collapse": "subsection",
+"scroll_highlight": true
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

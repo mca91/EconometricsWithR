@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>6.4 OLS Assumptions in Multiple Regression | Introduction to Econometrics with R</title>
+  <meta name="description" content="Beginners with little background in statistics and econometrics often have a hard time understanding the benefits of having programming skills for learning and applying Econometrics. ‘Introduction to Econometrics with R’ is an interactive companion to the well-received textbook ‘Introduction to Econometrics’ by James H. Stock and Mark W. Watson (2015). It gives a gentle introduction to the essentials of R programming and guides students in implementing the empirical applications presented throughout the textbook using the newly aquired skills. This is supported by interactive programming exercises generated with DataCamp Light and integration of interactive visualizations of central concepts which are based on the flexible JavaScript library D3.js." />
+  <meta name="generator" content="bookdown 0.23 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="6.4 OLS Assumptions in Multiple Regression | Introduction to Econometrics with R" />
+  <meta property="og:type" content="book" />
+  <meta property="og:url" content="https://www.econometrics-with-r.org/" />
+  <meta property="og:image" content="https://www.econometrics-with-r.org//images/cover.png" />
+  <meta property="og:description" content="Beginners with little background in statistics and econometrics often have a hard time understanding the benefits of having programming skills for learning and applying Econometrics. ‘Introduction to Econometrics with R’ is an interactive companion to the well-received textbook ‘Introduction to Econometrics’ by James H. Stock and Mark W. Watson (2015). It gives a gentle introduction to the essentials of R programming and guides students in implementing the empirical applications presented throughout the textbook using the newly aquired skills. This is supported by interactive programming exercises generated with DataCamp Light and integration of interactive visualizations of central concepts which are based on the flexible JavaScript library D3.js." />
+  <meta name="github-repo" content="mca91/EconometricsWithR" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="6.4 OLS Assumptions in Multiple Regression | Introduction to Econometrics with R" />
+  
+  <meta name="twitter:description" content="Beginners with little background in statistics and econometrics often have a hard time understanding the benefits of having programming skills for learning and applying Econometrics. ‘Introduction to Econometrics with R’ is an interactive companion to the well-received textbook ‘Introduction to Econometrics’ by James H. Stock and Mark W. Watson (2015). It gives a gentle introduction to the essentials of R programming and guides students in implementing the empirical applications presented throughout the textbook using the newly aquired skills. This is supported by interactive programming exercises generated with DataCamp Light and integration of interactive visualizations of central concepts which are based on the flexible JavaScript library D3.js." />
+  <meta name="twitter:image" content="https://www.econometrics-with-r.org//images/cover.png" />
+
+<meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber, and Martin Schmelzer" />
+
+
+<meta name="date" content="2021-10-06" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="6.3-mofimr.html"/>
+<link rel="next" href="6.5-the-distribution-of-the-ols-estimators-in-multiple-regression.html"/>
+<script src="libs/header-attrs-2.10/header-attrs.js"></script>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
+<script src="libs/htmlwidgets-1.5.3/htmlwidgets.js"></script>
+<script src="libs/plotly-binding-4.9.4.1/plotly.js"></script>
+<script src="libs/typedarray-0.1/typedarray.min.js"></script>
+<link href="libs/crosstalk-1.1.1/css/crosstalk.css" rel="stylesheet" />
+<script src="libs/crosstalk-1.1.1/js/crosstalk.min.js"></script>
+<link href="libs/plotly-htmlwidgets-css-1.57.1/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="libs/plotly-main-1.57.1/plotly-latest.min.js"></script>
+<!-- font families -->
+
+<link href="https://fonts.googleapis.com/css?family=PT+Sans|Pacifico|Source+Sans+Pro" rel="stylesheet">
+
+<script src="js/hideOutput.js"></script>
+
+<!-- Mathjax -->
+<script type="text/javascript" id="MathJax-script" async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+ <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        extensions: ["tex2jax.js", "TeX/AMSmath.js"],
+        tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+        jax: ["input/TeX","output/CommonHTML"]
+      });
+      MathJax.Hub.processSectionDelay = 0;
+  </script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-110299877-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-110299877-1');
+</script>
+
+<!-- open review block -->
+
+<script async defer src="https://hypothes.is/embed.js"></script>
+
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  background-color: #f8f8f8; }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ef2929; } /* Alert */
+code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #c4a000; } /* Attribute */
+code span.bn { color: #0000cf; } /* BaseN */
+code span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4e9a06; } /* Char */
+code span.cn { color: #000000; } /* Constant */
+code span.co { color: #8f5902; font-style: italic; } /* Comment */
+code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code span.dt { color: #204a87; } /* DataType */
+code span.dv { color: #0000cf; } /* DecVal */
+code span.er { color: #a40000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #0000cf; } /* Float */
+code span.fu { color: #000000; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code span.ot { color: #8f5902; } /* Other */
+code span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code span.sc { color: #000000; } /* SpecialChar */
+code span.ss { color: #4e9a06; } /* SpecialString */
+code span.st { color: #4e9a06; } /* String */
+code span.va { color: #000000; } /* Variable */
+code span.vs { color: #4e9a06; } /* VerbatimString */
+code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+/* Used with Pandoc 2.11+ new --citeproc when CSL is used */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+<link rel="stylesheet" href="toc.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><center><img src="images/logo.png" alt="logo" width="50%" height="50%"style="margin: 15px 0 0 0"></center></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Preface</a></li>
+<li class="chapter" data-level="1" data-path="1-introduction.html"><a href="1-introduction.html"><i class="fa fa-check"></i><b>1</b> Introduction</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="1.1-colophon.html"><a href="1.1-colophon.html"><i class="fa fa-check"></i><b>1.1</b> Colophon</a></li>
+<li class="chapter" data-level="1.2" data-path="1.2-a-very-short-introduction-to-r-and-rstudio.html"><a href="1.2-a-very-short-introduction-to-r-and-rstudio.html"><i class="fa fa-check"></i><b>1.2</b> A Very Short Introduction to <tt>R</tt> and <em>RStudio</em></a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="2-pt.html"><a href="2-pt.html"><i class="fa fa-check"></i><b>2</b> Probability Theory</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="2.1-random-variables-and-probability-distributions.html"><a href="2.1-random-variables-and-probability-distributions.html"><i class="fa fa-check"></i><b>2.1</b> Random Variables and Probability Distributions</a>
+<ul>
+<li class="chapter" data-level="" data-path="2.1-random-variables-and-probability-distributions.html"><a href="2.1-random-variables-and-probability-distributions.html#probability-distributions-of-discrete-random-variables"><i class="fa fa-check"></i>Probability Distributions of Discrete Random Variables</a></li>
+<li class="chapter" data-level="" data-path="2.1-random-variables-and-probability-distributions.html"><a href="2.1-random-variables-and-probability-distributions.html#bernoulli-trials"><i class="fa fa-check"></i>Bernoulli Trials</a></li>
+<li class="chapter" data-level="" data-path="2.1-random-variables-and-probability-distributions.html"><a href="2.1-random-variables-and-probability-distributions.html#expected-value-mean-and-variance"><i class="fa fa-check"></i>Expected Value, Mean and Variance</a></li>
+<li class="chapter" data-level="" data-path="2.1-random-variables-and-probability-distributions.html"><a href="2.1-random-variables-and-probability-distributions.html#probability-distributions-of-continuous-random-variables"><i class="fa fa-check"></i>Probability Distributions of Continuous Random Variables</a></li>
+<li class="chapter" data-level="" data-path="2.1-random-variables-and-probability-distributions.html"><a href="2.1-random-variables-and-probability-distributions.html#the-normal-distribution"><i class="fa fa-check"></i>The Normal Distribution</a></li>
+<li class="chapter" data-level="" data-path="2.1-random-variables-and-probability-distributions.html"><a href="2.1-random-variables-and-probability-distributions.html#the-chi-squared-distribution"><i class="fa fa-check"></i>The Chi-Squared Distribution</a></li>
+<li class="chapter" data-level="" data-path="2.1-random-variables-and-probability-distributions.html"><a href="2.1-random-variables-and-probability-distributions.html#thetdist"><i class="fa fa-check"></i>The Student t Distribution</a></li>
+<li class="chapter" data-level="" data-path="2.1-random-variables-and-probability-distributions.html"><a href="2.1-random-variables-and-probability-distributions.html#the-f-distribution"><i class="fa fa-check"></i>The F Distribution</a></li>
+</ul></li>
+<li class="chapter" data-level="2.2" data-path="2.2-RSATDOSA.html"><a href="2.2-RSATDOSA.html"><i class="fa fa-check"></i><b>2.2</b> Random Sampling and the Distribution of Sample Averages</a>
+<ul>
+<li class="chapter" data-level="" data-path="2.2-RSATDOSA.html"><a href="2.2-RSATDOSA.html#mean-and-variance-of-the-sample-mean"><i class="fa fa-check"></i>Mean and Variance of the Sample Mean</a></li>
+<li class="chapter" data-level="" data-path="2.2-RSATDOSA.html"><a href="2.2-RSATDOSA.html#large-sample-approximations-to-sampling-distributions"><i class="fa fa-check"></i>Large Sample Approximations to Sampling Distributions</a></li>
+</ul></li>
+<li class="chapter" data-level="2.3" data-path="2.3-exercises-2.html"><a href="2.3-exercises-2.html"><i class="fa fa-check"></i><b>2.3</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="3-arosur.html"><a href="3-arosur.html"><i class="fa fa-check"></i><b>3</b> A Review of Statistics using R</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="3.1-estimation-of-the-population-mean.html"><a href="3.1-estimation-of-the-population-mean.html"><i class="fa fa-check"></i><b>3.1</b> Estimation of the Population Mean</a></li>
+<li class="chapter" data-level="3.2" data-path="3.2-potsm.html"><a href="3.2-potsm.html"><i class="fa fa-check"></i><b>3.2</b> Properties of the Sample Mean</a></li>
+<li class="chapter" data-level="3.3" data-path="3.3-hypothesis-tests-concerning-the-population-mean.html"><a href="3.3-hypothesis-tests-concerning-the-population-mean.html"><i class="fa fa-check"></i><b>3.3</b> Hypothesis Tests Concerning the Population Mean</a>
+<ul>
+<li class="chapter" data-level="" data-path="3.3-hypothesis-tests-concerning-the-population-mean.html"><a href="3.3-hypothesis-tests-concerning-the-population-mean.html#the-p-value"><i class="fa fa-check"></i>The p-Value</a></li>
+<li class="chapter" data-level="" data-path="3.3-hypothesis-tests-concerning-the-population-mean.html"><a href="3.3-hypothesis-tests-concerning-the-population-mean.html#calculating-the-p-value-when-the-standard-deviation-is-known"><i class="fa fa-check"></i>Calculating the p-Value when the Standard Deviation is Known</a></li>
+<li class="chapter" data-level="" data-path="3.3-hypothesis-tests-concerning-the-population-mean.html"><a href="3.3-hypothesis-tests-concerning-the-population-mean.html#SVSSDASE"><i class="fa fa-check"></i>Sample Variance, Sample Standard Deviation and Standard Error</a></li>
+<li class="chapter" data-level="" data-path="3.3-hypothesis-tests-concerning-the-population-mean.html"><a href="3.3-hypothesis-tests-concerning-the-population-mean.html#calculating-the-p-value-when-the-standard-deviation-is-unknown"><i class="fa fa-check"></i>Calculating the p-value When the Standard Deviation is Unknown</a></li>
+<li class="chapter" data-level="" data-path="3.3-hypothesis-tests-concerning-the-population-mean.html"><a href="3.3-hypothesis-tests-concerning-the-population-mean.html#the-t-statistic"><i class="fa fa-check"></i>The t-statistic</a></li>
+<li class="chapter" data-level="" data-path="3.3-hypothesis-tests-concerning-the-population-mean.html"><a href="3.3-hypothesis-tests-concerning-the-population-mean.html#hypothesis-testing-with-a-prespecified-significance-level"><i class="fa fa-check"></i>Hypothesis Testing with a Prespecified Significance Level</a></li>
+<li class="chapter" data-level="" data-path="3.3-hypothesis-tests-concerning-the-population-mean.html"><a href="3.3-hypothesis-tests-concerning-the-population-mean.html#one-sided-alternatives"><i class="fa fa-check"></i>One-sided Alternatives</a></li>
+</ul></li>
+<li class="chapter" data-level="3.4" data-path="3.4-confidence-intervals-for-the-population-mean.html"><a href="3.4-confidence-intervals-for-the-population-mean.html"><i class="fa fa-check"></i><b>3.4</b> Confidence Intervals for the Population Mean</a></li>
+<li class="chapter" data-level="3.5" data-path="3.5-cmfdp.html"><a href="3.5-cmfdp.html"><i class="fa fa-check"></i><b>3.5</b> Comparing Means from Different Populations</a></li>
+<li class="chapter" data-level="3.6" data-path="3.6-aattggoe.html"><a href="3.6-aattggoe.html"><i class="fa fa-check"></i><b>3.6</b> An Application to the Gender Gap of Earnings</a></li>
+<li class="chapter" data-level="3.7" data-path="3.7-scatterplots-sample-covariance-and-sample-correlation.html"><a href="3.7-scatterplots-sample-covariance-and-sample-correlation.html"><i class="fa fa-check"></i><b>3.7</b> Scatterplots, Sample Covariance and Sample Correlation</a></li>
+<li class="chapter" data-level="3.8" data-path="3.8-exercises-3.html"><a href="3.8-exercises-3.html"><i class="fa fa-check"></i><b>3.8</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="4-lrwor.html"><a href="4-lrwor.html"><i class="fa fa-check"></i><b>4</b> Linear Regression with One Regressor</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="4.1-simple-linear-regression.html"><a href="4.1-simple-linear-regression.html"><i class="fa fa-check"></i><b>4.1</b> Simple Linear Regression</a></li>
+<li class="chapter" data-level="4.2" data-path="4.2-estimating-the-coefficients-of-the-linear-regression-model.html"><a href="4.2-estimating-the-coefficients-of-the-linear-regression-model.html"><i class="fa fa-check"></i><b>4.2</b> Estimating the Coefficients of the Linear Regression Model</a>
+<ul>
+<li class="chapter" data-level="" data-path="4.2-estimating-the-coefficients-of-the-linear-regression-model.html"><a href="4.2-estimating-the-coefficients-of-the-linear-regression-model.html#the-ordinary-least-squares-estimator"><i class="fa fa-check"></i>The Ordinary Least Squares Estimator</a></li>
+</ul></li>
+<li class="chapter" data-level="4.3" data-path="4.3-measures-of-fit.html"><a href="4.3-measures-of-fit.html"><i class="fa fa-check"></i><b>4.3</b> Measures of Fit</a>
+<ul>
+<li class="chapter" data-level="" data-path="4.3-measures-of-fit.html"><a href="4.3-measures-of-fit.html#the-coefficient-of-determination"><i class="fa fa-check"></i>The Coefficient of Determination</a></li>
+<li class="chapter" data-level="" data-path="4.3-measures-of-fit.html"><a href="4.3-measures-of-fit.html#the-standard-error-of-the-regression"><i class="fa fa-check"></i>The Standard Error of the Regression</a></li>
+<li class="chapter" data-level="" data-path="4.3-measures-of-fit.html"><a href="4.3-measures-of-fit.html#application-to-the-test-score-data"><i class="fa fa-check"></i>Application to the Test Score Data</a></li>
+</ul></li>
+<li class="chapter" data-level="4.4" data-path="4.4-tlsa.html"><a href="4.4-tlsa.html"><i class="fa fa-check"></i><b>4.4</b> The Least Squares Assumptions</a>
+<ul>
+<li class="chapter" data-level="" data-path="4.4-tlsa.html"><a href="4.4-tlsa.html#assumption-1-the-error-term-has-conditional-mean-of-zero"><i class="fa fa-check"></i>Assumption 1: The Error Term has Conditional Mean of Zero</a></li>
+<li class="chapter" data-level="" data-path="4.4-tlsa.html"><a href="4.4-tlsa.html#assumption-2-independently-and-identically-distributed-data"><i class="fa fa-check"></i>Assumption 2: Independently and Identically Distributed Data</a></li>
+<li class="chapter" data-level="" data-path="4.4-tlsa.html"><a href="4.4-tlsa.html#assumption-3-large-outliers-are-unlikely"><i class="fa fa-check"></i>Assumption 3: Large Outliers are Unlikely</a></li>
+</ul></li>
+<li class="chapter" data-level="4.5" data-path="4.5-tsdotoe.html"><a href="4.5-tsdotoe.html"><i class="fa fa-check"></i><b>4.5</b> The Sampling Distribution of the OLS Estimator</a>
+<ul>
+<li class="chapter" data-level="" data-path="4.5-tsdotoe.html"><a href="4.5-tsdotoe.html#simulation-study-1"><i class="fa fa-check"></i>Simulation Study 1</a></li>
+<li class="chapter" data-level="" data-path="4.5-tsdotoe.html"><a href="4.5-tsdotoe.html#simulation-study-2"><i class="fa fa-check"></i>Simulation Study 2</a></li>
+<li class="chapter" data-level="" data-path="4.5-tsdotoe.html"><a href="4.5-tsdotoe.html#simulation-study-3"><i class="fa fa-check"></i>Simulation Study 3</a></li>
+</ul></li>
+<li class="chapter" data-level="4.6" data-path="4.6-exercises-4.html"><a href="4.6-exercises-4.html"><i class="fa fa-check"></i><b>4.6</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="5-htaciitslrm.html"><a href="5-htaciitslrm.html"><i class="fa fa-check"></i><b>5</b> Hypothesis Tests and Confidence Intervals in the Simple Linear Regression Model</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="5.1-testing-two-sided-hypotheses-concerning-the-slope-coefficient.html"><a href="5.1-testing-two-sided-hypotheses-concerning-the-slope-coefficient.html"><i class="fa fa-check"></i><b>5.1</b> Testing Two-Sided Hypotheses Concerning the Slope Coefficient</a></li>
+<li class="chapter" data-level="5.2" data-path="5.2-cifrc.html"><a href="5.2-cifrc.html"><i class="fa fa-check"></i><b>5.2</b> Confidence Intervals for Regression Coefficients</a>
+<ul>
+<li class="chapter" data-level="" data-path="5.2-cifrc.html"><a href="5.2-cifrc.html#simulation-study-confidence-intervals"><i class="fa fa-check"></i>Simulation Study: Confidence Intervals</a></li>
+</ul></li>
+<li class="chapter" data-level="5.3" data-path="5.3-rwxiabv.html"><a href="5.3-rwxiabv.html"><i class="fa fa-check"></i><b>5.3</b> Regression when X is a Binary Variable</a></li>
+<li class="chapter" data-level="5.4" data-path="5.4-hah.html"><a href="5.4-hah.html"><i class="fa fa-check"></i><b>5.4</b> Heteroskedasticity and Homoskedasticity</a>
+<ul>
+<li class="chapter" data-level="" data-path="5.4-hah.html"><a href="5.4-hah.html#a-real-world-example-for-heteroskedasticity"><i class="fa fa-check"></i>A Real-World Example for Heteroskedasticity</a></li>
+<li class="chapter" data-level="" data-path="5.4-hah.html"><a href="5.4-hah.html#should-we-care-about-heteroskedasticity"><i class="fa fa-check"></i>Should We Care About Heteroskedasticity?</a></li>
+<li class="chapter" data-level="" data-path="5.4-hah.html"><a href="5.4-hah.html#computation-of-heteroskedasticity-robust-standard-errors"><i class="fa fa-check"></i>Computation of Heteroskedasticity-Robust Standard Errors</a></li>
+</ul></li>
+<li class="chapter" data-level="5.5" data-path="5.5-the-gauss-markov-theorem.html"><a href="5.5-the-gauss-markov-theorem.html"><i class="fa fa-check"></i><b>5.5</b> The Gauss-Markov Theorem</a>
+<ul>
+<li class="chapter" data-level="" data-path="5.5-the-gauss-markov-theorem.html"><a href="5.5-the-gauss-markov-theorem.html#simulation-study-blue-estimator"><i class="fa fa-check"></i>Simulation Study: BLUE Estimator</a></li>
+</ul></li>
+<li class="chapter" data-level="5.6" data-path="5.6-using-the-t-statistic-in-regression-when-the-sample-size-is-small.html"><a href="5.6-using-the-t-statistic-in-regression-when-the-sample-size-is-small.html"><i class="fa fa-check"></i><b>5.6</b> Using the t-Statistic in Regression When the Sample Size Is Small</a></li>
+<li class="chapter" data-level="5.7" data-path="5.7-exercises-5.html"><a href="5.7-exercises-5.html"><i class="fa fa-check"></i><b>5.7</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="6-rmwmr.html"><a href="6-rmwmr.html"><i class="fa fa-check"></i><b>6</b> Regression Models with Multiple Regressors</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="6.1-omitted-variable-bias.html"><a href="6.1-omitted-variable-bias.html"><i class="fa fa-check"></i><b>6.1</b> Omitted Variable Bias</a></li>
+<li class="chapter" data-level="6.2" data-path="6.2-tmrm.html"><a href="6.2-tmrm.html"><i class="fa fa-check"></i><b>6.2</b> The Multiple Regression Model</a></li>
+<li class="chapter" data-level="6.3" data-path="6.3-mofimr.html"><a href="6.3-mofimr.html"><i class="fa fa-check"></i><b>6.3</b> Measures of Fit in Multiple Regression</a></li>
+<li class="chapter" data-level="6.4" data-path="6.4-ols-assumptions-in-multiple-regression.html"><a href="6.4-ols-assumptions-in-multiple-regression.html"><i class="fa fa-check"></i><b>6.4</b> OLS Assumptions in Multiple Regression</a>
+<ul>
+<li class="chapter" data-level="" data-path="6.4-ols-assumptions-in-multiple-regression.html"><a href="6.4-ols-assumptions-in-multiple-regression.html#multicollinearity"><i class="fa fa-check"></i>Multicollinearity</a></li>
+<li class="chapter" data-level="" data-path="6.4-ols-assumptions-in-multiple-regression.html"><a href="6.4-ols-assumptions-in-multiple-regression.html#simulation-study-imperfect-multicollinearity"><i class="fa fa-check"></i>Simulation Study: Imperfect Multicollinearity</a></li>
+</ul></li>
+<li class="chapter" data-level="6.5" data-path="6.5-the-distribution-of-the-ols-estimators-in-multiple-regression.html"><a href="6.5-the-distribution-of-the-ols-estimators-in-multiple-regression.html"><i class="fa fa-check"></i><b>6.5</b> The Distribution of the OLS Estimators in Multiple Regression</a></li>
+<li class="chapter" data-level="6.6" data-path="6.6-exercises-6.html"><a href="6.6-exercises-6.html"><i class="fa fa-check"></i><b>6.6</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="7-htaciimr.html"><a href="7-htaciimr.html"><i class="fa fa-check"></i><b>7</b> Hypothesis Tests and Confidence Intervals in Multiple Regression</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="7.1-hypothesis-tests-and-confidence-intervals-for-a-single-coefficient.html"><a href="7.1-hypothesis-tests-and-confidence-intervals-for-a-single-coefficient.html"><i class="fa fa-check"></i><b>7.1</b> Hypothesis Tests and Confidence Intervals for a Single Coefficient</a></li>
+<li class="chapter" data-level="7.2" data-path="7.2-an-application-to-test-scores-and-the-student-teacher-ratio.html"><a href="7.2-an-application-to-test-scores-and-the-student-teacher-ratio.html"><i class="fa fa-check"></i><b>7.2</b> An Application to Test Scores and the Student-Teacher Ratio</a>
+<ul>
+<li class="chapter" data-level="" data-path="7.2-an-application-to-test-scores-and-the-student-teacher-ratio.html"><a href="7.2-an-application-to-test-scores-and-the-student-teacher-ratio.html#another-augmentation-of-the-model"><i class="fa fa-check"></i>Another Augmentation of the Model</a></li>
+</ul></li>
+<li class="chapter" data-level="7.3" data-path="7.3-joint-hypothesis-testing-using-the-f-statistic.html"><a href="7.3-joint-hypothesis-testing-using-the-f-statistic.html"><i class="fa fa-check"></i><b>7.3</b> Joint Hypothesis Testing Using the F-Statistic</a></li>
+<li class="chapter" data-level="7.4" data-path="7.4-confidence-sets-for-multiple-coefficients.html"><a href="7.4-confidence-sets-for-multiple-coefficients.html"><i class="fa fa-check"></i><b>7.4</b> Confidence Sets for Multiple Coefficients</a></li>
+<li class="chapter" data-level="7.5" data-path="7.5-model-specification-for-multiple-regression.html"><a href="7.5-model-specification-for-multiple-regression.html"><i class="fa fa-check"></i><b>7.5</b> Model Specification for Multiple Regression</a>
+<ul>
+<li class="chapter" data-level="" data-path="7.5-model-specification-for-multiple-regression.html"><a href="7.5-model-specification-for-multiple-regression.html#model-specification-in-theory-and-in-practice"><i class="fa fa-check"></i>Model Specification in Theory and in Practice</a></li>
+</ul></li>
+<li class="chapter" data-level="7.6" data-path="7.6-analysis-of-the-test-score-data-set.html"><a href="7.6-analysis-of-the-test-score-data-set.html"><i class="fa fa-check"></i><b>7.6</b> Analysis of the Test Score Data Set</a></li>
+<li class="chapter" data-level="7.7" data-path="7.7-exercises-7.html"><a href="7.7-exercises-7.html"><i class="fa fa-check"></i><b>7.7</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="8-nrf.html"><a href="8-nrf.html"><i class="fa fa-check"></i><b>8</b> Nonlinear Regression Functions</a>
+<ul>
+<li class="chapter" data-level="8.1" data-path="8.1-a-general-strategy-for-modelling-nonlinear-regression-functions.html"><a href="8.1-a-general-strategy-for-modelling-nonlinear-regression-functions.html"><i class="fa fa-check"></i><b>8.1</b> A General Strategy for Modelling Nonlinear Regression Functions</a></li>
+<li class="chapter" data-level="8.2" data-path="8.2-nfoasiv.html"><a href="8.2-nfoasiv.html"><i class="fa fa-check"></i><b>8.2</b> Nonlinear Functions of a Single Independent Variable</a>
+<ul>
+<li class="chapter" data-level="" data-path="8.2-nfoasiv.html"><a href="8.2-nfoasiv.html#polynomials"><i class="fa fa-check"></i>Polynomials</a></li>
+<li class="chapter" data-level="" data-path="8.2-nfoasiv.html"><a href="8.2-nfoasiv.html#logarithms"><i class="fa fa-check"></i>Logarithms</a></li>
+</ul></li>
+<li class="chapter" data-level="8.3" data-path="8.3-interactions-between-independent-variables.html"><a href="8.3-interactions-between-independent-variables.html"><i class="fa fa-check"></i><b>8.3</b> Interactions Between Independent Variables</a></li>
+<li class="chapter" data-level="8.4" data-path="8.4-nonlinear-effects-on-test-scores-of-the-student-teacher-ratio.html"><a href="8.4-nonlinear-effects-on-test-scores-of-the-student-teacher-ratio.html"><i class="fa fa-check"></i><b>8.4</b> Nonlinear Effects on Test Scores of the Student-Teacher Ratio</a></li>
+<li class="chapter" data-level="8.5" data-path="8.5-exercises-8.html"><a href="8.5-exercises-8.html"><i class="fa fa-check"></i><b>8.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="9-asbomr.html"><a href="9-asbomr.html"><i class="fa fa-check"></i><b>9</b> Assessing Studies Based on Multiple Regression</a>
+<ul>
+<li class="chapter" data-level="9.1" data-path="9.1-internal-and-external-validity.html"><a href="9.1-internal-and-external-validity.html"><i class="fa fa-check"></i><b>9.1</b> Internal and External Validity</a></li>
+<li class="chapter" data-level="9.2" data-path="9.2-ttivomra.html"><a href="9.2-ttivomra.html"><i class="fa fa-check"></i><b>9.2</b> Threats to Internal Validity of Multiple Regression Analysis</a></li>
+<li class="chapter" data-level="9.3" data-path="9.3-internal-and-external-validity-when-the-regression-is-used-for-forecasting.html"><a href="9.3-internal-and-external-validity-when-the-regression-is-used-for-forecasting.html"><i class="fa fa-check"></i><b>9.3</b> Internal and External Validity when the Regression is Used for Forecasting</a></li>
+<li class="chapter" data-level="9.4" data-path="9.4-etsacs.html"><a href="9.4-etsacs.html"><i class="fa fa-check"></i><b>9.4</b> Example: Test Scores and Class Size</a></li>
+<li class="chapter" data-level="9.5" data-path="9.5-exercises-9.html"><a href="9.5-exercises-9.html"><i class="fa fa-check"></i><b>9.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="10" data-path="10-rwpd.html"><a href="10-rwpd.html"><i class="fa fa-check"></i><b>10</b> Regression with Panel Data</a>
+<ul>
+<li class="chapter" data-level="10.1" data-path="10.1-panel-data.html"><a href="10.1-panel-data.html"><i class="fa fa-check"></i><b>10.1</b> Panel Data</a></li>
+<li class="chapter" data-level="10.2" data-path="10.2-PDWTTP.html"><a href="10.2-PDWTTP.html"><i class="fa fa-check"></i><b>10.2</b> Panel Data with Two Time Periods: “Before and After” Comparisons</a></li>
+<li class="chapter" data-level="10.3" data-path="10.3-fixed-effects-regression.html"><a href="10.3-fixed-effects-regression.html"><i class="fa fa-check"></i><b>10.3</b> Fixed Effects Regression</a>
+<ul>
+<li class="chapter" data-level="" data-path="10.3-fixed-effects-regression.html"><a href="10.3-fixed-effects-regression.html#estimation-and-inference"><i class="fa fa-check"></i>Estimation and Inference</a></li>
+<li class="chapter" data-level="" data-path="10.3-fixed-effects-regression.html"><a href="10.3-fixed-effects-regression.html#application-to-traffic-deaths"><i class="fa fa-check"></i>Application to Traffic Deaths</a></li>
+</ul></li>
+<li class="chapter" data-level="10.4" data-path="10.4-regression-with-time-fixed-effects.html"><a href="10.4-regression-with-time-fixed-effects.html"><i class="fa fa-check"></i><b>10.4</b> Regression with Time Fixed Effects</a></li>
+<li class="chapter" data-level="10.5" data-path="10.5-tferaaseffer.html"><a href="10.5-tferaaseffer.html"><i class="fa fa-check"></i><b>10.5</b> The Fixed Effects Regression Assumptions and Standard Errors for Fixed Effects Regression</a></li>
+<li class="chapter" data-level="10.6" data-path="10.6-drunk-driving-laws-and-traffic-deaths.html"><a href="10.6-drunk-driving-laws-and-traffic-deaths.html"><i class="fa fa-check"></i><b>10.6</b> Drunk Driving Laws and Traffic Deaths</a></li>
+<li class="chapter" data-level="10.7" data-path="10.7-exercises-10.html"><a href="10.7-exercises-10.html"><i class="fa fa-check"></i><b>10.7</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="11" data-path="11-rwabdv.html"><a href="11-rwabdv.html"><i class="fa fa-check"></i><b>11</b> Regression with a Binary Dependent Variable</a>
+<ul>
+<li class="chapter" data-level="11.1" data-path="11.1-binary-dependent-variables-and-the-linear-probability-model.html"><a href="11.1-binary-dependent-variables-and-the-linear-probability-model.html"><i class="fa fa-check"></i><b>11.1</b> Binary Dependent Variables and the Linear Probability Model</a></li>
+<li class="chapter" data-level="11.2" data-path="11.2-palr.html"><a href="11.2-palr.html"><i class="fa fa-check"></i><b>11.2</b> Probit and Logit Regression</a>
+<ul>
+<li class="chapter" data-level="" data-path="11.2-palr.html"><a href="11.2-palr.html#probit-regression"><i class="fa fa-check"></i>Probit Regression</a></li>
+<li class="chapter" data-level="" data-path="11.2-palr.html"><a href="11.2-palr.html#logit-regression"><i class="fa fa-check"></i>Logit Regression</a></li>
+</ul></li>
+<li class="chapter" data-level="11.3" data-path="11.3-estimation-and-inference-in-the-logit-and-probit-models.html"><a href="11.3-estimation-and-inference-in-the-logit-and-probit-models.html"><i class="fa fa-check"></i><b>11.3</b> Estimation and Inference in the Logit and Probit Models</a></li>
+<li class="chapter" data-level="11.4" data-path="11.4-application-to-the-boston-hmda-data.html"><a href="11.4-application-to-the-boston-hmda-data.html"><i class="fa fa-check"></i><b>11.4</b> Application to the Boston HMDA Data</a></li>
+<li class="chapter" data-level="11.5" data-path="11.5-exercises-11.html"><a href="11.5-exercises-11.html"><i class="fa fa-check"></i><b>11.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="12" data-path="12-ivr.html"><a href="12-ivr.html"><i class="fa fa-check"></i><b>12</b> Instrumental Variables Regression</a>
+<ul>
+<li class="chapter" data-level="12.1" data-path="12.1-TIVEWASRAASI.html"><a href="12.1-TIVEWASRAASI.html"><i class="fa fa-check"></i><b>12.1</b> The IV Estimator with a Single Regressor and a Single Instrument</a></li>
+<li class="chapter" data-level="12.2" data-path="12.2-TGIVRM.html"><a href="12.2-TGIVRM.html"><i class="fa fa-check"></i><b>12.2</b> The General IV Regression Model</a></li>
+<li class="chapter" data-level="12.3" data-path="12.3-civ.html"><a href="12.3-civ.html"><i class="fa fa-check"></i><b>12.3</b> Checking Instrument Validity</a></li>
+<li class="chapter" data-level="12.4" data-path="12.4-attdfc.html"><a href="12.4-attdfc.html"><i class="fa fa-check"></i><b>12.4</b> Application to the Demand for Cigarettes</a></li>
+<li class="chapter" data-level="12.5" data-path="12.5-where-do-valid-instruments-come-from.html"><a href="12.5-where-do-valid-instruments-come-from.html"><i class="fa fa-check"></i><b>12.5</b> Where Do Valid Instruments Come From?</a></li>
+<li class="chapter" data-level="12.6" data-path="12.6-exercises-12.html"><a href="12.6-exercises-12.html"><i class="fa fa-check"></i><b>12.6</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="13" data-path="13-eaqe.html"><a href="13-eaqe.html"><i class="fa fa-check"></i><b>13</b> Experiments and Quasi-Experiments</a>
+<ul>
+<li class="chapter" data-level="13.1" data-path="13.1-poceaie.html"><a href="13.1-poceaie.html"><i class="fa fa-check"></i><b>13.1</b> Potential Outcomes, Causal Effects and Idealized Experiments</a></li>
+<li class="chapter" data-level="13.2" data-path="13.2-threats-to-validity-of-experiments.html"><a href="13.2-threats-to-validity-of-experiments.html"><i class="fa fa-check"></i><b>13.2</b> Threats to Validity of Experiments</a></li>
+<li class="chapter" data-level="13.3" data-path="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html"><i class="fa fa-check"></i><b>13.3</b> Experimental Estimates of the Effect of Class Size Reductions</a>
+<ul>
+<li class="chapter" data-level="" data-path="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#experimental-design-and-the-data-set"><i class="fa fa-check"></i>Experimental Design and the Data Set</a></li>
+<li class="chapter" data-level="" data-path="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#analysis-of-the-star-data"><i class="fa fa-check"></i>Analysis of the STAR Data</a></li>
+</ul></li>
+<li class="chapter" data-level="13.4" data-path="13.4-qe.html"><a href="13.4-qe.html"><i class="fa fa-check"></i><b>13.4</b> Quasi Experiments</a>
+<ul>
+<li class="chapter" data-level="" data-path="13.4-qe.html"><a href="13.4-qe.html#the-differences-in-differences-estimator"><i class="fa fa-check"></i>The Differences-in-Differences Estimator</a></li>
+<li class="chapter" data-level="" data-path="13.4-qe.html"><a href="13.4-qe.html#regression-discontinuity-estimators"><i class="fa fa-check"></i>Regression Discontinuity Estimators</a></li>
+</ul></li>
+<li class="chapter" data-level="13.5" data-path="13.5-exercises-13.html"><a href="13.5-exercises-13.html"><i class="fa fa-check"></i><b>13.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="14" data-path="14-ittsraf.html"><a href="14-ittsraf.html"><i class="fa fa-check"></i><b>14</b> Introduction to Time Series Regression and Forecasting</a>
+<ul>
+<li class="chapter" data-level="14.1" data-path="14.1-using-regression-models-for-forecasting.html"><a href="14.1-using-regression-models-for-forecasting.html"><i class="fa fa-check"></i><b>14.1</b> Using Regression Models for Forecasting</a></li>
+<li class="chapter" data-level="14.2" data-path="14.2-tsdasc.html"><a href="14.2-tsdasc.html"><i class="fa fa-check"></i><b>14.2</b> Time Series Data and Serial Correlation</a>
+<ul>
+<li class="chapter" data-level="" data-path="14.2-tsdasc.html"><a href="14.2-tsdasc.html#notation-lags-differences-logarithms-and-growth-rates"><i class="fa fa-check"></i>Notation, Lags, Differences, Logarithms and Growth Rates</a></li>
+</ul></li>
+<li class="chapter" data-level="14.3" data-path="14.3-autoregressions.html"><a href="14.3-autoregressions.html"><i class="fa fa-check"></i><b>14.3</b> Autoregressions</a>
+<ul>
+<li><a href="14.3-autoregressions.html#autoregressive-models-of-order-p">Autoregressive Models of Order <span class="math inline">\(p\)</span></a></li>
+</ul></li>
+<li class="chapter" data-level="14.4" data-path="14.4-cybtmpi.html"><a href="14.4-cybtmpi.html"><i class="fa fa-check"></i><b>14.4</b> Can You Beat the Market? (Part I)</a></li>
+<li class="chapter" data-level="14.5" data-path="14.5-apatadlm.html"><a href="14.5-apatadlm.html"><i class="fa fa-check"></i><b>14.5</b> Additional Predictors and The ADL Model</a>
+<ul>
+<li class="chapter" data-level="" data-path="14.5-apatadlm.html"><a href="14.5-apatadlm.html#forecast-uncertainty-and-forecast-intervals"><i class="fa fa-check"></i>Forecast Uncertainty and Forecast Intervals</a></li>
+</ul></li>
+<li class="chapter" data-level="14.6" data-path="14.6-llsuic.html"><a href="14.6-llsuic.html"><i class="fa fa-check"></i><b>14.6</b> Lag Length Selection Using Information Criteria</a></li>
+<li class="chapter" data-level="14.7" data-path="14.7-nit.html"><a href="14.7-nit.html"><i class="fa fa-check"></i><b>14.7</b> Nonstationarity I: Trends</a></li>
+<li class="chapter" data-level="14.8" data-path="14.8-niib.html"><a href="14.8-niib.html"><i class="fa fa-check"></i><b>14.8</b> Nonstationarity II: Breaks</a></li>
+<li class="chapter" data-level="14.9" data-path="14.9-can-you-beat-the-market-part-ii.html"><a href="14.9-can-you-beat-the-market-part-ii.html"><i class="fa fa-check"></i><b>14.9</b> Can You Beat the Market? (Part II)</a></li>
+</ul></li>
+<li class="chapter" data-level="15" data-path="15-eodce.html"><a href="15-eodce.html"><i class="fa fa-check"></i><b>15</b> Estimation of Dynamic Causal Effects</a>
+<ul>
+<li class="chapter" data-level="15.1" data-path="15.1-the-orange-juice-data.html"><a href="15.1-the-orange-juice-data.html"><i class="fa fa-check"></i><b>15.1</b> The Orange Juice Data</a></li>
+<li class="chapter" data-level="15.2" data-path="15.2-dynamic-causal-effects.html"><a href="15.2-dynamic-causal-effects.html"><i class="fa fa-check"></i><b>15.2</b> Dynamic Causal Effects</a></li>
+<li class="chapter" data-level="15.3" data-path="15.3-dynamic-multipliers-and-cumulative-dynamic-multipliers.html"><a href="15.3-dynamic-multipliers-and-cumulative-dynamic-multipliers.html"><i class="fa fa-check"></i><b>15.3</b> Dynamic Multipliers and Cumulative Dynamic Multipliers</a></li>
+<li class="chapter" data-level="15.4" data-path="15.4-hac-standard-errors.html"><a href="15.4-hac-standard-errors.html"><i class="fa fa-check"></i><b>15.4</b> HAC Standard Errors</a></li>
+<li class="chapter" data-level="15.5" data-path="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html"><i class="fa fa-check"></i><b>15.5</b> Estimation of Dynamic Causal Effects with Strictly Exogeneous Regressors</a></li>
+<li class="chapter" data-level="15.6" data-path="15.6-orange-juice-prices-and-cold-weather.html"><a href="15.6-orange-juice-prices-and-cold-weather.html"><i class="fa fa-check"></i><b>15.6</b> Orange Juice Prices and Cold Weather</a></li>
+</ul></li>
+<li class="chapter" data-level="16" data-path="16-atitsr.html"><a href="16-atitsr.html"><i class="fa fa-check"></i><b>16</b> Additional Topics in Time Series Regression</a>
+<ul>
+<li class="chapter" data-level="16.1" data-path="16.1-vector-autoregressions.html"><a href="16.1-vector-autoregressions.html"><i class="fa fa-check"></i><b>16.1</b> Vector Autoregressions</a></li>
+<li class="chapter" data-level="16.2" data-path="16.2-ooiatdfglsurt.html"><a href="16.2-ooiatdfglsurt.html"><i class="fa fa-check"></i><b>16.2</b> Orders of Integration and the DF-GLS Unit Root Test</a></li>
+<li class="chapter" data-level="16.3" data-path="16.3-cointegration.html"><a href="16.3-cointegration.html"><i class="fa fa-check"></i><b>16.3</b> Cointegration</a></li>
+<li class="chapter" data-level="16.4" data-path="16.4-volatility-clustering-and-autoregressive-conditional-heteroskedasticity.html"><a href="16.4-volatility-clustering-and-autoregressive-conditional-heteroskedasticity.html"><i class="fa fa-check"></i><b>16.4</b> Volatility Clustering and Autoregressive Conditional Heteroskedasticity</a>
+<ul>
+<li class="chapter" data-level="" data-path="16.4-volatility-clustering-and-autoregressive-conditional-heteroskedasticity.html"><a href="16.4-volatility-clustering-and-autoregressive-conditional-heteroskedasticity.html#arch-and-garch-models"><i class="fa fa-check"></i>ARCH and GARCH Models</a></li>
+<li class="chapter" data-level="" data-path="16.4-volatility-clustering-and-autoregressive-conditional-heteroskedasticity.html"><a href="16.4-volatility-clustering-and-autoregressive-conditional-heteroskedasticity.html#application-to-stock-price-volatility"><i class="fa fa-check"></i>Application to Stock Price Volatility</a></li>
+<li class="chapter" data-level="" data-path="16.4-volatility-clustering-and-autoregressive-conditional-heteroskedasticity.html"><a href="16.4-volatility-clustering-and-autoregressive-conditional-heteroskedasticity.html#summary-8"><i class="fa fa-check"></i>Summary</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Introduction to Econometrics with R</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div class = rmdreview>
+This book is in <b>Open Review</b>. We want your feedback to make the book better for you and other students. You may annotate some text by <span style="background-color: #3297FD; color: white">selecting it with the cursor</span> and then click the <i class="h-icon-annotate"></i> on the pop-up menu. You can also see the annotations of others: click the <i class="h-icon-chevron-left"></i> in the upper right hand corner of the page <i class="fa fa-arrow-circle-right  fa-rotate-315" aria-hidden="true"></i>
+</div>
+<div id="ols-assumptions-in-multiple-regression" class="section level2" number="6.4">
+<h2><span class="header-section-number">6.4</span> OLS Assumptions in Multiple Regression</h2>
+<p>In the multiple regression model we extend the three least squares assumptions of the simple regression model (see Chapter <a href="4-lrwor.html#lrwor">4</a>) and add a fourth assumption. These assumptions are presented in Key Concept 6.4. We will not go into the details of assumptions 1-3 since their ideas generalize easy to the case of multiple regressors. We will focus on the fourth assumption. This assumption rules out perfect correlation between regressors.</p>
+<div id="KC6.4" class="keyconcept">
+<h3 class="right">
+Key Concept 6.4
+</h3>
+<h3 class="left">
+The Least Squares Assumptions in the Multiple Regression Model
+</h3>
+<p>The multiple regression model is given by</p>
+<p><span class="math display">\[ Y_i = \beta_0 + \beta_1 X_{1i} + \beta_1 X_{2i} + \dots + \beta_k X_{ki} + u_i \ , \ i=1,\dots,n. \]</span></p>
+<p>The OLS assumptions in the multiple regression model are an extension of the ones made for the simple regression model:</p>
+<ol style="list-style-type: decimal">
+<li>Regressors <span class="math inline">\((X_{1i}, X_{2i}, \dots, X_{ki}, Y_i) \ , \ i=1,\dots,n\)</span>, are drawn such that the i.i.d. assumption holds.</li>
+<li><span class="math inline">\(u_i\)</span> is an error term with conditional mean zero given the regressors, i.e.,
+<span class="math display">\[ E(u_i\vert X_{1i}, X_{2i}, \dots, X_{ki}) = 0. \]</span></li>
+<li>Large outliers are unlikely, formally <span class="math inline">\(X_{1i},\dots,X_{ki}\)</span> and <span class="math inline">\(Y_i\)</span> have finite fourth moments.</li>
+<li>No perfect multicollinearity.</li>
+</ol>
+</div>
+<div id="multicollinearity" class="section level3 unnumbered">
+<h3>Multicollinearity</h3>
+<p><em>Multicollinearity</em> means that two or more regressors in a multiple regression model are <em>strongly</em> correlated. If the correlation between two or more regressors is perfect, that is, one regressor can be written as a linear combination of the other(s), we have <em>perfect multicollinearity</em>. While strong multicollinearity in general is unpleasant as it causes the variance of the OLS estimator to be large (we will discuss this in more detail later), the presence of perfect multicollinearity makes it impossible to solve for the OLS estimator, i.e., the model cannot be estimated in the first place.</p>
+<p>The next section presents some examples of perfect multicollinearity and demonstrates how <tt>lm()</tt> deals with them.</p>
+<div id="examples-of-perfect-multicollinearity" class="section level4 unnumbered">
+<h4>Examples of Perfect Multicollinearity</h4>
+<p>How does <tt>R</tt> react if we try to estimate a model with perfectly correlated regressors?</p>
+<p><tt>lm</tt> will produce a warning in the first line of the coefficient section of the output (<tt>1 not defined because of singularities</tt>) and ignore the regressor(s) which is (are) assumed to be a linear combination of the other(s). Consider the following example where we add another variable <tt>FracEL</tt>, the fraction of English learners, to <tt>CASchools</tt> where observations are scaled values of the observations for <tt>english</tt> and use it as a regressor together with <tt>STR</tt> and <tt>english</tt> in a multiple regression model. In this example <tt>english</tt> and <tt>FracEL</tt> are perfectly collinear. The <tt>R</tt> code is as follows.</p>
+<div class="sourceCode" id="cb144"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb144-1"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb144-1" aria-hidden="true" tabindex="-1"></a><span class="co"># define the fraction of English learners        </span></span>
+<span id="cb144-2"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb144-2" aria-hidden="true" tabindex="-1"></a>CASchools<span class="sc">$</span>FracEL <span class="ot">&lt;-</span> CASchools<span class="sc">$</span>english <span class="sc">/</span> <span class="dv">100</span></span>
+<span id="cb144-3"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb144-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb144-4"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb144-4" aria-hidden="true" tabindex="-1"></a><span class="co"># estimate the model</span></span>
+<span id="cb144-5"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb144-5" aria-hidden="true" tabindex="-1"></a>mult.mod <span class="ot">&lt;-</span> <span class="fu">lm</span>(score <span class="sc">~</span> STR <span class="sc">+</span> english <span class="sc">+</span> FracEL, <span class="at">data =</span> CASchools) </span>
+<span id="cb144-6"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb144-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb144-7"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb144-7" aria-hidden="true" tabindex="-1"></a><span class="co"># obtain a summary of the model</span></span>
+<span id="cb144-8"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb144-8" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mult.mod)                                                 </span>
+<span id="cb144-9"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb144-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb144-10"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb144-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Call:</span></span>
+<span id="cb144-11"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb144-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; lm(formula = score ~ STR + english + FracEL, data = CASchools)</span></span>
+<span id="cb144-12"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb144-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb144-13"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb144-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Residuals:</span></span>
+<span id="cb144-14"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb144-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     Min      1Q  Median      3Q     Max </span></span>
+<span id="cb144-15"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb144-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -48.845 -10.240  -0.308   9.815  43.461 </span></span>
+<span id="cb144-16"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb144-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb144-17"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb144-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Coefficients: (1 not defined because of singularities)</span></span>
+<span id="cb144-18"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb144-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;              Estimate Std. Error t value Pr(&gt;|t|)    </span></span>
+<span id="cb144-19"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb144-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; (Intercept) 686.03224    7.41131  92.566  &lt; 2e-16 ***</span></span>
+<span id="cb144-20"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb144-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; STR          -1.10130    0.38028  -2.896  0.00398 ** </span></span>
+<span id="cb144-21"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb144-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; english      -0.64978    0.03934 -16.516  &lt; 2e-16 ***</span></span>
+<span id="cb144-22"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb144-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; FracEL             NA         NA      NA       NA    </span></span>
+<span id="cb144-23"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb144-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ---</span></span>
+<span id="cb144-24"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb144-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span>
+<span id="cb144-25"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb144-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb144-26"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb144-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Residual standard error: 14.46 on 417 degrees of freedom</span></span>
+<span id="cb144-27"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb144-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Multiple R-squared:  0.4264, Adjusted R-squared:  0.4237 </span></span>
+<span id="cb144-28"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb144-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; F-statistic:   155 on 2 and 417 DF,  p-value: &lt; 2.2e-16</span></span></code></pre></div>
+<p>The row <tt>FracEL</tt> in the coefficients section of the output consists of <tt>NA</tt> entries since <tt>FracEL</tt> was excluded from the model.</p>
+<p>If we were to compute OLS by hand, we would run into the same problem but no one would be helping us out! The computation simply fails. Why is this? Take the following example:</p>
+<p>Assume you want to estimate a simple linear regression model with a constant and a single regressor <span class="math inline">\(X\)</span>. As mentioned above, for perfect multicollinearity to be present <span class="math inline">\(X\)</span> has to be a linear combination of the other regressors. Since the only other regressor is a constant (think of the right hand side of the model equation as <span class="math inline">\(\beta_0 \times 1 + \beta_1 X_i + u_i\)</span> so that <span class="math inline">\(\beta_1\)</span> is always multiplied by <span class="math inline">\(1\)</span> for every observation), <span class="math inline">\(X\)</span> has to be constant as well. For <span class="math inline">\(\hat\beta_1\)</span> we have</p>
+<p><span class="math display">\[ \hat\beta_1 =  \frac{\sum_{i = 1}^n (X_i - \bar{X})(Y_i - \bar{Y})} { \sum_{i=1}^n (X_i - \bar{X})^2} = \frac{\widehat{Cov}(X,Y)}{\widehat{Var}(X)}. \tag{6.7} \]</span></p>
+<p>The variance of the regressor <span class="math inline">\(X\)</span> is in the denominator. Since the variance of a constant is zero, we are not able to compute this fraction and <span class="math inline">\(\hat{\beta}_1\)</span> is undefined.</p>
+<p><strong>Note:</strong> In this special case the denominator in (<a href="#mjx-eqn-6.7">6.7</a>) equals zero, too. Can you show that?</p>
+<p>Let us consider two further examples where our selection of regressors induces perfect multicollinearity. First, assume that we intend to analyze the effect of class size on test score by using a dummy variable that identifies classes which are not small (<span class="math inline">\(NS\)</span>). We define that a school has the <span class="math inline">\(NS\)</span> attribute when the school’s average student-teacher ratio is at least <span class="math inline">\(12\)</span>,</p>
+<p><span class="math display">\[ NS = \begin{cases} 0, \ \ \ \text{if STR &lt; 12} \\ 1 \ \ \ \text{otherwise.} \end{cases} \]</span></p>
+<p>We add the corresponding column to <tt>CASchools</tt> and estimate a multiple regression model with covariates <tt>computer</tt> and <tt>english</tt>.</p>
+<div class="sourceCode" id="cb145"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb145-1"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb145-1" aria-hidden="true" tabindex="-1"></a><span class="co"># if STR smaller 12, NS = 0, else NS = 1</span></span>
+<span id="cb145-2"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb145-2" aria-hidden="true" tabindex="-1"></a>CASchools<span class="sc">$</span>NS <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(CASchools<span class="sc">$</span>STR <span class="sc">&lt;</span> <span class="dv">12</span>, <span class="dv">0</span>, <span class="dv">1</span>)</span>
+<span id="cb145-3"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb145-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb145-4"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb145-4" aria-hidden="true" tabindex="-1"></a><span class="co"># estimate the model</span></span>
+<span id="cb145-5"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb145-5" aria-hidden="true" tabindex="-1"></a>mult.mod <span class="ot">&lt;-</span> <span class="fu">lm</span>(score <span class="sc">~</span> computer <span class="sc">+</span> english <span class="sc">+</span> NS, <span class="at">data =</span> CASchools)</span>
+<span id="cb145-6"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb145-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb145-7"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb145-7" aria-hidden="true" tabindex="-1"></a><span class="co"># obtain a model summary</span></span>
+<span id="cb145-8"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb145-8" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mult.mod)                                                  </span>
+<span id="cb145-9"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb145-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb145-10"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb145-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Call:</span></span>
+<span id="cb145-11"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb145-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; lm(formula = score ~ computer + english + NS, data = CASchools)</span></span>
+<span id="cb145-12"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb145-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb145-13"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb145-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Residuals:</span></span>
+<span id="cb145-14"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb145-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     Min      1Q  Median      3Q     Max </span></span>
+<span id="cb145-15"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb145-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -49.492  -9.976  -0.778   8.761  43.798 </span></span>
+<span id="cb145-16"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb145-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb145-17"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb145-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Coefficients: (1 not defined because of singularities)</span></span>
+<span id="cb145-18"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb145-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;               Estimate Std. Error t value Pr(&gt;|t|)    </span></span>
+<span id="cb145-19"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb145-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; (Intercept) 663.704837   0.984259 674.319  &lt; 2e-16 ***</span></span>
+<span id="cb145-20"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb145-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; computer      0.005374   0.001670   3.218  0.00139 ** </span></span>
+<span id="cb145-21"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb145-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; english      -0.708947   0.040303 -17.591  &lt; 2e-16 ***</span></span>
+<span id="cb145-22"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb145-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; NS                  NA         NA      NA       NA    </span></span>
+<span id="cb145-23"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb145-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ---</span></span>
+<span id="cb145-24"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb145-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span>
+<span id="cb145-25"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb145-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb145-26"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb145-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Residual standard error: 14.43 on 417 degrees of freedom</span></span>
+<span id="cb145-27"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb145-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Multiple R-squared:  0.4291, Adjusted R-squared:  0.4263 </span></span>
+<span id="cb145-28"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb145-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; F-statistic: 156.7 on 2 and 417 DF,  p-value: &lt; 2.2e-16</span></span></code></pre></div>
+<p>Again, the output of <tt>summary(mult.mod)</tt> tells us that inclusion of <tt>NS</tt> in the regression would render the estimation infeasible. What happened here? This is an example where we made a logical mistake when defining the regressor <tt>NS</tt>: taking a closer look at <span class="math inline">\(NS\)</span>, the redefined measure for class size, reveals that there is not a single school with <span class="math inline">\(STR&lt;12\)</span> hence <span class="math inline">\(NS\)</span> equals one for all observations. We can check this by printing the contents of <tt>CASchools$NS</tt> or by using the function <tt>table()</tt>, see <code>?table</code>.</p>
+<div class="sourceCode" id="cb146"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb146-1"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb146-1" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(CASchools<span class="sc">$</span>NS)</span>
+<span id="cb146-2"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb146-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb146-3"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb146-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   1 </span></span>
+<span id="cb146-4"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb146-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 420</span></span></code></pre></div>
+<p><tt>CASchools$NS</tt> is a vector of <span class="math inline">\(420\)</span> ones and our data set includes <span class="math inline">\(420\)</span> observations. This obviously violates assumption 4 of Key Concept 6.4: the observations for the intercept are always <span class="math inline">\(1\)</span>,</p>
+<p><span class="math display">\[\begin{align*}
+  intercept = \, &amp; \lambda \cdot NS
+\end{align*}\]</span></p>
+<p><span class="math display">\[\begin{align*}
+\begin{pmatrix} 1 
+  \\ \vdots \\ 1
+  \end{pmatrix} = \, &amp; \lambda \cdot 
+  \begin{pmatrix} 1 \\ 
+  \vdots \\ 1
+  \end{pmatrix} \\   
+  \Leftrightarrow \, &amp; \lambda = 1.
+\end{align*}\]</span></p>
+<p>Since the regressors can be written as a linear combination of each other, we face perfect multicollinearity and <tt>R</tt> excludes <tt>NS</tt> from the model. Thus the take-away message is: think carefully about how the regressors in your models relate!</p>
+<p>Another example of perfect multicollinearity is known as the <em>dummy variable trap</em>. This may occur when multiple dummy variables are used as regressors. A common case for this is when dummies are used to sort the data into mutually exclusive categories. For example, suppose we have spatial information that indicates whether a school is located in the North, West, South or East of the U.S. This allows us to create the dummy variables</p>
+<p><span class="math display">\[\begin{align*}
+  North_i =&amp; 
+  \begin{cases}
+    1 \ \ \text{if located in the north} \\
+    0 \ \ \text{otherwise}
+  \end{cases} \\
+    West_i =&amp; 
+  \begin{cases}
+    1 \ \ \text{if located in the west} \\
+    0 \ \ \text{otherwise}
+  \end{cases} \\
+    South_i =&amp; 
+  \begin{cases}
+    1 \ \ \text{if located in the south} \\
+    0 \ \ \text{otherwise}
+  \end{cases} \\
+    East_i =&amp; 
+  \begin{cases}
+    1 \ \ \text{if located in the east} \\
+    0 \ \ \text{otherwise}.
+  \end{cases}
+\end{align*}\]</span></p>
+<p>Since the regions are mutually exclusive, for every school <span class="math inline">\(i=1,\dots,n\)</span> we have <span class="math display">\[ North_i + West_i + South_i + East_i = 1. \]</span></p>
+<p>We run into problems when trying to estimate a model that includes a constant and <em>all four</em> direction dummies in the model, e.g., <span class="math display">\[ TestScore = \beta_0 + \beta_1 \times STR + \beta_2 \times english + \beta_3 \times North_i + \beta_4 \times West_i + \beta_5 \times South_i + \beta_6 \times East_i + u_i \tag{6.8}\]</span>
+since then for all observations <span class="math inline">\(i=1,\dots,n\)</span> the constant term is a linear combination of the dummies:</p>
+<p><span class="math display">\[\begin{align}
+  intercept = \, &amp; \lambda_1 \cdot (North + West + South + East) \\
+  \begin{pmatrix} 1 \\ \vdots \\ 1\end{pmatrix} = \, &amp; \lambda_1 \cdot \begin{pmatrix} 1 \\ \vdots \\ 1\end{pmatrix} \\   \Leftrightarrow \, &amp; \lambda_1 = 1
+\end{align}\]</span></p>
+<p>and we have perfect multicollinearity. Thus the “dummy variable trap” means not paying attention and falsely including exhaustive dummies <em>and</em> a constant in a regression model.</p>
+<p>How does <tt>lm()</tt> handle a regression like (<a href="#mjx-eqn-6.8">6.8</a>)? Let us first generate some artificial categorical data and append a new column named <tt>directions</tt> to <tt>CASchools</tt> and see how <tt>lm()</tt> behaves when asked to estimate the model.</p>
+<div class="sourceCode" id="cb147"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb147-1"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb147-1" aria-hidden="true" tabindex="-1"></a><span class="co"># set seed for reproducibility</span></span>
+<span id="cb147-2"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb147-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb147-3"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb147-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb147-4"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb147-4" aria-hidden="true" tabindex="-1"></a><span class="co"># generate artificial data on location</span></span>
+<span id="cb147-5"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb147-5" aria-hidden="true" tabindex="-1"></a>CASchools<span class="sc">$</span>direction <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">c</span>(<span class="st">&quot;West&quot;</span>, <span class="st">&quot;North&quot;</span>, <span class="st">&quot;South&quot;</span>, <span class="st">&quot;East&quot;</span>), </span>
+<span id="cb147-6"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb147-6" aria-hidden="true" tabindex="-1"></a>                              <span class="dv">420</span>, </span>
+<span id="cb147-7"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb147-7" aria-hidden="true" tabindex="-1"></a>                              <span class="at">replace =</span> T)</span>
+<span id="cb147-8"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb147-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb147-9"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb147-9" aria-hidden="true" tabindex="-1"></a><span class="co"># estimate the model</span></span>
+<span id="cb147-10"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb147-10" aria-hidden="true" tabindex="-1"></a>mult.mod <span class="ot">&lt;-</span> <span class="fu">lm</span>(score <span class="sc">~</span> STR <span class="sc">+</span> english <span class="sc">+</span> direction, <span class="at">data =</span> CASchools)</span>
+<span id="cb147-11"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb147-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb147-12"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb147-12" aria-hidden="true" tabindex="-1"></a><span class="co"># obtain a model summary</span></span>
+<span id="cb147-13"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb147-13" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mult.mod)                                                 </span>
+<span id="cb147-14"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb147-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb147-15"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb147-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Call:</span></span>
+<span id="cb147-16"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb147-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; lm(formula = score ~ STR + english + direction, data = CASchools)</span></span>
+<span id="cb147-17"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb147-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb147-18"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb147-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Residuals:</span></span>
+<span id="cb147-19"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb147-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     Min      1Q  Median      3Q     Max </span></span>
+<span id="cb147-20"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb147-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -49.603 -10.175  -0.484   9.524  42.830 </span></span>
+<span id="cb147-21"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb147-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb147-22"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb147-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Coefficients:</span></span>
+<span id="cb147-23"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb147-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                 Estimate Std. Error t value Pr(&gt;|t|)    </span></span>
+<span id="cb147-24"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb147-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; (Intercept)    684.80477    7.54130  90.807  &lt; 2e-16 ***</span></span>
+<span id="cb147-25"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb147-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; STR             -1.08873    0.38153  -2.854  0.00454 ** </span></span>
+<span id="cb147-26"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb147-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; english         -0.65597    0.04018 -16.325  &lt; 2e-16 ***</span></span>
+<span id="cb147-27"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb147-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; directionNorth   1.66314    2.05870   0.808  0.41964    </span></span>
+<span id="cb147-28"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb147-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; directionSouth   0.71619    2.06321   0.347  0.72867    </span></span>
+<span id="cb147-29"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb147-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; directionWest    1.79351    1.98174   0.905  0.36598    </span></span>
+<span id="cb147-30"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb147-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ---</span></span>
+<span id="cb147-31"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb147-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span>
+<span id="cb147-32"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb147-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb147-33"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb147-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Residual standard error: 14.5 on 414 degrees of freedom</span></span>
+<span id="cb147-34"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb147-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Multiple R-squared:  0.4279, Adjusted R-squared:  0.421 </span></span>
+<span id="cb147-35"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb147-35" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; F-statistic: 61.92 on 5 and 414 DF,  p-value: &lt; 2.2e-16</span></span></code></pre></div>
+<p>Notice that <tt>R</tt> solves the problem on its own by generating and including the dummies <tt>directionNorth</tt>, <tt>directionSouth</tt> and <tt>directionWest</tt> but omitting <tt>directionEast</tt>. Of course, the omission of every other dummy instead would achieve the same. Another solution would be to exclude the constant and to include all dummies instead.</p>
+<p>Does this mean that the information on schools located in the East is lost? Fortunately, this is not the case: exclusion of <tt>directEast</tt> just alters the interpretation of coefficient estimates on the remaining dummies from absolute to relative. For example, the coefficient estimate on <tt>directionNorth</tt> states that, on average, test scores in the North are about <span class="math inline">\(1.61\)</span> points higher than in the East.</p>
+<p>A last example considers the case where a perfect linear relationship arises from redundant regressors. Suppose we have a regressor <span class="math inline">\(PctES\)</span>, the percentage of English speakers in the school where</p>
+<p><span class="math display">\[ PctES = 100 -  PctEL\]</span></p>
+<p>and both <span class="math inline">\(PctES\)</span> and <span class="math inline">\(PctEL\)</span> are included in a regression model. One regressor is redundant since the other one conveys the same information. Since this obviously is a case where the regressors can be written as linear combination, we end up with perfect multicollinearity, again.</p>
+<p>Let us do this in <tt>R</tt>.</p>
+<div class="sourceCode" id="cb148"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb148-1"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb148-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Percentage of english speakers </span></span>
+<span id="cb148-2"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb148-2" aria-hidden="true" tabindex="-1"></a>CASchools<span class="sc">$</span>PctES <span class="ot">&lt;-</span> <span class="dv">100</span> <span class="sc">-</span> CASchools<span class="sc">$</span>english</span>
+<span id="cb148-3"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb148-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb148-4"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb148-4" aria-hidden="true" tabindex="-1"></a><span class="co"># estimate the model</span></span>
+<span id="cb148-5"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb148-5" aria-hidden="true" tabindex="-1"></a>mult.mod <span class="ot">&lt;-</span> <span class="fu">lm</span>(score <span class="sc">~</span> STR <span class="sc">+</span> english <span class="sc">+</span> PctES, <span class="at">data =</span> CASchools)</span>
+<span id="cb148-6"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb148-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb148-7"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb148-7" aria-hidden="true" tabindex="-1"></a><span class="co"># obtain a model summary</span></span>
+<span id="cb148-8"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb148-8" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mult.mod)                                                 </span>
+<span id="cb148-9"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb148-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb148-10"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb148-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Call:</span></span>
+<span id="cb148-11"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb148-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; lm(formula = score ~ STR + english + PctES, data = CASchools)</span></span>
+<span id="cb148-12"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb148-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb148-13"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb148-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Residuals:</span></span>
+<span id="cb148-14"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb148-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     Min      1Q  Median      3Q     Max </span></span>
+<span id="cb148-15"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb148-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -48.845 -10.240  -0.308   9.815  43.461 </span></span>
+<span id="cb148-16"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb148-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb148-17"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb148-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Coefficients: (1 not defined because of singularities)</span></span>
+<span id="cb148-18"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb148-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;              Estimate Std. Error t value Pr(&gt;|t|)    </span></span>
+<span id="cb148-19"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb148-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; (Intercept) 686.03224    7.41131  92.566  &lt; 2e-16 ***</span></span>
+<span id="cb148-20"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb148-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; STR          -1.10130    0.38028  -2.896  0.00398 ** </span></span>
+<span id="cb148-21"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb148-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; english      -0.64978    0.03934 -16.516  &lt; 2e-16 ***</span></span>
+<span id="cb148-22"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb148-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; PctES              NA         NA      NA       NA    </span></span>
+<span id="cb148-23"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb148-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ---</span></span>
+<span id="cb148-24"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb148-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span>
+<span id="cb148-25"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb148-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb148-26"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb148-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Residual standard error: 14.46 on 417 degrees of freedom</span></span>
+<span id="cb148-27"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb148-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Multiple R-squared:  0.4264, Adjusted R-squared:  0.4237 </span></span>
+<span id="cb148-28"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb148-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; F-statistic:   155 on 2 and 417 DF,  p-value: &lt; 2.2e-16</span></span></code></pre></div>
+<p>Once more, <tt>lm()</tt> refuses to estimate the full model using OLS and excludes <tt>PctES</tt>.</p>
+<p>See Chapter 18.1 of the book for an explanation of perfect multicollinearity and its consequences to the OLS estimator in general multiple regression models using matrix notation.</p>
+</div>
+<div id="imperfect-multicollinearity" class="section level4 unnumbered">
+<h4>Imperfect Multicollinearity</h4>
+<p>As opposed to perfect multicollinearity, imperfect multicollinearity is — to a certain extent — less of a problem. In fact, imperfect multicollinearity is the reason why we are interested in estimating multiple regression models in the first place: the OLS estimator allows us to <em>isolate</em> influences of <em>correlated</em> regressors on the dependent variable. If it was not for these dependencies, there would not be a reason to resort to a multiple regression approach and we could simply work with a single-regressor model. However, this is rarely the case in applications. We already know that ignoring dependencies among regressors which influence the outcome variable has an adverse effect on estimation results.</p>
+<p>So when and why is imperfect multicollinearity a problem? Suppose you have the regression model</p>
+<p><span class="math display">\[ Y_i = \beta_0 + \beta_1 X_{1i} + \beta_2 X_{2i} + u_i \tag{6.9} \]</span></p>
+<p>and you are interested in estimating <span class="math inline">\(\beta_1\)</span>, the effect on <span class="math inline">\(Y_i\)</span> of a one unit change in <span class="math inline">\(X_{1i}\)</span>, while holding <span class="math inline">\(X_{2i}\)</span> constant. You do not know that the true model indeed includes <span class="math inline">\(X_2\)</span>. You follow some reasoning and add <span class="math inline">\(X_2\)</span> as a covariate to the model in order to address a potential omitted variable bias. You are confident that <span class="math inline">\(E(u_i\vert X_{1i}, X_{2i})=0\)</span> and that there is no reason to suspect a violation of the assumptions 2 and 3 made in Key Concept 6.4. If <span class="math inline">\(X_1\)</span> and <span class="math inline">\(X_2\)</span> are highly correlated, OLS struggles to precisely estimate <span class="math inline">\(\beta_1\)</span>. That means that although <span class="math inline">\(\hat\beta_1\)</span> is a consistent and unbiased estimator for <span class="math inline">\(\beta_1\)</span>, it has a large variance due to <span class="math inline">\(X_2\)</span> being included in the model. If the errors are homoskedastic, this issue can be better understood from the formula for the variance of <span class="math inline">\(\hat\beta_1\)</span> in the model (<a href="#mjx-eqn-6.9">6.9</a>) (see Appendix 6.2 of the book):</p>
+<p><span class="math display">\[ \sigma^2_{\hat\beta_1} = \frac{1}{n} \left( \frac{1}{1-\rho^2_{X_1,X_2}} \right) \frac{\sigma^2_u}{\sigma^2_{X_1}}. \tag{6.10} \]</span></p>
+<p>First, if <span class="math inline">\(\rho_{X_1,X_2}=0\)</span>, i.e., if there is no correlation between both regressors, including <span class="math inline">\(X_2\)</span> in the model has no influence on the variance of <span class="math inline">\(\hat\beta_1\)</span>. Secondly, if <span class="math inline">\(X_1\)</span> and <span class="math inline">\(X_2\)</span> are correlated, <span class="math inline">\(\sigma^2_{\hat\beta_1}\)</span> is inversely proportional to <span class="math inline">\(1-\rho^2_{X_1,X_2}\)</span> so the stronger the correlation between <span class="math inline">\(X_1\)</span> and <span class="math inline">\(X_2\)</span>, the smaller is <span class="math inline">\(1-\rho^2_{X_1,X_2}\)</span> and thus the bigger is the variance of <span class="math inline">\(\hat\beta_1\)</span>. Thirdly, increasing the sample size helps to reduce the variance of <span class="math inline">\(\hat\beta_1\)</span>. Of course, this is not limited to the case with two regressors: in multiple regressions, imperfect multicollinearity inflates the variance of one or more coefficient estimators. It is an empirical question which coefficient estimates are severely affected by this and which are not. When the sample size is small, one often faces the decision whether to accept the consequence of adding a large number of covariates (higher variance) or to use a model with only few regressors (possible omitted variable bias). This is called <em>bias-variance trade-off</em>.</p>
+<p>In sum, undesirable consequences of imperfect multicollinearity are generally not the result of a logical error made by the researcher (as is often the case for perfect multicollinearity) but are rather a problem that is linked to the data used, the model to be estimated and the research question at hand.</p>
+</div>
+</div>
+<div id="simulation-study-imperfect-multicollinearity" class="section level3 unnumbered">
+<h3>Simulation Study: Imperfect Multicollinearity</h3>
+<p>Let us conduct a simulation study to illustrate the issues sketched above.</p>
+<ol style="list-style-type: decimal">
+<li>We use (<a href="#mjx-eqn-6.8">6.9</a>) as the data generating process and choose <span class="math inline">\(\beta_0 = 5\)</span>, <span class="math inline">\(\beta_1 = 2.5\)</span> and <span class="math inline">\(\beta_2 = 3\)</span> and <span class="math inline">\(u_i\)</span> is an error term distributed as <span class="math inline">\(\mathcal{N}(0,5)\)</span>. In a first step, we sample the regressor data from a bivariate normal distribution: <span class="math display">\[ X_i = (X_{1i}, X_{2i}) \overset{i.i.d.}{\sim} \mathcal{N} \left[\begin{pmatrix} 0 \\ 0  \end{pmatrix}, \begin{pmatrix} 10 &amp; 2.5 \\ 2.5 &amp; 10 \end{pmatrix} \right] \]</span> It is straightforward to see that the correlation between <span class="math inline">\(X_1\)</span> and <span class="math inline">\(X_2\)</span> in the population is rather low:</li>
+</ol>
+<p><span class="math display">\[ \rho_{X_1,X_2} = \frac{Cov(X_1,X_2)}{\sqrt{Var(X_1)}\sqrt{Var{(X_2)}}} = \frac{2.5}{10} = 0.25 \]</span></p>
+<ol start="2" style="list-style-type: decimal">
+<li><p>Next, we estimate the model (<a href="#mjx-eqn-6.9">6.9</a>) and save the estimates for <span class="math inline">\(\beta_1\)</span> and <span class="math inline">\(\beta_2\)</span>. This is repeated <span class="math inline">\(10000\)</span> times with a <code>for</code> loop so we end up with a large number of estimates that allow us to describe the distributions of <span class="math inline">\(\hat\beta_1\)</span> and <span class="math inline">\(\hat\beta_2\)</span>.</p></li>
+<li><p>We repeat steps 1 and 2 but increase the covariance between <span class="math inline">\(X_1\)</span> and <span class="math inline">\(X_2\)</span> from <span class="math inline">\(2.5\)</span> to <span class="math inline">\(8.5\)</span> such that the correlation between the regressors is high: <span class="math display">\[ \rho_{X_1,X_2} = \frac{Cov(X_1,X_2)}{\sqrt{Var(X_1)}\sqrt{Var{(X_2)}}} = \frac{8.5}{10} = 0.85 \]</span></p></li>
+<li><p>In order to assess the effect on the precision of the estimators of increasing the collinearity between <span class="math inline">\(X_1\)</span> and <span class="math inline">\(X_2\)</span> we estimate the variances of <span class="math inline">\(\hat\beta_1\)</span> and <span class="math inline">\(\hat\beta_2\)</span> and compare.</p></li>
+</ol>
+<div class="sourceCode" id="cb149"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb149-1"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb149-1" aria-hidden="true" tabindex="-1"></a><span class="co"># load packages</span></span>
+<span id="cb149-2"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb149-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MASS)</span>
+<span id="cb149-3"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb149-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mvtnorm)</span>
+<span id="cb149-4"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb149-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb149-5"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb149-5" aria-hidden="true" tabindex="-1"></a><span class="co"># set number of observations</span></span>
+<span id="cb149-6"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb149-6" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">50</span></span>
+<span id="cb149-7"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb149-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb149-8"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb149-8" aria-hidden="true" tabindex="-1"></a><span class="co"># initialize vectors of coefficients</span></span>
+<span id="cb149-9"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb149-9" aria-hidden="true" tabindex="-1"></a>coefs1 <span class="ot">&lt;-</span> <span class="fu">cbind</span>(<span class="st">&quot;hat_beta_1&quot;</span> <span class="ot">=</span> <span class="fu">numeric</span>(<span class="dv">10000</span>), <span class="st">&quot;hat_beta_2&quot;</span> <span class="ot">=</span> <span class="fu">numeric</span>(<span class="dv">10000</span>))</span>
+<span id="cb149-10"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb149-10" aria-hidden="true" tabindex="-1"></a>coefs2 <span class="ot">&lt;-</span> coefs1</span>
+<span id="cb149-11"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb149-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb149-12"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb149-12" aria-hidden="true" tabindex="-1"></a><span class="co"># set seed</span></span>
+<span id="cb149-13"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb149-13" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb149-14"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb149-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb149-15"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb149-15" aria-hidden="true" tabindex="-1"></a><span class="co"># loop sampling and estimation</span></span>
+<span id="cb149-16"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb149-16" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">10000</span>) {</span>
+<span id="cb149-17"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb149-17" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb149-18"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb149-18" aria-hidden="true" tabindex="-1"></a>  <span class="co"># for cov(X_1,X_2) = 0.25</span></span>
+<span id="cb149-19"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb149-19" aria-hidden="true" tabindex="-1"></a>  X <span class="ot">&lt;-</span> <span class="fu">rmvnorm</span>(n, <span class="fu">c</span>(<span class="dv">50</span>, <span class="dv">100</span>), <span class="at">sigma =</span> <span class="fu">cbind</span>(<span class="fu">c</span>(<span class="dv">10</span>, <span class="fl">2.5</span>), <span class="fu">c</span>(<span class="fl">2.5</span>, <span class="dv">10</span>)))</span>
+<span id="cb149-20"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb149-20" aria-hidden="true" tabindex="-1"></a>  u <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n, <span class="at">sd =</span> <span class="dv">5</span>)</span>
+<span id="cb149-21"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb149-21" aria-hidden="true" tabindex="-1"></a>  Y <span class="ot">&lt;-</span> <span class="dv">5</span> <span class="sc">+</span> <span class="fl">2.5</span> <span class="sc">*</span> X[, <span class="dv">1</span>] <span class="sc">+</span> <span class="dv">3</span> <span class="sc">*</span> X[, <span class="dv">2</span>] <span class="sc">+</span> u</span>
+<span id="cb149-22"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb149-22" aria-hidden="true" tabindex="-1"></a>  coefs1[i, ] <span class="ot">&lt;-</span> <span class="fu">lm</span>(Y <span class="sc">~</span> X[, <span class="dv">1</span>] <span class="sc">+</span> X[, <span class="dv">2</span>])<span class="sc">$</span>coefficients[<span class="sc">-</span><span class="dv">1</span>]</span>
+<span id="cb149-23"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb149-23" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb149-24"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb149-24" aria-hidden="true" tabindex="-1"></a>  <span class="co"># for cov(X_1,X_2) = 0.85</span></span>
+<span id="cb149-25"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb149-25" aria-hidden="true" tabindex="-1"></a>  X <span class="ot">&lt;-</span> <span class="fu">rmvnorm</span>(n, <span class="fu">c</span>(<span class="dv">50</span>, <span class="dv">100</span>), <span class="at">sigma =</span> <span class="fu">cbind</span>(<span class="fu">c</span>(<span class="dv">10</span>, <span class="fl">8.5</span>), <span class="fu">c</span>(<span class="fl">8.5</span>, <span class="dv">10</span>)))</span>
+<span id="cb149-26"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb149-26" aria-hidden="true" tabindex="-1"></a>  Y <span class="ot">&lt;-</span> <span class="dv">5</span> <span class="sc">+</span> <span class="fl">2.5</span> <span class="sc">*</span> X[, <span class="dv">1</span>] <span class="sc">+</span> <span class="dv">3</span> <span class="sc">*</span> X[, <span class="dv">2</span>] <span class="sc">+</span> u</span>
+<span id="cb149-27"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb149-27" aria-hidden="true" tabindex="-1"></a>  coefs2[i, ] <span class="ot">&lt;-</span> <span class="fu">lm</span>(Y <span class="sc">~</span> X[, <span class="dv">1</span>] <span class="sc">+</span> X[, <span class="dv">2</span>])<span class="sc">$</span>coefficients[<span class="sc">-</span><span class="dv">1</span>]</span>
+<span id="cb149-28"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb149-28" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb149-29"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb149-29" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb149-30"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb149-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb149-31"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb149-31" aria-hidden="true" tabindex="-1"></a><span class="co"># obtain variance estimates</span></span>
+<span id="cb149-32"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb149-32" aria-hidden="true" tabindex="-1"></a><span class="fu">diag</span>(<span class="fu">var</span>(coefs1))</span>
+<span id="cb149-33"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb149-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; hat_beta_1 hat_beta_2 </span></span>
+<span id="cb149-34"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb149-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 0.05674375 0.05712459</span></span>
+<span id="cb149-35"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb149-35" aria-hidden="true" tabindex="-1"></a><span class="fu">diag</span>(<span class="fu">var</span>(coefs2))</span>
+<span id="cb149-36"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb149-36" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; hat_beta_1 hat_beta_2 </span></span>
+<span id="cb149-37"><a href="6.4-ols-assumptions-in-multiple-regression.html#cb149-37" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  0.1904949  0.1909056</span></span></code></pre></div>
+<p>We are interested in the variances which are the diagonal elements. We see that due to the high collinearity, the variances of <span class="math inline">\(\hat\beta_1\)</span> and <span class="math inline">\(\hat\beta_2\)</span> have more than tripled, meaning it is more difficult to precisely estimate the true coefficients.</p>
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="6.3-mofimr.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="6.5-the-distribution-of-the-ols-estimators-in-multiple-regression.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": true,
+"facebook": true,
+"twitter": true,
+"linkedin": true,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "serif",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/mca91/EconometricsWithR/edit/master/06-ch6.Rmd",
+"text": "Edit"
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": ["ITER.pdf"],
+"search": {
+"engine": "lunr",
+"options": null
+},
+"toc": {
+"collapse": "subsection",
+"scroll_highlight": true
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

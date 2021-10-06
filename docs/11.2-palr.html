@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>11.2 Probit and Logit Regression | Introduction to Econometrics with R</title>
+  <meta name="description" content="Beginners with little background in statistics and econometrics often have a hard time understanding the benefits of having programming skills for learning and applying Econometrics. ‘Introduction to Econometrics with R’ is an interactive companion to the well-received textbook ‘Introduction to Econometrics’ by James H. Stock and Mark W. Watson (2015). It gives a gentle introduction to the essentials of R programming and guides students in implementing the empirical applications presented throughout the textbook using the newly aquired skills. This is supported by interactive programming exercises generated with DataCamp Light and integration of interactive visualizations of central concepts which are based on the flexible JavaScript library D3.js." />
+  <meta name="generator" content="bookdown 0.23 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="11.2 Probit and Logit Regression | Introduction to Econometrics with R" />
+  <meta property="og:type" content="book" />
+  <meta property="og:url" content="https://www.econometrics-with-r.org/" />
+  <meta property="og:image" content="https://www.econometrics-with-r.org//images/cover.png" />
+  <meta property="og:description" content="Beginners with little background in statistics and econometrics often have a hard time understanding the benefits of having programming skills for learning and applying Econometrics. ‘Introduction to Econometrics with R’ is an interactive companion to the well-received textbook ‘Introduction to Econometrics’ by James H. Stock and Mark W. Watson (2015). It gives a gentle introduction to the essentials of R programming and guides students in implementing the empirical applications presented throughout the textbook using the newly aquired skills. This is supported by interactive programming exercises generated with DataCamp Light and integration of interactive visualizations of central concepts which are based on the flexible JavaScript library D3.js." />
+  <meta name="github-repo" content="mca91/EconometricsWithR" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="11.2 Probit and Logit Regression | Introduction to Econometrics with R" />
+  
+  <meta name="twitter:description" content="Beginners with little background in statistics and econometrics often have a hard time understanding the benefits of having programming skills for learning and applying Econometrics. ‘Introduction to Econometrics with R’ is an interactive companion to the well-received textbook ‘Introduction to Econometrics’ by James H. Stock and Mark W. Watson (2015). It gives a gentle introduction to the essentials of R programming and guides students in implementing the empirical applications presented throughout the textbook using the newly aquired skills. This is supported by interactive programming exercises generated with DataCamp Light and integration of interactive visualizations of central concepts which are based on the flexible JavaScript library D3.js." />
+  <meta name="twitter:image" content="https://www.econometrics-with-r.org//images/cover.png" />
+
+<meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber, and Martin Schmelzer" />
+
+
+<meta name="date" content="2021-10-06" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="11.1-binary-dependent-variables-and-the-linear-probability-model.html"/>
+<link rel="next" href="11.3-estimation-and-inference-in-the-logit-and-probit-models.html"/>
+<script src="libs/header-attrs-2.10/header-attrs.js"></script>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
+<script src="libs/htmlwidgets-1.5.3/htmlwidgets.js"></script>
+<script src="libs/plotly-binding-4.9.4.1/plotly.js"></script>
+<script src="libs/typedarray-0.1/typedarray.min.js"></script>
+<link href="libs/crosstalk-1.1.1/css/crosstalk.css" rel="stylesheet" />
+<script src="libs/crosstalk-1.1.1/js/crosstalk.min.js"></script>
+<link href="libs/plotly-htmlwidgets-css-1.57.1/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="libs/plotly-main-1.57.1/plotly-latest.min.js"></script>
+<!-- font families -->
+
+<link href="https://fonts.googleapis.com/css?family=PT+Sans|Pacifico|Source+Sans+Pro" rel="stylesheet">
+
+<script src="js/hideOutput.js"></script>
+
+<!-- Mathjax -->
+<script type="text/javascript" id="MathJax-script" async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+ <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        extensions: ["tex2jax.js", "TeX/AMSmath.js"],
+        tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+        jax: ["input/TeX","output/CommonHTML"]
+      });
+      MathJax.Hub.processSectionDelay = 0;
+  </script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-110299877-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-110299877-1');
+</script>
+
+<!-- open review block -->
+
+<script async defer src="https://hypothes.is/embed.js"></script>
+
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  background-color: #f8f8f8; }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ef2929; } /* Alert */
+code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #c4a000; } /* Attribute */
+code span.bn { color: #0000cf; } /* BaseN */
+code span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4e9a06; } /* Char */
+code span.cn { color: #000000; } /* Constant */
+code span.co { color: #8f5902; font-style: italic; } /* Comment */
+code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code span.dt { color: #204a87; } /* DataType */
+code span.dv { color: #0000cf; } /* DecVal */
+code span.er { color: #a40000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #0000cf; } /* Float */
+code span.fu { color: #000000; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code span.ot { color: #8f5902; } /* Other */
+code span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code span.sc { color: #000000; } /* SpecialChar */
+code span.ss { color: #4e9a06; } /* SpecialString */
+code span.st { color: #4e9a06; } /* String */
+code span.va { color: #000000; } /* Variable */
+code span.vs { color: #4e9a06; } /* VerbatimString */
+code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+/* Used with Pandoc 2.11+ new --citeproc when CSL is used */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+<link rel="stylesheet" href="toc.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><center><img src="images/logo.png" alt="logo" width="50%" height="50%"style="margin: 15px 0 0 0"></center></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Preface</a></li>
+<li class="chapter" data-level="1" data-path="1-introduction.html"><a href="1-introduction.html"><i class="fa fa-check"></i><b>1</b> Introduction</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="1.1-colophon.html"><a href="1.1-colophon.html"><i class="fa fa-check"></i><b>1.1</b> Colophon</a></li>
+<li class="chapter" data-level="1.2" data-path="1.2-a-very-short-introduction-to-r-and-rstudio.html"><a href="1.2-a-very-short-introduction-to-r-and-rstudio.html"><i class="fa fa-check"></i><b>1.2</b> A Very Short Introduction to <tt>R</tt> and <em>RStudio</em></a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="2-pt.html"><a href="2-pt.html"><i class="fa fa-check"></i><b>2</b> Probability Theory</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="2.1-random-variables-and-probability-distributions.html"><a href="2.1-random-variables-and-probability-distributions.html"><i class="fa fa-check"></i><b>2.1</b> Random Variables and Probability Distributions</a>
+<ul>
+<li class="chapter" data-level="" data-path="2.1-random-variables-and-probability-distributions.html"><a href="2.1-random-variables-and-probability-distributions.html#probability-distributions-of-discrete-random-variables"><i class="fa fa-check"></i>Probability Distributions of Discrete Random Variables</a></li>
+<li class="chapter" data-level="" data-path="2.1-random-variables-and-probability-distributions.html"><a href="2.1-random-variables-and-probability-distributions.html#bernoulli-trials"><i class="fa fa-check"></i>Bernoulli Trials</a></li>
+<li class="chapter" data-level="" data-path="2.1-random-variables-and-probability-distributions.html"><a href="2.1-random-variables-and-probability-distributions.html#expected-value-mean-and-variance"><i class="fa fa-check"></i>Expected Value, Mean and Variance</a></li>
+<li class="chapter" data-level="" data-path="2.1-random-variables-and-probability-distributions.html"><a href="2.1-random-variables-and-probability-distributions.html#probability-distributions-of-continuous-random-variables"><i class="fa fa-check"></i>Probability Distributions of Continuous Random Variables</a></li>
+<li class="chapter" data-level="" data-path="2.1-random-variables-and-probability-distributions.html"><a href="2.1-random-variables-and-probability-distributions.html#the-normal-distribution"><i class="fa fa-check"></i>The Normal Distribution</a></li>
+<li class="chapter" data-level="" data-path="2.1-random-variables-and-probability-distributions.html"><a href="2.1-random-variables-and-probability-distributions.html#the-chi-squared-distribution"><i class="fa fa-check"></i>The Chi-Squared Distribution</a></li>
+<li class="chapter" data-level="" data-path="2.1-random-variables-and-probability-distributions.html"><a href="2.1-random-variables-and-probability-distributions.html#thetdist"><i class="fa fa-check"></i>The Student t Distribution</a></li>
+<li class="chapter" data-level="" data-path="2.1-random-variables-and-probability-distributions.html"><a href="2.1-random-variables-and-probability-distributions.html#the-f-distribution"><i class="fa fa-check"></i>The F Distribution</a></li>
+</ul></li>
+<li class="chapter" data-level="2.2" data-path="2.2-RSATDOSA.html"><a href="2.2-RSATDOSA.html"><i class="fa fa-check"></i><b>2.2</b> Random Sampling and the Distribution of Sample Averages</a>
+<ul>
+<li class="chapter" data-level="" data-path="2.2-RSATDOSA.html"><a href="2.2-RSATDOSA.html#mean-and-variance-of-the-sample-mean"><i class="fa fa-check"></i>Mean and Variance of the Sample Mean</a></li>
+<li class="chapter" data-level="" data-path="2.2-RSATDOSA.html"><a href="2.2-RSATDOSA.html#large-sample-approximations-to-sampling-distributions"><i class="fa fa-check"></i>Large Sample Approximations to Sampling Distributions</a></li>
+</ul></li>
+<li class="chapter" data-level="2.3" data-path="2.3-exercises-2.html"><a href="2.3-exercises-2.html"><i class="fa fa-check"></i><b>2.3</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="3-arosur.html"><a href="3-arosur.html"><i class="fa fa-check"></i><b>3</b> A Review of Statistics using R</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="3.1-estimation-of-the-population-mean.html"><a href="3.1-estimation-of-the-population-mean.html"><i class="fa fa-check"></i><b>3.1</b> Estimation of the Population Mean</a></li>
+<li class="chapter" data-level="3.2" data-path="3.2-potsm.html"><a href="3.2-potsm.html"><i class="fa fa-check"></i><b>3.2</b> Properties of the Sample Mean</a></li>
+<li class="chapter" data-level="3.3" data-path="3.3-hypothesis-tests-concerning-the-population-mean.html"><a href="3.3-hypothesis-tests-concerning-the-population-mean.html"><i class="fa fa-check"></i><b>3.3</b> Hypothesis Tests Concerning the Population Mean</a>
+<ul>
+<li class="chapter" data-level="" data-path="3.3-hypothesis-tests-concerning-the-population-mean.html"><a href="3.3-hypothesis-tests-concerning-the-population-mean.html#the-p-value"><i class="fa fa-check"></i>The p-Value</a></li>
+<li class="chapter" data-level="" data-path="3.3-hypothesis-tests-concerning-the-population-mean.html"><a href="3.3-hypothesis-tests-concerning-the-population-mean.html#calculating-the-p-value-when-the-standard-deviation-is-known"><i class="fa fa-check"></i>Calculating the p-Value when the Standard Deviation is Known</a></li>
+<li class="chapter" data-level="" data-path="3.3-hypothesis-tests-concerning-the-population-mean.html"><a href="3.3-hypothesis-tests-concerning-the-population-mean.html#SVSSDASE"><i class="fa fa-check"></i>Sample Variance, Sample Standard Deviation and Standard Error</a></li>
+<li class="chapter" data-level="" data-path="3.3-hypothesis-tests-concerning-the-population-mean.html"><a href="3.3-hypothesis-tests-concerning-the-population-mean.html#calculating-the-p-value-when-the-standard-deviation-is-unknown"><i class="fa fa-check"></i>Calculating the p-value When the Standard Deviation is Unknown</a></li>
+<li class="chapter" data-level="" data-path="3.3-hypothesis-tests-concerning-the-population-mean.html"><a href="3.3-hypothesis-tests-concerning-the-population-mean.html#the-t-statistic"><i class="fa fa-check"></i>The t-statistic</a></li>
+<li class="chapter" data-level="" data-path="3.3-hypothesis-tests-concerning-the-population-mean.html"><a href="3.3-hypothesis-tests-concerning-the-population-mean.html#hypothesis-testing-with-a-prespecified-significance-level"><i class="fa fa-check"></i>Hypothesis Testing with a Prespecified Significance Level</a></li>
+<li class="chapter" data-level="" data-path="3.3-hypothesis-tests-concerning-the-population-mean.html"><a href="3.3-hypothesis-tests-concerning-the-population-mean.html#one-sided-alternatives"><i class="fa fa-check"></i>One-sided Alternatives</a></li>
+</ul></li>
+<li class="chapter" data-level="3.4" data-path="3.4-confidence-intervals-for-the-population-mean.html"><a href="3.4-confidence-intervals-for-the-population-mean.html"><i class="fa fa-check"></i><b>3.4</b> Confidence Intervals for the Population Mean</a></li>
+<li class="chapter" data-level="3.5" data-path="3.5-cmfdp.html"><a href="3.5-cmfdp.html"><i class="fa fa-check"></i><b>3.5</b> Comparing Means from Different Populations</a></li>
+<li class="chapter" data-level="3.6" data-path="3.6-aattggoe.html"><a href="3.6-aattggoe.html"><i class="fa fa-check"></i><b>3.6</b> An Application to the Gender Gap of Earnings</a></li>
+<li class="chapter" data-level="3.7" data-path="3.7-scatterplots-sample-covariance-and-sample-correlation.html"><a href="3.7-scatterplots-sample-covariance-and-sample-correlation.html"><i class="fa fa-check"></i><b>3.7</b> Scatterplots, Sample Covariance and Sample Correlation</a></li>
+<li class="chapter" data-level="3.8" data-path="3.8-exercises-3.html"><a href="3.8-exercises-3.html"><i class="fa fa-check"></i><b>3.8</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="4-lrwor.html"><a href="4-lrwor.html"><i class="fa fa-check"></i><b>4</b> Linear Regression with One Regressor</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="4.1-simple-linear-regression.html"><a href="4.1-simple-linear-regression.html"><i class="fa fa-check"></i><b>4.1</b> Simple Linear Regression</a></li>
+<li class="chapter" data-level="4.2" data-path="4.2-estimating-the-coefficients-of-the-linear-regression-model.html"><a href="4.2-estimating-the-coefficients-of-the-linear-regression-model.html"><i class="fa fa-check"></i><b>4.2</b> Estimating the Coefficients of the Linear Regression Model</a>
+<ul>
+<li class="chapter" data-level="" data-path="4.2-estimating-the-coefficients-of-the-linear-regression-model.html"><a href="4.2-estimating-the-coefficients-of-the-linear-regression-model.html#the-ordinary-least-squares-estimator"><i class="fa fa-check"></i>The Ordinary Least Squares Estimator</a></li>
+</ul></li>
+<li class="chapter" data-level="4.3" data-path="4.3-measures-of-fit.html"><a href="4.3-measures-of-fit.html"><i class="fa fa-check"></i><b>4.3</b> Measures of Fit</a>
+<ul>
+<li class="chapter" data-level="" data-path="4.3-measures-of-fit.html"><a href="4.3-measures-of-fit.html#the-coefficient-of-determination"><i class="fa fa-check"></i>The Coefficient of Determination</a></li>
+<li class="chapter" data-level="" data-path="4.3-measures-of-fit.html"><a href="4.3-measures-of-fit.html#the-standard-error-of-the-regression"><i class="fa fa-check"></i>The Standard Error of the Regression</a></li>
+<li class="chapter" data-level="" data-path="4.3-measures-of-fit.html"><a href="4.3-measures-of-fit.html#application-to-the-test-score-data"><i class="fa fa-check"></i>Application to the Test Score Data</a></li>
+</ul></li>
+<li class="chapter" data-level="4.4" data-path="4.4-tlsa.html"><a href="4.4-tlsa.html"><i class="fa fa-check"></i><b>4.4</b> The Least Squares Assumptions</a>
+<ul>
+<li class="chapter" data-level="" data-path="4.4-tlsa.html"><a href="4.4-tlsa.html#assumption-1-the-error-term-has-conditional-mean-of-zero"><i class="fa fa-check"></i>Assumption 1: The Error Term has Conditional Mean of Zero</a></li>
+<li class="chapter" data-level="" data-path="4.4-tlsa.html"><a href="4.4-tlsa.html#assumption-2-independently-and-identically-distributed-data"><i class="fa fa-check"></i>Assumption 2: Independently and Identically Distributed Data</a></li>
+<li class="chapter" data-level="" data-path="4.4-tlsa.html"><a href="4.4-tlsa.html#assumption-3-large-outliers-are-unlikely"><i class="fa fa-check"></i>Assumption 3: Large Outliers are Unlikely</a></li>
+</ul></li>
+<li class="chapter" data-level="4.5" data-path="4.5-tsdotoe.html"><a href="4.5-tsdotoe.html"><i class="fa fa-check"></i><b>4.5</b> The Sampling Distribution of the OLS Estimator</a>
+<ul>
+<li class="chapter" data-level="" data-path="4.5-tsdotoe.html"><a href="4.5-tsdotoe.html#simulation-study-1"><i class="fa fa-check"></i>Simulation Study 1</a></li>
+<li class="chapter" data-level="" data-path="4.5-tsdotoe.html"><a href="4.5-tsdotoe.html#simulation-study-2"><i class="fa fa-check"></i>Simulation Study 2</a></li>
+<li class="chapter" data-level="" data-path="4.5-tsdotoe.html"><a href="4.5-tsdotoe.html#simulation-study-3"><i class="fa fa-check"></i>Simulation Study 3</a></li>
+</ul></li>
+<li class="chapter" data-level="4.6" data-path="4.6-exercises-4.html"><a href="4.6-exercises-4.html"><i class="fa fa-check"></i><b>4.6</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="5-htaciitslrm.html"><a href="5-htaciitslrm.html"><i class="fa fa-check"></i><b>5</b> Hypothesis Tests and Confidence Intervals in the Simple Linear Regression Model</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="5.1-testing-two-sided-hypotheses-concerning-the-slope-coefficient.html"><a href="5.1-testing-two-sided-hypotheses-concerning-the-slope-coefficient.html"><i class="fa fa-check"></i><b>5.1</b> Testing Two-Sided Hypotheses Concerning the Slope Coefficient</a></li>
+<li class="chapter" data-level="5.2" data-path="5.2-cifrc.html"><a href="5.2-cifrc.html"><i class="fa fa-check"></i><b>5.2</b> Confidence Intervals for Regression Coefficients</a>
+<ul>
+<li class="chapter" data-level="" data-path="5.2-cifrc.html"><a href="5.2-cifrc.html#simulation-study-confidence-intervals"><i class="fa fa-check"></i>Simulation Study: Confidence Intervals</a></li>
+</ul></li>
+<li class="chapter" data-level="5.3" data-path="5.3-rwxiabv.html"><a href="5.3-rwxiabv.html"><i class="fa fa-check"></i><b>5.3</b> Regression when X is a Binary Variable</a></li>
+<li class="chapter" data-level="5.4" data-path="5.4-hah.html"><a href="5.4-hah.html"><i class="fa fa-check"></i><b>5.4</b> Heteroskedasticity and Homoskedasticity</a>
+<ul>
+<li class="chapter" data-level="" data-path="5.4-hah.html"><a href="5.4-hah.html#a-real-world-example-for-heteroskedasticity"><i class="fa fa-check"></i>A Real-World Example for Heteroskedasticity</a></li>
+<li class="chapter" data-level="" data-path="5.4-hah.html"><a href="5.4-hah.html#should-we-care-about-heteroskedasticity"><i class="fa fa-check"></i>Should We Care About Heteroskedasticity?</a></li>
+<li class="chapter" data-level="" data-path="5.4-hah.html"><a href="5.4-hah.html#computation-of-heteroskedasticity-robust-standard-errors"><i class="fa fa-check"></i>Computation of Heteroskedasticity-Robust Standard Errors</a></li>
+</ul></li>
+<li class="chapter" data-level="5.5" data-path="5.5-the-gauss-markov-theorem.html"><a href="5.5-the-gauss-markov-theorem.html"><i class="fa fa-check"></i><b>5.5</b> The Gauss-Markov Theorem</a>
+<ul>
+<li class="chapter" data-level="" data-path="5.5-the-gauss-markov-theorem.html"><a href="5.5-the-gauss-markov-theorem.html#simulation-study-blue-estimator"><i class="fa fa-check"></i>Simulation Study: BLUE Estimator</a></li>
+</ul></li>
+<li class="chapter" data-level="5.6" data-path="5.6-using-the-t-statistic-in-regression-when-the-sample-size-is-small.html"><a href="5.6-using-the-t-statistic-in-regression-when-the-sample-size-is-small.html"><i class="fa fa-check"></i><b>5.6</b> Using the t-Statistic in Regression When the Sample Size Is Small</a></li>
+<li class="chapter" data-level="5.7" data-path="5.7-exercises-5.html"><a href="5.7-exercises-5.html"><i class="fa fa-check"></i><b>5.7</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="6-rmwmr.html"><a href="6-rmwmr.html"><i class="fa fa-check"></i><b>6</b> Regression Models with Multiple Regressors</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="6.1-omitted-variable-bias.html"><a href="6.1-omitted-variable-bias.html"><i class="fa fa-check"></i><b>6.1</b> Omitted Variable Bias</a></li>
+<li class="chapter" data-level="6.2" data-path="6.2-tmrm.html"><a href="6.2-tmrm.html"><i class="fa fa-check"></i><b>6.2</b> The Multiple Regression Model</a></li>
+<li class="chapter" data-level="6.3" data-path="6.3-mofimr.html"><a href="6.3-mofimr.html"><i class="fa fa-check"></i><b>6.3</b> Measures of Fit in Multiple Regression</a></li>
+<li class="chapter" data-level="6.4" data-path="6.4-ols-assumptions-in-multiple-regression.html"><a href="6.4-ols-assumptions-in-multiple-regression.html"><i class="fa fa-check"></i><b>6.4</b> OLS Assumptions in Multiple Regression</a>
+<ul>
+<li class="chapter" data-level="" data-path="6.4-ols-assumptions-in-multiple-regression.html"><a href="6.4-ols-assumptions-in-multiple-regression.html#multicollinearity"><i class="fa fa-check"></i>Multicollinearity</a></li>
+<li class="chapter" data-level="" data-path="6.4-ols-assumptions-in-multiple-regression.html"><a href="6.4-ols-assumptions-in-multiple-regression.html#simulation-study-imperfect-multicollinearity"><i class="fa fa-check"></i>Simulation Study: Imperfect Multicollinearity</a></li>
+</ul></li>
+<li class="chapter" data-level="6.5" data-path="6.5-the-distribution-of-the-ols-estimators-in-multiple-regression.html"><a href="6.5-the-distribution-of-the-ols-estimators-in-multiple-regression.html"><i class="fa fa-check"></i><b>6.5</b> The Distribution of the OLS Estimators in Multiple Regression</a></li>
+<li class="chapter" data-level="6.6" data-path="6.6-exercises-6.html"><a href="6.6-exercises-6.html"><i class="fa fa-check"></i><b>6.6</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="7-htaciimr.html"><a href="7-htaciimr.html"><i class="fa fa-check"></i><b>7</b> Hypothesis Tests and Confidence Intervals in Multiple Regression</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="7.1-hypothesis-tests-and-confidence-intervals-for-a-single-coefficient.html"><a href="7.1-hypothesis-tests-and-confidence-intervals-for-a-single-coefficient.html"><i class="fa fa-check"></i><b>7.1</b> Hypothesis Tests and Confidence Intervals for a Single Coefficient</a></li>
+<li class="chapter" data-level="7.2" data-path="7.2-an-application-to-test-scores-and-the-student-teacher-ratio.html"><a href="7.2-an-application-to-test-scores-and-the-student-teacher-ratio.html"><i class="fa fa-check"></i><b>7.2</b> An Application to Test Scores and the Student-Teacher Ratio</a>
+<ul>
+<li class="chapter" data-level="" data-path="7.2-an-application-to-test-scores-and-the-student-teacher-ratio.html"><a href="7.2-an-application-to-test-scores-and-the-student-teacher-ratio.html#another-augmentation-of-the-model"><i class="fa fa-check"></i>Another Augmentation of the Model</a></li>
+</ul></li>
+<li class="chapter" data-level="7.3" data-path="7.3-joint-hypothesis-testing-using-the-f-statistic.html"><a href="7.3-joint-hypothesis-testing-using-the-f-statistic.html"><i class="fa fa-check"></i><b>7.3</b> Joint Hypothesis Testing Using the F-Statistic</a></li>
+<li class="chapter" data-level="7.4" data-path="7.4-confidence-sets-for-multiple-coefficients.html"><a href="7.4-confidence-sets-for-multiple-coefficients.html"><i class="fa fa-check"></i><b>7.4</b> Confidence Sets for Multiple Coefficients</a></li>
+<li class="chapter" data-level="7.5" data-path="7.5-model-specification-for-multiple-regression.html"><a href="7.5-model-specification-for-multiple-regression.html"><i class="fa fa-check"></i><b>7.5</b> Model Specification for Multiple Regression</a>
+<ul>
+<li class="chapter" data-level="" data-path="7.5-model-specification-for-multiple-regression.html"><a href="7.5-model-specification-for-multiple-regression.html#model-specification-in-theory-and-in-practice"><i class="fa fa-check"></i>Model Specification in Theory and in Practice</a></li>
+</ul></li>
+<li class="chapter" data-level="7.6" data-path="7.6-analysis-of-the-test-score-data-set.html"><a href="7.6-analysis-of-the-test-score-data-set.html"><i class="fa fa-check"></i><b>7.6</b> Analysis of the Test Score Data Set</a></li>
+<li class="chapter" data-level="7.7" data-path="7.7-exercises-7.html"><a href="7.7-exercises-7.html"><i class="fa fa-check"></i><b>7.7</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="8-nrf.html"><a href="8-nrf.html"><i class="fa fa-check"></i><b>8</b> Nonlinear Regression Functions</a>
+<ul>
+<li class="chapter" data-level="8.1" data-path="8.1-a-general-strategy-for-modelling-nonlinear-regression-functions.html"><a href="8.1-a-general-strategy-for-modelling-nonlinear-regression-functions.html"><i class="fa fa-check"></i><b>8.1</b> A General Strategy for Modelling Nonlinear Regression Functions</a></li>
+<li class="chapter" data-level="8.2" data-path="8.2-nfoasiv.html"><a href="8.2-nfoasiv.html"><i class="fa fa-check"></i><b>8.2</b> Nonlinear Functions of a Single Independent Variable</a>
+<ul>
+<li class="chapter" data-level="" data-path="8.2-nfoasiv.html"><a href="8.2-nfoasiv.html#polynomials"><i class="fa fa-check"></i>Polynomials</a></li>
+<li class="chapter" data-level="" data-path="8.2-nfoasiv.html"><a href="8.2-nfoasiv.html#logarithms"><i class="fa fa-check"></i>Logarithms</a></li>
+</ul></li>
+<li class="chapter" data-level="8.3" data-path="8.3-interactions-between-independent-variables.html"><a href="8.3-interactions-between-independent-variables.html"><i class="fa fa-check"></i><b>8.3</b> Interactions Between Independent Variables</a></li>
+<li class="chapter" data-level="8.4" data-path="8.4-nonlinear-effects-on-test-scores-of-the-student-teacher-ratio.html"><a href="8.4-nonlinear-effects-on-test-scores-of-the-student-teacher-ratio.html"><i class="fa fa-check"></i><b>8.4</b> Nonlinear Effects on Test Scores of the Student-Teacher Ratio</a></li>
+<li class="chapter" data-level="8.5" data-path="8.5-exercises-8.html"><a href="8.5-exercises-8.html"><i class="fa fa-check"></i><b>8.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="9-asbomr.html"><a href="9-asbomr.html"><i class="fa fa-check"></i><b>9</b> Assessing Studies Based on Multiple Regression</a>
+<ul>
+<li class="chapter" data-level="9.1" data-path="9.1-internal-and-external-validity.html"><a href="9.1-internal-and-external-validity.html"><i class="fa fa-check"></i><b>9.1</b> Internal and External Validity</a></li>
+<li class="chapter" data-level="9.2" data-path="9.2-ttivomra.html"><a href="9.2-ttivomra.html"><i class="fa fa-check"></i><b>9.2</b> Threats to Internal Validity of Multiple Regression Analysis</a></li>
+<li class="chapter" data-level="9.3" data-path="9.3-internal-and-external-validity-when-the-regression-is-used-for-forecasting.html"><a href="9.3-internal-and-external-validity-when-the-regression-is-used-for-forecasting.html"><i class="fa fa-check"></i><b>9.3</b> Internal and External Validity when the Regression is Used for Forecasting</a></li>
+<li class="chapter" data-level="9.4" data-path="9.4-etsacs.html"><a href="9.4-etsacs.html"><i class="fa fa-check"></i><b>9.4</b> Example: Test Scores and Class Size</a></li>
+<li class="chapter" data-level="9.5" data-path="9.5-exercises-9.html"><a href="9.5-exercises-9.html"><i class="fa fa-check"></i><b>9.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="10" data-path="10-rwpd.html"><a href="10-rwpd.html"><i class="fa fa-check"></i><b>10</b> Regression with Panel Data</a>
+<ul>
+<li class="chapter" data-level="10.1" data-path="10.1-panel-data.html"><a href="10.1-panel-data.html"><i class="fa fa-check"></i><b>10.1</b> Panel Data</a></li>
+<li class="chapter" data-level="10.2" data-path="10.2-PDWTTP.html"><a href="10.2-PDWTTP.html"><i class="fa fa-check"></i><b>10.2</b> Panel Data with Two Time Periods: “Before and After” Comparisons</a></li>
+<li class="chapter" data-level="10.3" data-path="10.3-fixed-effects-regression.html"><a href="10.3-fixed-effects-regression.html"><i class="fa fa-check"></i><b>10.3</b> Fixed Effects Regression</a>
+<ul>
+<li class="chapter" data-level="" data-path="10.3-fixed-effects-regression.html"><a href="10.3-fixed-effects-regression.html#estimation-and-inference"><i class="fa fa-check"></i>Estimation and Inference</a></li>
+<li class="chapter" data-level="" data-path="10.3-fixed-effects-regression.html"><a href="10.3-fixed-effects-regression.html#application-to-traffic-deaths"><i class="fa fa-check"></i>Application to Traffic Deaths</a></li>
+</ul></li>
+<li class="chapter" data-level="10.4" data-path="10.4-regression-with-time-fixed-effects.html"><a href="10.4-regression-with-time-fixed-effects.html"><i class="fa fa-check"></i><b>10.4</b> Regression with Time Fixed Effects</a></li>
+<li class="chapter" data-level="10.5" data-path="10.5-tferaaseffer.html"><a href="10.5-tferaaseffer.html"><i class="fa fa-check"></i><b>10.5</b> The Fixed Effects Regression Assumptions and Standard Errors for Fixed Effects Regression</a></li>
+<li class="chapter" data-level="10.6" data-path="10.6-drunk-driving-laws-and-traffic-deaths.html"><a href="10.6-drunk-driving-laws-and-traffic-deaths.html"><i class="fa fa-check"></i><b>10.6</b> Drunk Driving Laws and Traffic Deaths</a></li>
+<li class="chapter" data-level="10.7" data-path="10.7-exercises-10.html"><a href="10.7-exercises-10.html"><i class="fa fa-check"></i><b>10.7</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="11" data-path="11-rwabdv.html"><a href="11-rwabdv.html"><i class="fa fa-check"></i><b>11</b> Regression with a Binary Dependent Variable</a>
+<ul>
+<li class="chapter" data-level="11.1" data-path="11.1-binary-dependent-variables-and-the-linear-probability-model.html"><a href="11.1-binary-dependent-variables-and-the-linear-probability-model.html"><i class="fa fa-check"></i><b>11.1</b> Binary Dependent Variables and the Linear Probability Model</a></li>
+<li class="chapter" data-level="11.2" data-path="11.2-palr.html"><a href="11.2-palr.html"><i class="fa fa-check"></i><b>11.2</b> Probit and Logit Regression</a>
+<ul>
+<li class="chapter" data-level="" data-path="11.2-palr.html"><a href="11.2-palr.html#probit-regression"><i class="fa fa-check"></i>Probit Regression</a></li>
+<li class="chapter" data-level="" data-path="11.2-palr.html"><a href="11.2-palr.html#logit-regression"><i class="fa fa-check"></i>Logit Regression</a></li>
+</ul></li>
+<li class="chapter" data-level="11.3" data-path="11.3-estimation-and-inference-in-the-logit-and-probit-models.html"><a href="11.3-estimation-and-inference-in-the-logit-and-probit-models.html"><i class="fa fa-check"></i><b>11.3</b> Estimation and Inference in the Logit and Probit Models</a></li>
+<li class="chapter" data-level="11.4" data-path="11.4-application-to-the-boston-hmda-data.html"><a href="11.4-application-to-the-boston-hmda-data.html"><i class="fa fa-check"></i><b>11.4</b> Application to the Boston HMDA Data</a></li>
+<li class="chapter" data-level="11.5" data-path="11.5-exercises-11.html"><a href="11.5-exercises-11.html"><i class="fa fa-check"></i><b>11.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="12" data-path="12-ivr.html"><a href="12-ivr.html"><i class="fa fa-check"></i><b>12</b> Instrumental Variables Regression</a>
+<ul>
+<li class="chapter" data-level="12.1" data-path="12.1-TIVEWASRAASI.html"><a href="12.1-TIVEWASRAASI.html"><i class="fa fa-check"></i><b>12.1</b> The IV Estimator with a Single Regressor and a Single Instrument</a></li>
+<li class="chapter" data-level="12.2" data-path="12.2-TGIVRM.html"><a href="12.2-TGIVRM.html"><i class="fa fa-check"></i><b>12.2</b> The General IV Regression Model</a></li>
+<li class="chapter" data-level="12.3" data-path="12.3-civ.html"><a href="12.3-civ.html"><i class="fa fa-check"></i><b>12.3</b> Checking Instrument Validity</a></li>
+<li class="chapter" data-level="12.4" data-path="12.4-attdfc.html"><a href="12.4-attdfc.html"><i class="fa fa-check"></i><b>12.4</b> Application to the Demand for Cigarettes</a></li>
+<li class="chapter" data-level="12.5" data-path="12.5-where-do-valid-instruments-come-from.html"><a href="12.5-where-do-valid-instruments-come-from.html"><i class="fa fa-check"></i><b>12.5</b> Where Do Valid Instruments Come From?</a></li>
+<li class="chapter" data-level="12.6" data-path="12.6-exercises-12.html"><a href="12.6-exercises-12.html"><i class="fa fa-check"></i><b>12.6</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="13" data-path="13-eaqe.html"><a href="13-eaqe.html"><i class="fa fa-check"></i><b>13</b> Experiments and Quasi-Experiments</a>
+<ul>
+<li class="chapter" data-level="13.1" data-path="13.1-poceaie.html"><a href="13.1-poceaie.html"><i class="fa fa-check"></i><b>13.1</b> Potential Outcomes, Causal Effects and Idealized Experiments</a></li>
+<li class="chapter" data-level="13.2" data-path="13.2-threats-to-validity-of-experiments.html"><a href="13.2-threats-to-validity-of-experiments.html"><i class="fa fa-check"></i><b>13.2</b> Threats to Validity of Experiments</a></li>
+<li class="chapter" data-level="13.3" data-path="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html"><i class="fa fa-check"></i><b>13.3</b> Experimental Estimates of the Effect of Class Size Reductions</a>
+<ul>
+<li class="chapter" data-level="" data-path="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#experimental-design-and-the-data-set"><i class="fa fa-check"></i>Experimental Design and the Data Set</a></li>
+<li class="chapter" data-level="" data-path="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#analysis-of-the-star-data"><i class="fa fa-check"></i>Analysis of the STAR Data</a></li>
+</ul></li>
+<li class="chapter" data-level="13.4" data-path="13.4-qe.html"><a href="13.4-qe.html"><i class="fa fa-check"></i><b>13.4</b> Quasi Experiments</a>
+<ul>
+<li class="chapter" data-level="" data-path="13.4-qe.html"><a href="13.4-qe.html#the-differences-in-differences-estimator"><i class="fa fa-check"></i>The Differences-in-Differences Estimator</a></li>
+<li class="chapter" data-level="" data-path="13.4-qe.html"><a href="13.4-qe.html#regression-discontinuity-estimators"><i class="fa fa-check"></i>Regression Discontinuity Estimators</a></li>
+</ul></li>
+<li class="chapter" data-level="13.5" data-path="13.5-exercises-13.html"><a href="13.5-exercises-13.html"><i class="fa fa-check"></i><b>13.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="14" data-path="14-ittsraf.html"><a href="14-ittsraf.html"><i class="fa fa-check"></i><b>14</b> Introduction to Time Series Regression and Forecasting</a>
+<ul>
+<li class="chapter" data-level="14.1" data-path="14.1-using-regression-models-for-forecasting.html"><a href="14.1-using-regression-models-for-forecasting.html"><i class="fa fa-check"></i><b>14.1</b> Using Regression Models for Forecasting</a></li>
+<li class="chapter" data-level="14.2" data-path="14.2-tsdasc.html"><a href="14.2-tsdasc.html"><i class="fa fa-check"></i><b>14.2</b> Time Series Data and Serial Correlation</a>
+<ul>
+<li class="chapter" data-level="" data-path="14.2-tsdasc.html"><a href="14.2-tsdasc.html#notation-lags-differences-logarithms-and-growth-rates"><i class="fa fa-check"></i>Notation, Lags, Differences, Logarithms and Growth Rates</a></li>
+</ul></li>
+<li class="chapter" data-level="14.3" data-path="14.3-autoregressions.html"><a href="14.3-autoregressions.html"><i class="fa fa-check"></i><b>14.3</b> Autoregressions</a>
+<ul>
+<li><a href="14.3-autoregressions.html#autoregressive-models-of-order-p">Autoregressive Models of Order <span class="math inline">\(p\)</span></a></li>
+</ul></li>
+<li class="chapter" data-level="14.4" data-path="14.4-cybtmpi.html"><a href="14.4-cybtmpi.html"><i class="fa fa-check"></i><b>14.4</b> Can You Beat the Market? (Part I)</a></li>
+<li class="chapter" data-level="14.5" data-path="14.5-apatadlm.html"><a href="14.5-apatadlm.html"><i class="fa fa-check"></i><b>14.5</b> Additional Predictors and The ADL Model</a>
+<ul>
+<li class="chapter" data-level="" data-path="14.5-apatadlm.html"><a href="14.5-apatadlm.html#forecast-uncertainty-and-forecast-intervals"><i class="fa fa-check"></i>Forecast Uncertainty and Forecast Intervals</a></li>
+</ul></li>
+<li class="chapter" data-level="14.6" data-path="14.6-llsuic.html"><a href="14.6-llsuic.html"><i class="fa fa-check"></i><b>14.6</b> Lag Length Selection Using Information Criteria</a></li>
+<li class="chapter" data-level="14.7" data-path="14.7-nit.html"><a href="14.7-nit.html"><i class="fa fa-check"></i><b>14.7</b> Nonstationarity I: Trends</a></li>
+<li class="chapter" data-level="14.8" data-path="14.8-niib.html"><a href="14.8-niib.html"><i class="fa fa-check"></i><b>14.8</b> Nonstationarity II: Breaks</a></li>
+<li class="chapter" data-level="14.9" data-path="14.9-can-you-beat-the-market-part-ii.html"><a href="14.9-can-you-beat-the-market-part-ii.html"><i class="fa fa-check"></i><b>14.9</b> Can You Beat the Market? (Part II)</a></li>
+</ul></li>
+<li class="chapter" data-level="15" data-path="15-eodce.html"><a href="15-eodce.html"><i class="fa fa-check"></i><b>15</b> Estimation of Dynamic Causal Effects</a>
+<ul>
+<li class="chapter" data-level="15.1" data-path="15.1-the-orange-juice-data.html"><a href="15.1-the-orange-juice-data.html"><i class="fa fa-check"></i><b>15.1</b> The Orange Juice Data</a></li>
+<li class="chapter" data-level="15.2" data-path="15.2-dynamic-causal-effects.html"><a href="15.2-dynamic-causal-effects.html"><i class="fa fa-check"></i><b>15.2</b> Dynamic Causal Effects</a></li>
+<li class="chapter" data-level="15.3" data-path="15.3-dynamic-multipliers-and-cumulative-dynamic-multipliers.html"><a href="15.3-dynamic-multipliers-and-cumulative-dynamic-multipliers.html"><i class="fa fa-check"></i><b>15.3</b> Dynamic Multipliers and Cumulative Dynamic Multipliers</a></li>
+<li class="chapter" data-level="15.4" data-path="15.4-hac-standard-errors.html"><a href="15.4-hac-standard-errors.html"><i class="fa fa-check"></i><b>15.4</b> HAC Standard Errors</a></li>
+<li class="chapter" data-level="15.5" data-path="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html"><i class="fa fa-check"></i><b>15.5</b> Estimation of Dynamic Causal Effects with Strictly Exogeneous Regressors</a></li>
+<li class="chapter" data-level="15.6" data-path="15.6-orange-juice-prices-and-cold-weather.html"><a href="15.6-orange-juice-prices-and-cold-weather.html"><i class="fa fa-check"></i><b>15.6</b> Orange Juice Prices and Cold Weather</a></li>
+</ul></li>
+<li class="chapter" data-level="16" data-path="16-atitsr.html"><a href="16-atitsr.html"><i class="fa fa-check"></i><b>16</b> Additional Topics in Time Series Regression</a>
+<ul>
+<li class="chapter" data-level="16.1" data-path="16.1-vector-autoregressions.html"><a href="16.1-vector-autoregressions.html"><i class="fa fa-check"></i><b>16.1</b> Vector Autoregressions</a></li>
+<li class="chapter" data-level="16.2" data-path="16.2-ooiatdfglsurt.html"><a href="16.2-ooiatdfglsurt.html"><i class="fa fa-check"></i><b>16.2</b> Orders of Integration and the DF-GLS Unit Root Test</a></li>
+<li class="chapter" data-level="16.3" data-path="16.3-cointegration.html"><a href="16.3-cointegration.html"><i class="fa fa-check"></i><b>16.3</b> Cointegration</a></li>
+<li class="chapter" data-level="16.4" data-path="16.4-volatility-clustering-and-autoregressive-conditional-heteroskedasticity.html"><a href="16.4-volatility-clustering-and-autoregressive-conditional-heteroskedasticity.html"><i class="fa fa-check"></i><b>16.4</b> Volatility Clustering and Autoregressive Conditional Heteroskedasticity</a>
+<ul>
+<li class="chapter" data-level="" data-path="16.4-volatility-clustering-and-autoregressive-conditional-heteroskedasticity.html"><a href="16.4-volatility-clustering-and-autoregressive-conditional-heteroskedasticity.html#arch-and-garch-models"><i class="fa fa-check"></i>ARCH and GARCH Models</a></li>
+<li class="chapter" data-level="" data-path="16.4-volatility-clustering-and-autoregressive-conditional-heteroskedasticity.html"><a href="16.4-volatility-clustering-and-autoregressive-conditional-heteroskedasticity.html#application-to-stock-price-volatility"><i class="fa fa-check"></i>Application to Stock Price Volatility</a></li>
+<li class="chapter" data-level="" data-path="16.4-volatility-clustering-and-autoregressive-conditional-heteroskedasticity.html"><a href="16.4-volatility-clustering-and-autoregressive-conditional-heteroskedasticity.html#summary-8"><i class="fa fa-check"></i>Summary</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Introduction to Econometrics with R</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div class = rmdreview>
+This book is in <b>Open Review</b>. We want your feedback to make the book better for you and other students. You may annotate some text by <span style="background-color: #3297FD; color: white">selecting it with the cursor</span> and then click the <i class="h-icon-annotate"></i> on the pop-up menu. You can also see the annotations of others: click the <i class="h-icon-chevron-left"></i> in the upper right hand corner of the page <i class="fa fa-arrow-circle-right  fa-rotate-315" aria-hidden="true"></i>
+</div>
+<div id="palr" class="section level2" number="11.2">
+<h2><span class="header-section-number">11.2</span> Probit and Logit Regression</h2>
+<p>The linear probability model has a major flaw: it assumes the conditional probability function to be linear. This does not restrict <span class="math inline">\(P(Y=1\vert X_1,\dots,X_k)\)</span> to lie between <span class="math inline">\(0\)</span> and <span class="math inline">\(1\)</span>. We can easily see this in our reproduction of Figure 11.1 of the book: for <span class="math inline">\(P/I \ ratio \geq 1.75\)</span>, <a href="11.1-binary-dependent-variables-and-the-linear-probability-model.html#eq:lpm">(11.2)</a> predicts the probability of a mortgage application denial to be bigger than <span class="math inline">\(1\)</span>. For applications with <span class="math inline">\(P/I \ ratio\)</span> close to <span class="math inline">\(0\)</span>, the predicted probability of denial is even negative so that the model has no meaningful interpretation here.</p>
+<p>This circumstance calls for an approach that uses a nonlinear function to model the conditional probability function of a binary dependent variable. Commonly used methods are Probit and Logit regression.</p>
+<div id="probit-regression" class="section level3 unnumbered">
+<h3>Probit Regression</h3>
+<p>In Probit regression, the cumulative standard normal distribution function <span class="math inline">\(\Phi(\cdot)\)</span> is used to model the regression function when the dependent variable is binary, that is, we assume
+<span class="math display" id="eq:probitmodel">\[\begin{align}
+  E(Y\vert X) = P(Y=1\vert X) = \Phi(\beta_0 + \beta_1 X). \tag{11.4}
+\end{align}\]</span></p>
+<p><span class="math inline">\(\beta_0 + \beta_1 X\)</span> in <a href="11.2-palr.html#eq:probitmodel">(11.4)</a> plays the role of a quantile <span class="math inline">\(z\)</span>. Remember that <span class="math display">\[\Phi(z) = P(Z \leq z) \ , \ Z \sim \mathcal{N}(0,1)\]</span> such that the Probit coefficient <span class="math inline">\(\beta_1\)</span> in <a href="11.2-palr.html#eq:probitmodel">(11.4)</a> is the change in <span class="math inline">\(z\)</span> associated with a one unit change in <span class="math inline">\(X\)</span>. Although the effect on <span class="math inline">\(z\)</span> of a change in <span class="math inline">\(X\)</span> is linear, the link between <span class="math inline">\(z\)</span> and the dependent variable <span class="math inline">\(Y\)</span> is nonlinear since <span class="math inline">\(\Phi\)</span> is a nonlinear function of <span class="math inline">\(X\)</span>.</p>
+<p>Since the dependent variable is a nonlinear function of the regressors, the coefficient on <span class="math inline">\(X\)</span> has no simple interpretation. According to Key Concept 8.1, the expected change in the probability that <span class="math inline">\(Y=1\)</span> due to a change in <span class="math inline">\(P/I \ ratio\)</span> can be computed as follows:</p>
+<ol style="list-style-type: decimal">
+<li>Compute the predicted probability that <span class="math inline">\(Y=1\)</span> for the original value of <span class="math inline">\(X\)</span>.</li>
+<li>Compute the predicted probability that <span class="math inline">\(Y=1\)</span> for <span class="math inline">\(X + \Delta X\)</span>.</li>
+<li>Compute the difference between both predicted probabilities.</li>
+</ol>
+<p>Of course we can generalize <a href="11.2-palr.html#eq:probitmodel">(11.4)</a> to Probit regression with multiple regressors to mitigate the risk of facing omitted variable bias. Probit regression essentials are summarized in Key Concept 11.2.</p>
+<div id="KC11.2" class="keyconcept">
+<h3 class="right">
+Key Concept 11.2
+</h3>
+<h3 class="left">
+Probit Model, Predicted Probabilities and Estimated Effects
+</h3>
+<p>Assume that <span class="math inline">\(Y\)</span> is a binary variable. The model</p>
+<p><span class="math display">\[ Y= \beta_0 + \beta_1 + X_1 + \beta_2 X_2 + \dots + \beta_k X_k + u \]</span>
+with
+<span class="math display">\[P(Y = 1 \vert X_1, X_2, \dots ,X_k) = \Phi(\beta_0 + \beta_1 + X_1 + \beta_2 X_2 + \dots + \beta_k X_k)\]</span>
+is the population Probit model with multiple regressors <span class="math inline">\(X_1, X_2, \dots, X_k\)</span> and <span class="math inline">\(\Phi(\cdot)\)</span> is the cumulative standard normal distribution function.</p>
+<p>The predicted probability that <span class="math inline">\(Y=1\)</span> given <span class="math inline">\(X_1, X_2, \dots, X_k\)</span> can be calculated in two steps:</p>
+<ol style="list-style-type: decimal">
+<li><p>Compute <span class="math inline">\(z = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + \dots + \beta_k X_k\)</span></p></li>
+<li><p>Look up <span class="math inline">\(\Phi(z)\)</span> by calling <tt>pnorm()</tt>.</p></li>
+</ol>
+<p><span class="math inline">\(\beta_j\)</span> is the effect on <span class="math inline">\(z\)</span> of a one unit change in regressor <span class="math inline">\(X_j\)</span>, holding constant all other <span class="math inline">\(k-1\)</span> regressors.</p>
+<p>The effect on the predicted probability of a change in a regressor can be computed as in Key Concept 8.1.</p>
+<p>In <tt>R</tt>, Probit models can be estimated using the function <tt>glm()</tt> from the package <tt>stats</tt>. Using the argument <tt>family</tt> we specify that we want to use a Probit link function.</p>
+</div>
+<p>We now estimate a simple Probit model of the probability of a mortgage denial.</p>
+<div class="sourceCode" id="cb267"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb267-1"><a href="11.2-palr.html#cb267-1" aria-hidden="true" tabindex="-1"></a><span class="co"># estimate the simple probit model</span></span>
+<span id="cb267-2"><a href="11.2-palr.html#cb267-2" aria-hidden="true" tabindex="-1"></a>denyprobit <span class="ot">&lt;-</span> <span class="fu">glm</span>(deny <span class="sc">~</span> pirat, </span>
+<span id="cb267-3"><a href="11.2-palr.html#cb267-3" aria-hidden="true" tabindex="-1"></a>                  <span class="at">family =</span> <span class="fu">binomial</span>(<span class="at">link =</span> <span class="st">&quot;probit&quot;</span>), </span>
+<span id="cb267-4"><a href="11.2-palr.html#cb267-4" aria-hidden="true" tabindex="-1"></a>                  <span class="at">data =</span> HMDA)</span>
+<span id="cb267-5"><a href="11.2-palr.html#cb267-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb267-6"><a href="11.2-palr.html#cb267-6" aria-hidden="true" tabindex="-1"></a><span class="fu">coeftest</span>(denyprobit, <span class="at">vcov. =</span> vcovHC, <span class="at">type =</span> <span class="st">&quot;HC1&quot;</span>)</span>
+<span id="cb267-7"><a href="11.2-palr.html#cb267-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb267-8"><a href="11.2-palr.html#cb267-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; z test of coefficients:</span></span>
+<span id="cb267-9"><a href="11.2-palr.html#cb267-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb267-10"><a href="11.2-palr.html#cb267-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;             Estimate Std. Error  z value  Pr(&gt;|z|)    </span></span>
+<span id="cb267-11"><a href="11.2-palr.html#cb267-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; (Intercept) -2.19415    0.18901 -11.6087 &lt; 2.2e-16 ***</span></span>
+<span id="cb267-12"><a href="11.2-palr.html#cb267-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; pirat        2.96787    0.53698   5.5269 3.259e-08 ***</span></span>
+<span id="cb267-13"><a href="11.2-palr.html#cb267-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ---</span></span>
+<span id="cb267-14"><a href="11.2-palr.html#cb267-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span></code></pre></div>
+<p>The estimated model is</p>
+<p><span class="math display" id="eq:denyprobit">\[\begin{align}
+  \widehat{P(deny\vert P/I \ ratio}) = \Phi(-\underset{(0.19)}{2.19} + \underset{(0.54)}{2.97} P/I \ ratio). \tag{11.5}
+\end{align}\]</span></p>
+<p>Just as in the linear probability model we find that the relation between the probability of denial and the payments-to-income ratio is positive and that the corresponding coefficient is highly significant.</p>
+<p>The following code chunk reproduces Figure 11.2 of the book.</p>
+<div class="sourceCode" id="cb268"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb268-1"><a href="11.2-palr.html#cb268-1" aria-hidden="true" tabindex="-1"></a><span class="co"># plot data</span></span>
+<span id="cb268-2"><a href="11.2-palr.html#cb268-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="at">x =</span> HMDA<span class="sc">$</span>pirat, </span>
+<span id="cb268-3"><a href="11.2-palr.html#cb268-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">y =</span> HMDA<span class="sc">$</span>deny,</span>
+<span id="cb268-4"><a href="11.2-palr.html#cb268-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">&quot;Probit Model of the Probability of Denial, Given P/I Ratio&quot;</span>,</span>
+<span id="cb268-5"><a href="11.2-palr.html#cb268-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">&quot;P/I ratio&quot;</span>,</span>
+<span id="cb268-6"><a href="11.2-palr.html#cb268-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">&quot;Deny&quot;</span>,</span>
+<span id="cb268-7"><a href="11.2-palr.html#cb268-7" aria-hidden="true" tabindex="-1"></a>     <span class="at">pch =</span> <span class="dv">20</span>,</span>
+<span id="cb268-8"><a href="11.2-palr.html#cb268-8" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">0.4</span>, <span class="fl">1.4</span>),</span>
+<span id="cb268-9"><a href="11.2-palr.html#cb268-9" aria-hidden="true" tabindex="-1"></a>     <span class="at">cex.main =</span> <span class="fl">0.85</span>)</span>
+<span id="cb268-10"><a href="11.2-palr.html#cb268-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb268-11"><a href="11.2-palr.html#cb268-11" aria-hidden="true" tabindex="-1"></a><span class="co"># add horizontal dashed lines and text</span></span>
+<span id="cb268-12"><a href="11.2-palr.html#cb268-12" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h =</span> <span class="dv">1</span>, <span class="at">lty =</span> <span class="dv">2</span>, <span class="at">col =</span> <span class="st">&quot;darkred&quot;</span>)</span>
+<span id="cb268-13"><a href="11.2-palr.html#cb268-13" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h =</span> <span class="dv">0</span>, <span class="at">lty =</span> <span class="dv">2</span>, <span class="at">col =</span> <span class="st">&quot;darkred&quot;</span>)</span>
+<span id="cb268-14"><a href="11.2-palr.html#cb268-14" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="fl">2.5</span>, <span class="fl">0.9</span>, <span class="at">cex =</span> <span class="fl">0.8</span>, <span class="st">&quot;Mortgage denied&quot;</span>)</span>
+<span id="cb268-15"><a href="11.2-palr.html#cb268-15" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="fl">2.5</span>, <span class="sc">-</span><span class="fl">0.1</span>, <span class="at">cex=</span> <span class="fl">0.8</span>, <span class="st">&quot;Mortgage approved&quot;</span>)</span>
+<span id="cb268-16"><a href="11.2-palr.html#cb268-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb268-17"><a href="11.2-palr.html#cb268-17" aria-hidden="true" tabindex="-1"></a><span class="co"># add estimated regression line</span></span>
+<span id="cb268-18"><a href="11.2-palr.html#cb268-18" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">3</span>, <span class="fl">0.01</span>)</span>
+<span id="cb268-19"><a href="11.2-palr.html#cb268-19" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">predict</span>(denyprobit, <span class="fu">list</span>(<span class="at">pirat =</span> x), <span class="at">type =</span> <span class="st">&quot;response&quot;</span>)</span>
+<span id="cb268-20"><a href="11.2-palr.html#cb268-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb268-21"><a href="11.2-palr.html#cb268-21" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(x, y, <span class="at">lwd =</span> <span class="fl">1.5</span>, <span class="at">col =</span> <span class="st">&quot;steelblue&quot;</span>)</span></code></pre></div>
+<p><img src="ITER_files/figure-html/unnamed-chunk-458-1.png" width="80%" style="display: block; margin: auto;" /></p>
+<p>The estimated regression function has a stretched “S”-shape which is typical for the CDF of a continuous random variable with symmetric PDF like that of a normal random variable. The function is clearly nonlinear and flattens out for large and small values of <span class="math inline">\(P/I \ ratio\)</span>. The functional form thus also ensures that the predicted conditional probabilities of a denial lie between <span class="math inline">\(0\)</span> and <span class="math inline">\(1\)</span>.</p>
+<p>We use <tt>predict()</tt> to compute the predicted change in the denial probability when <span class="math inline">\(P/I \ ratio\)</span> is increased from <span class="math inline">\(0.3\)</span> to <span class="math inline">\(0.4\)</span>.</p>
+<div class="sourceCode" id="cb269"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb269-1"><a href="11.2-palr.html#cb269-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. compute predictions for P/I ratio = 0.3, 0.4</span></span>
+<span id="cb269-2"><a href="11.2-palr.html#cb269-2" aria-hidden="true" tabindex="-1"></a>predictions <span class="ot">&lt;-</span> <span class="fu">predict</span>(denyprobit, </span>
+<span id="cb269-3"><a href="11.2-palr.html#cb269-3" aria-hidden="true" tabindex="-1"></a>                       <span class="at">newdata =</span> <span class="fu">data.frame</span>(<span class="st">&quot;pirat&quot;</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="fl">0.3</span>, <span class="fl">0.4</span>)),</span>
+<span id="cb269-4"><a href="11.2-palr.html#cb269-4" aria-hidden="true" tabindex="-1"></a>                       <span class="at">type =</span> <span class="st">&quot;response&quot;</span>)</span>
+<span id="cb269-5"><a href="11.2-palr.html#cb269-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb269-6"><a href="11.2-palr.html#cb269-6" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Compute difference in probabilities</span></span>
+<span id="cb269-7"><a href="11.2-palr.html#cb269-7" aria-hidden="true" tabindex="-1"></a><span class="fu">diff</span>(predictions)</span>
+<span id="cb269-8"><a href="11.2-palr.html#cb269-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;          2 </span></span>
+<span id="cb269-9"><a href="11.2-palr.html#cb269-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 0.06081433</span></span></code></pre></div>
+<p>We find that an increase in the payment-to-income ratio from <span class="math inline">\(0.3\)</span> to <span class="math inline">\(0.4\)</span> is predicted to increase the probability of denial by approximately <span class="math inline">\(6.2\%\)</span>.</p>
+<p>We continue by using an augmented Probit model to estimate the effect of race on the probability of a mortgage application denial.</p>
+<div class="sourceCode" id="cb270"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb270-1"><a href="11.2-palr.html#cb270-1" aria-hidden="true" tabindex="-1"></a>denyprobit2 <span class="ot">&lt;-</span> <span class="fu">glm</span>(deny <span class="sc">~</span> pirat <span class="sc">+</span> black, </span>
+<span id="cb270-2"><a href="11.2-palr.html#cb270-2" aria-hidden="true" tabindex="-1"></a>                   <span class="at">family =</span> <span class="fu">binomial</span>(<span class="at">link =</span> <span class="st">&quot;probit&quot;</span>), </span>
+<span id="cb270-3"><a href="11.2-palr.html#cb270-3" aria-hidden="true" tabindex="-1"></a>                   <span class="at">data =</span> HMDA)</span>
+<span id="cb270-4"><a href="11.2-palr.html#cb270-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb270-5"><a href="11.2-palr.html#cb270-5" aria-hidden="true" tabindex="-1"></a><span class="fu">coeftest</span>(denyprobit2, <span class="at">vcov. =</span> vcovHC, <span class="at">type =</span> <span class="st">&quot;HC1&quot;</span>)</span>
+<span id="cb270-6"><a href="11.2-palr.html#cb270-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb270-7"><a href="11.2-palr.html#cb270-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; z test of coefficients:</span></span>
+<span id="cb270-8"><a href="11.2-palr.html#cb270-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb270-9"><a href="11.2-palr.html#cb270-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;              Estimate Std. Error  z value  Pr(&gt;|z|)    </span></span>
+<span id="cb270-10"><a href="11.2-palr.html#cb270-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; (Intercept) -2.258787   0.176608 -12.7898 &lt; 2.2e-16 ***</span></span>
+<span id="cb270-11"><a href="11.2-palr.html#cb270-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; pirat        2.741779   0.497673   5.5092 3.605e-08 ***</span></span>
+<span id="cb270-12"><a href="11.2-palr.html#cb270-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; blackyes     0.708155   0.083091   8.5227 &lt; 2.2e-16 ***</span></span>
+<span id="cb270-13"><a href="11.2-palr.html#cb270-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ---</span></span>
+<span id="cb270-14"><a href="11.2-palr.html#cb270-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span></code></pre></div>
+<p>The estimated model equation is</p>
+<p><span class="math display" id="eq:denyprobit2">\[\begin{align}
+  \widehat{P(deny\vert P/I \ ratio, black)} = \Phi (-\underset{(0.18)}{2.26} + \underset{(0.50)}{2.74} P/I \ ratio + \underset{(0.08)}{0.71} black). \tag{11.6} 
+\end{align}\]</span></p>
+<p>While all coefficients are highly significant, both the estimated coefficients on the payments-to-income ratio and the indicator for African American descent are positive. Again, the coefficients are difficult to interpret but they indicate that, first, African Americans have a higher probability of denial than white applicants, holding constant the payments-to-income ratio and second, applicants with a high payments-to-income ratio face a higher risk of being rejected.</p>
+<p>How big is the estimated difference in denial probabilities between two hypothetical applicants with the same payments-to-income ratio? As before, we may use <tt>predict()</tt> to compute this difference.</p>
+<div class="sourceCode" id="cb271"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb271-1"><a href="11.2-palr.html#cb271-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. compute predictions for P/I ratio = 0.3</span></span>
+<span id="cb271-2"><a href="11.2-palr.html#cb271-2" aria-hidden="true" tabindex="-1"></a>predictions <span class="ot">&lt;-</span> <span class="fu">predict</span>(denyprobit2, </span>
+<span id="cb271-3"><a href="11.2-palr.html#cb271-3" aria-hidden="true" tabindex="-1"></a>                       <span class="at">newdata =</span> <span class="fu">data.frame</span>(<span class="st">&quot;black&quot;</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="st">&quot;no&quot;</span>, <span class="st">&quot;yes&quot;</span>), </span>
+<span id="cb271-4"><a href="11.2-palr.html#cb271-4" aria-hidden="true" tabindex="-1"></a>                                            <span class="st">&quot;pirat&quot;</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="fl">0.3</span>, <span class="fl">0.3</span>)),</span>
+<span id="cb271-5"><a href="11.2-palr.html#cb271-5" aria-hidden="true" tabindex="-1"></a>                       <span class="at">type =</span> <span class="st">&quot;response&quot;</span>)</span>
+<span id="cb271-6"><a href="11.2-palr.html#cb271-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb271-7"><a href="11.2-palr.html#cb271-7" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. compute difference in probabilities</span></span>
+<span id="cb271-8"><a href="11.2-palr.html#cb271-8" aria-hidden="true" tabindex="-1"></a><span class="fu">diff</span>(predictions)</span>
+<span id="cb271-9"><a href="11.2-palr.html#cb271-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;         2 </span></span>
+<span id="cb271-10"><a href="11.2-palr.html#cb271-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 0.1578117</span></span></code></pre></div>
+<p>In this case, the estimated difference in denial probabilities is about <span class="math inline">\(15.8\%\)</span>.</p>
+</div>
+<div id="logit-regression" class="section level3 unnumbered">
+<h3>Logit Regression</h3>
+<p>Key Concept 11.3 summarizes the Logit regression function.</p>
+<div id="KC11.3" class="keyconcept">
+<h3 class="right">
+Key Concept 11.3
+</h3>
+<h3 class="left">
+Logit Regression
+</h3>
+<p>The population Logit regression function is</p>
+<p><span class="math display">\[\begin{align*}
+  P(Y=1\vert X_1, X_2, \dots, X_k) =&amp; \, F(\beta_0 + \beta_1 X_1 + \beta_2 X_2 + \dots + \beta_k X_k) \\
+  =&amp; \, \frac{1}{1+e^{-(\beta_0 + \beta_1 X_1 + \beta_2 X_2 + \dots + \beta_k X_k)}}.
+\end{align*}\]</span></p>
+<p>The idea is similar to Probit regression except that a different CDF is used: <span class="math display">\[F(x) = \frac{1}{1+e^{-x}}\]</span> is the CDF of a standard logistically distributed random variable.</p>
+</div>
+<p>As for Probit regression, there is no simple interpretation of the model coefficients and it is best to consider predicted probabilities or differences in predicted probabilities. Here again, <span class="math inline">\(t\)</span>-statistics and confidence intervals based on large sample normal approximations can be computed as usual.</p>
+<p>It is fairly easy to estimate a Logit regression model using <tt>R</tt>.</p>
+<div class="sourceCode" id="cb272"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb272-1"><a href="11.2-palr.html#cb272-1" aria-hidden="true" tabindex="-1"></a>denylogit <span class="ot">&lt;-</span> <span class="fu">glm</span>(deny <span class="sc">~</span> pirat, </span>
+<span id="cb272-2"><a href="11.2-palr.html#cb272-2" aria-hidden="true" tabindex="-1"></a>                 <span class="at">family =</span> <span class="fu">binomial</span>(<span class="at">link =</span> <span class="st">&quot;logit&quot;</span>), </span>
+<span id="cb272-3"><a href="11.2-palr.html#cb272-3" aria-hidden="true" tabindex="-1"></a>                 <span class="at">data =</span> HMDA)</span>
+<span id="cb272-4"><a href="11.2-palr.html#cb272-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb272-5"><a href="11.2-palr.html#cb272-5" aria-hidden="true" tabindex="-1"></a><span class="fu">coeftest</span>(denylogit, <span class="at">vcov. =</span> vcovHC, <span class="at">type =</span> <span class="st">&quot;HC1&quot;</span>)</span>
+<span id="cb272-6"><a href="11.2-palr.html#cb272-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb272-7"><a href="11.2-palr.html#cb272-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; z test of coefficients:</span></span>
+<span id="cb272-8"><a href="11.2-palr.html#cb272-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb272-9"><a href="11.2-palr.html#cb272-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;             Estimate Std. Error  z value  Pr(&gt;|z|)    </span></span>
+<span id="cb272-10"><a href="11.2-palr.html#cb272-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; (Intercept) -4.02843    0.35898 -11.2218 &lt; 2.2e-16 ***</span></span>
+<span id="cb272-11"><a href="11.2-palr.html#cb272-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; pirat        5.88450    1.00015   5.8836 4.014e-09 ***</span></span>
+<span id="cb272-12"><a href="11.2-palr.html#cb272-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ---</span></span>
+<span id="cb272-13"><a href="11.2-palr.html#cb272-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span></code></pre></div>
+<p>The subsequent code chunk reproduces Figure 11.3 of the book.</p>
+<div class="sourceCode" id="cb273"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb273-1"><a href="11.2-palr.html#cb273-1" aria-hidden="true" tabindex="-1"></a><span class="co"># plot data</span></span>
+<span id="cb273-2"><a href="11.2-palr.html#cb273-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="at">x =</span> HMDA<span class="sc">$</span>pirat, </span>
+<span id="cb273-3"><a href="11.2-palr.html#cb273-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">y =</span> HMDA<span class="sc">$</span>deny,</span>
+<span id="cb273-4"><a href="11.2-palr.html#cb273-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">&quot;Probit and Logit Models Model of the Probability of Denial, Given P/I Ratio&quot;</span>,</span>
+<span id="cb273-5"><a href="11.2-palr.html#cb273-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">&quot;P/I ratio&quot;</span>,</span>
+<span id="cb273-6"><a href="11.2-palr.html#cb273-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">&quot;Deny&quot;</span>,</span>
+<span id="cb273-7"><a href="11.2-palr.html#cb273-7" aria-hidden="true" tabindex="-1"></a>     <span class="at">pch =</span> <span class="dv">20</span>,</span>
+<span id="cb273-8"><a href="11.2-palr.html#cb273-8" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">0.4</span>, <span class="fl">1.4</span>),</span>
+<span id="cb273-9"><a href="11.2-palr.html#cb273-9" aria-hidden="true" tabindex="-1"></a>     <span class="at">cex.main =</span> <span class="fl">0.9</span>)</span>
+<span id="cb273-10"><a href="11.2-palr.html#cb273-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb273-11"><a href="11.2-palr.html#cb273-11" aria-hidden="true" tabindex="-1"></a><span class="co"># add horizontal dashed lines and text</span></span>
+<span id="cb273-12"><a href="11.2-palr.html#cb273-12" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h =</span> <span class="dv">1</span>, <span class="at">lty =</span> <span class="dv">2</span>, <span class="at">col =</span> <span class="st">&quot;darkred&quot;</span>)</span>
+<span id="cb273-13"><a href="11.2-palr.html#cb273-13" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h =</span> <span class="dv">0</span>, <span class="at">lty =</span> <span class="dv">2</span>, <span class="at">col =</span> <span class="st">&quot;darkred&quot;</span>)</span>
+<span id="cb273-14"><a href="11.2-palr.html#cb273-14" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="fl">2.5</span>, <span class="fl">0.9</span>, <span class="at">cex =</span> <span class="fl">0.8</span>, <span class="st">&quot;Mortgage denied&quot;</span>)</span>
+<span id="cb273-15"><a href="11.2-palr.html#cb273-15" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="fl">2.5</span>, <span class="sc">-</span><span class="fl">0.1</span>, <span class="at">cex=</span> <span class="fl">0.8</span>, <span class="st">&quot;Mortgage approved&quot;</span>)</span>
+<span id="cb273-16"><a href="11.2-palr.html#cb273-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb273-17"><a href="11.2-palr.html#cb273-17" aria-hidden="true" tabindex="-1"></a><span class="co"># add estimated regression line of Probit and Logit models</span></span>
+<span id="cb273-18"><a href="11.2-palr.html#cb273-18" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">3</span>, <span class="fl">0.01</span>)</span>
+<span id="cb273-19"><a href="11.2-palr.html#cb273-19" aria-hidden="true" tabindex="-1"></a>y_probit <span class="ot">&lt;-</span> <span class="fu">predict</span>(denyprobit, <span class="fu">list</span>(<span class="at">pirat =</span> x), <span class="at">type =</span> <span class="st">&quot;response&quot;</span>)</span>
+<span id="cb273-20"><a href="11.2-palr.html#cb273-20" aria-hidden="true" tabindex="-1"></a>y_logit <span class="ot">&lt;-</span> <span class="fu">predict</span>(denylogit, <span class="fu">list</span>(<span class="at">pirat =</span> x), <span class="at">type =</span> <span class="st">&quot;response&quot;</span>)</span>
+<span id="cb273-21"><a href="11.2-palr.html#cb273-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb273-22"><a href="11.2-palr.html#cb273-22" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(x, y_probit, <span class="at">lwd =</span> <span class="fl">1.5</span>, <span class="at">col =</span> <span class="st">&quot;steelblue&quot;</span>)</span>
+<span id="cb273-23"><a href="11.2-palr.html#cb273-23" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(x, y_logit, <span class="at">lwd =</span> <span class="fl">1.5</span>, <span class="at">col =</span> <span class="st">&quot;black&quot;</span>, <span class="at">lty =</span> <span class="dv">2</span>)</span>
+<span id="cb273-24"><a href="11.2-palr.html#cb273-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb273-25"><a href="11.2-palr.html#cb273-25" aria-hidden="true" tabindex="-1"></a><span class="co"># add a legend</span></span>
+<span id="cb273-26"><a href="11.2-palr.html#cb273-26" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">&quot;topleft&quot;</span>,</span>
+<span id="cb273-27"><a href="11.2-palr.html#cb273-27" aria-hidden="true" tabindex="-1"></a>       <span class="at">horiz =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb273-28"><a href="11.2-palr.html#cb273-28" aria-hidden="true" tabindex="-1"></a>       <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">&quot;Probit&quot;</span>, <span class="st">&quot;Logit&quot;</span>),</span>
+<span id="cb273-29"><a href="11.2-palr.html#cb273-29" aria-hidden="true" tabindex="-1"></a>       <span class="at">col =</span> <span class="fu">c</span>(<span class="st">&quot;steelblue&quot;</span>, <span class="st">&quot;black&quot;</span>), </span>
+<span id="cb273-30"><a href="11.2-palr.html#cb273-30" aria-hidden="true" tabindex="-1"></a>       <span class="at">lty =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span></code></pre></div>
+<p><img src="ITER_files/figure-html/unnamed-chunk-465-1.png" width="80%" style="display: block; margin: auto;" /></p>
+<p>Both models produce very similar estimates of the probability that a mortgage application will be denied depending on the applicants payment-to-income ratio.</p>
+<p>Following the book we extend the simple Logit model of mortgage denial with the additional regressor <span class="math inline">\(black\)</span>.</p>
+<div class="sourceCode" id="cb274"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb274-1"><a href="11.2-palr.html#cb274-1" aria-hidden="true" tabindex="-1"></a><span class="co"># estimate a Logit regression with multiple regressors</span></span>
+<span id="cb274-2"><a href="11.2-palr.html#cb274-2" aria-hidden="true" tabindex="-1"></a>denylogit2 <span class="ot">&lt;-</span> <span class="fu">glm</span>(deny <span class="sc">~</span> pirat <span class="sc">+</span> black, </span>
+<span id="cb274-3"><a href="11.2-palr.html#cb274-3" aria-hidden="true" tabindex="-1"></a>                  <span class="at">family =</span> <span class="fu">binomial</span>(<span class="at">link =</span> <span class="st">&quot;logit&quot;</span>), </span>
+<span id="cb274-4"><a href="11.2-palr.html#cb274-4" aria-hidden="true" tabindex="-1"></a>                  <span class="at">data =</span> HMDA)</span>
+<span id="cb274-5"><a href="11.2-palr.html#cb274-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb274-6"><a href="11.2-palr.html#cb274-6" aria-hidden="true" tabindex="-1"></a><span class="fu">coeftest</span>(denylogit2, <span class="at">vcov. =</span> vcovHC, <span class="at">type =</span> <span class="st">&quot;HC1&quot;</span>)</span>
+<span id="cb274-7"><a href="11.2-palr.html#cb274-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb274-8"><a href="11.2-palr.html#cb274-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; z test of coefficients:</span></span>
+<span id="cb274-9"><a href="11.2-palr.html#cb274-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb274-10"><a href="11.2-palr.html#cb274-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;             Estimate Std. Error  z value  Pr(&gt;|z|)    </span></span>
+<span id="cb274-11"><a href="11.2-palr.html#cb274-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; (Intercept) -4.12556    0.34597 -11.9245 &lt; 2.2e-16 ***</span></span>
+<span id="cb274-12"><a href="11.2-palr.html#cb274-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; pirat        5.37036    0.96376   5.5723 2.514e-08 ***</span></span>
+<span id="cb274-13"><a href="11.2-palr.html#cb274-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; blackyes     1.27278    0.14616   8.7081 &lt; 2.2e-16 ***</span></span>
+<span id="cb274-14"><a href="11.2-palr.html#cb274-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ---</span></span>
+<span id="cb274-15"><a href="11.2-palr.html#cb274-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span></code></pre></div>
+<p>We obtain</p>
+<p><span class="math display" id="eq:denylogit2">\[\begin{align}
+  \widehat{P(deny=1 \vert P/I ratio, black)} = F(-\underset{(0.35)}{4.13} + \underset{(0.96)}{5.37} P/I \ ratio + \underset{(0.15)}{1.27} black). \tag{11.7}
+\end{align}\]</span></p>
+<p>As for the Probit model <a href="11.2-palr.html#eq:denyprobit2">(11.6)</a> all model coefficients are highly significant and we obtain positive estimates for the coefficients on <span class="math inline">\(P/I \ ratio\)</span> and <span class="math inline">\(black\)</span>. For comparison we compute the predicted probability of denial for two hypothetical applicants that differ in race and have a <span class="math inline">\(P/I \ ratio\)</span> of <span class="math inline">\(0.3\)</span>.</p>
+<div class="sourceCode" id="cb275"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb275-1"><a href="11.2-palr.html#cb275-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. compute predictions for P/I ratio = 0.3</span></span>
+<span id="cb275-2"><a href="11.2-palr.html#cb275-2" aria-hidden="true" tabindex="-1"></a>predictions <span class="ot">&lt;-</span> <span class="fu">predict</span>(denylogit2, </span>
+<span id="cb275-3"><a href="11.2-palr.html#cb275-3" aria-hidden="true" tabindex="-1"></a>                       <span class="at">newdata =</span> <span class="fu">data.frame</span>(<span class="st">&quot;black&quot;</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="st">&quot;no&quot;</span>, <span class="st">&quot;yes&quot;</span>), </span>
+<span id="cb275-4"><a href="11.2-palr.html#cb275-4" aria-hidden="true" tabindex="-1"></a>                                            <span class="st">&quot;pirat&quot;</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="fl">0.3</span>, <span class="fl">0.3</span>)),</span>
+<span id="cb275-5"><a href="11.2-palr.html#cb275-5" aria-hidden="true" tabindex="-1"></a>                       <span class="at">type =</span> <span class="st">&quot;response&quot;</span>)</span>
+<span id="cb275-6"><a href="11.2-palr.html#cb275-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb275-7"><a href="11.2-palr.html#cb275-7" aria-hidden="true" tabindex="-1"></a>predictions</span>
+<span id="cb275-8"><a href="11.2-palr.html#cb275-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;          1          2 </span></span>
+<span id="cb275-9"><a href="11.2-palr.html#cb275-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 0.07485143 0.22414592</span></span>
+<span id="cb275-10"><a href="11.2-palr.html#cb275-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb275-11"><a href="11.2-palr.html#cb275-11" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Compute difference in probabilities</span></span>
+<span id="cb275-12"><a href="11.2-palr.html#cb275-12" aria-hidden="true" tabindex="-1"></a><span class="fu">diff</span>(predictions)</span>
+<span id="cb275-13"><a href="11.2-palr.html#cb275-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;         2 </span></span>
+<span id="cb275-14"><a href="11.2-palr.html#cb275-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 0.1492945</span></span></code></pre></div>
+<p>We find that the white applicant faces a denial probability of only <span class="math inline">\(7.5\%\)</span>, while the African American is rejected with a probability of <span class="math inline">\(22.4\%\)</span>, a difference of <span class="math inline">\(14.9\%\)</span>.</p>
+<div id="comparison-of-the-models" class="section level4 unnumbered">
+<h4>Comparison of the Models</h4>
+<p>The Probit model and the Logit model deliver only approximations to the unknown population regression function <span class="math inline">\(E(Y\vert X)\)</span>. It is not obvious how to decide which model to use in practice. The linear probability model has the clear drawback of not being able to capture the nonlinear nature of the population regression function and it may predict probabilities to lie outside the interval <span class="math inline">\([0,1]\)</span>. Probit and Logit models are harder to interpret but capture the nonlinearities better than the linear approach: both models produce predictions of probabilities that lie inside the interval <span class="math inline">\([0,1]\)</span>. Predictions of all three models are often close to each other. The book suggests to use the method that is easiest to use in the statistical software of choice. As we have seen, it is equally easy to estimate Probit and Logit model using <tt>R</tt>. We can therefore give no general recommendation which method to use.</p>
+</div>
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="11.1-binary-dependent-variables-and-the-linear-probability-model.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="11.3-estimation-and-inference-in-the-logit-and-probit-models.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": true,
+"facebook": true,
+"twitter": true,
+"linkedin": true,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "serif",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/mca91/EconometricsWithR/edit/master/11-ch11.Rmd",
+"text": "Edit"
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": ["ITER.pdf"],
+"search": {
+"engine": "lunr",
+"options": null
+},
+"toc": {
+"collapse": "subsection",
+"scroll_highlight": true
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

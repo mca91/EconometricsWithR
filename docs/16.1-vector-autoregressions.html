@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>16.1 Vector Autoregressions | Introduction to Econometrics with R</title>
+  <meta name="description" content="Beginners with little background in statistics and econometrics often have a hard time understanding the benefits of having programming skills for learning and applying Econometrics. ‘Introduction to Econometrics with R’ is an interactive companion to the well-received textbook ‘Introduction to Econometrics’ by James H. Stock and Mark W. Watson (2015). It gives a gentle introduction to the essentials of R programming and guides students in implementing the empirical applications presented throughout the textbook using the newly aquired skills. This is supported by interactive programming exercises generated with DataCamp Light and integration of interactive visualizations of central concepts which are based on the flexible JavaScript library D3.js." />
+  <meta name="generator" content="bookdown 0.23 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="16.1 Vector Autoregressions | Introduction to Econometrics with R" />
+  <meta property="og:type" content="book" />
+  <meta property="og:url" content="https://www.econometrics-with-r.org/" />
+  <meta property="og:image" content="https://www.econometrics-with-r.org//images/cover.png" />
+  <meta property="og:description" content="Beginners with little background in statistics and econometrics often have a hard time understanding the benefits of having programming skills for learning and applying Econometrics. ‘Introduction to Econometrics with R’ is an interactive companion to the well-received textbook ‘Introduction to Econometrics’ by James H. Stock and Mark W. Watson (2015). It gives a gentle introduction to the essentials of R programming and guides students in implementing the empirical applications presented throughout the textbook using the newly aquired skills. This is supported by interactive programming exercises generated with DataCamp Light and integration of interactive visualizations of central concepts which are based on the flexible JavaScript library D3.js." />
+  <meta name="github-repo" content="mca91/EconometricsWithR" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="16.1 Vector Autoregressions | Introduction to Econometrics with R" />
+  
+  <meta name="twitter:description" content="Beginners with little background in statistics and econometrics often have a hard time understanding the benefits of having programming skills for learning and applying Econometrics. ‘Introduction to Econometrics with R’ is an interactive companion to the well-received textbook ‘Introduction to Econometrics’ by James H. Stock and Mark W. Watson (2015). It gives a gentle introduction to the essentials of R programming and guides students in implementing the empirical applications presented throughout the textbook using the newly aquired skills. This is supported by interactive programming exercises generated with DataCamp Light and integration of interactive visualizations of central concepts which are based on the flexible JavaScript library D3.js." />
+  <meta name="twitter:image" content="https://www.econometrics-with-r.org//images/cover.png" />
+
+<meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber, and Martin Schmelzer" />
+
+
+<meta name="date" content="2021-10-06" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="16-atitsr.html"/>
+<link rel="next" href="16.2-ooiatdfglsurt.html"/>
+<script src="libs/header-attrs-2.10/header-attrs.js"></script>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
+<script src="libs/htmlwidgets-1.5.3/htmlwidgets.js"></script>
+<script src="libs/plotly-binding-4.9.4.1/plotly.js"></script>
+<script src="libs/typedarray-0.1/typedarray.min.js"></script>
+<link href="libs/crosstalk-1.1.1/css/crosstalk.css" rel="stylesheet" />
+<script src="libs/crosstalk-1.1.1/js/crosstalk.min.js"></script>
+<link href="libs/plotly-htmlwidgets-css-1.57.1/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="libs/plotly-main-1.57.1/plotly-latest.min.js"></script>
+<!-- font families -->
+
+<link href="https://fonts.googleapis.com/css?family=PT+Sans|Pacifico|Source+Sans+Pro" rel="stylesheet">
+
+<script src="js/hideOutput.js"></script>
+
+<!-- Mathjax -->
+<script type="text/javascript" id="MathJax-script" async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+ <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        extensions: ["tex2jax.js", "TeX/AMSmath.js"],
+        tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+        jax: ["input/TeX","output/CommonHTML"]
+      });
+      MathJax.Hub.processSectionDelay = 0;
+  </script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-110299877-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-110299877-1');
+</script>
+
+<!-- open review block -->
+
+<script async defer src="https://hypothes.is/embed.js"></script>
+
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  background-color: #f8f8f8; }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ef2929; } /* Alert */
+code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #c4a000; } /* Attribute */
+code span.bn { color: #0000cf; } /* BaseN */
+code span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4e9a06; } /* Char */
+code span.cn { color: #000000; } /* Constant */
+code span.co { color: #8f5902; font-style: italic; } /* Comment */
+code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code span.dt { color: #204a87; } /* DataType */
+code span.dv { color: #0000cf; } /* DecVal */
+code span.er { color: #a40000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #0000cf; } /* Float */
+code span.fu { color: #000000; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code span.ot { color: #8f5902; } /* Other */
+code span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code span.sc { color: #000000; } /* SpecialChar */
+code span.ss { color: #4e9a06; } /* SpecialString */
+code span.st { color: #4e9a06; } /* String */
+code span.va { color: #000000; } /* Variable */
+code span.vs { color: #4e9a06; } /* VerbatimString */
+code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+/* Used with Pandoc 2.11+ new --citeproc when CSL is used */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+<link rel="stylesheet" href="toc.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><center><img src="images/logo.png" alt="logo" width="50%" height="50%"style="margin: 15px 0 0 0"></center></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Preface</a></li>
+<li class="chapter" data-level="1" data-path="1-introduction.html"><a href="1-introduction.html"><i class="fa fa-check"></i><b>1</b> Introduction</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="1.1-colophon.html"><a href="1.1-colophon.html"><i class="fa fa-check"></i><b>1.1</b> Colophon</a></li>
+<li class="chapter" data-level="1.2" data-path="1.2-a-very-short-introduction-to-r-and-rstudio.html"><a href="1.2-a-very-short-introduction-to-r-and-rstudio.html"><i class="fa fa-check"></i><b>1.2</b> A Very Short Introduction to <tt>R</tt> and <em>RStudio</em></a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="2-pt.html"><a href="2-pt.html"><i class="fa fa-check"></i><b>2</b> Probability Theory</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="2.1-random-variables-and-probability-distributions.html"><a href="2.1-random-variables-and-probability-distributions.html"><i class="fa fa-check"></i><b>2.1</b> Random Variables and Probability Distributions</a>
+<ul>
+<li class="chapter" data-level="" data-path="2.1-random-variables-and-probability-distributions.html"><a href="2.1-random-variables-and-probability-distributions.html#probability-distributions-of-discrete-random-variables"><i class="fa fa-check"></i>Probability Distributions of Discrete Random Variables</a></li>
+<li class="chapter" data-level="" data-path="2.1-random-variables-and-probability-distributions.html"><a href="2.1-random-variables-and-probability-distributions.html#bernoulli-trials"><i class="fa fa-check"></i>Bernoulli Trials</a></li>
+<li class="chapter" data-level="" data-path="2.1-random-variables-and-probability-distributions.html"><a href="2.1-random-variables-and-probability-distributions.html#expected-value-mean-and-variance"><i class="fa fa-check"></i>Expected Value, Mean and Variance</a></li>
+<li class="chapter" data-level="" data-path="2.1-random-variables-and-probability-distributions.html"><a href="2.1-random-variables-and-probability-distributions.html#probability-distributions-of-continuous-random-variables"><i class="fa fa-check"></i>Probability Distributions of Continuous Random Variables</a></li>
+<li class="chapter" data-level="" data-path="2.1-random-variables-and-probability-distributions.html"><a href="2.1-random-variables-and-probability-distributions.html#the-normal-distribution"><i class="fa fa-check"></i>The Normal Distribution</a></li>
+<li class="chapter" data-level="" data-path="2.1-random-variables-and-probability-distributions.html"><a href="2.1-random-variables-and-probability-distributions.html#the-chi-squared-distribution"><i class="fa fa-check"></i>The Chi-Squared Distribution</a></li>
+<li class="chapter" data-level="" data-path="2.1-random-variables-and-probability-distributions.html"><a href="2.1-random-variables-and-probability-distributions.html#thetdist"><i class="fa fa-check"></i>The Student t Distribution</a></li>
+<li class="chapter" data-level="" data-path="2.1-random-variables-and-probability-distributions.html"><a href="2.1-random-variables-and-probability-distributions.html#the-f-distribution"><i class="fa fa-check"></i>The F Distribution</a></li>
+</ul></li>
+<li class="chapter" data-level="2.2" data-path="2.2-RSATDOSA.html"><a href="2.2-RSATDOSA.html"><i class="fa fa-check"></i><b>2.2</b> Random Sampling and the Distribution of Sample Averages</a>
+<ul>
+<li class="chapter" data-level="" data-path="2.2-RSATDOSA.html"><a href="2.2-RSATDOSA.html#mean-and-variance-of-the-sample-mean"><i class="fa fa-check"></i>Mean and Variance of the Sample Mean</a></li>
+<li class="chapter" data-level="" data-path="2.2-RSATDOSA.html"><a href="2.2-RSATDOSA.html#large-sample-approximations-to-sampling-distributions"><i class="fa fa-check"></i>Large Sample Approximations to Sampling Distributions</a></li>
+</ul></li>
+<li class="chapter" data-level="2.3" data-path="2.3-exercises-2.html"><a href="2.3-exercises-2.html"><i class="fa fa-check"></i><b>2.3</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="3-arosur.html"><a href="3-arosur.html"><i class="fa fa-check"></i><b>3</b> A Review of Statistics using R</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="3.1-estimation-of-the-population-mean.html"><a href="3.1-estimation-of-the-population-mean.html"><i class="fa fa-check"></i><b>3.1</b> Estimation of the Population Mean</a></li>
+<li class="chapter" data-level="3.2" data-path="3.2-potsm.html"><a href="3.2-potsm.html"><i class="fa fa-check"></i><b>3.2</b> Properties of the Sample Mean</a></li>
+<li class="chapter" data-level="3.3" data-path="3.3-hypothesis-tests-concerning-the-population-mean.html"><a href="3.3-hypothesis-tests-concerning-the-population-mean.html"><i class="fa fa-check"></i><b>3.3</b> Hypothesis Tests Concerning the Population Mean</a>
+<ul>
+<li class="chapter" data-level="" data-path="3.3-hypothesis-tests-concerning-the-population-mean.html"><a href="3.3-hypothesis-tests-concerning-the-population-mean.html#the-p-value"><i class="fa fa-check"></i>The p-Value</a></li>
+<li class="chapter" data-level="" data-path="3.3-hypothesis-tests-concerning-the-population-mean.html"><a href="3.3-hypothesis-tests-concerning-the-population-mean.html#calculating-the-p-value-when-the-standard-deviation-is-known"><i class="fa fa-check"></i>Calculating the p-Value when the Standard Deviation is Known</a></li>
+<li class="chapter" data-level="" data-path="3.3-hypothesis-tests-concerning-the-population-mean.html"><a href="3.3-hypothesis-tests-concerning-the-population-mean.html#SVSSDASE"><i class="fa fa-check"></i>Sample Variance, Sample Standard Deviation and Standard Error</a></li>
+<li class="chapter" data-level="" data-path="3.3-hypothesis-tests-concerning-the-population-mean.html"><a href="3.3-hypothesis-tests-concerning-the-population-mean.html#calculating-the-p-value-when-the-standard-deviation-is-unknown"><i class="fa fa-check"></i>Calculating the p-value When the Standard Deviation is Unknown</a></li>
+<li class="chapter" data-level="" data-path="3.3-hypothesis-tests-concerning-the-population-mean.html"><a href="3.3-hypothesis-tests-concerning-the-population-mean.html#the-t-statistic"><i class="fa fa-check"></i>The t-statistic</a></li>
+<li class="chapter" data-level="" data-path="3.3-hypothesis-tests-concerning-the-population-mean.html"><a href="3.3-hypothesis-tests-concerning-the-population-mean.html#hypothesis-testing-with-a-prespecified-significance-level"><i class="fa fa-check"></i>Hypothesis Testing with a Prespecified Significance Level</a></li>
+<li class="chapter" data-level="" data-path="3.3-hypothesis-tests-concerning-the-population-mean.html"><a href="3.3-hypothesis-tests-concerning-the-population-mean.html#one-sided-alternatives"><i class="fa fa-check"></i>One-sided Alternatives</a></li>
+</ul></li>
+<li class="chapter" data-level="3.4" data-path="3.4-confidence-intervals-for-the-population-mean.html"><a href="3.4-confidence-intervals-for-the-population-mean.html"><i class="fa fa-check"></i><b>3.4</b> Confidence Intervals for the Population Mean</a></li>
+<li class="chapter" data-level="3.5" data-path="3.5-cmfdp.html"><a href="3.5-cmfdp.html"><i class="fa fa-check"></i><b>3.5</b> Comparing Means from Different Populations</a></li>
+<li class="chapter" data-level="3.6" data-path="3.6-aattggoe.html"><a href="3.6-aattggoe.html"><i class="fa fa-check"></i><b>3.6</b> An Application to the Gender Gap of Earnings</a></li>
+<li class="chapter" data-level="3.7" data-path="3.7-scatterplots-sample-covariance-and-sample-correlation.html"><a href="3.7-scatterplots-sample-covariance-and-sample-correlation.html"><i class="fa fa-check"></i><b>3.7</b> Scatterplots, Sample Covariance and Sample Correlation</a></li>
+<li class="chapter" data-level="3.8" data-path="3.8-exercises-3.html"><a href="3.8-exercises-3.html"><i class="fa fa-check"></i><b>3.8</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="4-lrwor.html"><a href="4-lrwor.html"><i class="fa fa-check"></i><b>4</b> Linear Regression with One Regressor</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="4.1-simple-linear-regression.html"><a href="4.1-simple-linear-regression.html"><i class="fa fa-check"></i><b>4.1</b> Simple Linear Regression</a></li>
+<li class="chapter" data-level="4.2" data-path="4.2-estimating-the-coefficients-of-the-linear-regression-model.html"><a href="4.2-estimating-the-coefficients-of-the-linear-regression-model.html"><i class="fa fa-check"></i><b>4.2</b> Estimating the Coefficients of the Linear Regression Model</a>
+<ul>
+<li class="chapter" data-level="" data-path="4.2-estimating-the-coefficients-of-the-linear-regression-model.html"><a href="4.2-estimating-the-coefficients-of-the-linear-regression-model.html#the-ordinary-least-squares-estimator"><i class="fa fa-check"></i>The Ordinary Least Squares Estimator</a></li>
+</ul></li>
+<li class="chapter" data-level="4.3" data-path="4.3-measures-of-fit.html"><a href="4.3-measures-of-fit.html"><i class="fa fa-check"></i><b>4.3</b> Measures of Fit</a>
+<ul>
+<li class="chapter" data-level="" data-path="4.3-measures-of-fit.html"><a href="4.3-measures-of-fit.html#the-coefficient-of-determination"><i class="fa fa-check"></i>The Coefficient of Determination</a></li>
+<li class="chapter" data-level="" data-path="4.3-measures-of-fit.html"><a href="4.3-measures-of-fit.html#the-standard-error-of-the-regression"><i class="fa fa-check"></i>The Standard Error of the Regression</a></li>
+<li class="chapter" data-level="" data-path="4.3-measures-of-fit.html"><a href="4.3-measures-of-fit.html#application-to-the-test-score-data"><i class="fa fa-check"></i>Application to the Test Score Data</a></li>
+</ul></li>
+<li class="chapter" data-level="4.4" data-path="4.4-tlsa.html"><a href="4.4-tlsa.html"><i class="fa fa-check"></i><b>4.4</b> The Least Squares Assumptions</a>
+<ul>
+<li class="chapter" data-level="" data-path="4.4-tlsa.html"><a href="4.4-tlsa.html#assumption-1-the-error-term-has-conditional-mean-of-zero"><i class="fa fa-check"></i>Assumption 1: The Error Term has Conditional Mean of Zero</a></li>
+<li class="chapter" data-level="" data-path="4.4-tlsa.html"><a href="4.4-tlsa.html#assumption-2-independently-and-identically-distributed-data"><i class="fa fa-check"></i>Assumption 2: Independently and Identically Distributed Data</a></li>
+<li class="chapter" data-level="" data-path="4.4-tlsa.html"><a href="4.4-tlsa.html#assumption-3-large-outliers-are-unlikely"><i class="fa fa-check"></i>Assumption 3: Large Outliers are Unlikely</a></li>
+</ul></li>
+<li class="chapter" data-level="4.5" data-path="4.5-tsdotoe.html"><a href="4.5-tsdotoe.html"><i class="fa fa-check"></i><b>4.5</b> The Sampling Distribution of the OLS Estimator</a>
+<ul>
+<li class="chapter" data-level="" data-path="4.5-tsdotoe.html"><a href="4.5-tsdotoe.html#simulation-study-1"><i class="fa fa-check"></i>Simulation Study 1</a></li>
+<li class="chapter" data-level="" data-path="4.5-tsdotoe.html"><a href="4.5-tsdotoe.html#simulation-study-2"><i class="fa fa-check"></i>Simulation Study 2</a></li>
+<li class="chapter" data-level="" data-path="4.5-tsdotoe.html"><a href="4.5-tsdotoe.html#simulation-study-3"><i class="fa fa-check"></i>Simulation Study 3</a></li>
+</ul></li>
+<li class="chapter" data-level="4.6" data-path="4.6-exercises-4.html"><a href="4.6-exercises-4.html"><i class="fa fa-check"></i><b>4.6</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="5-htaciitslrm.html"><a href="5-htaciitslrm.html"><i class="fa fa-check"></i><b>5</b> Hypothesis Tests and Confidence Intervals in the Simple Linear Regression Model</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="5.1-testing-two-sided-hypotheses-concerning-the-slope-coefficient.html"><a href="5.1-testing-two-sided-hypotheses-concerning-the-slope-coefficient.html"><i class="fa fa-check"></i><b>5.1</b> Testing Two-Sided Hypotheses Concerning the Slope Coefficient</a></li>
+<li class="chapter" data-level="5.2" data-path="5.2-cifrc.html"><a href="5.2-cifrc.html"><i class="fa fa-check"></i><b>5.2</b> Confidence Intervals for Regression Coefficients</a>
+<ul>
+<li class="chapter" data-level="" data-path="5.2-cifrc.html"><a href="5.2-cifrc.html#simulation-study-confidence-intervals"><i class="fa fa-check"></i>Simulation Study: Confidence Intervals</a></li>
+</ul></li>
+<li class="chapter" data-level="5.3" data-path="5.3-rwxiabv.html"><a href="5.3-rwxiabv.html"><i class="fa fa-check"></i><b>5.3</b> Regression when X is a Binary Variable</a></li>
+<li class="chapter" data-level="5.4" data-path="5.4-hah.html"><a href="5.4-hah.html"><i class="fa fa-check"></i><b>5.4</b> Heteroskedasticity and Homoskedasticity</a>
+<ul>
+<li class="chapter" data-level="" data-path="5.4-hah.html"><a href="5.4-hah.html#a-real-world-example-for-heteroskedasticity"><i class="fa fa-check"></i>A Real-World Example for Heteroskedasticity</a></li>
+<li class="chapter" data-level="" data-path="5.4-hah.html"><a href="5.4-hah.html#should-we-care-about-heteroskedasticity"><i class="fa fa-check"></i>Should We Care About Heteroskedasticity?</a></li>
+<li class="chapter" data-level="" data-path="5.4-hah.html"><a href="5.4-hah.html#computation-of-heteroskedasticity-robust-standard-errors"><i class="fa fa-check"></i>Computation of Heteroskedasticity-Robust Standard Errors</a></li>
+</ul></li>
+<li class="chapter" data-level="5.5" data-path="5.5-the-gauss-markov-theorem.html"><a href="5.5-the-gauss-markov-theorem.html"><i class="fa fa-check"></i><b>5.5</b> The Gauss-Markov Theorem</a>
+<ul>
+<li class="chapter" data-level="" data-path="5.5-the-gauss-markov-theorem.html"><a href="5.5-the-gauss-markov-theorem.html#simulation-study-blue-estimator"><i class="fa fa-check"></i>Simulation Study: BLUE Estimator</a></li>
+</ul></li>
+<li class="chapter" data-level="5.6" data-path="5.6-using-the-t-statistic-in-regression-when-the-sample-size-is-small.html"><a href="5.6-using-the-t-statistic-in-regression-when-the-sample-size-is-small.html"><i class="fa fa-check"></i><b>5.6</b> Using the t-Statistic in Regression When the Sample Size Is Small</a></li>
+<li class="chapter" data-level="5.7" data-path="5.7-exercises-5.html"><a href="5.7-exercises-5.html"><i class="fa fa-check"></i><b>5.7</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="6-rmwmr.html"><a href="6-rmwmr.html"><i class="fa fa-check"></i><b>6</b> Regression Models with Multiple Regressors</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="6.1-omitted-variable-bias.html"><a href="6.1-omitted-variable-bias.html"><i class="fa fa-check"></i><b>6.1</b> Omitted Variable Bias</a></li>
+<li class="chapter" data-level="6.2" data-path="6.2-tmrm.html"><a href="6.2-tmrm.html"><i class="fa fa-check"></i><b>6.2</b> The Multiple Regression Model</a></li>
+<li class="chapter" data-level="6.3" data-path="6.3-mofimr.html"><a href="6.3-mofimr.html"><i class="fa fa-check"></i><b>6.3</b> Measures of Fit in Multiple Regression</a></li>
+<li class="chapter" data-level="6.4" data-path="6.4-ols-assumptions-in-multiple-regression.html"><a href="6.4-ols-assumptions-in-multiple-regression.html"><i class="fa fa-check"></i><b>6.4</b> OLS Assumptions in Multiple Regression</a>
+<ul>
+<li class="chapter" data-level="" data-path="6.4-ols-assumptions-in-multiple-regression.html"><a href="6.4-ols-assumptions-in-multiple-regression.html#multicollinearity"><i class="fa fa-check"></i>Multicollinearity</a></li>
+<li class="chapter" data-level="" data-path="6.4-ols-assumptions-in-multiple-regression.html"><a href="6.4-ols-assumptions-in-multiple-regression.html#simulation-study-imperfect-multicollinearity"><i class="fa fa-check"></i>Simulation Study: Imperfect Multicollinearity</a></li>
+</ul></li>
+<li class="chapter" data-level="6.5" data-path="6.5-the-distribution-of-the-ols-estimators-in-multiple-regression.html"><a href="6.5-the-distribution-of-the-ols-estimators-in-multiple-regression.html"><i class="fa fa-check"></i><b>6.5</b> The Distribution of the OLS Estimators in Multiple Regression</a></li>
+<li class="chapter" data-level="6.6" data-path="6.6-exercises-6.html"><a href="6.6-exercises-6.html"><i class="fa fa-check"></i><b>6.6</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="7-htaciimr.html"><a href="7-htaciimr.html"><i class="fa fa-check"></i><b>7</b> Hypothesis Tests and Confidence Intervals in Multiple Regression</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="7.1-hypothesis-tests-and-confidence-intervals-for-a-single-coefficient.html"><a href="7.1-hypothesis-tests-and-confidence-intervals-for-a-single-coefficient.html"><i class="fa fa-check"></i><b>7.1</b> Hypothesis Tests and Confidence Intervals for a Single Coefficient</a></li>
+<li class="chapter" data-level="7.2" data-path="7.2-an-application-to-test-scores-and-the-student-teacher-ratio.html"><a href="7.2-an-application-to-test-scores-and-the-student-teacher-ratio.html"><i class="fa fa-check"></i><b>7.2</b> An Application to Test Scores and the Student-Teacher Ratio</a>
+<ul>
+<li class="chapter" data-level="" data-path="7.2-an-application-to-test-scores-and-the-student-teacher-ratio.html"><a href="7.2-an-application-to-test-scores-and-the-student-teacher-ratio.html#another-augmentation-of-the-model"><i class="fa fa-check"></i>Another Augmentation of the Model</a></li>
+</ul></li>
+<li class="chapter" data-level="7.3" data-path="7.3-joint-hypothesis-testing-using-the-f-statistic.html"><a href="7.3-joint-hypothesis-testing-using-the-f-statistic.html"><i class="fa fa-check"></i><b>7.3</b> Joint Hypothesis Testing Using the F-Statistic</a></li>
+<li class="chapter" data-level="7.4" data-path="7.4-confidence-sets-for-multiple-coefficients.html"><a href="7.4-confidence-sets-for-multiple-coefficients.html"><i class="fa fa-check"></i><b>7.4</b> Confidence Sets for Multiple Coefficients</a></li>
+<li class="chapter" data-level="7.5" data-path="7.5-model-specification-for-multiple-regression.html"><a href="7.5-model-specification-for-multiple-regression.html"><i class="fa fa-check"></i><b>7.5</b> Model Specification for Multiple Regression</a>
+<ul>
+<li class="chapter" data-level="" data-path="7.5-model-specification-for-multiple-regression.html"><a href="7.5-model-specification-for-multiple-regression.html#model-specification-in-theory-and-in-practice"><i class="fa fa-check"></i>Model Specification in Theory and in Practice</a></li>
+</ul></li>
+<li class="chapter" data-level="7.6" data-path="7.6-analysis-of-the-test-score-data-set.html"><a href="7.6-analysis-of-the-test-score-data-set.html"><i class="fa fa-check"></i><b>7.6</b> Analysis of the Test Score Data Set</a></li>
+<li class="chapter" data-level="7.7" data-path="7.7-exercises-7.html"><a href="7.7-exercises-7.html"><i class="fa fa-check"></i><b>7.7</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="8-nrf.html"><a href="8-nrf.html"><i class="fa fa-check"></i><b>8</b> Nonlinear Regression Functions</a>
+<ul>
+<li class="chapter" data-level="8.1" data-path="8.1-a-general-strategy-for-modelling-nonlinear-regression-functions.html"><a href="8.1-a-general-strategy-for-modelling-nonlinear-regression-functions.html"><i class="fa fa-check"></i><b>8.1</b> A General Strategy for Modelling Nonlinear Regression Functions</a></li>
+<li class="chapter" data-level="8.2" data-path="8.2-nfoasiv.html"><a href="8.2-nfoasiv.html"><i class="fa fa-check"></i><b>8.2</b> Nonlinear Functions of a Single Independent Variable</a>
+<ul>
+<li class="chapter" data-level="" data-path="8.2-nfoasiv.html"><a href="8.2-nfoasiv.html#polynomials"><i class="fa fa-check"></i>Polynomials</a></li>
+<li class="chapter" data-level="" data-path="8.2-nfoasiv.html"><a href="8.2-nfoasiv.html#logarithms"><i class="fa fa-check"></i>Logarithms</a></li>
+</ul></li>
+<li class="chapter" data-level="8.3" data-path="8.3-interactions-between-independent-variables.html"><a href="8.3-interactions-between-independent-variables.html"><i class="fa fa-check"></i><b>8.3</b> Interactions Between Independent Variables</a></li>
+<li class="chapter" data-level="8.4" data-path="8.4-nonlinear-effects-on-test-scores-of-the-student-teacher-ratio.html"><a href="8.4-nonlinear-effects-on-test-scores-of-the-student-teacher-ratio.html"><i class="fa fa-check"></i><b>8.4</b> Nonlinear Effects on Test Scores of the Student-Teacher Ratio</a></li>
+<li class="chapter" data-level="8.5" data-path="8.5-exercises-8.html"><a href="8.5-exercises-8.html"><i class="fa fa-check"></i><b>8.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="9-asbomr.html"><a href="9-asbomr.html"><i class="fa fa-check"></i><b>9</b> Assessing Studies Based on Multiple Regression</a>
+<ul>
+<li class="chapter" data-level="9.1" data-path="9.1-internal-and-external-validity.html"><a href="9.1-internal-and-external-validity.html"><i class="fa fa-check"></i><b>9.1</b> Internal and External Validity</a></li>
+<li class="chapter" data-level="9.2" data-path="9.2-ttivomra.html"><a href="9.2-ttivomra.html"><i class="fa fa-check"></i><b>9.2</b> Threats to Internal Validity of Multiple Regression Analysis</a></li>
+<li class="chapter" data-level="9.3" data-path="9.3-internal-and-external-validity-when-the-regression-is-used-for-forecasting.html"><a href="9.3-internal-and-external-validity-when-the-regression-is-used-for-forecasting.html"><i class="fa fa-check"></i><b>9.3</b> Internal and External Validity when the Regression is Used for Forecasting</a></li>
+<li class="chapter" data-level="9.4" data-path="9.4-etsacs.html"><a href="9.4-etsacs.html"><i class="fa fa-check"></i><b>9.4</b> Example: Test Scores and Class Size</a></li>
+<li class="chapter" data-level="9.5" data-path="9.5-exercises-9.html"><a href="9.5-exercises-9.html"><i class="fa fa-check"></i><b>9.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="10" data-path="10-rwpd.html"><a href="10-rwpd.html"><i class="fa fa-check"></i><b>10</b> Regression with Panel Data</a>
+<ul>
+<li class="chapter" data-level="10.1" data-path="10.1-panel-data.html"><a href="10.1-panel-data.html"><i class="fa fa-check"></i><b>10.1</b> Panel Data</a></li>
+<li class="chapter" data-level="10.2" data-path="10.2-PDWTTP.html"><a href="10.2-PDWTTP.html"><i class="fa fa-check"></i><b>10.2</b> Panel Data with Two Time Periods: “Before and After” Comparisons</a></li>
+<li class="chapter" data-level="10.3" data-path="10.3-fixed-effects-regression.html"><a href="10.3-fixed-effects-regression.html"><i class="fa fa-check"></i><b>10.3</b> Fixed Effects Regression</a>
+<ul>
+<li class="chapter" data-level="" data-path="10.3-fixed-effects-regression.html"><a href="10.3-fixed-effects-regression.html#estimation-and-inference"><i class="fa fa-check"></i>Estimation and Inference</a></li>
+<li class="chapter" data-level="" data-path="10.3-fixed-effects-regression.html"><a href="10.3-fixed-effects-regression.html#application-to-traffic-deaths"><i class="fa fa-check"></i>Application to Traffic Deaths</a></li>
+</ul></li>
+<li class="chapter" data-level="10.4" data-path="10.4-regression-with-time-fixed-effects.html"><a href="10.4-regression-with-time-fixed-effects.html"><i class="fa fa-check"></i><b>10.4</b> Regression with Time Fixed Effects</a></li>
+<li class="chapter" data-level="10.5" data-path="10.5-tferaaseffer.html"><a href="10.5-tferaaseffer.html"><i class="fa fa-check"></i><b>10.5</b> The Fixed Effects Regression Assumptions and Standard Errors for Fixed Effects Regression</a></li>
+<li class="chapter" data-level="10.6" data-path="10.6-drunk-driving-laws-and-traffic-deaths.html"><a href="10.6-drunk-driving-laws-and-traffic-deaths.html"><i class="fa fa-check"></i><b>10.6</b> Drunk Driving Laws and Traffic Deaths</a></li>
+<li class="chapter" data-level="10.7" data-path="10.7-exercises-10.html"><a href="10.7-exercises-10.html"><i class="fa fa-check"></i><b>10.7</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="11" data-path="11-rwabdv.html"><a href="11-rwabdv.html"><i class="fa fa-check"></i><b>11</b> Regression with a Binary Dependent Variable</a>
+<ul>
+<li class="chapter" data-level="11.1" data-path="11.1-binary-dependent-variables-and-the-linear-probability-model.html"><a href="11.1-binary-dependent-variables-and-the-linear-probability-model.html"><i class="fa fa-check"></i><b>11.1</b> Binary Dependent Variables and the Linear Probability Model</a></li>
+<li class="chapter" data-level="11.2" data-path="11.2-palr.html"><a href="11.2-palr.html"><i class="fa fa-check"></i><b>11.2</b> Probit and Logit Regression</a>
+<ul>
+<li class="chapter" data-level="" data-path="11.2-palr.html"><a href="11.2-palr.html#probit-regression"><i class="fa fa-check"></i>Probit Regression</a></li>
+<li class="chapter" data-level="" data-path="11.2-palr.html"><a href="11.2-palr.html#logit-regression"><i class="fa fa-check"></i>Logit Regression</a></li>
+</ul></li>
+<li class="chapter" data-level="11.3" data-path="11.3-estimation-and-inference-in-the-logit-and-probit-models.html"><a href="11.3-estimation-and-inference-in-the-logit-and-probit-models.html"><i class="fa fa-check"></i><b>11.3</b> Estimation and Inference in the Logit and Probit Models</a></li>
+<li class="chapter" data-level="11.4" data-path="11.4-application-to-the-boston-hmda-data.html"><a href="11.4-application-to-the-boston-hmda-data.html"><i class="fa fa-check"></i><b>11.4</b> Application to the Boston HMDA Data</a></li>
+<li class="chapter" data-level="11.5" data-path="11.5-exercises-11.html"><a href="11.5-exercises-11.html"><i class="fa fa-check"></i><b>11.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="12" data-path="12-ivr.html"><a href="12-ivr.html"><i class="fa fa-check"></i><b>12</b> Instrumental Variables Regression</a>
+<ul>
+<li class="chapter" data-level="12.1" data-path="12.1-TIVEWASRAASI.html"><a href="12.1-TIVEWASRAASI.html"><i class="fa fa-check"></i><b>12.1</b> The IV Estimator with a Single Regressor and a Single Instrument</a></li>
+<li class="chapter" data-level="12.2" data-path="12.2-TGIVRM.html"><a href="12.2-TGIVRM.html"><i class="fa fa-check"></i><b>12.2</b> The General IV Regression Model</a></li>
+<li class="chapter" data-level="12.3" data-path="12.3-civ.html"><a href="12.3-civ.html"><i class="fa fa-check"></i><b>12.3</b> Checking Instrument Validity</a></li>
+<li class="chapter" data-level="12.4" data-path="12.4-attdfc.html"><a href="12.4-attdfc.html"><i class="fa fa-check"></i><b>12.4</b> Application to the Demand for Cigarettes</a></li>
+<li class="chapter" data-level="12.5" data-path="12.5-where-do-valid-instruments-come-from.html"><a href="12.5-where-do-valid-instruments-come-from.html"><i class="fa fa-check"></i><b>12.5</b> Where Do Valid Instruments Come From?</a></li>
+<li class="chapter" data-level="12.6" data-path="12.6-exercises-12.html"><a href="12.6-exercises-12.html"><i class="fa fa-check"></i><b>12.6</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="13" data-path="13-eaqe.html"><a href="13-eaqe.html"><i class="fa fa-check"></i><b>13</b> Experiments and Quasi-Experiments</a>
+<ul>
+<li class="chapter" data-level="13.1" data-path="13.1-poceaie.html"><a href="13.1-poceaie.html"><i class="fa fa-check"></i><b>13.1</b> Potential Outcomes, Causal Effects and Idealized Experiments</a></li>
+<li class="chapter" data-level="13.2" data-path="13.2-threats-to-validity-of-experiments.html"><a href="13.2-threats-to-validity-of-experiments.html"><i class="fa fa-check"></i><b>13.2</b> Threats to Validity of Experiments</a></li>
+<li class="chapter" data-level="13.3" data-path="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html"><i class="fa fa-check"></i><b>13.3</b> Experimental Estimates of the Effect of Class Size Reductions</a>
+<ul>
+<li class="chapter" data-level="" data-path="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#experimental-design-and-the-data-set"><i class="fa fa-check"></i>Experimental Design and the Data Set</a></li>
+<li class="chapter" data-level="" data-path="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#analysis-of-the-star-data"><i class="fa fa-check"></i>Analysis of the STAR Data</a></li>
+</ul></li>
+<li class="chapter" data-level="13.4" data-path="13.4-qe.html"><a href="13.4-qe.html"><i class="fa fa-check"></i><b>13.4</b> Quasi Experiments</a>
+<ul>
+<li class="chapter" data-level="" data-path="13.4-qe.html"><a href="13.4-qe.html#the-differences-in-differences-estimator"><i class="fa fa-check"></i>The Differences-in-Differences Estimator</a></li>
+<li class="chapter" data-level="" data-path="13.4-qe.html"><a href="13.4-qe.html#regression-discontinuity-estimators"><i class="fa fa-check"></i>Regression Discontinuity Estimators</a></li>
+</ul></li>
+<li class="chapter" data-level="13.5" data-path="13.5-exercises-13.html"><a href="13.5-exercises-13.html"><i class="fa fa-check"></i><b>13.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="14" data-path="14-ittsraf.html"><a href="14-ittsraf.html"><i class="fa fa-check"></i><b>14</b> Introduction to Time Series Regression and Forecasting</a>
+<ul>
+<li class="chapter" data-level="14.1" data-path="14.1-using-regression-models-for-forecasting.html"><a href="14.1-using-regression-models-for-forecasting.html"><i class="fa fa-check"></i><b>14.1</b> Using Regression Models for Forecasting</a></li>
+<li class="chapter" data-level="14.2" data-path="14.2-tsdasc.html"><a href="14.2-tsdasc.html"><i class="fa fa-check"></i><b>14.2</b> Time Series Data and Serial Correlation</a>
+<ul>
+<li class="chapter" data-level="" data-path="14.2-tsdasc.html"><a href="14.2-tsdasc.html#notation-lags-differences-logarithms-and-growth-rates"><i class="fa fa-check"></i>Notation, Lags, Differences, Logarithms and Growth Rates</a></li>
+</ul></li>
+<li class="chapter" data-level="14.3" data-path="14.3-autoregressions.html"><a href="14.3-autoregressions.html"><i class="fa fa-check"></i><b>14.3</b> Autoregressions</a>
+<ul>
+<li><a href="14.3-autoregressions.html#autoregressive-models-of-order-p">Autoregressive Models of Order <span class="math inline">\(p\)</span></a></li>
+</ul></li>
+<li class="chapter" data-level="14.4" data-path="14.4-cybtmpi.html"><a href="14.4-cybtmpi.html"><i class="fa fa-check"></i><b>14.4</b> Can You Beat the Market? (Part I)</a></li>
+<li class="chapter" data-level="14.5" data-path="14.5-apatadlm.html"><a href="14.5-apatadlm.html"><i class="fa fa-check"></i><b>14.5</b> Additional Predictors and The ADL Model</a>
+<ul>
+<li class="chapter" data-level="" data-path="14.5-apatadlm.html"><a href="14.5-apatadlm.html#forecast-uncertainty-and-forecast-intervals"><i class="fa fa-check"></i>Forecast Uncertainty and Forecast Intervals</a></li>
+</ul></li>
+<li class="chapter" data-level="14.6" data-path="14.6-llsuic.html"><a href="14.6-llsuic.html"><i class="fa fa-check"></i><b>14.6</b> Lag Length Selection Using Information Criteria</a></li>
+<li class="chapter" data-level="14.7" data-path="14.7-nit.html"><a href="14.7-nit.html"><i class="fa fa-check"></i><b>14.7</b> Nonstationarity I: Trends</a></li>
+<li class="chapter" data-level="14.8" data-path="14.8-niib.html"><a href="14.8-niib.html"><i class="fa fa-check"></i><b>14.8</b> Nonstationarity II: Breaks</a></li>
+<li class="chapter" data-level="14.9" data-path="14.9-can-you-beat-the-market-part-ii.html"><a href="14.9-can-you-beat-the-market-part-ii.html"><i class="fa fa-check"></i><b>14.9</b> Can You Beat the Market? (Part II)</a></li>
+</ul></li>
+<li class="chapter" data-level="15" data-path="15-eodce.html"><a href="15-eodce.html"><i class="fa fa-check"></i><b>15</b> Estimation of Dynamic Causal Effects</a>
+<ul>
+<li class="chapter" data-level="15.1" data-path="15.1-the-orange-juice-data.html"><a href="15.1-the-orange-juice-data.html"><i class="fa fa-check"></i><b>15.1</b> The Orange Juice Data</a></li>
+<li class="chapter" data-level="15.2" data-path="15.2-dynamic-causal-effects.html"><a href="15.2-dynamic-causal-effects.html"><i class="fa fa-check"></i><b>15.2</b> Dynamic Causal Effects</a></li>
+<li class="chapter" data-level="15.3" data-path="15.3-dynamic-multipliers-and-cumulative-dynamic-multipliers.html"><a href="15.3-dynamic-multipliers-and-cumulative-dynamic-multipliers.html"><i class="fa fa-check"></i><b>15.3</b> Dynamic Multipliers and Cumulative Dynamic Multipliers</a></li>
+<li class="chapter" data-level="15.4" data-path="15.4-hac-standard-errors.html"><a href="15.4-hac-standard-errors.html"><i class="fa fa-check"></i><b>15.4</b> HAC Standard Errors</a></li>
+<li class="chapter" data-level="15.5" data-path="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html"><a href="15.5-estimation-of-dynamic-causal-effects-with-strictly-exogeneous-regressors.html"><i class="fa fa-check"></i><b>15.5</b> Estimation of Dynamic Causal Effects with Strictly Exogeneous Regressors</a></li>
+<li class="chapter" data-level="15.6" data-path="15.6-orange-juice-prices-and-cold-weather.html"><a href="15.6-orange-juice-prices-and-cold-weather.html"><i class="fa fa-check"></i><b>15.6</b> Orange Juice Prices and Cold Weather</a></li>
+</ul></li>
+<li class="chapter" data-level="16" data-path="16-atitsr.html"><a href="16-atitsr.html"><i class="fa fa-check"></i><b>16</b> Additional Topics in Time Series Regression</a>
+<ul>
+<li class="chapter" data-level="16.1" data-path="16.1-vector-autoregressions.html"><a href="16.1-vector-autoregressions.html"><i class="fa fa-check"></i><b>16.1</b> Vector Autoregressions</a></li>
+<li class="chapter" data-level="16.2" data-path="16.2-ooiatdfglsurt.html"><a href="16.2-ooiatdfglsurt.html"><i class="fa fa-check"></i><b>16.2</b> Orders of Integration and the DF-GLS Unit Root Test</a></li>
+<li class="chapter" data-level="16.3" data-path="16.3-cointegration.html"><a href="16.3-cointegration.html"><i class="fa fa-check"></i><b>16.3</b> Cointegration</a></li>
+<li class="chapter" data-level="16.4" data-path="16.4-volatility-clustering-and-autoregressive-conditional-heteroskedasticity.html"><a href="16.4-volatility-clustering-and-autoregressive-conditional-heteroskedasticity.html"><i class="fa fa-check"></i><b>16.4</b> Volatility Clustering and Autoregressive Conditional Heteroskedasticity</a>
+<ul>
+<li class="chapter" data-level="" data-path="16.4-volatility-clustering-and-autoregressive-conditional-heteroskedasticity.html"><a href="16.4-volatility-clustering-and-autoregressive-conditional-heteroskedasticity.html#arch-and-garch-models"><i class="fa fa-check"></i>ARCH and GARCH Models</a></li>
+<li class="chapter" data-level="" data-path="16.4-volatility-clustering-and-autoregressive-conditional-heteroskedasticity.html"><a href="16.4-volatility-clustering-and-autoregressive-conditional-heteroskedasticity.html#application-to-stock-price-volatility"><i class="fa fa-check"></i>Application to Stock Price Volatility</a></li>
+<li class="chapter" data-level="" data-path="16.4-volatility-clustering-and-autoregressive-conditional-heteroskedasticity.html"><a href="16.4-volatility-clustering-and-autoregressive-conditional-heteroskedasticity.html#summary-8"><i class="fa fa-check"></i>Summary</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Introduction to Econometrics with R</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div class = rmdreview>
+This book is in <b>Open Review</b>. We want your feedback to make the book better for you and other students. You may annotate some text by <span style="background-color: #3297FD; color: white">selecting it with the cursor</span> and then click the <i class="h-icon-annotate"></i> on the pop-up menu. You can also see the annotations of others: click the <i class="h-icon-chevron-left"></i> in the upper right hand corner of the page <i class="fa fa-arrow-circle-right  fa-rotate-315" aria-hidden="true"></i>
+</div>
+<div id="vector-autoregressions" class="section level2" number="16.1">
+<h2><span class="header-section-number">16.1</span> Vector Autoregressions</h2>
+<p>A Vector autoregressive (VAR) model is useful when one is interested in predicting multiple time series variables using a single model. At its core, the VAR model is an extension of the univariate autoregressive model we have dealt with in Chapters <a href="14-ittsraf.html#ittsraf">14</a> and <a href="15-eodce.html#eodce">15</a>. Key Concept 16.1 summarizes the essentials of VAR.</p>
+<div id="KC16.1" class="keyconcept">
+<h3 class="right">
+Key Concept <br> 16.1
+</h3>
+<h3 class="left">
+Vector Autoregressions
+</h3>
+<p>
+<p>The vector autoregression (VAR) model extends the idea of univariate autoregression to <span class="math inline">\(k\)</span> time series regressions, where the lagged values of <em>all</em> <span class="math inline">\(k\)</span> series appear as regressors. Put differently, in a VAR model we regress a <em>vector</em> of time series variables on lagged vectors of these variables. As for AR(<span class="math inline">\(p\)</span>) models, the lag order is denoted by <span class="math inline">\(p\)</span> so the VAR(<span class="math inline">\(p\)</span>) model of two variables <span class="math inline">\(X_t\)</span> and <span class="math inline">\(Y_t\)</span> (<span class="math inline">\(k=2\)</span>) is given by the equations</p>
+<p><span class="math display">\[\begin{align*}
+  Y_t =&amp; \, \beta_{10} + \beta_{11} Y_{t-1} + \dots + \beta_{1p} Y_{t-p} + \gamma_{11} X_{t-1} + \dots + \gamma_{1p} X_{t-p} + u_{1t}, \\
+  X_t =&amp; \, \beta_{20} + \beta_{21} Y_{t-1} + \dots + \beta_{2p} Y_{t-p} + \gamma_{21} X_{t-1} + \dots + \gamma_{2p} X_{t-p} + u_{2t}.
+\end{align*}\]</span></p>
+<p>The <span class="math inline">\(\beta\)</span>s and <span class="math inline">\(\gamma\)</span>s can be estimated using OLS on each equation. The assumptions for VARs are the time series assumptions presented in Key Concept 14.6 applied to each of the equations.</p>
+<p>It is straightforward to estimate VAR models in <tt>R</tt>. A feasible approach is to simply use <tt>lm()</tt> for estimation of the individual equations. Furthermore, the <tt>R</tt>package <tt>vars</tt> provides standard tools for estimation, diagnostic testing and prediction using this type of models.</p>
+</p>
+</div>
+<p>When the assumptions of Key Concept 16.1 hold, the OLS estimators of the VAR coefficients are consistent and jointly normal in large samples so that the usual inferential methods such as confidence intervals and <span class="math inline">\(t\)</span>-statistics can be used.</p>
+<p>The structure of VARs also allows to jointly test restrictions across multiple equations. For instance, it may be of interest to test whether the coefficients on all regressors of the lag <span class="math inline">\(p\)</span> are zero. This corresponds to testing the null that the lag order <span class="math inline">\(p-1\)</span> is correct. Large sample joint normality of the coefficient estimates is convenient because it implies that we may simply use an <span class="math inline">\(F\)</span>-test for this testing problem. The explicit formula for such a test statistic is rather complicated but fortunately such computations are easily done using the <tt>R</tt> functions we work with in this chapter. Another way to determine optimal lag lengths are information criteria like the <span class="math inline">\(BIC\)</span> which we have introduced for univariate time series regressions in Chapter <a href="14.6-llsuic.html#llsuic">14.6</a>. Just as in the case of a single equation, for a multiple equation model we choose the specification which has the smallest <span class="math inline">\(BIC(p)\)</span>, where
+<span class="math display">\[\begin{align*}
+  BIC(p) =&amp; \, \log\left[\text{det}(\widehat{\Sigma}_u)\right] + k(kp+1) \frac{\log(T)}{T}.
+\end{align*}\]</span>
+with <span class="math inline">\(\widehat{\Sigma}_u\)</span> denoting the estimate of the <span class="math inline">\(k \times k\)</span> covariance matrix of the VAR errors and <span class="math inline">\(\text{det}(\cdot)\)</span> denotes the determinant.</p>
+<p>As for univariate distributed lag models, one should think carefully about variables to include in a VAR, as adding unrelated variables reduces the forecast accuracy by increasing the estimation error. This is particularly important because the number of parameters to be estimated grows qudratically to the number of variables modeled by the VAR. In the application below we shall see that economic theory and empirical evidence are helpful for this decision.</p>
+<div id="a-var-model-of-the-growth-rate-of-gdp-and-the-term-spread" class="section level4 unnumbered">
+<h4>A VAR Model of the Growth Rate of GDP and the Term Spread</h4>
+<p>We now show how to estimate a VAR model of the GDP growth rate, <span class="math inline">\(GDPGR\)</span>, and the term spread, <span class="math inline">\(TSpread\)</span>. As following the discussion on nonstationarity of GDP growth in Chapter <a href="14.7-nit.html#nit">14.7</a> (recall the possible break in the early 1980s detected by the <span class="math inline">\(QLR\)</span> test statistic), we use data from 1981:Q1 to 2012:Q4. The two model equations are</p>
+<p><span class="math display">\[\begin{align*}
+ GDPGR_t =&amp; \, \beta_{10} + \beta_{11} GDPGR_{t-1} + \beta_{12} GDPGR_{t-2} + \gamma_{11} TSpread_{t-1} + \gamma_{12} TSpread_{t-2} + u_{1t}, \\
+ TSpread_t =&amp; \, \beta_{20} + \beta_{21} GDPGR_{t-1} + \beta_{22} GDPGR_{t-2} + \gamma_{21} TSpread_{t-1} + \gamma_{22} TSpread_{t-2} + u_{2t}.
+\end{align*}\]</span></p>
+<p>The data set <tt>us_macro_quarterly.xlsx</tt> is provided on the companion website to <span class="citation">Stock and Watson (<a href="#ref-stock2015" role="doc-biblioref">2015</a>)</span> and can be downloaded <a href="http://wps.aw.com/aw_stock_ie_3/178/45691/11696965.cw/index.html">here</a>. It contains quarterly data on U.S. real (i.e., inflation adjusted) GDP from 1947 to 2004. We begin by importing the data set and do some formatting (we already worked with this data set in Chapter <a href="14-ittsraf.html#ittsraf">14</a> so you may skip these steps if you have already loaded the data in your working environment).</p>
+<div class="sourceCode" id="cb445"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb445-1"><a href="16.1-vector-autoregressions.html#cb445-1" aria-hidden="true" tabindex="-1"></a><span class="co"># load the U.S. macroeconomic data set</span></span>
+<span id="cb445-2"><a href="16.1-vector-autoregressions.html#cb445-2" aria-hidden="true" tabindex="-1"></a>USMacroSWQ <span class="ot">&lt;-</span> <span class="fu">read_xlsx</span>(<span class="st">&quot;Data/us_macro_quarterly.xlsx&quot;</span>,</span>
+<span id="cb445-3"><a href="16.1-vector-autoregressions.html#cb445-3" aria-hidden="true" tabindex="-1"></a>                         <span class="at">sheet =</span> <span class="dv">1</span>,</span>
+<span id="cb445-4"><a href="16.1-vector-autoregressions.html#cb445-4" aria-hidden="true" tabindex="-1"></a>                         <span class="at">col_types =</span> <span class="fu">c</span>(<span class="st">&quot;text&quot;</span>, <span class="fu">rep</span>(<span class="st">&quot;numeric&quot;</span>, <span class="dv">9</span>)))</span>
+<span id="cb445-5"><a href="16.1-vector-autoregressions.html#cb445-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb445-6"><a href="16.1-vector-autoregressions.html#cb445-6" aria-hidden="true" tabindex="-1"></a><span class="co"># set the column names</span></span>
+<span id="cb445-7"><a href="16.1-vector-autoregressions.html#cb445-7" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(USMacroSWQ) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Date&quot;</span>, <span class="st">&quot;GDPC96&quot;</span>, <span class="st">&quot;JAPAN_IP&quot;</span>, <span class="st">&quot;PCECTPI&quot;</span>, <span class="st">&quot;GS10&quot;</span>, </span>
+<span id="cb445-8"><a href="16.1-vector-autoregressions.html#cb445-8" aria-hidden="true" tabindex="-1"></a>                          <span class="st">&quot;GS1&quot;</span>, <span class="st">&quot;TB3MS&quot;</span>, <span class="st">&quot;UNRATE&quot;</span>, <span class="st">&quot;EXUSUK&quot;</span>, <span class="st">&quot;CPIAUCSL&quot;</span>)</span>
+<span id="cb445-9"><a href="16.1-vector-autoregressions.html#cb445-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb445-10"><a href="16.1-vector-autoregressions.html#cb445-10" aria-hidden="true" tabindex="-1"></a><span class="co"># format the date column</span></span>
+<span id="cb445-11"><a href="16.1-vector-autoregressions.html#cb445-11" aria-hidden="true" tabindex="-1"></a>USMacroSWQ<span class="sc">$</span>Date <span class="ot">&lt;-</span> <span class="fu">as.yearqtr</span>(USMacroSWQ<span class="sc">$</span>Date, <span class="at">format =</span> <span class="st">&quot;%Y:0%q&quot;</span>)</span>
+<span id="cb445-12"><a href="16.1-vector-autoregressions.html#cb445-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb445-13"><a href="16.1-vector-autoregressions.html#cb445-13" aria-hidden="true" tabindex="-1"></a><span class="co"># define GDP as ts object</span></span>
+<span id="cb445-14"><a href="16.1-vector-autoregressions.html#cb445-14" aria-hidden="true" tabindex="-1"></a>GDP <span class="ot">&lt;-</span> <span class="fu">ts</span>(USMacroSWQ<span class="sc">$</span>GDPC96,</span>
+<span id="cb445-15"><a href="16.1-vector-autoregressions.html#cb445-15" aria-hidden="true" tabindex="-1"></a>          <span class="at">start =</span> <span class="fu">c</span>(<span class="dv">1957</span>, <span class="dv">1</span>), </span>
+<span id="cb445-16"><a href="16.1-vector-autoregressions.html#cb445-16" aria-hidden="true" tabindex="-1"></a>          <span class="at">end =</span> <span class="fu">c</span>(<span class="dv">2013</span>, <span class="dv">4</span>), </span>
+<span id="cb445-17"><a href="16.1-vector-autoregressions.html#cb445-17" aria-hidden="true" tabindex="-1"></a>          <span class="at">frequency =</span> <span class="dv">4</span>)</span>
+<span id="cb445-18"><a href="16.1-vector-autoregressions.html#cb445-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb445-19"><a href="16.1-vector-autoregressions.html#cb445-19" aria-hidden="true" tabindex="-1"></a><span class="co"># define GDP growth as a ts object</span></span>
+<span id="cb445-20"><a href="16.1-vector-autoregressions.html#cb445-20" aria-hidden="true" tabindex="-1"></a>GDPGrowth <span class="ot">&lt;-</span> <span class="fu">ts</span>(<span class="dv">400</span><span class="sc">*</span><span class="fu">log</span>(GDP[<span class="sc">-</span><span class="dv">1</span>]<span class="sc">/</span>GDP[<span class="sc">-</span><span class="fu">length</span>(GDP)]),</span>
+<span id="cb445-21"><a href="16.1-vector-autoregressions.html#cb445-21" aria-hidden="true" tabindex="-1"></a>                <span class="at">start =</span> <span class="fu">c</span>(<span class="dv">1957</span>, <span class="dv">2</span>), </span>
+<span id="cb445-22"><a href="16.1-vector-autoregressions.html#cb445-22" aria-hidden="true" tabindex="-1"></a>                <span class="at">end =</span> <span class="fu">c</span>(<span class="dv">2013</span>, <span class="dv">4</span>), </span>
+<span id="cb445-23"><a href="16.1-vector-autoregressions.html#cb445-23" aria-hidden="true" tabindex="-1"></a>                <span class="at">frequency =</span> <span class="dv">4</span>)</span>
+<span id="cb445-24"><a href="16.1-vector-autoregressions.html#cb445-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb445-25"><a href="16.1-vector-autoregressions.html#cb445-25" aria-hidden="true" tabindex="-1"></a><span class="co"># 3-months Treasury bill interest rate as a &#39;ts&#39; object</span></span>
+<span id="cb445-26"><a href="16.1-vector-autoregressions.html#cb445-26" aria-hidden="true" tabindex="-1"></a>TB3MS <span class="ot">&lt;-</span> <span class="fu">ts</span>(USMacroSWQ<span class="sc">$</span>TB3MS,</span>
+<span id="cb445-27"><a href="16.1-vector-autoregressions.html#cb445-27" aria-hidden="true" tabindex="-1"></a>            <span class="at">start =</span> <span class="fu">c</span>(<span class="dv">1957</span>, <span class="dv">1</span>), </span>
+<span id="cb445-28"><a href="16.1-vector-autoregressions.html#cb445-28" aria-hidden="true" tabindex="-1"></a>            <span class="at">end =</span> <span class="fu">c</span>(<span class="dv">2013</span>, <span class="dv">4</span>), </span>
+<span id="cb445-29"><a href="16.1-vector-autoregressions.html#cb445-29" aria-hidden="true" tabindex="-1"></a>            <span class="at">frequency =</span> <span class="dv">4</span>)</span>
+<span id="cb445-30"><a href="16.1-vector-autoregressions.html#cb445-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb445-31"><a href="16.1-vector-autoregressions.html#cb445-31" aria-hidden="true" tabindex="-1"></a><span class="co"># 10-years Treasury bonds interest rate as a &#39;ts&#39; object</span></span>
+<span id="cb445-32"><a href="16.1-vector-autoregressions.html#cb445-32" aria-hidden="true" tabindex="-1"></a>TB10YS <span class="ot">&lt;-</span> <span class="fu">ts</span>(USMacroSWQ<span class="sc">$</span>GS10, </span>
+<span id="cb445-33"><a href="16.1-vector-autoregressions.html#cb445-33" aria-hidden="true" tabindex="-1"></a>              <span class="at">start =</span> <span class="fu">c</span>(<span class="dv">1957</span>, <span class="dv">1</span>), </span>
+<span id="cb445-34"><a href="16.1-vector-autoregressions.html#cb445-34" aria-hidden="true" tabindex="-1"></a>              <span class="at">end =</span> <span class="fu">c</span>(<span class="dv">2013</span>, <span class="dv">4</span>), </span>
+<span id="cb445-35"><a href="16.1-vector-autoregressions.html#cb445-35" aria-hidden="true" tabindex="-1"></a>              <span class="at">frequency =</span> <span class="dv">4</span>)</span>
+<span id="cb445-36"><a href="16.1-vector-autoregressions.html#cb445-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb445-37"><a href="16.1-vector-autoregressions.html#cb445-37" aria-hidden="true" tabindex="-1"></a><span class="co"># generate the term spread series</span></span>
+<span id="cb445-38"><a href="16.1-vector-autoregressions.html#cb445-38" aria-hidden="true" tabindex="-1"></a>TSpread <span class="ot">&lt;-</span> TB10YS <span class="sc">-</span> TB3MS</span></code></pre></div>
+<p>We estimate both equations separately by OLS and use <tt>coeftest()</tt> to obtain robust standard errors.</p>
+<div class="sourceCode" id="cb446"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb446-1"><a href="16.1-vector-autoregressions.html#cb446-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimate both equations using &#39;dynlm()&#39;</span></span>
+<span id="cb446-2"><a href="16.1-vector-autoregressions.html#cb446-2" aria-hidden="true" tabindex="-1"></a>VAR_EQ1 <span class="ot">&lt;-</span> <span class="fu">dynlm</span>(GDPGrowth <span class="sc">~</span> <span class="fu">L</span>(GDPGrowth, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>) <span class="sc">+</span> <span class="fu">L</span>(TSpread, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>), </span>
+<span id="cb446-3"><a href="16.1-vector-autoregressions.html#cb446-3" aria-hidden="true" tabindex="-1"></a>                 <span class="at">start =</span> <span class="fu">c</span>(<span class="dv">1981</span>, <span class="dv">1</span>), </span>
+<span id="cb446-4"><a href="16.1-vector-autoregressions.html#cb446-4" aria-hidden="true" tabindex="-1"></a>                 <span class="at">end =</span> <span class="fu">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>))</span>
+<span id="cb446-5"><a href="16.1-vector-autoregressions.html#cb446-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb446-6"><a href="16.1-vector-autoregressions.html#cb446-6" aria-hidden="true" tabindex="-1"></a>VAR_EQ2 <span class="ot">&lt;-</span> <span class="fu">dynlm</span>(TSpread <span class="sc">~</span> <span class="fu">L</span>(GDPGrowth, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>) <span class="sc">+</span> <span class="fu">L</span>(TSpread, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>),</span>
+<span id="cb446-7"><a href="16.1-vector-autoregressions.html#cb446-7" aria-hidden="true" tabindex="-1"></a>                 <span class="at">start =</span> <span class="fu">c</span>(<span class="dv">1981</span>, <span class="dv">1</span>),</span>
+<span id="cb446-8"><a href="16.1-vector-autoregressions.html#cb446-8" aria-hidden="true" tabindex="-1"></a>                 <span class="at">end =</span> <span class="fu">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>))</span>
+<span id="cb446-9"><a href="16.1-vector-autoregressions.html#cb446-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb446-10"><a href="16.1-vector-autoregressions.html#cb446-10" aria-hidden="true" tabindex="-1"></a><span class="co"># rename regressors for better readability</span></span>
+<span id="cb446-11"><a href="16.1-vector-autoregressions.html#cb446-11" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(VAR_EQ1<span class="sc">$</span>coefficients) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Intercept&quot;</span>,<span class="st">&quot;Growth_t-1&quot;</span>, </span>
+<span id="cb446-12"><a href="16.1-vector-autoregressions.html#cb446-12" aria-hidden="true" tabindex="-1"></a>                                 <span class="st">&quot;Growth_t-2&quot;</span>, <span class="st">&quot;TSpread_t-1&quot;</span>, <span class="st">&quot;TSpread_t-2&quot;</span>)</span>
+<span id="cb446-13"><a href="16.1-vector-autoregressions.html#cb446-13" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(VAR_EQ2<span class="sc">$</span>coefficients) <span class="ot">&lt;-</span> <span class="fu">names</span>(VAR_EQ1<span class="sc">$</span>coefficients)</span>
+<span id="cb446-14"><a href="16.1-vector-autoregressions.html#cb446-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb446-15"><a href="16.1-vector-autoregressions.html#cb446-15" aria-hidden="true" tabindex="-1"></a><span class="co"># robust coefficient summaries</span></span>
+<span id="cb446-16"><a href="16.1-vector-autoregressions.html#cb446-16" aria-hidden="true" tabindex="-1"></a><span class="fu">coeftest</span>(VAR_EQ1, <span class="at">vcov. =</span> sandwich)</span>
+<span id="cb446-17"><a href="16.1-vector-autoregressions.html#cb446-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb446-18"><a href="16.1-vector-autoregressions.html#cb446-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; t test of coefficients:</span></span>
+<span id="cb446-19"><a href="16.1-vector-autoregressions.html#cb446-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb446-20"><a href="16.1-vector-autoregressions.html#cb446-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;              Estimate Std. Error t value  Pr(&gt;|t|)    </span></span>
+<span id="cb446-21"><a href="16.1-vector-autoregressions.html#cb446-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Intercept    0.516344   0.524429  0.9846 0.3267616    </span></span>
+<span id="cb446-22"><a href="16.1-vector-autoregressions.html#cb446-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Growth_t-1   0.289553   0.110827  2.6127 0.0101038 *  </span></span>
+<span id="cb446-23"><a href="16.1-vector-autoregressions.html#cb446-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Growth_t-2   0.216392   0.085879  2.5197 0.0130255 *  </span></span>
+<span id="cb446-24"><a href="16.1-vector-autoregressions.html#cb446-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; TSpread_t-1 -0.902549   0.358290 -2.5190 0.0130498 *  </span></span>
+<span id="cb446-25"><a href="16.1-vector-autoregressions.html#cb446-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; TSpread_t-2  1.329831   0.392660  3.3867 0.0009503 ***</span></span>
+<span id="cb446-26"><a href="16.1-vector-autoregressions.html#cb446-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ---</span></span>
+<span id="cb446-27"><a href="16.1-vector-autoregressions.html#cb446-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span>
+<span id="cb446-28"><a href="16.1-vector-autoregressions.html#cb446-28" aria-hidden="true" tabindex="-1"></a><span class="fu">coeftest</span>(VAR_EQ2, <span class="at">vcov. =</span> sandwich)</span>
+<span id="cb446-29"><a href="16.1-vector-autoregressions.html#cb446-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb446-30"><a href="16.1-vector-autoregressions.html#cb446-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; t test of coefficients:</span></span>
+<span id="cb446-31"><a href="16.1-vector-autoregressions.html#cb446-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb446-32"><a href="16.1-vector-autoregressions.html#cb446-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;               Estimate Std. Error t value  Pr(&gt;|t|)    </span></span>
+<span id="cb446-33"><a href="16.1-vector-autoregressions.html#cb446-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Intercept    0.4557740  0.1214227  3.7536 0.0002674 ***</span></span>
+<span id="cb446-34"><a href="16.1-vector-autoregressions.html#cb446-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Growth_t-1   0.0099785  0.0218424  0.4568 0.6485920    </span></span>
+<span id="cb446-35"><a href="16.1-vector-autoregressions.html#cb446-35" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Growth_t-2  -0.0572451  0.0264099 -2.1676 0.0321186 *  </span></span>
+<span id="cb446-36"><a href="16.1-vector-autoregressions.html#cb446-36" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; TSpread_t-1  1.0582279  0.0983750 10.7571 &lt; 2.2e-16 ***</span></span>
+<span id="cb446-37"><a href="16.1-vector-autoregressions.html#cb446-37" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; TSpread_t-2 -0.2191902  0.1086198 -2.0180 0.0457712 *  </span></span>
+<span id="cb446-38"><a href="16.1-vector-autoregressions.html#cb446-38" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ---</span></span>
+<span id="cb446-39"><a href="16.1-vector-autoregressions.html#cb446-39" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span></code></pre></div>
+<p>We end up with the following results:</p>
+<p><span class="math display">\[\begin{align*}
+ GDPGR_t =&amp; \, \underset{(0.46)}{0.52} + \underset{(0.11)}{0.29} GDPGR_{t-1} + \underset{(0.09)}{0.22} GDPGR_{t-2} -\underset{(0.36)}{0.90} TSpread_{t-1} + \underset{(0.39)}{1.33} TSpread_{t-2} \\
+ TSpread_t =&amp; \, \underset{(0.12)}{0.46} + \underset{(0.02)}{0.01} GDPGR_{t-1} -\underset{(0.03)}{0.06} GDPGR_{t-2} + \underset{(0.10)}{1.06} TSpread_{t-1} -\underset{(0.11)}{0.22} TSpread_{t-2} 
+\end{align*}\]</span></p>
+<p>The function <tt>VAR()</tt> can be used to obtain the same coefficient estimates as presented above since it applies OLS per equation, too.</p>
+<div class="sourceCode" id="cb447"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb447-1"><a href="16.1-vector-autoregressions.html#cb447-1" aria-hidden="true" tabindex="-1"></a><span class="co"># set up data for estimation using `VAR()`</span></span>
+<span id="cb447-2"><a href="16.1-vector-autoregressions.html#cb447-2" aria-hidden="true" tabindex="-1"></a>VAR_data <span class="ot">&lt;-</span> <span class="fu">window</span>(<span class="fu">ts.union</span>(GDPGrowth, TSpread), <span class="at">start =</span> <span class="fu">c</span>(<span class="dv">1980</span>, <span class="dv">3</span>), <span class="at">end =</span> <span class="fu">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>))</span>
+<span id="cb447-3"><a href="16.1-vector-autoregressions.html#cb447-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb447-4"><a href="16.1-vector-autoregressions.html#cb447-4" aria-hidden="true" tabindex="-1"></a><span class="co"># estimate model coefficients using `VAR()`</span></span>
+<span id="cb447-5"><a href="16.1-vector-autoregressions.html#cb447-5" aria-hidden="true" tabindex="-1"></a>VAR_est <span class="ot">&lt;-</span> <span class="fu">VAR</span>(<span class="at">y =</span> VAR_data, <span class="at">p =</span> <span class="dv">2</span>)</span>
+<span id="cb447-6"><a href="16.1-vector-autoregressions.html#cb447-6" aria-hidden="true" tabindex="-1"></a>VAR_est</span>
+<span id="cb447-7"><a href="16.1-vector-autoregressions.html#cb447-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb447-8"><a href="16.1-vector-autoregressions.html#cb447-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; VAR Estimation Results:</span></span>
+<span id="cb447-9"><a href="16.1-vector-autoregressions.html#cb447-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ======================= </span></span>
+<span id="cb447-10"><a href="16.1-vector-autoregressions.html#cb447-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb447-11"><a href="16.1-vector-autoregressions.html#cb447-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Estimated coefficients for equation GDPGrowth: </span></span>
+<span id="cb447-12"><a href="16.1-vector-autoregressions.html#cb447-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ============================================== </span></span>
+<span id="cb447-13"><a href="16.1-vector-autoregressions.html#cb447-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Call:</span></span>
+<span id="cb447-14"><a href="16.1-vector-autoregressions.html#cb447-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; GDPGrowth = GDPGrowth.l1 + TSpread.l1 + GDPGrowth.l2 + TSpread.l2 + const </span></span>
+<span id="cb447-15"><a href="16.1-vector-autoregressions.html#cb447-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb447-16"><a href="16.1-vector-autoregressions.html#cb447-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; GDPGrowth.l1   TSpread.l1 GDPGrowth.l2   TSpread.l2        const </span></span>
+<span id="cb447-17"><a href="16.1-vector-autoregressions.html#cb447-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    0.2895533   -0.9025493    0.2163919    1.3298305    0.5163440 </span></span>
+<span id="cb447-18"><a href="16.1-vector-autoregressions.html#cb447-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb447-19"><a href="16.1-vector-autoregressions.html#cb447-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb447-20"><a href="16.1-vector-autoregressions.html#cb447-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Estimated coefficients for equation TSpread: </span></span>
+<span id="cb447-21"><a href="16.1-vector-autoregressions.html#cb447-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ============================================ </span></span>
+<span id="cb447-22"><a href="16.1-vector-autoregressions.html#cb447-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Call:</span></span>
+<span id="cb447-23"><a href="16.1-vector-autoregressions.html#cb447-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; TSpread = GDPGrowth.l1 + TSpread.l1 + GDPGrowth.l2 + TSpread.l2 + const </span></span>
+<span id="cb447-24"><a href="16.1-vector-autoregressions.html#cb447-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb447-25"><a href="16.1-vector-autoregressions.html#cb447-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; GDPGrowth.l1   TSpread.l1 GDPGrowth.l2   TSpread.l2        const </span></span>
+<span id="cb447-26"><a href="16.1-vector-autoregressions.html#cb447-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  0.009978489  1.058227945 -0.057245123 -0.219190243  0.455773969</span></span></code></pre></div>
+<p><tt>VAR()</tt> returns a <tt>list</tt> of <tt>lm</tt> objects which can be passed to the usual functions, for example <tt>summary()</tt> and so it is straightforward to obtain model statistics for the individual equations.</p>
+<div class="sourceCode" id="cb448"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb448-1"><a href="16.1-vector-autoregressions.html#cb448-1" aria-hidden="true" tabindex="-1"></a><span class="co"># obtain the adj. R^2 from the output of &#39;VAR()&#39;</span></span>
+<span id="cb448-2"><a href="16.1-vector-autoregressions.html#cb448-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(VAR_est<span class="sc">$</span>varresult<span class="sc">$</span>GDPGrowth)<span class="sc">$</span>adj.r.squared</span>
+<span id="cb448-3"><a href="16.1-vector-autoregressions.html#cb448-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.2887223</span></span>
+<span id="cb448-4"><a href="16.1-vector-autoregressions.html#cb448-4" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(VAR_est<span class="sc">$</span>varresult<span class="sc">$</span>TSpread)<span class="sc">$</span>adj.r.squared</span>
+<span id="cb448-5"><a href="16.1-vector-autoregressions.html#cb448-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.8254311</span></span></code></pre></div>
+<p>We may use the individual model objects to conduct Granger causality tests.</p>
+<div class="sourceCode" id="cb449"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb449-1"><a href="16.1-vector-autoregressions.html#cb449-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Granger causality tests:</span></span>
+<span id="cb449-2"><a href="16.1-vector-autoregressions.html#cb449-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb449-3"><a href="16.1-vector-autoregressions.html#cb449-3" aria-hidden="true" tabindex="-1"></a><span class="co"># test if term spread has no power in explaining GDP growth</span></span>
+<span id="cb449-4"><a href="16.1-vector-autoregressions.html#cb449-4" aria-hidden="true" tabindex="-1"></a><span class="fu">linearHypothesis</span>(VAR_EQ1, </span>
+<span id="cb449-5"><a href="16.1-vector-autoregressions.html#cb449-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">hypothesis.matrix =</span> <span class="fu">c</span>(<span class="st">&quot;TSpread_t-1&quot;</span>, <span class="st">&quot;TSpread_t-2&quot;</span>),</span>
+<span id="cb449-6"><a href="16.1-vector-autoregressions.html#cb449-6" aria-hidden="true" tabindex="-1"></a>                 <span class="at">vcov. =</span> sandwich)</span>
+<span id="cb449-7"><a href="16.1-vector-autoregressions.html#cb449-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Linear hypothesis test</span></span>
+<span id="cb449-8"><a href="16.1-vector-autoregressions.html#cb449-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb449-9"><a href="16.1-vector-autoregressions.html#cb449-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Hypothesis:</span></span>
+<span id="cb449-10"><a href="16.1-vector-autoregressions.html#cb449-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; TSpread_t - 0</span></span>
+<span id="cb449-11"><a href="16.1-vector-autoregressions.html#cb449-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; TSpread_t - 2 = 0</span></span>
+<span id="cb449-12"><a href="16.1-vector-autoregressions.html#cb449-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb449-13"><a href="16.1-vector-autoregressions.html#cb449-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Model 1: restricted model</span></span>
+<span id="cb449-14"><a href="16.1-vector-autoregressions.html#cb449-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Model 2: GDPGrowth ~ L(GDPGrowth, 1:2) + L(TSpread, 1:2)</span></span>
+<span id="cb449-15"><a href="16.1-vector-autoregressions.html#cb449-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb449-16"><a href="16.1-vector-autoregressions.html#cb449-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Note: Coefficient covariance matrix supplied.</span></span>
+<span id="cb449-17"><a href="16.1-vector-autoregressions.html#cb449-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb449-18"><a href="16.1-vector-autoregressions.html#cb449-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   Res.Df Df      F   Pr(&gt;F)   </span></span>
+<span id="cb449-19"><a href="16.1-vector-autoregressions.html#cb449-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1    125                      </span></span>
+<span id="cb449-20"><a href="16.1-vector-autoregressions.html#cb449-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2    123  2 5.9094 0.003544 **</span></span>
+<span id="cb449-21"><a href="16.1-vector-autoregressions.html#cb449-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ---</span></span>
+<span id="cb449-22"><a href="16.1-vector-autoregressions.html#cb449-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span>
+<span id="cb449-23"><a href="16.1-vector-autoregressions.html#cb449-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb449-24"><a href="16.1-vector-autoregressions.html#cb449-24" aria-hidden="true" tabindex="-1"></a><span class="co"># test if GDP growth has no power in explaining term spread</span></span>
+<span id="cb449-25"><a href="16.1-vector-autoregressions.html#cb449-25" aria-hidden="true" tabindex="-1"></a><span class="fu">linearHypothesis</span>(VAR_EQ2, </span>
+<span id="cb449-26"><a href="16.1-vector-autoregressions.html#cb449-26" aria-hidden="true" tabindex="-1"></a>                 <span class="at">hypothesis.matrix =</span> <span class="fu">c</span>(<span class="st">&quot;Growth_t-1&quot;</span>, <span class="st">&quot;Growth_t-2&quot;</span>),</span>
+<span id="cb449-27"><a href="16.1-vector-autoregressions.html#cb449-27" aria-hidden="true" tabindex="-1"></a>                 <span class="at">vcov. =</span> sandwich)</span>
+<span id="cb449-28"><a href="16.1-vector-autoregressions.html#cb449-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Linear hypothesis test</span></span>
+<span id="cb449-29"><a href="16.1-vector-autoregressions.html#cb449-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb449-30"><a href="16.1-vector-autoregressions.html#cb449-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Hypothesis:</span></span>
+<span id="cb449-31"><a href="16.1-vector-autoregressions.html#cb449-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Growth_t - 0</span></span>
+<span id="cb449-32"><a href="16.1-vector-autoregressions.html#cb449-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Growth_t - 2 = 0</span></span>
+<span id="cb449-33"><a href="16.1-vector-autoregressions.html#cb449-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb449-34"><a href="16.1-vector-autoregressions.html#cb449-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Model 1: restricted model</span></span>
+<span id="cb449-35"><a href="16.1-vector-autoregressions.html#cb449-35" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Model 2: TSpread ~ L(GDPGrowth, 1:2) + L(TSpread, 1:2)</span></span>
+<span id="cb449-36"><a href="16.1-vector-autoregressions.html#cb449-36" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb449-37"><a href="16.1-vector-autoregressions.html#cb449-37" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Note: Coefficient covariance matrix supplied.</span></span>
+<span id="cb449-38"><a href="16.1-vector-autoregressions.html#cb449-38" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb449-39"><a href="16.1-vector-autoregressions.html#cb449-39" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   Res.Df Df      F  Pr(&gt;F)  </span></span>
+<span id="cb449-40"><a href="16.1-vector-autoregressions.html#cb449-40" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1    125                    </span></span>
+<span id="cb449-41"><a href="16.1-vector-autoregressions.html#cb449-41" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2    123  2 3.4777 0.03395 *</span></span>
+<span id="cb449-42"><a href="16.1-vector-autoregressions.html#cb449-42" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ---</span></span>
+<span id="cb449-43"><a href="16.1-vector-autoregressions.html#cb449-43" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span></code></pre></div>
+<p>Both Granger causality tests reject at the level of <span class="math inline">\(5\%\)</span>. This is evidence in favor of the conjecture that the term spread has power in explaining GDP growth and vice versa.</p>
+</div>
+<div id="iterated-multivariate-forecasts-using-an-iterated-var" class="section level4 unnumbered">
+<h4>Iterated Multivariate Forecasts using an Iterated VAR</h4>
+<p>The idea of an iterated forecast for period <span class="math inline">\(T+2\)</span> based on observations up to period <span class="math inline">\(T\)</span> is to use the one-period-ahead forecast as an intermediate step. That is, the forecast for period <span class="math inline">\(T+1\)</span> is used as an observation when predicting the level of a series for period <span class="math inline">\(T+2\)</span>. This can be generalized to a <span class="math inline">\(h\)</span>-period-ahead forecast where all intervening periods between <span class="math inline">\(T\)</span> and <span class="math inline">\(T+h\)</span> must be forecasted as they are used as observations in the process (see Chapter 16.2 of the book for a more detailed argument on this concept). Iterated multiperiod forecasts are summarized in Key Concept 16.2.</p>
+<div id="KC16.2" class="keyconcept">
+<h3 class="right">
+Key Concept <br> 16.2
+</h3>
+<h3 class="left">
+Iterated Multiperiod Forecasts
+</h3>
+<p>
+<p>The steps for an <em>iterated multiperiod AR forecast</em> are:</p>
+<ol style="list-style-type: decimal">
+<li><p>Estimate the AR(<span class="math inline">\(p\)</span>) model using OLS and compute the one-period-ahead forecast.</p></li>
+<li><p>Use the one-period-ahead forecast to obtain the two-period-ahead forecast.</p></li>
+<li><p>Continue by iterating to obtain forecasts farther into the future.</p></li>
+</ol>
+<p>An <em>iterated multiperiod VAR forecast</em> is done as follows:</p>
+<ol style="list-style-type: decimal">
+<li><p>Estimate the VAR(<span class="math inline">\(p\)</span>) model using OLS per equation and compute the one-period-ahead forecast for <em>all</em> variables in the VAR.</p></li>
+<li><p>Use the one-period-ahead forecasts to obtain the two-period-ahead forecasts.</p></li>
+<li><p>Continue by iterating to obtain forecasts of all variables in the VAR farther into the future.</p></li>
+</ol>
+</p>
+</div>
+<p>Since a VAR models all variables using lags of the respective other variables, we need to compute forecasts for <em>all</em> variables. It can be cumbersome to do so when the VAR is large but fortunately there are <tt>R</tt> functions that facilitate this. For example, the function <tt>predict()</tt> can be used to obtain iterated multivariate forecasts for VAR models estimated by the function <tt>VAR()</tt>.</p>
+<p>The following code chunk shows how to compute iterated forecasts for GDP growth and the term spread up to period 2015:Q1, that is <span class="math inline">\(h=10\)</span>, using the model object <tt>VAR_est</tt>.</p>
+<div class="sourceCode" id="cb450"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb450-1"><a href="16.1-vector-autoregressions.html#cb450-1" aria-hidden="true" tabindex="-1"></a><span class="co"># compute iterated forecasts for GDP growth and term spread for the next 10 quarters</span></span>
+<span id="cb450-2"><a href="16.1-vector-autoregressions.html#cb450-2" aria-hidden="true" tabindex="-1"></a>forecasts <span class="ot">&lt;-</span> <span class="fu">predict</span>(VAR_est)</span>
+<span id="cb450-3"><a href="16.1-vector-autoregressions.html#cb450-3" aria-hidden="true" tabindex="-1"></a>forecasts</span>
+<span id="cb450-4"><a href="16.1-vector-autoregressions.html#cb450-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $GDPGrowth</span></span>
+<span id="cb450-5"><a href="16.1-vector-autoregressions.html#cb450-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;           fcst     lower    upper       CI</span></span>
+<span id="cb450-6"><a href="16.1-vector-autoregressions.html#cb450-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1,] 1.738653 -3.006124 6.483430 4.744777</span></span>
+<span id="cb450-7"><a href="16.1-vector-autoregressions.html#cb450-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [2,] 1.692193 -3.312731 6.697118 5.004925</span></span>
+<span id="cb450-8"><a href="16.1-vector-autoregressions.html#cb450-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [3,] 1.911852 -3.282880 7.106583 5.194731</span></span>
+<span id="cb450-9"><a href="16.1-vector-autoregressions.html#cb450-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [4,] 2.137070 -3.164247 7.438386 5.301317</span></span>
+<span id="cb450-10"><a href="16.1-vector-autoregressions.html#cb450-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [5,] 2.329667 -3.041435 7.700769 5.371102</span></span>
+<span id="cb450-11"><a href="16.1-vector-autoregressions.html#cb450-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [6,] 2.496815 -2.931819 7.925449 5.428634</span></span>
+<span id="cb450-12"><a href="16.1-vector-autoregressions.html#cb450-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [7,] 2.631849 -2.846390 8.110088 5.478239</span></span>
+<span id="cb450-13"><a href="16.1-vector-autoregressions.html#cb450-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [8,] 2.734819 -2.785426 8.255064 5.520245</span></span>
+<span id="cb450-14"><a href="16.1-vector-autoregressions.html#cb450-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [9,] 2.808291 -2.745597 8.362180 5.553889</span></span>
+<span id="cb450-15"><a href="16.1-vector-autoregressions.html#cb450-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [10,] 2.856169 -2.722905 8.435243 5.579074</span></span>
+<span id="cb450-16"><a href="16.1-vector-autoregressions.html#cb450-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb450-17"><a href="16.1-vector-autoregressions.html#cb450-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $TSpread</span></span>
+<span id="cb450-18"><a href="16.1-vector-autoregressions.html#cb450-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;           fcst        lower    upper        CI</span></span>
+<span id="cb450-19"><a href="16.1-vector-autoregressions.html#cb450-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [1,] 1.676746  0.708471226 2.645021 0.9682751</span></span>
+<span id="cb450-20"><a href="16.1-vector-autoregressions.html#cb450-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [2,] 1.884098  0.471880228 3.296316 1.4122179</span></span>
+<span id="cb450-21"><a href="16.1-vector-autoregressions.html#cb450-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [3,] 1.999409  0.336348101 3.662470 1.6630609</span></span>
+<span id="cb450-22"><a href="16.1-vector-autoregressions.html#cb450-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [4,] 2.080836  0.242407507 3.919265 1.8384285</span></span>
+<span id="cb450-23"><a href="16.1-vector-autoregressions.html#cb450-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [5,] 2.131402  0.175797245 4.087008 1.9556052</span></span>
+<span id="cb450-24"><a href="16.1-vector-autoregressions.html#cb450-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [6,] 2.156094  0.125220562 4.186968 2.0308738</span></span>
+<span id="cb450-25"><a href="16.1-vector-autoregressions.html#cb450-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [7,] 2.161783  0.085037834 4.238528 2.0767452</span></span>
+<span id="cb450-26"><a href="16.1-vector-autoregressions.html#cb450-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [8,] 2.154170  0.051061544 4.257278 2.1031082</span></span>
+<span id="cb450-27"><a href="16.1-vector-autoregressions.html#cb450-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  [9,] 2.138164  0.020749780 4.255578 2.1174139</span></span>
+<span id="cb450-28"><a href="16.1-vector-autoregressions.html#cb450-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [10,] 2.117733 -0.007139213 4.242605 2.1248722</span></span></code></pre></div>
+<p>This reveals that the two-quarter-ahead forecast of GDP growth in 2013:Q2 using data through 2012:Q4 is <span class="math inline">\(1.69\)</span>. For the same period, the iterated VAR forecast for the term spread is <span class="math inline">\(1.88\)</span>.</p>
+<p>The matrices returned by <code>predict(VAR_est)</code> also include <span class="math inline">\(95\%\)</span> prediction intervals (however, the function does not adjust for autocorrelation or heteroskedasticity of the errors!).</p>
+<p>We may also plot the iterated forecasts for both variables by calling <tt>plot()</tt> on the output of <code>predict(VAR_est)</code>.</p>
+<div class="sourceCode" id="cb451"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb451-1"><a href="16.1-vector-autoregressions.html#cb451-1" aria-hidden="true" tabindex="-1"></a><span class="co"># visualize the iterated forecasts</span></span>
+<span id="cb451-2"><a href="16.1-vector-autoregressions.html#cb451-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(forecasts)</span></code></pre></div>
+<p><img src="ITER_files/figure-html/unnamed-chunk-719-1.png" width="80%" style="display: block; margin: auto;" /></p>
+</div>
+<div id="direct-multiperiod-forecasts" class="section level4 unnumbered">
+<h4>Direct Multiperiod Forecasts</h4>
+<p>A direct multiperiod forecast uses a model where the predictors are lagged appropriately such that the available observations can be used <em>directly</em> to do the forecast. The idea of direct multiperiod forecasting is summarized in Key Concept 16.3.</p>
+<div id="KC16.3" class="keyconcept">
+<h3 class="right">
+Key Concept <br> 16.3
+</h3>
+<h3 class="left">
+Direct Multiperiod Forecasts
+</h3>
+<p>
+<p>A <em>direct multiperiod forecast</em> that forecasts <span class="math inline">\(h\)</span> periods into the future using a model of <span class="math inline">\(Y_t\)</span> and an additional predictor <span class="math inline">\(X_t\)</span> with <span class="math inline">\(p\)</span> lags is done by first estimating</p>
+<p><span class="math display">\[\begin{align*}
+  Y_t =&amp; \, \delta_0 + \delta_1 Y_{t-h} + \dots + \delta_{p} Y_{t-p-h+1} + \delta_{p+1} X_{t-h} \\
+  +&amp; \dots + \delta_{2p} Y_{t-p-h+1} + u_t,  
+\end{align*}\]</span></p>
+which is then used to compute the forecast of <span class="math inline">\(Y_{T+h}\)</span> based on observations through period <span class="math inline">\(T\)</span>.
+</p>
+</div>
+<p>For example, to obtain two-quarter-ahead forecasts of GDP growth and the term spread we first estimate the equations</p>
+<p><span class="math display">\[\begin{align*}
+ GDPGR_t =&amp; \, \beta_{10} + \beta_{11} GDPGR_{t-2} + \beta_{12} GDPGR_{t-3} + \gamma_{11} TSpread_{t-2} + \gamma_{12} TSpread_{t-3} + u_{1t}, \\
+ TSpread_t =&amp; \, \beta_{20} + \beta_{21} GDPGR_{t-2} + \beta_{22} GDPGR_{t-3} + \gamma_{21} TSpread_{t-2} + \gamma_{22} TSpread_{t-3} + u_{2t}
+\end{align*}\]</span></p>
+<p>and then substitute the values of <span class="math inline">\(GDPGR_{2012:Q4}\)</span>, <span class="math inline">\(GDPGR_{2012:Q3}\)</span>, <span class="math inline">\(TSpread_{2012:Q4}\)</span> and <span class="math inline">\(TSpread_{2012:Q3}\)</span> into both equations. This is easily done manually.</p>
+<div class="sourceCode" id="cb452"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb452-1"><a href="16.1-vector-autoregressions.html#cb452-1" aria-hidden="true" tabindex="-1"></a><span class="co"># estimate models for direct two-quarter-ahead forecasts</span></span>
+<span id="cb452-2"><a href="16.1-vector-autoregressions.html#cb452-2" aria-hidden="true" tabindex="-1"></a>VAR_EQ1_direct <span class="ot">&lt;-</span> <span class="fu">dynlm</span>(GDPGrowth <span class="sc">~</span> <span class="fu">L</span>(GDPGrowth, <span class="dv">2</span><span class="sc">:</span><span class="dv">3</span>) <span class="sc">+</span> <span class="fu">L</span>(TSpread, <span class="dv">2</span><span class="sc">:</span><span class="dv">3</span>), </span>
+<span id="cb452-3"><a href="16.1-vector-autoregressions.html#cb452-3" aria-hidden="true" tabindex="-1"></a>                        <span class="at">start =</span> <span class="fu">c</span>(<span class="dv">1981</span>, <span class="dv">1</span>), <span class="at">end =</span> <span class="fu">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>))</span>
+<span id="cb452-4"><a href="16.1-vector-autoregressions.html#cb452-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb452-5"><a href="16.1-vector-autoregressions.html#cb452-5" aria-hidden="true" tabindex="-1"></a>VAR_EQ2_direct <span class="ot">&lt;-</span> <span class="fu">dynlm</span>(TSpread <span class="sc">~</span> <span class="fu">L</span>(GDPGrowth, <span class="dv">2</span><span class="sc">:</span><span class="dv">3</span>) <span class="sc">+</span> <span class="fu">L</span>(TSpread, <span class="dv">2</span><span class="sc">:</span><span class="dv">3</span>), </span>
+<span id="cb452-6"><a href="16.1-vector-autoregressions.html#cb452-6" aria-hidden="true" tabindex="-1"></a>                        <span class="at">start =</span> <span class="fu">c</span>(<span class="dv">1981</span>, <span class="dv">1</span>), <span class="at">end =</span> <span class="fu">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>))</span>
+<span id="cb452-7"><a href="16.1-vector-autoregressions.html#cb452-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb452-8"><a href="16.1-vector-autoregressions.html#cb452-8" aria-hidden="true" tabindex="-1"></a><span class="co"># compute direct two-quarter-ahead forecasts</span></span>
+<span id="cb452-9"><a href="16.1-vector-autoregressions.html#cb452-9" aria-hidden="true" tabindex="-1"></a><span class="fu">coef</span>(VAR_EQ1_direct) <span class="sc">%*%</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="co"># intercept</span></span>
+<span id="cb452-10"><a href="16.1-vector-autoregressions.html#cb452-10" aria-hidden="true" tabindex="-1"></a>                           <span class="fu">window</span>(GDPGrowth, <span class="at">start =</span> <span class="fu">c</span>(<span class="dv">2012</span>, <span class="dv">3</span>), <span class="at">end =</span> <span class="fu">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>)), </span>
+<span id="cb452-11"><a href="16.1-vector-autoregressions.html#cb452-11" aria-hidden="true" tabindex="-1"></a>                           <span class="fu">window</span>(TSpread, <span class="at">start =</span> <span class="fu">c</span>(<span class="dv">2012</span>, <span class="dv">3</span>), <span class="at">end =</span> <span class="fu">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>)))</span>
+<span id="cb452-12"><a href="16.1-vector-autoregressions.html#cb452-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;          [,1]</span></span>
+<span id="cb452-13"><a href="16.1-vector-autoregressions.html#cb452-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1,] 2.439497</span></span>
+<span id="cb452-14"><a href="16.1-vector-autoregressions.html#cb452-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb452-15"><a href="16.1-vector-autoregressions.html#cb452-15" aria-hidden="true" tabindex="-1"></a><span class="fu">coef</span>(VAR_EQ2_direct) <span class="sc">%*%</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="co"># intercept</span></span>
+<span id="cb452-16"><a href="16.1-vector-autoregressions.html#cb452-16" aria-hidden="true" tabindex="-1"></a>                           <span class="fu">window</span>(GDPGrowth, <span class="at">start =</span> <span class="fu">c</span>(<span class="dv">2012</span>, <span class="dv">3</span>), <span class="at">end =</span> <span class="fu">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>)), </span>
+<span id="cb452-17"><a href="16.1-vector-autoregressions.html#cb452-17" aria-hidden="true" tabindex="-1"></a>                           <span class="fu">window</span>(TSpread, <span class="at">start =</span> <span class="fu">c</span>(<span class="dv">2012</span>, <span class="dv">3</span>), <span class="at">end =</span> <span class="fu">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>)))</span>
+<span id="cb452-18"><a href="16.1-vector-autoregressions.html#cb452-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;         [,1]</span></span>
+<span id="cb452-19"><a href="16.1-vector-autoregressions.html#cb452-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1,] 1.66578</span></span></code></pre></div>
+<p>Applied economists often use the iterated method since this forecasts are more reliable in terms of <span class="math inline">\(MSFE\)</span>, provided that the one-period-ahead model is correctly specified. If this is not the case, for example because one equation in a VAR is believed to be misspecified, it can be beneficial to use direct forecasts since the iterated method will then be biased and thus have a higher <span class="math inline">\(MSFE\)</span> than the direct method. See Chapter <a href="16.2-ooiatdfglsurt.html#ooiatdfglsurt">16.2</a> for a more detailed discussion on advantages and disadvantages of both methods.</p>
+</div>
+</div>
+<h3>References</h3>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-stock2015" class="csl-entry">
+Stock, J. H., and M. W. Watson. 2015. <em><span>I</span>ntroduction to <span>E</span>conometrics, <span>T</span>hird <span>U</span>pdate, <span>G</span>lobal <span>E</span>dition</em>. <span>P</span>earson <span>E</span>ducation <span>L</span>imited.
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="16-atitsr.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="16.2-ooiatdfglsurt.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": true,
+"facebook": true,
+"twitter": true,
+"linkedin": true,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "serif",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/mca91/EconometricsWithR/edit/master/16-ch16.Rmd",
+"text": "Edit"
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": ["ITER.pdf"],
+"search": {
+"engine": "lunr",
+"options": null
+},
+"toc": {
+"collapse": "subsection",
+"scroll_highlight": true
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>
