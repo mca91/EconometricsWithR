@@ -1,0 +1,337 @@
+%% LyX 2.0.2 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass[11pt,english]{article}
+\usepackage{ae,aecompl}
+\renewcommand{\familydefault}{\rmdefault}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\usepackage{geometry}
+\geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+\usepackage{babel}
+\usepackage{setspace}
+\onehalfspacing
+\usepackage[unicode=true]
+ {hyperref}
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+%\VignetteIndexEntry{stargazer}
+\usepackage{dcolumn}
+
+\makeatother
+
+\begin{document}
+
+\title{stargazer: \\
+beautiful \LaTeX{}, HTML and ASCII tables from R statistical output}
+
+
+\author{Marek Hlavac}
+\maketitle
+
+\section{Introduction}
+
+\emph{stargazer} is an R package that creates \LaTeX{} code, HTML code and ASCII
+text for well-formatted regression tables, with multiple models side-by-side,
+as well as for summary statistics tables, data frames, vectors and matrices.
+
+
+\section{Why Should I Use \emph{stargazer}?}
+
+Compared to available alternatives, \emph{stargazer} excels in at
+least three respects: its ease of use, the large number of models
+it supports, and its beautiful aesthetics. These advantages have made
+it the R-to-\LaTeX{} package of choice for many satisfied users at
+research and teaching institutions around the world.
+
+
+\subsection{Ease of Use}
+
+\emph{stargazer} was designed with the user's comfort in mind. The
+learning curve is very mild, and all arguments are very intuitive,
+so that even a beginning user of R or \LaTeX{} can quickly become
+familiar with the package's many capabilities. The package is intelligent,
+and tries to minimize the amount of effort the user has to put into
+adjusting argument values.
+
+If \emph{stargazer} is given a set of regression model objects, for
+instance, the package will create a side-by-side regression table.
+By contrast, if the user feeds it a data frame, \emph{stargazer} will
+know that the user is most likely looking for a summary statistics
+table or -- if the \emph{summary} argument is set to FALSE -- wants
+to output the content of the data frame.\newpage{}
+
+A quick reproducible example shows just how easy \emph{stargazer}
+is to use. You can install \emph{stargazer} from CRAN in the usual
+way:\\
+
+
+\noindent \verb|install.packages("stargazer")| \newline
+\verb|library(stargazer)| \newline
+
+To create a summary statistics table from the \emph{`attitude'} data
+frame (which should be available with your default installation of
+R), simply run the following:\\
+
+
+\noindent \verb|stargazer(attitude)| 
+
+\begin{table}[!htbp] \centering    \caption{}    \label{}  \begin{tabular}{@{\extracolsep{5pt}}lccccc}  \\[-1.8ex]\hline  \hline \\[-1.8ex]  Statistic & \multicolumn{1}{c}{N} & \multicolumn{1}{c}{Mean} & \multicolumn{1}{c}{St. Dev.} & \multicolumn{1}{c}{Min} & \multicolumn{1}{c}{Max} \\  \hline \\[-1.8ex]  rating & 30 & 64.633 & 12.173 & 40 & 85 \\  complaints & 30 & 66.600 & 13.315 & 37 & 90 \\  privileges & 30 & 53.133 & 12.235 & 30 & 83 \\  learning & 30 & 56.367 & 11.737 & 34 & 75 \\  raises & 30 & 64.633 & 10.397 & 43 & 88 \\  critical & 30 & 74.767 & 9.895 & 49 & 92 \\  advance & 30 & 42.933 & 10.289 & 25 & 72 \\  high.rating & 30 & 0.333 & 0.479 & 0 & 1 \\  \hline \\[-1.8ex]  \normalsize  \end{tabular}  \end{table}
+
+To output the contents of the first four rows of some data frame,
+specify the part of the data frame you would like to see, and set
+the \emph{summary} option to FALSE:\\
+
+
+\noindent \verb|stargazer(attitude[1:4,], summary=FALSE, rownames=FALSE)| 
+
+\begin{table}[!htbp] \centering    \caption{}    \label{}  \begin{tabular}{@{\extracolsep{5pt}} cccccccc}  \\[-1.8ex]\hline  \hline \\[-1.8ex]  rating & complaints & privileges & learning & raises & critical & advance & high.rating \\  \hline \\[-1.8ex]  $43$ & $51$ & $30$ & $39$ & $61$ & $92$ & $45$ & FALSE \\  $63$ & $64$ & $51$ & $54$ & $63$ & $73$ & $47$ & FALSE \\  $71$ & $70$ & $68$ & $69$ & $76$ & $86$ & $48$ & TRUE \\  $61$ & $63$ & $45$ & $47$ & $54$ & $84$ & $35$ & FALSE \\  \hline \\[-1.8ex]  \normalsize  \end{tabular}  \end{table}  
+
+Now, let us try to create a simple regression table with three side-by-side
+models -- two Ordinary Least Squares (OLS) and one probit regression
+model -- using the \emph{lm()} and \emph{glm()} functions. We can
+set the\emph{ align} argument to TRUE, so that coefficients in each
+column are aligned along the decimal point. \emph{Table 3} shows the
+result.\newpage{}
+
+\noindent \verb|##  2 OLS models| \newline
+\verb|linear.1 <- lm(rating ~ complaints + privileges + learning + raises + critical,| \newline
+\verb|data=attitude)| \newline
+\verb|linear.2 <- lm(rating ~ complaints + privileges + learning, data=attitude)| \newline
+\verb|## create an indicator dependent variable, and run a probit model| \newline
+\verb|attitude$high.rating <- (attitude$rating > 70)| \newline
+\verb|probit.model <- glm(high.rating ~ learning + critical + advance, data=attitude,| \newline
+\verb|family = binomial(link = "probit"))| \newline \newline
+\verb|stargazer(linear.1, linear.2, probit.model, title="Results", align=TRUE)|\begin{table}[htb] \centering    \caption{Results}    \label{}  \footnotesize 
+\begin{tabular}{@{\extracolsep{5pt}}lD{.}{.}{-3} D{.}{.}{-3} D{.}{.}{-3} }  \\[-1.8ex]\hline  \hline \\[-1.8ex]   & \multicolumn{3}{c}{\textit{Dependent variable:}} \\  \cline{2-4}  \\[-1.8ex] & \multicolumn{2}{c}{rating} & \multicolumn{1}{c}{high.rating} \\  \\[-1.8ex] & \multicolumn{2}{c}{\textit{OLS}} & \multicolumn{1}{c}{\textit{probit}} \\  \\[-1.8ex] & \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)}\\  \hline \\[-1.8ex]   complaints & 0.692^{***} & 0.682^{***} &  \\    & (0.149) & (0.129) &  \\    & & & \\   privileges & -0.104 & -0.103 &  \\    & (0.135) & (0.129) &  \\    & & & \\   learning & 0.249 & 0.238^{*} & 0.164^{***} \\    & (0.160) & (0.139) & (0.053) \\    & & & \\   raises & -0.033 &  &  \\    & (0.202) &  &  \\    & & & \\   critical & 0.015 &  & -0.001 \\    & (0.147) &  & (0.044) \\    & & & \\   advance &  &  & -0.062 \\    &  &  & (0.042) \\    & & & \\   Constant & 11.011 & 11.258 & -7.476^{**} \\    & (11.704) & (7.318) & (3.570) \\    & & & \\  \hline \\[-1.8ex]  Observations & \multicolumn{1}{c}{$30$} & \multicolumn{1}{c}{$30$} & \multicolumn{1}{c}{$30$} \\  R$^{2}$ & \multicolumn{1}{c}{$0.715$} & \multicolumn{1}{c}{$0.715$} &  \\  Adjusted R$^{2}$ & \multicolumn{1}{c}{$0.656$} & \multicolumn{1}{c}{$0.682$} &  \\  Log likelihood &  &  & \multicolumn{1}{c}{$-9.087$} \\  Akaike Inf. Crit. & \multicolumn{1}{c}{210.375} & \multicolumn{1}{c}{206.412} & \multicolumn{1}{c}{26.175} \\ Bayesian Inf. Crit. & \multicolumn{1}{c}{220.183} & \multicolumn{1}{c}{213.418} & \multicolumn{1}{c}{31.780} \\   Residual Std. Error & \multicolumn{1}{c}{$7.139 (df = 24)$} & \multicolumn{1}{c}{$6.863 (df = 26)$} &  \\  F statistic & \multicolumn{1}{c}{$12.063^{***} (df = 5; 24)$} & \multicolumn{1}{c}{$21.743^{***} (df = 3; 26)$} &  \\  \hline  \hline \\[-1.8ex]  \textit{Note:}  & \multicolumn{3}{r}{$^{*}$p$<$0.1; $^{**}$p$<$0.05; $^{***}$p$<$0.01} \\  \normalsize  \end{tabular}  \end{table}
+
+\newpage{}
+
+In \emph{Table 4}, we go a little bit further, and make some formatting
+and labeling adjustments. In particular, we remove all empty lines
+from the table (using \textit{no.space}), and use \emph{omit.stat}
+to leave out several statistics -- namely, the log-likelihood (``\emph{LL'}'),
+residual standard error (``\emph{ser}'') and the F-statistic (``\emph{f}'').
+Additionally, we label each of the dependent and independent variables
+with an easy-to-understand name. To do so, we use the \emph{dep.var.labels}
+and \emph{covariate.labels} arguments. The result is a complex, publication-quality
+\LaTeX{} table. The relevant command call looks like this:
+
+\noindent \newline
+\verb|stargazer(linear.1, linear.2, probit.model, title="Regression Results",| \newline
+\verb|align=TRUE, dep.var.labels=c("Overall Rating","High Rating"),| \newline
+\verb|covariate.labels=c("Handling of Complaints","No Special Privileges",|
+\newline \verb|"Opportunity to Learn","Performance-Based Raises","Too Critical","Advancement"),|
+\newline \verb|omit.stat=c("LL","ser","f"), no.space=TRUE)|
+
+\begin{table}[!htbp] \centering    \caption{Regression Results}    \label{}  \begin{tabular}{@{\extracolsep{5pt}}lD{.}{.}{-3} D{.}{.}{-3} D{.}{.}{-3} }  \\[-1.8ex]\hline  \hline \\[-1.8ex]   & \multicolumn{3}{c}{\textit{Dependent variable:}} \\  \cline{2-4}  \\[-1.8ex] & \multicolumn{2}{c}{Overall Rating} & \multicolumn{1}{c}{High Rating} \\  \\[-1.8ex] & \multicolumn{2}{c}{\textit{OLS}} & \multicolumn{1}{c}{\textit{probit}} \\  \\[-1.8ex] & \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)}\\  \hline \\[-1.8ex]   Handling of Complaints & 0.692^{***} & 0.682^{***} &  \\    & (0.149) & (0.129) &  \\    No Special Privileges & -0.104 & -0.103 &  \\    & (0.135) & (0.129) &  \\    Opportunity to Learn & 0.249 & 0.238^{*} & 0.164^{***} \\    & (0.160) & (0.139) & (0.053) \\    Performance-Based Raises & -0.033 &  &  \\    & (0.202) &  &  \\    Too Critical & 0.015 &  & -0.001 \\    & (0.147) &  & (0.044) \\    Advancement &  &  & -0.062 \\    &  &  & (0.042) \\    Constant & 11.011 & 11.258 & -7.476^{**} \\    & (11.704) & (7.318) & (3.570) \\   \hline \\[-1.8ex]  Observations & \multicolumn{1}{c}{30} & \multicolumn{1}{c}{30} & \multicolumn{1}{c}{30} \\  R$^{2}$ & \multicolumn{1}{c}{0.715} & \multicolumn{1}{c}{0.715} &  \\  Adjusted R$^{2}$ & \multicolumn{1}{c}{0.656} & \multicolumn{1}{c}{0.682} &  \\  Akaike Inf. Crit. & \multicolumn{1}{c}{210.375} & \multicolumn{1}{c}{206.412} & \multicolumn{1}{c}{26.175} \\ Bayesian Inf. Crit. & \multicolumn{1}{c}{220.183} & \multicolumn{1}{c}{213.418} & \multicolumn{1}{c}{31.780} \\   \hline  \hline \\[-1.8ex]  \textit{Note:}  & \multicolumn{3}{r}{$^{*}$p$<$0.1; $^{**}$p$<$0.05; $^{***}$p$<$0.01} \\  \normalsize  \end{tabular}  \end{table} 
+
+\newpage{}In \textit{Table 5}, we limit ourselves to the two linear
+models, and report 90 percent confidence intervals (using \textit{ci}
+and \textit{ci.level}) instead of standard errors. In addition, we
+report the coefficients and confidence intervals on the same row (using
+\textit{single.row}).
+
+\noindent \newline
+\verb|stargazer(linear.1, linear.2, title="Regression Results",| \newline
+\verb|dep.var.labels=c("Overall Rating","High Rating"),| \newline
+\verb|covariate.labels=c("Handling of Complaints","No Special Privileges",|
+\newline \verb|"Opportunity to Learn","Performance-Based Raises","Too Critical","Advancement"),|
+\newline \verb|omit.stat=c("LL","ser","f"), ci=TRUE, ci.level=0.90, single.row=TRUE)|
+
+\begin{table}[!htbp] \centering    \caption{Regression Results}    \label{}  \begin{tabular}{@{\extracolsep{5pt}}lcc}  \\[-1.8ex]\hline  \hline \\[-1.8ex]   & \multicolumn{2}{c}{\textit{Dependent variable:}} \\  \cline{2-3}  \\[-1.8ex] & \multicolumn{2}{c}{Overall Rating} \\  \\[-1.8ex] & (1) & (2)\\  \hline \\[-1.8ex]   Handling of Complaints & 0.692$^{***}$ (0.447, 0.937) & 0.682$^{***}$ (0.470, 0.894) \\    No Special Privileges & $-$0.104 ($-$0.325, 0.118) & $-$0.103 ($-$0.316, 0.109) \\    Opportunity to Learn & 0.249 ($-$0.013, 0.512) & 0.238$^{*}$ (0.009, 0.467) \\    Performance-Based Raises & $-$0.033 ($-$0.366, 0.299) &  \\    Too Critical & 0.015 ($-$0.227, 0.258) &  \\    Advancement & 11.011 ($-$8.240, 30.262) & 11.258 ($-$0.779, 23.296) \\   \hline \\[-1.8ex]  Observations & 30 & 30 \\  R$^{2}$ & 0.715 & 0.715 \\  Adjusted R$^{2}$ & 0.656 & 0.682 \\ Akaike Inf. Crit. & 210.375 & 206.412 \\ Bayesian Inf. Crit. & 220.183 & 213.418 \\   \hline  \hline \\[-1.8ex]  \textit{Note:}  & \multicolumn{2}{r}{$^{*}$p$<$0.1; $^{**}$p$<$0.05; $^{***}$p$<$0.01} \\  \normalsize  \end{tabular}  \end{table}  
+
+\newpage{}To produce ASCII text output, rather than \LaTeX{} code,
+we simply set the argument \textit{type} to \textit{``text''}:
+
+\noindent \newline
+\verb|stargazer(linear.1, linear.2, type="text", title="Regression Results",| \newline
+\verb|dep.var.labels=c("Overall Rating","High Rating"),| \newline
+\verb|covariate.labels=c("Handling of Complaints","No Special Privileges",|
+\newline \verb|"Opportunity to Learn","Performance-Based Raises","Too Critical","Advancement"),|
+\newline \verb|omit.stat=c("LL","ser","f"), ci=TRUE, ci.level=0.90, single.row=TRUE)| \newline
+
+\noindent\verb|Regression Results| \newline
+\verb|========================================================================|\newline
+\verb|                                       Dependent variable:              |\newline
+\verb|                         -----------------------------------------------|\newline
+\verb|                                        Overall Rating                  |\newline
+\verb|                                  (1)                     (2)           |\newline
+\verb|------------------------------------------------------------------------|\newline
+\verb|Handling of Complaints   0.692*** (0.447, 0.937) 0.682*** (0.470, 0.894)|\newline
+\verb|No Special Privileges    -0.104 (-0.325, 0.118)  -0.103 (-0.316, 0.109) |\newline
+\verb|Opportunity to Learn      0.249 (-0.013, 0.512)   0.238* (0.009, 0.467) |\newline
+\verb|Performance-Based Raises -0.033 (-0.366, 0.299)                         |\newline
+\verb|Too Critical              0.015 (-0.227, 0.258)                         |\newline
+\verb|Advancement              11.011 (-8.240, 30.262) 11.258 (-0.779, 23.296)|\newline 
+\verb|------------------------------------------------------------------------|\newline
+\verb|Observations                       30                      30           |\newline
+\verb|R2                                0.715                   0.715         |\newline
+\verb|Adjusted R2                       0.656                   0.682         |\newline
+\verb|Akaike Inf. Crit.                210.375                 206.412        |\newline
+\verb|Bayesian Inf. Crit.              220.183                 213.418        |\newline
+\verb|========================================================================|\newline
+\verb|Note:                                        *p<0.1; **p<0.05; ***p<0.01|\newline
+
+\noindent \newpage{}Let us now change the order of the explanatory
+variables using the \emph{order} argument, and remove the covariate
+labels. In particular, we would like \emph{learning} and \emph{privileges}
+to come before all the other covariates. In addition, of the summary
+statistics reported, let us keep only the number of observations (using
+the argument \emph{keep.stat}). Instead of reporting ASCII text, we'll
+go back to producing \LaTeX{} tables by returning the \textit{type} argument
+to its default value of \textit{``latex''}. \emph{Table 6} is our result. Please note
+that users can also set the \textit{type} argument to \textit{``html''} to obtain
+HTML code.
+
+\noindent \newline
+\verb|stargazer(linear.1, linear.2, title="Regression Results",| \newline
+\verb|dep.var.labels=c("Overall Rating","High Rating"),| \newline
+\verb|order=c("learning", "privileges"),| \newline
+\verb|keep.stat="n", ci=TRUE, ci.level=0.90, single.row=TRUE)| \newline
+
+\noindent \begin{table}[!htbp] \centering    \caption{Regression Results}    \label{}  \begin{tabular}{@{\extracolsep{5pt}}lcc}  \\[-1.8ex]\hline  \hline \\[-1.8ex]   & \multicolumn{2}{c}{\textit{Dependent variable:}} \\  \cline{2-3}  \\[-1.8ex] & \multicolumn{2}{c}{Overall Rating} \\  \\[-1.8ex] & (1) & (2)\\  \hline \\[-1.8ex]   learning & 0.692$^{***}$ (0.447, 0.937) & 0.682$^{***}$ (0.470, 0.894) \\    privileges & $-$0.104 ($-$0.325, 0.118) & $-$0.103 ($-$0.316, 0.109) \\    complaints & 0.249 ($-$0.013, 0.512) & 0.238$^{*}$ (0.009, 0.467) \\    raises & $-$0.033 ($-$0.366, 0.299) &  \\    critical & 0.015 ($-$0.227, 0.258) &  \\    Constant & 11.011 ($-$8.240, 30.262) & 11.258 ($-$0.779, 23.296) \\   \hline \\[-1.8ex]  Observations & 30 & 30 \\  \hline  \hline \\[-1.8ex]  \textit{Note:}  & \multicolumn{2}{r}{$^{*}$p$<$0.1; $^{**}$p$<$0.05; $^{***}$p$<$0.01} \\  \normalsize  \end{tabular}  \end{table} 
+
+
+\emph{stargazer} can also report the content of vectors and matrices. Let us create a table 
+that contains the correlation matrix for the \emph{rating}, \emph{complaints} and \emph{privileges} variables 
+in the \emph{`attitude'} data frame:
+
+\noindent \newline
+\verb|correlation.matrix <- cor(attitude[,c("rating","complaints","privileges")])| \newline
+\verb|stargazer(correlation.matrix, title="Correlation Matrix")| \newline
+
+\noindent \begin{table}[!htbp] \centering 
+  \caption{Correlation Matrix} 
+  \label{} 
+\begin{tabular}{@{\extracolsep{5pt}} cccc} 
+\\[-1.8ex]\hline 
+\hline \\[-1.8ex] 
+ & rating & complaints & privileges \\ 
+rating & $1$ & $0.825$ & $0.426$ \\ 
+complaints & $0.825$ & $1$ & $0.558$ \\ 
+privileges & $0.426$ & $0.558$ & $1$ \\ 
+\hline \\[-1.8ex] 
+\end{tabular} 
+\end{table} 
+
+
+
+\newpage{}
+
+
+\subsection{Including Custom Standard Errors}
+
+Instead of reporting the default standard errors, users can choose
+to include custom vectors. Let us take a look at a brief example,
+adopted -- with permission -- from Slawa Rokicki's excellent \href{http://rforpublichealth.blogspot.com/}{R for Public Health}
+blog. In this example, we will consider the sales of ice cream. More
+specifically, we are going to analyze how they might be affected by
+the temperature outside. First, we will generate a data set that will,
+for 500 cities, include values of the following variables: temperature
+(variable \emph{temp}); sales per 100,000 people (\emph{sales}); and
+the proportion of the city's population that is female (\emph{female}).
+
+\noindent \newline
+\verb|set.seed(5)| \newline
+\verb|temp <- rnorm(500, mean = 80, sd = 12)| \newline
+\verb|sales <- 2 + temp * 3| \newline
+\verb|| \newline
+\verb|for (i in 1:length(sales)) {| \newline
+\verb|	if (temp[i]<75 ||\verb| temp[i]>95) sales[i] <- sales[i] + rnorm(1, 0, 25)| \newline
+\verb|	else sales[i] <- sales[i] + rnorm(1, 0, 8)| \newline
+\verb|}| \newline
+\verb|| \newline
+\verb|female <- rnorm(500, mean = 0.5, sd = 0.01)| \newline
+\verb|icecream <- as.data.frame(cbind(temp, sales, female))| \newline
+
+\noindent Now, let us run a simple Ordinary Least Squares (OLS) regression
+model, and use the \emph{sandwich} package to obtain heteroskedasticity-robust
+standard errors:
+
+\noindent \newline
+\verb|reg.model <- lm(sales ~ temp + female, data = icecream)| \newline
+\verb| | \newline
+\verb|library(sandwich)| \newline
+\verb|cov <- vcovHC(reg.model, type = "HC") | \newline
+\verb|robust.se <- sqrt(diag(cov)) | \newline
+
+\newpage{}We can now use \emph{stargazer} to create a regression
+table with the default and heteroskedasticity-robust standard errors
+in two columns, side by side:
+
+\noindent \newline
+\verb|stargazer(reg.model, reg.model, se=list(NULL, robust.se),| \newline
+\verb|column.labels=c("default","robust"), align=TRUE)| \newline
+
+
+\noindent \begin{table}[!htbp] \centering    \caption{}    \label{}  \begin{tabular}{@{\extracolsep{5pt}}lD{.}{.}{-3} D{.}{.}{-3} }  \\[-1.8ex]\hline  \hline \\[-1.8ex]   & \multicolumn{2}{c}{\textit{Dependent variable:}} \\  \cline{2-3}  \\[-1.8ex] & \multicolumn{2}{c}{sales} \\   & \multicolumn{1}{c}{default} & \multicolumn{1}{c}{robust} \\  \\[-1.8ex] & \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)}\\  \hline \\[-1.8ex]   temp & 2.972^{***} & 2.972^{***} \\    & (0.067) & (0.084) \\    & & \\   female & -37.819 & -37.819 \\    & (81.064) & (78.926) \\    & & \\   Constant & 23.916 & 23.916 \\    & (41.187) & (40.408) \\    & & \\  \hline \\[-1.8ex]  Observations & \multicolumn{1}{c}{500} & \multicolumn{1}{c}{500} \\  R$^{2}$ & \multicolumn{1}{c}{0.799} & \multicolumn{1}{c}{0.799} \\  Adjusted R$^{2}$ & \multicolumn{1}{c}{0.798} & \multicolumn{1}{c}{0.798} \\ Akaike Inf. Crit. & \multicolumn{1}{c}{4,318.054} & \multicolumn{1}{c}{4,318.054} \\ Bayesian Inf. Crit. & \multicolumn{1}{c}{4,334.912} & \multicolumn{1}{c}{4,334.912} \\   Residual Std. Error (df = 497) & \multicolumn{1}{c}{18.068} & \multicolumn{1}{c}{18.068} \\  F Statistic (df = 2; 497) & \multicolumn{1}{c}{984.916$^{***}$} & \multicolumn{1}{c}{984.916$^{***}$} \\  \hline  \hline \\[-1.8ex]  \textit{Note:}  & \multicolumn{2}{r}{$^{*}$p$<$0.1; $^{**}$p$<$0.05; $^{***}$p$<$0.01} \\  \normalsize  \end{tabular}  \end{table} 
+
+\subsection{Many supported models}
+
+\emph{stargazer} supports objects from the most widely used statistical
+functions and packages. In particular, the package supports model
+objects from \emph{aftreg }(eha)\emph{, arima} (stats)\emph{, betareg} (betareg), \emph{binaryChoice
+}(sampleSelection)\emph{, bj }(rms)\emph{, brglm }(brglm)\emph{, censReg} (censReg)\emph{, coeftest
+}(lmtest)\emph{, coxph }(survival), \emph{coxreg }(eha)\emph{, clm
+}(ordinal), \emph{clogit }(survival), \textit{cph} (rms), \textit{dynlm}
+(dynlm), \emph{ergm }(ergm), \textit{errorsarlm} (spdev), \emph{felm} (lfe), \emph{gam
+}(mgcv),\emph{ garchFit }(fGarch),\emph{ gee }(gee),\emph{ glm }(stats), \textit{Glm} (rms),\emph{
+glmer }(lme4),\emph{ glmrob}(robustbase), \emph{gls} (nlme), \textit{Gls} (rms), \textit{gmm}
+(gmm), \emph{heckit} (sampleSelection), \emph{hetglm} (glmx), \emph{hurdle }(pscl), \emph{ivreg}
+(AER), \textit{lagarlm} (spdep), \emph{lm}(stats),\emph{ lme }(nlme), \emph{lmer} (lme4),
+\emph{lmrob} (robustbase), \textit{lrm} (rms), \textit{maBina}\textit{\emph{
+(erer)}}\textit{, mclogit }\textit{\emph{(mclogit)}}\textit{, mlogit
+}\textit{\emph{(mlogit)}}\textit{, mnlogit
+}\textit{\emph{(mnlogit)}}\textit{, mlreg} (eha), \emph{multinom} (nnet),\emph{ nlme }(nlme),
+\emph{nlmer} (lme4), \textit{ols} (rms), \emph{pgmm}
+(plm), \textit{phreg} (eha), \emph{plm}
+(plm), \emph{pmg} (plm), \emph{polr} (MASS), \textit{psm} (rms), \textit{rem.dyad}
+(relevent), \emph{rlm} (MASS), \textit{rq} (quantreg), \textit{Rq}
+(rms), \emph{selection }(sampleSelection)\emph{, svyglm} (survey),
+\emph{survreg }(survival), \emph{tobit} (AER), \textit{weibreg} (eha),
+\emph{zeroinfl} (pscl), as well as from the implementation of these
+in \emph{zelig}. In addition, stargazer also supports the following
+zelig models: ``\textit{relogit''}, ``\emph{cloglog.net}'', ``\emph{gamma.net}'',
+``\emph{probit.net}'' and ``\emph{logit.net}''. 
+
+The number of models and objects that \emph{stargazer} can accommodate
+puts it ahead of most of the alternative R-to-\LaTeX{} options. As
+the development of the package continues, this list will continue
+expanding to matching models, as well as new, user-made, or customized
+statistical models. 
+
+
+\subsection{Beautiful aesthetics}
+
+\emph{stargazer} is very pleasing to the eye, and allows the user
+to customize all variable labels, as well as the formatting of the
+resulting table. If you'd like to create tables that look like those
+from your discipline's leading journal, \emph{stargazer} can help
+you with that as well. You can use the style argument to choose a
+template of your choice. Economics and management scholars can thus
+create tables that resemble those published in the \emph{American
+Economic Review}, in the \emph{Quarterly Journal of Economics}, or
+in \emph{Administrative Science Quarterly}. Political scientists can
+avail themselves of templates based on the \emph{American Political
+Science Review}, the \emph{American Journal of Political Science},
+and on \emph{International Organization}. For sociologists and demographers,
+the \emph{American Sociological Review}, the \emph{American Sociological
+Review} and \emph{Demography} are available.\newpage{}
+
+
+\section{Citing \emph{stargazer} in Research Publications}
+
+If you use the \emph{stargazer} package in your research publications,
+please remember to include the following citation:\\
+
+
+\noindent \texttt{Hlavac, Marek (2022). stargazer: Well-Formatted Regression and Summary Statistics Tables. R
+package version 5.2.3.} \texttt{https://CRAN.R-project.org/package=stargazer}~\\
+\texttt{}~\\
+
+
+\noindent \textbf{Note:} An early version of this document was adapted
+from \href{http://www.r-bloggers.com/stargazer-package-for-beautiful-latex-tables-from-r-statistical-models-output/}{my guest blog post}
+on Tal Galili's excellent \href{http://www.r-statistics.com/}{R-statistics blog}. 
+\end{document}
