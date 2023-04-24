@@ -8,11 +8,11 @@ library(readxl)
 library(urca)
 ```
 
-Time series data is data is collected for a single entity over time. This is fundamentally different from cross-section data which is data on multiple entities at the same point in time. Time series data allows estimation of the effect on $Y$ of a change in $X$ *over time*. This is what econometricians call a *dynamic causal effect*. Let us go back to the application to cigarette consumption of Chapter \@ref(ivr) where we were interested in estimating the effect on cigarette demand of a price increase caused by a raise of the general sales tax. One might use time series data to assess the causal effect of a tax increase on smoking both initially and in subsequent periods.
+Time series data is collected for a single entity over time. This is fundamentally different from cross-section data which is data on multiple entities at the same point in time. Time series data allows estimation of the effect on $Y$ of a change in $X$ *over time*. This is what econometricians call a *dynamic causal effect*. Let us go back to the application to cigarette consumption of Chapter \@ref(ivr) where we were interested in estimating the effect on cigarette demand of a price increase caused by a raise of the general sales tax. One might use time series data to assess the causal effect of a tax increase on smoking both initially and in subsequent periods.
 
-Another application of time series data is forecasting. For example, weather services use time series data to predict tomorrow's temperature by inter alia using today's temperature and temperatures of the past. To motivate an economic example, central banks are interested in forecasting next month's unemployment rates.
+Another application of time series data is forecasting. For example, weather services use time series data to predict tomorrow's temperature by, inter alia, using today's temperature and temperatures of the past. To motivate an economic example, central banks are interested in forecasting next month's unemployment rates.
 
-The remainder of Chapters in the book deals with the econometric techniques for the analysis of time series data and applications to forecasting and estimation of dynamic causal effects. This section covers the basic concepts presented in Chapter 14 of the book, explains how to visualize time series data and demonstrates how to estimate simple autoregressive models, where the regressors are past values of the dependent variable or other variables. In this context we also discuss the concept of stationarity, an important property which has far-reaching consequences. 
+The remaining chapters in the book deal with econometric techniques for analyzing time series data, as well as their applications in forecasting and estimating dynamic causal effects. This section covers the basic concepts presented in Chapter 14 of the book, explains how to visualize time series data and demonstrates how to estimate simple autoregressive models, where the regressors are past values of the dependent variable or other variables. In this context we also discuss the concept of stationarity, an important property which has far-reaching consequences. 
 
 Most empirical applications in this chapter are concerned with forecasting and use data on U.S. macroeconomic indicators or financial time series like Gross Domestic Product (GDP), the unemployment rate or excess stock returns.
 
@@ -42,7 +42,7 @@ library(urca)
 
 ## Using Regression Models for Forecasting
 
-What is the difference between estimating models for assessment of causal effects and forecasting? Consider again the simple example of estimating the casual effect of the student-teacher ratio on test scores introduced in Chapter \@ref(lrwor).
+What is the difference between estimating models for assessment of causal effects and forecasting? Consider again the simple example of estimating the causal effect of the student-teacher ratio on test scores introduced in Chapter \@ref(lrwor).
 
 ```{r, warning = FALSE, message=FALSE}
 library(AER)
@@ -54,7 +54,7 @@ mod <- lm(score ~ STR, data = CASchools)
 mod
 ```
 
-As has been stressed in Chapter \@ref(rmwmr), the estimate of the coefficient on the student-teacher ratio does not have a causal interpretation due to omitted variable bias. However, in terms of deciding which school to send her child to, it might nevertheless be appealing for a parent to use `r ttcode("mod")` for forecasting test scores in schooling districts where no public data about on scores are available.
+As has been stressed in Chapter \@ref(rmwmr), the estimate of the coefficient on the student-teacher ratio does not have a causal interpretation due to omitted variable bias. However, in terms of deciding which school to send her child to, it might nevertheless be appealing for a parent to use `r ttcode("mod")` for forecasting test scores in schooling districts where no public data on scores are available.
 
 As an example, assume that the average class in a district has $25$ students. This is not a perfect forecast but the following one-liner might be helpful for the parent to decide.
 
@@ -66,13 +66,14 @@ In a time series context, the parent could use data on present and past years te
 
 ## Time Series Data and Serial Correlation {#tsdasc}
 
-GDP is commonly defined as the value of goods and services produced over a given time period. The data set `r ttcode("us_macro_quarterly.xlsx")` is provided by the authors and can be downloaded [here](http://wps.pearsoned.co.uk/wps/media/objects/16103/16489878/data3eu/us_macro_quarterly.xlsx). It provides quarterly data on U.S. real (i.e. inflation adjusted) GDP from 1947 to 2004.
+GDP is commonly defined as the total value of goods and services produced during a given time period. The dataset us_macro_quarterly.xlsx, provided by the authors, can be downloaded [here](http://wps.pearsoned.co.uk/wps/media/objects/16103/16489878/data3eu/us_macro_quarterly.xlsx). It contains quarterly data on U.S. real GDP (i.e., inflation-adjusted) from 1947 to 2004.
 
 As before, a good starting point is to plot the data. The package `r ttcode("quantmod")` provides some convenient functions for plotting and computing with time series data. We also load the package `r ttcode("readxl")` to read the data into `r ttcode("R")`.
 
 ```{r, warning=FALSE, message=FALSE}
 # attach the package 'quantmod'
 library(quantmod)
+library(readxl)
 ```
 
 We begin by importing the data set.
@@ -91,7 +92,7 @@ colnames(USMacroSWQ) <- c("Date", "GDPC96", "JAPAN_IP", "PCECTPI",
                           "GS10", "GS1", "TB3MS", "UNRATE", "EXUSUK", "CPIAUCSL")
 ```
 
-We the first column of `r ttcode("us_macro_quarterly.xlsx")` contains text and the remaining ones are numeric. Using `r ttcode('col_types = c("text", rep("numeric", 9))')`  we tell `r ttcode("read_xlsx()")` take this into account when importing the data.
+The first column of `r ttcode("us_macro_quarterly.xlsx")` contains text and the remaining ones are numeric. Using `r ttcode('col_types = c("text", rep("numeric", 9))')`, we instruct `r ttcode("read_xlsx()")` to consider this format when importing the data.
 
 It is useful to work with time-series objects that keep track of the frequency of the data and are extensible. In what follows we will use objects of the class `r ttcode("xts")`, see `?xts`. Since the data in `r ttcode("USMacroSWQ")` are in quarterly frequency we convert the first column to `r ttcode("yearqtr")` format before generating the `r ttcode("xts")` object `r ttcode("GDP")`.
 
@@ -139,7 +140,7 @@ cat('
 <h3 class = "right"> Key Concept 14.1 </h3>
 <h3 class = "left"> Lags, First Differences, Logarithms and Growth Rates </h3>
 
-- Previous values of a time series are called *lags*. The first lag of $Y_t$ is $Y_{t-1}$. The $j^{th}$ lag of $Y_t$ is $Y_{t-j}$. In <tt>r ttcode("R")</tt>, lags of univariate or multivariate time series objects are conveniently computed by <tt>lag()</tt>, see <tt>?lag</tt>.
+- Previous values of a time series are called *lags*. The first lag of $Y_t$ is $Y_{t-1}$. The $j^{th}$ lag of $Y_t$ is $Y_{t-j}$. In <tt>`r ttcode("R")`</tt>, lags of univariate or multivariate time series objects are conveniently computed by <tt>lag()</tt>, see <tt>?lag</tt>.
 
 - Sometimes we work with a differenced series. The first difference of a series is $\\Delta Y_{t} = Y_t - Y_{t-1}$, the difference between periods $t$ and $t-1$. If <tt>Y</tt> is a time series, the series of first differences is computed as <tt>diff(Y)</tt>.
 
