@@ -533,6 +533,15 @@ SReturns <- read_xlsx("Data/Stock_Returns_1931_2002.xlsx",
                       col_types = "numeric")
 ```
 
+```{r}
+#Alternatively, ASC  cen be read directly from internet.
+
+SReturns <- read.csv("https://www.princeton.edu/~mwatson/Stock-Watson_3u/Students/EE_Datasets/Stock_Returns_1931_2002.asc", sep = "\t", header = FALSE )
+
+colnames(SReturns) <- c( "Year", "Month", "ExReturn", "ln_DivYield" )
+
+```
+
 We continue by converting the data to an object of class `r ttcode("ts")`.
 
 ```{r}
@@ -642,7 +651,7 @@ cat('
 An ADL($p$,$q$) model assumes that a time series $Y_t$ can be represented by a linear function of $p$ of its lagged values and $q$ lags of another time series $X_t$:
 \\begin{align*}
   Y_t =& \\, \\beta_0 + \\beta_1 Y_{t-1} + \\beta_2 Y_{t-2} + \\dots + \\beta_p Y_{t-p} \\\\ 
-      &+ \\, \\delta_1 X_{t-1} + \\delta_2 X_{t-2} + \\dots + \\delta_q X_{t-q} X_{t-q} + u_t.
+      &+ \\, \\delta_1 X_{t-1} + \\delta_2 X_{t-2} + \\dots + \\delta_q X_{t-q} + u_t.
 \\end{align*}
 is an *autoregressive distributed lag model* with $p$ lags of $Y_t$ and $q$ lags of $X_t$ where $$E(u_t\\vert Y_{t-1}, Y_{t-2}, \\dots, X_{t-1}, X_{t-2}, \\dots)=0.$$
 </p>
@@ -655,7 +664,7 @@ cat('\\begin{keyconcepts}[The Autoregressive Distributed Lag Model]{14.4}
 An ADL($p$,$q$) model assumes that a time series $Y_t$ can be represented by a linear function of $p$ of its lagged values and $q$ lags of another time series $X_t$:
 \\begin{align*}
   Y_t =& \\, \\beta_0 + \\beta_1 Y_{t-1} + \\beta_2 Y_{t-2} + \\dots + \\beta_p Y_{t-p} \\\\ 
-      &+ \\, \\delta_1 X_{t-1} + \\delta_2 X_{t-2} + \\dots + \\delta_q X_{t-q} X_{t-q} + u_t.
+      &+ \\, \\delta_1 X_{t-1} + \\delta_2 X_{t-2} + \\dots + \\delta_q X_{t-q} + u_t.
 \\end{align*}
 is an \\textit{autoregressive distributed lag model} with $p$ lags of $Y_t$ and $q$ lags of $X_t$ where $$E(u_t\\vert Y_{t-1}, Y_{t-2}, \\dots, X_{t-1}, X_{t-2}, \\dots)=0.$$
 \\end{keyconcepts}
@@ -667,13 +676,13 @@ is an \\textit{autoregressive distributed lag model} with $p$ lags of $Y_t$ and 
 Interest rates on long-term and short term treasury bonds are closely linked to macroeconomic conditions. While interest rates on both types of bonds have the same long-run tendencies, they behave quite differently in the short run.
 The difference in interest rates of two bonds with distinct maturity is called the *term spread*. 
 
-The following code chunks reproduce Figure 14.3 of the book which displays interest rates of 10-year U.S. Treasury bonds and 3-months U.S. Treasury bills from 1960 to 2012.
+The following code chunks reproduce Figure 14.3 of the book which displays interest rates of 10-year U.S. Treasury bonds and 3-month U.S. Treasury bills from 1960 to 2012.
 
 ```{r}
-# 3-months Treasury bills interest rate
+# 3-month Treasury bills interest rate
 TB3MS <- xts(USMacroSWQ$TB3MS, USMacroSWQ$Date)["1960::2012"]
 
-# 10-years Treasury bonds interest rate
+# 10-year Treasury bonds interest rate
 TB10YS <- xts(USMacroSWQ$GS10, USMacroSWQ$Date)["1960::2012"]
 
 # term spread
@@ -811,9 +820,9 @@ Do the ADL models \@ref(eq:gdpgradl21) and \@ref(eq:gdpgradl22) improve upon the
 
 ```{r}
 # compare adj. R2
-c("Adj.R2 AR(2)" = summary(GDPGR_AR2)$r.squared,
-  "Adj.R2 ADL(2,1)" = summary(GDPGR_ADL21)$r.squared,
-  "Adj.R2 ADL(2,2)" = summary(GDPGR_ADL22)$r.squared)
+c("Adj.R2 AR(2)" = summary(GDPGR_AR2)$adj.r.squared,
+  "Adj.R2 ADL(2,1)" = summary(GDPGR_ADL21)$adj.r.squared,
+  "Adj.R2 ADL(2,2)" = summary(GDPGR_ADL22)$adj.r.squared)
 
 # compare SER
 c("SER AR(2)" = summary(GDPGR_AR2)$sigma,
