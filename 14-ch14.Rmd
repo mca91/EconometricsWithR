@@ -8,11 +8,11 @@ library(readxl)
 library(urca)
 ```
 
-Time series data is data is collected for a single entity over time. This is fundamentally different from cross-section data which is data on multiple entities at the same point in time. Time series data allows estimation of the effect on $Y$ of a change in $X$ *over time*. This is what econometricians call a *dynamic causal effect*. Let us go back to the application to cigarette consumption of Chapter \@ref(ivr) where we were interested in estimating the effect on cigarette demand of a price increase caused by a raise of the general sales tax. One might use time series data to assess the causal effect of a tax increase on smoking both initially and in subsequent periods.
+Time series data is collected for a single entity over time. This is fundamentally different from cross-section data which is data on multiple entities at the same point in time. Time series data allows estimation of the effect on $Y$ of a change in $X$ *over time*. This is what econometricians call a *dynamic causal effect*. Let us go back to the application to cigarette consumption of Chapter \@ref(ivr) where we were interested in estimating the effect on cigarette demand of a price increase caused by a raise of the general sales tax. One might use time series data to assess the causal effect of a tax increase on smoking both initially and in subsequent periods.
 
-Another application of time series data is forecasting. For example, weather services use time series data to predict tomorrow's temperature by inter alia using today's temperature and temperatures of the past. To motivate an economic example, central banks are interested in forecasting next month's unemployment rates.
+Another application of time series data is forecasting. For example, weather services use time series data to predict tomorrow's temperature by, inter alia, using today's temperature and temperatures of the past. To motivate an economic example, central banks are interested in forecasting next month's unemployment rates.
 
-The remainder of Chapters in the book deals with the econometric techniques for the analysis of time series data and applications to forecasting and estimation of dynamic causal effects. This section covers the basic concepts presented in Chapter 14 of the book, explains how to visualize time series data and demonstrates how to estimate simple autoregressive models, where the regressors are past values of the dependent variable or other variables. In this context we also discuss the concept of stationarity, an important property which has far-reaching consequences. 
+The remaining chapters in the book deal with econometric techniques for analyzing time series data, as well as their applications in forecasting and estimating dynamic causal effects. This section covers the basic concepts presented in Chapter 14 of the book, explains how to visualize time series data and demonstrates how to estimate simple autoregressive models, where the regressors are past values of the dependent variable or other variables. In this context we also discuss the concept of stationarity, an important property which has far-reaching consequences. 
 
 Most empirical applications in this chapter are concerned with forecasting and use data on U.S. macroeconomic indicators or financial time series like Gross Domestic Product (GDP), the unemployment rate or excess stock returns.
 
@@ -42,7 +42,7 @@ library(urca)
 
 ## Using Regression Models for Forecasting
 
-What is the difference between estimating models for assessment of causal effects and forecasting? Consider again the simple example of estimating the casual effect of the student-teacher ratio on test scores introduced in Chapter \@ref(lrwor).
+What is the difference between estimating models for assessment of causal effects and forecasting? Consider again the simple example of estimating the causal effect of the student-teacher ratio on test scores introduced in Chapter \@ref(lrwor).
 
 ```{r, warning = FALSE, message=FALSE}
 library(AER)
@@ -54,7 +54,7 @@ mod <- lm(score ~ STR, data = CASchools)
 mod
 ```
 
-As has been stressed in Chapter \@ref(rmwmr), the estimate of the coefficient on the student-teacher ratio does not have a causal interpretation due to omitted variable bias. However, in terms of deciding which school to send her child to, it might nevertheless be appealing for a parent to use `r ttcode("mod")` for forecasting test scores in schooling districts where no public data about on scores are available.
+As has been stressed in Chapter \@ref(rmwmr), the estimate of the coefficient on the student-teacher ratio does not have a causal interpretation due to omitted variable bias. However, in terms of deciding which school to send her child to, it might nevertheless be appealing for a parent to use `r ttcode("mod")` for forecasting test scores in schooling districts where no public data on scores are available.
 
 As an example, assume that the average class in a district has $25$ students. This is not a perfect forecast but the following one-liner might be helpful for the parent to decide.
 
@@ -66,13 +66,14 @@ In a time series context, the parent could use data on present and past years te
 
 ## Time Series Data and Serial Correlation {#tsdasc}
 
-GDP is commonly defined as the value of goods and services produced over a given time period. The data set `r ttcode("us_macro_quarterly.xlsx")` is provided by the authors and can be downloaded [here](http://wps.pearsoned.co.uk/wps/media/objects/16103/16489878/data3eu/us_macro_quarterly.xlsx). It provides quarterly data on U.S. real (i.e. inflation adjusted) GDP from 1947 to 2004.
+GDP is commonly defined as the total value of goods and services produced during a given time period. The dataset us_macro_quarterly.xlsx, provided by the authors, can be downloaded [here](http://wps.pearsoned.co.uk/wps/media/objects/16103/16489878/data3eu/us_macro_quarterly.xlsx). It contains quarterly data on U.S. real GDP (i.e., inflation-adjusted) from 1947 to 2004.
 
 As before, a good starting point is to plot the data. The package `r ttcode("quantmod")` provides some convenient functions for plotting and computing with time series data. We also load the package `r ttcode("readxl")` to read the data into `r ttcode("R")`.
 
 ```{r, warning=FALSE, message=FALSE}
 # attach the package 'quantmod'
 library(quantmod)
+library(readxl)
 ```
 
 We begin by importing the data set.
@@ -91,7 +92,7 @@ colnames(USMacroSWQ) <- c("Date", "GDPC96", "JAPAN_IP", "PCECTPI",
                           "GS10", "GS1", "TB3MS", "UNRATE", "EXUSUK", "CPIAUCSL")
 ```
 
-We the first column of `r ttcode("us_macro_quarterly.xlsx")` contains text and the remaining ones are numeric. Using `r ttcode('col_types = c("text", rep("numeric", 9))')`  we tell `r ttcode("read_xlsx()")` take this into account when importing the data.
+The first column of `r ttcode("us_macro_quarterly.xlsx")` contains text and the remaining ones are numeric. Using `r ttcode('col_types = c("text", rep("numeric", 9))')`, we instruct `r ttcode("read_xlsx()")` to consider this format when importing the data.
 
 It is useful to work with time-series objects that keep track of the frequency of the data and are extensible. In what follows we will use objects of the class `r ttcode("xts")`, see `?xts`. Since the data in `r ttcode("USMacroSWQ")` are in quarterly frequency we convert the first column to `r ttcode("yearqtr")` format before generating the `r ttcode("xts")` object `r ttcode("GDP")`.
 
@@ -139,7 +140,7 @@ cat('
 <h3 class = "right"> Key Concept 14.1 </h3>
 <h3 class = "left"> Lags, First Differences, Logarithms and Growth Rates </h3>
 
-- Previous values of a time series are called *lags*. The first lag of $Y_t$ is $Y_{t-1}$. The $j^{th}$ lag of $Y_t$ is $Y_{t-j}$. In <tt>r ttcode("R")</tt>, lags of univariate or multivariate time series objects are conveniently computed by <tt>lag()</tt>, see <tt>?lag</tt>.
+- Previous values of a time series are called *lags*. The first lag of $Y_t$ is $Y_{t-1}$. The $j^{th}$ lag of $Y_t$ is $Y_{t-j}$. In <tt>`r ttcode("R")`</tt>, lags of univariate or multivariate time series objects are conveniently computed by <tt>lag()</tt>, see <tt>?lag</tt>.
 
 - Sometimes we work with a differenced series. The first difference of a series is $\\Delta Y_{t} = Y_t - Y_{t-1}$, the difference between periods $t$ and $t-1$. If <tt>Y</tt> is a time series, the series of first differences is computed as <tt>diff(Y)</tt>.
 
@@ -402,7 +403,7 @@ The forecast error is
   \text{Forecast error} = Y_{T+1} - \widehat{Y}_{T+1\vert T}.
 \end{align*}
 
-#### Forecasts and Predicted Values {-}
+#### Forecasts and Forecasted Values {-}
 
 Forecasted values of $Y_t$ are *not* what we refer to as *OLS predicted values* of $Y_t$. Also, the forecast error is *not* an OLS residual. Forecasts and forecast errors are obtained using *out-of-sample* values while predicted values and residuals are computed for *in-sample* values that were actually observed and used in estimating the model.
 
@@ -459,7 +460,7 @@ cat('
 <h3 class = "right"> Key Concept 14.3 </h3>
 <h3 class = "left"> Autoregressions </h3>
 <p>
-An AR($p$) model assumes that a time series $Y_t$ can be modeld by a linear function of the first $p$ of its lagged values.
+An AR($p$) model assumes that a time series $Y_t$ can be modeled by a linear function of the first $p$ of its lagged values.
 \\begin{align*}
   Y_t = \\beta_0 + \\beta_1 Y_{t-1} + \\beta_2 Y_{t-2} + \\dots + \\beta_p Y_{t-p} + u_t
 \\end{align*}
@@ -523,13 +524,22 @@ The theory of efficient capital markets states that stock prices embody all curr
 
 This idea is presented in the box *Can You Beat the Market? (Part I)* on p. 582 of the book. This section reproduces the estimation results.
 
-We start by importing monthly data from 1931:1 to 2002:12 on excess returns of a broad-based index of stock prices, the CRSP value-weighted index. The data are provided by the authors of the book as an excel sheet which can be downloaded [here](http://wps.aw.com/wps/media/objects/11422/11696965/data3eu/Stock_Returns_1931_2002.xlsx).
+We start by importing monthly data from 1931:1 to 2002:12 on excess returns of a broad-based index of stock prices, the CRSP value-weighted index. The data are provided by the authors of the book as an excel sheet which can be downloaded [here](https://wps.pearsoned.com/wps/media/objects/11422/11696965/data3eu/Stock_Returns_1931_2002.xlsx).
 
 ```{r}
 # read in data on stock returns
 SReturns <- read_xlsx("Data/Stock_Returns_1931_2002.xlsx",
                       sheet = 1,
                       col_types = "numeric")
+```
+
+```{r}
+#Alternatively, ASC  cen be read directly from internet.
+
+SReturns <- read.csv("https://www.princeton.edu/~mwatson/Stock-Watson_3u/Students/EE_Datasets/Stock_Returns_1931_2002.asc", sep = "\t", header = FALSE )
+
+colnames(SReturns) <- c( "Year", "Month", "ExReturn", "ln_DivYield" )
+
 ```
 
 We continue by converting the data to an object of class `r ttcode("ts")`.
@@ -641,7 +651,7 @@ cat('
 An ADL($p$,$q$) model assumes that a time series $Y_t$ can be represented by a linear function of $p$ of its lagged values and $q$ lags of another time series $X_t$:
 \\begin{align*}
   Y_t =& \\, \\beta_0 + \\beta_1 Y_{t-1} + \\beta_2 Y_{t-2} + \\dots + \\beta_p Y_{t-p} \\\\ 
-      &+ \\, \\delta_1 X_{t-1} + \\delta_2 X_{t-2} + \\dots + \\delta_q X_{t-q} X_{t-q} + u_t.
+      &+ \\, \\delta_1 X_{t-1} + \\delta_2 X_{t-2} + \\dots + \\delta_q X_{t-q} + u_t.
 \\end{align*}
 is an *autoregressive distributed lag model* with $p$ lags of $Y_t$ and $q$ lags of $X_t$ where $$E(u_t\\vert Y_{t-1}, Y_{t-2}, \\dots, X_{t-1}, X_{t-2}, \\dots)=0.$$
 </p>
@@ -654,7 +664,7 @@ cat('\\begin{keyconcepts}[The Autoregressive Distributed Lag Model]{14.4}
 An ADL($p$,$q$) model assumes that a time series $Y_t$ can be represented by a linear function of $p$ of its lagged values and $q$ lags of another time series $X_t$:
 \\begin{align*}
   Y_t =& \\, \\beta_0 + \\beta_1 Y_{t-1} + \\beta_2 Y_{t-2} + \\dots + \\beta_p Y_{t-p} \\\\ 
-      &+ \\, \\delta_1 X_{t-1} + \\delta_2 X_{t-2} + \\dots + \\delta_q X_{t-q} X_{t-q} + u_t.
+      &+ \\, \\delta_1 X_{t-1} + \\delta_2 X_{t-2} + \\dots + \\delta_q X_{t-q} + u_t.
 \\end{align*}
 is an \\textit{autoregressive distributed lag model} with $p$ lags of $Y_t$ and $q$ lags of $X_t$ where $$E(u_t\\vert Y_{t-1}, Y_{t-2}, \\dots, X_{t-1}, X_{t-2}, \\dots)=0.$$
 \\end{keyconcepts}
@@ -666,13 +676,13 @@ is an \\textit{autoregressive distributed lag model} with $p$ lags of $Y_t$ and 
 Interest rates on long-term and short term treasury bonds are closely linked to macroeconomic conditions. While interest rates on both types of bonds have the same long-run tendencies, they behave quite differently in the short run.
 The difference in interest rates of two bonds with distinct maturity is called the *term spread*. 
 
-The following code chunks reproduce Figure 14.3 of the book which displays interest rates of 10-year U.S. Treasury bonds and 3-months U.S. Treasury bills from 1960 to 2012.
+The following code chunks reproduce Figure 14.3 of the book which displays interest rates of 10-year U.S. Treasury bonds and 3-month U.S. Treasury bills from 1960 to 2012.
 
 ```{r}
-# 3-months Treasury bills interest rate
+# 3-month Treasury bills interest rate
 TB3MS <- xts(USMacroSWQ$TB3MS, USMacroSWQ$Date)["1960::2012"]
 
-# 10-years Treasury bonds interest rate
+# 10-year Treasury bonds interest rate
 TB10YS <- xts(USMacroSWQ$GS10, USMacroSWQ$Date)["1960::2012"]
 
 # term spread
@@ -810,9 +820,9 @@ Do the ADL models \@ref(eq:gdpgradl21) and \@ref(eq:gdpgradl22) improve upon the
 
 ```{r}
 # compare adj. R2
-c("Adj.R2 AR(2)" = summary(GDPGR_AR2)$r.squared,
-  "Adj.R2 ADL(2,1)" = summary(GDPGR_ADL21)$r.squared,
-  "Adj.R2 ADL(2,2)" = summary(GDPGR_ADL22)$r.squared)
+c("Adj.R2 AR(2)" = summary(GDPGR_AR2)$adj.r.squared,
+  "Adj.R2 ADL(2,1)" = summary(GDPGR_ADL21)$adj.r.squared,
+  "Adj.R2 ADL(2,2)" = summary(GDPGR_ADL22)$adj.r.squared)
 
 # compare SER
 c("SER AR(2)" = summary(GDPGR_AR2)$sigma,

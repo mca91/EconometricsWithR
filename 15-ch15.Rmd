@@ -1,6 +1,6 @@
 # Estimation of Dynamic Causal Effects {#eodce}
 
-It sometimes is of interest to know the size of current and future reaction of $Y$ to a change in $X$. This is called the *dynamic causal effect* on $Y$ of a change in $X$. This Chapter we discusses how to estimate dynamic causal effects in `r ttcode("R")` applications, where we investigate the dynamic effect of cold weather in Florida on the price of orange juice concentrate.
+It sometimes is of interest to know the size of current and future reaction of $Y$ to a change in $X$. This is called the *dynamic causal effect* on $Y$ of a change in $X$. In this Chapter we discuss how to estimate dynamic causal effects in `r ttcode("R")` applications, where we investigate the dynamic effect of cold weather in Florida on the price of orange juice concentrate.
 
 The discussion covers:
 
@@ -634,14 +634,14 @@ According to column (1) of Table \@ref(tab:deoafddotpooj), the contemporaneous e
 
 Columns (2) and (3) present estimates of the dynamic cumulative multipliers of model `r ttcode("FOJC_mod_CM1")`. Apparently, it does not matter whether we choose $m=7$ or $m=14$ when computing HAC standard errors so we stick with $m=7$ and the standard errors reported in column (2). 
 
-If the demand for orange juice is higher in winter, $FDD_t$ would be correlated with the error term since freezes occur rather in winter so we would face omitted variable bias. The third model estimate, `r ttcode("FOJC_mod_CM2")`, accounts for this possible issue by using an additional set of 11 monthly dummies. For brevity, estimates of the dummy coefficients are excluded from the output produced by stargazer (this is achieved by setting `r ttcode("omit = 'season'")`). We may check that the dummy for January was omitted to prevent perfect multicollinearity.
+If the demand for orange juice is higher in winter, $FDD_t$ would be correlated with the error term since freezes occur rather in winter so we would face omitted variable bias. The fourth model estimate, `r ttcode("FOJC_mod_CM2")`, accounts for this possible issue by using an additional set of 11 monthly dummies. For brevity, estimates of the dummy coefficients are excluded from the output produced by stargazer (this is achieved by setting `r ttcode("omit = 'season'")`). We may check that the dummy for January was omitted to prevent perfect multicollinearity.
 
 ```{r}
 # estimates on mothly dummies
 FOJC_mod_CM2$coefficients[-c(1:20)]
 ```
 
-A comparison of the estimates presented in columns (3) and (4) indicates that adding monthly dummies has a negligible effect. Further evidence for this comes from a joint test of the hypothesis that the 11 dummy coefficients are zero. Instead of using `r ttcode("linearHypothesis()")`, we use the function `r ttcode("waldtest()")` and supply two model objects instead: `r ttcode("unres_model")`, the unrestricted model object which is the same as `r ttcode("FOJC_mod_CM2")` (except for the coefficient names since we have modified them above) and `r ttcode("res_model")`, the model where the restriction that all dummy coefficients are zero is imposed. `r ttcode("res_model")` is conveniently obtained using the function `r ttcode("update()")`. It extracts the argument `r ttcode("formula")` of a model object, updates it as specified and then re-fits the model. By setting `r ttcode("formula = . ~ . - season(FDD)")` we impose that the monthly dummies do not enter the model.
+A comparison of the estimates presented in columns (2) and (4) indicates that adding monthly dummies has a negligible effect. Further evidence for this comes from a joint test of the hypothesis that the 11 dummy coefficients are zero. Instead of using `r ttcode("linearHypothesis()")`, we use the function `r ttcode("waldtest()")` and supply two model objects instead: `r ttcode("unres_model")`, the unrestricted model object which is the same as `r ttcode("FOJC_mod_CM2")` (except for the coefficient names since we have modified them above) and `r ttcode("res_model")`, the model where the restriction that all dummy coefficients are zero is imposed. `r ttcode("res_model")` is conveniently obtained using the function `r ttcode("update()")`. It extracts the argument `r ttcode("formula")` of a model object, updates it as specified and then re-fits the model. By setting `r ttcode("formula = . ~ . - season(FDD)")` we impose that the monthly dummies do not enter the model.
 
 ```{r}
 # test if coefficients on monthly dummies are zero
@@ -754,7 +754,7 @@ text(18, 1.2, "1950 - 1966")
 
 Clearly, the cumulative dynamic multipliers have changed considerably over time. The effect of a freeze was stronger and more persistent in the 1950s and 1960s. For the 1970s the magnitude of the effect was lower but still highly persistent. We observe an even lower magnitude for the final third of the sample span (1984 - 2000) where the long-run effect is much less persistent and essentially zero after a year. 
 
-A QLR test for a break in the distributed lag regression of column (1) in Table \@ref{tab:deoafddotpooj} with $15\%$ trimming using a HAC variance-covariance matrix estimate supports the conjecture that the population regression coefficients have changed over time.
+A QLR test for a break in the distributed lag regression of column (1) in Table \@ref(tab:deoafddotpooj) with $15\%$ trimming using a HAC variance-covariance matrix estimate supports the conjecture that the population regression coefficients have changed over time.
 
 ```{r, cache=TRUE}
 # set up a range of possible break dates
