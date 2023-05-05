@@ -23,7 +23,7 @@
 <meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber, and Martin Schmelzer" />
 
 
-<meta name="date" content="2023-03-23" />
+<meta name="date" content="2023-05-05" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -465,10 +465,11 @@ This book is in <b>Open Review</b>. We want your feedback to make the book bette
 </div>
 <div id="tsdasc" class="section level2 hasAnchor" number="14.2">
 <h2><span class="header-section-number">14.2</span> Time Series Data and Serial Correlation<a href="14.2-tsdasc.html#tsdasc" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>GDP is commonly defined as the value of goods and services produced over a given time period. The data set <tt>us_macro_quarterly.xlsx</tt> is provided by the authors and can be downloaded <a href="http://wps.pearsoned.co.uk/wps/media/objects/16103/16489878/data3eu/us_macro_quarterly.xlsx">here</a>. It provides quarterly data on U.S. real (i.e. inflation adjusted) GDP from 1947 to 2004.</p>
+<p>GDP is commonly defined as the total value of goods and services produced during a given time period. The dataset us_macro_quarterly.xlsx, provided by the authors, can be downloaded <a href="http://wps.pearsoned.co.uk/wps/media/objects/16103/16489878/data3eu/us_macro_quarterly.xlsx">here</a>. It contains quarterly data on U.S. real GDP (i.e., inflation-adjusted) from 1947 to 2004.</p>
 <p>As before, a good starting point is to plot the data. The package <tt>quantmod</tt> provides some convenient functions for plotting and computing with time series data. We also load the package <tt>readxl</tt> to read the data into <tt>R</tt>.</p>
 <div class="sourceCode" id="cb341"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb341-1"><a href="14.2-tsdasc.html#cb341-1" aria-hidden="true" tabindex="-1"></a><span class="co"># attach the package &#39;quantmod&#39;</span></span>
-<span id="cb341-2"><a href="14.2-tsdasc.html#cb341-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(quantmod)</span></code></pre></div>
+<span id="cb341-2"><a href="14.2-tsdasc.html#cb341-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(quantmod)</span>
+<span id="cb341-3"><a href="14.2-tsdasc.html#cb341-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readxl)</span></code></pre></div>
 <p>We begin by importing the data set.</p>
 <div class="sourceCode" id="cb342"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb342-1"><a href="14.2-tsdasc.html#cb342-1" aria-hidden="true" tabindex="-1"></a><span class="co"># load US macroeconomic data</span></span>
 <span id="cb342-2"><a href="14.2-tsdasc.html#cb342-2" aria-hidden="true" tabindex="-1"></a>USMacroSWQ <span class="ot">&lt;-</span> <span class="fu">read_xlsx</span>(<span class="st">&quot;Data/us_macro_quarterly.xlsx&quot;</span>,</span>
@@ -481,7 +482,7 @@ This book is in <b>Open Review</b>. We want your feedback to make the book bette
 <span id="cb342-9"><a href="14.2-tsdasc.html#cb342-9" aria-hidden="true" tabindex="-1"></a><span class="co"># adjust column names</span></span>
 <span id="cb342-10"><a href="14.2-tsdasc.html#cb342-10" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(USMacroSWQ) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Date&quot;</span>, <span class="st">&quot;GDPC96&quot;</span>, <span class="st">&quot;JAPAN_IP&quot;</span>, <span class="st">&quot;PCECTPI&quot;</span>, </span>
 <span id="cb342-11"><a href="14.2-tsdasc.html#cb342-11" aria-hidden="true" tabindex="-1"></a>                          <span class="st">&quot;GS10&quot;</span>, <span class="st">&quot;GS1&quot;</span>, <span class="st">&quot;TB3MS&quot;</span>, <span class="st">&quot;UNRATE&quot;</span>, <span class="st">&quot;EXUSUK&quot;</span>, <span class="st">&quot;CPIAUCSL&quot;</span>)</span></code></pre></div>
-<p>We the first column of <tt>us_macro_quarterly.xlsx</tt> contains text and the remaining ones are numeric. Using <tt>col_types = c(“text”, rep(“numeric”, 9))</tt> we tell <tt>read_xlsx()</tt> take this into account when importing the data.</p>
+<p>The first column of <tt>us_macro_quarterly.xlsx</tt> contains text and the remaining ones are numeric. Using <tt>col_types = c(“text”, rep(“numeric”, 9))</tt>, we instruct <tt>read_xlsx()</tt> to consider this format when importing the data.</p>
 <p>It is useful to work with time-series objects that keep track of the frequency of the data and are extensible. In what follows we will use objects of the class <tt>xts</tt>, see <code>?xts</code>. Since the data in <tt>USMacroSWQ</tt> are in quarterly frequency we convert the first column to <tt>yearqtr</tt> format before generating the <tt>xts</tt> object <tt>GDP</tt>.</p>
 <div class="sourceCode" id="cb343"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb343-1"><a href="14.2-tsdasc.html#cb343-1" aria-hidden="true" tabindex="-1"></a><span class="co"># GDP series as xts object</span></span>
 <span id="cb343-2"><a href="14.2-tsdasc.html#cb343-2" aria-hidden="true" tabindex="-1"></a>GDP <span class="ot">&lt;-</span> <span class="fu">xts</span>(USMacroSWQ<span class="sc">$</span>GDPC96, USMacroSWQ<span class="sc">$</span>Date)[<span class="st">&quot;1960::2013&quot;</span>]</span>
@@ -516,7 +517,7 @@ Key Concept 14.1
 Lags, First Differences, Logarithms and Growth Rates
 </h3>
 <ul>
-<li><p>Previous values of a time series are called <em>lags</em>. The first lag of <span class="math inline">\(Y_t\)</span> is <span class="math inline">\(Y_{t-1}\)</span>. The <span class="math inline">\(j^{th}\)</span> lag of <span class="math inline">\(Y_t\)</span> is <span class="math inline">\(Y_{t-j}\)</span>. In <tt>r ttcode(“R”)</tt>, lags of univariate or multivariate time series objects are conveniently computed by <tt>lag()</tt>, see <tt>?lag</tt>.</p></li>
+<li><p>Previous values of a time series are called <em>lags</em>. The first lag of <span class="math inline">\(Y_t\)</span> is <span class="math inline">\(Y_{t-1}\)</span>. The <span class="math inline">\(j^{th}\)</span> lag of <span class="math inline">\(Y_t\)</span> is <span class="math inline">\(Y_{t-j}\)</span>. In <tt><code>r ttcode("R")</code></tt>, lags of univariate or multivariate time series objects are conveniently computed by <tt>lag()</tt>, see <tt>?lag</tt>.</p></li>
 <li><p>Sometimes we work with a differenced series. The first difference of a series is <span class="math inline">\(\Delta Y_{t} = Y_t - Y_{t-1}\)</span>, the difference between periods <span class="math inline">\(t\)</span> and <span class="math inline">\(t-1\)</span>. If <tt>Y</tt> is a time series, the series of first differences is computed as <tt>diff(Y)</tt>.</p></li>
 <li><p>It may be convenient to work with the first difference in logarithms of a series. We denote this by <span class="math inline">\(\Delta \log(Y_t) = \log(Y_t) - \log(Y_{t-1})\)</span>. For a time series <tt>Y</tt>, this is obtained using <tt>log(Y/lag(Y))</tt>.</p></li>
 <li><p><span class="math inline">\(100 \Delta \log (Y_t)\)</span> is an approximation for the percentage change between <span class="math inline">\(Y_t\)</span> and <span class="math inline">\(Y_{t-1}\)</span>.</p></li>

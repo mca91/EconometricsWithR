@@ -23,7 +23,7 @@
 <meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber, and Martin Schmelzer" />
 
 
-<meta name="date" content="2023-03-23" />
+<meta name="date" content="2023-05-05" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -483,75 +483,75 @@ Orders of Integration, Differencing and Stationarity
 </p>
 </div>
 <p>Following the book, we take the price level of the U.S. measured by the <em>Personal Consumption Expenditures Price Index</em> as an example.</p>
-<div class="sourceCode" id="cb453"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb453-1"><a href="16.2-ooiatdfglsurt.html#cb453-1" aria-hidden="true" tabindex="-1"></a><span class="co"># define ts object of the U.S. PCE Price Index</span></span>
-<span id="cb453-2"><a href="16.2-ooiatdfglsurt.html#cb453-2" aria-hidden="true" tabindex="-1"></a>PCECTPI <span class="ot">&lt;-</span> <span class="fu">ts</span>(<span class="fu">log</span>(USMacroSWQ<span class="sc">$</span>PCECTPI), </span>
-<span id="cb453-3"><a href="16.2-ooiatdfglsurt.html#cb453-3" aria-hidden="true" tabindex="-1"></a>              <span class="at">start =</span> <span class="fu">c</span>(<span class="dv">1957</span>, <span class="dv">1</span>), </span>
-<span id="cb453-4"><a href="16.2-ooiatdfglsurt.html#cb453-4" aria-hidden="true" tabindex="-1"></a>              <span class="at">end =</span> <span class="fu">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>), </span>
-<span id="cb453-5"><a href="16.2-ooiatdfglsurt.html#cb453-5" aria-hidden="true" tabindex="-1"></a>              <span class="at">freq =</span> <span class="dv">4</span>)</span>
-<span id="cb453-6"><a href="16.2-ooiatdfglsurt.html#cb453-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb453-7"><a href="16.2-ooiatdfglsurt.html#cb453-7" aria-hidden="true" tabindex="-1"></a><span class="co"># plot logarithm of the PCE Price Index</span></span>
-<span id="cb453-8"><a href="16.2-ooiatdfglsurt.html#cb453-8" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">log</span>(PCECTPI),</span>
-<span id="cb453-9"><a href="16.2-ooiatdfglsurt.html#cb453-9" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">&quot;Log of United States PCE Price Index&quot;</span>,</span>
-<span id="cb453-10"><a href="16.2-ooiatdfglsurt.html#cb453-10" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">&quot;Logarithm&quot;</span>,</span>
-<span id="cb453-11"><a href="16.2-ooiatdfglsurt.html#cb453-11" aria-hidden="true" tabindex="-1"></a>     <span class="at">col =</span> <span class="st">&quot;steelblue&quot;</span>, </span>
-<span id="cb453-12"><a href="16.2-ooiatdfglsurt.html#cb453-12" aria-hidden="true" tabindex="-1"></a>     <span class="at">lwd =</span> <span class="dv">2</span>)</span></code></pre></div>
-<p><img src="ITER_files/figure-html/unnamed-chunk-725-1.png" width="80%" style="display: block; margin: auto;" /></p>
-<p>The logarithm of the price level has a smoothly varying trend. This is typical for an <span class="math inline">\(I(2)\)</span> series. If the price level is indeed <span class="math inline">\(I(2)\)</span>, the first differences of this series should be <span class="math inline">\(I(1)\)</span>. Since we are considering the logarithm of the price level, we obtain growth rates by taking first differences. Therefore, the differenced price level series is the series of quarterly inflation rates. This is quickly done in <tt>R</tt> using the function <tt>Delt()</tt> from the package <tt>quantmod</tt>. As explained in Chapter <a href="14.2-tsdasc.html#tsdasc">14.2</a>, multiplying the quarterly inflation rates by <span class="math inline">\(400\)</span> yields the quarterly rate of inflation, measured in percentage points at an annual rate.</p>
-<div class="sourceCode" id="cb454"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb454-1"><a href="16.2-ooiatdfglsurt.html#cb454-1" aria-hidden="true" tabindex="-1"></a><span class="co"># plot U.S. PCE price inflation</span></span>
-<span id="cb454-2"><a href="16.2-ooiatdfglsurt.html#cb454-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="dv">400</span> <span class="sc">*</span> <span class="fu">Delt</span>(PCECTPI),</span>
-<span id="cb454-3"><a href="16.2-ooiatdfglsurt.html#cb454-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">&quot;United States PCE Price Index&quot;</span>,</span>
-<span id="cb454-4"><a href="16.2-ooiatdfglsurt.html#cb454-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">&quot;Percent per annum&quot;</span>,</span>
-<span id="cb454-5"><a href="16.2-ooiatdfglsurt.html#cb454-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">col =</span> <span class="st">&quot;steelblue&quot;</span>, </span>
-<span id="cb454-6"><a href="16.2-ooiatdfglsurt.html#cb454-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">lwd =</span> <span class="dv">2</span>)</span>
-<span id="cb454-7"><a href="16.2-ooiatdfglsurt.html#cb454-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb454-8"><a href="16.2-ooiatdfglsurt.html#cb454-8" aria-hidden="true" tabindex="-1"></a><span class="co"># add a dashed line at y =  0 </span></span>
-<span id="cb454-9"><a href="16.2-ooiatdfglsurt.html#cb454-9" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="at">lty =</span> <span class="dv">2</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb454"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb454-1"><a href="16.2-ooiatdfglsurt.html#cb454-1" aria-hidden="true" tabindex="-1"></a><span class="co"># define ts object of the U.S. PCE Price Index</span></span>
+<span id="cb454-2"><a href="16.2-ooiatdfglsurt.html#cb454-2" aria-hidden="true" tabindex="-1"></a>PCECTPI <span class="ot">&lt;-</span> <span class="fu">ts</span>(<span class="fu">log</span>(USMacroSWQ<span class="sc">$</span>PCECTPI), </span>
+<span id="cb454-3"><a href="16.2-ooiatdfglsurt.html#cb454-3" aria-hidden="true" tabindex="-1"></a>              <span class="at">start =</span> <span class="fu">c</span>(<span class="dv">1957</span>, <span class="dv">1</span>), </span>
+<span id="cb454-4"><a href="16.2-ooiatdfglsurt.html#cb454-4" aria-hidden="true" tabindex="-1"></a>              <span class="at">end =</span> <span class="fu">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>), </span>
+<span id="cb454-5"><a href="16.2-ooiatdfglsurt.html#cb454-5" aria-hidden="true" tabindex="-1"></a>              <span class="at">freq =</span> <span class="dv">4</span>)</span>
+<span id="cb454-6"><a href="16.2-ooiatdfglsurt.html#cb454-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb454-7"><a href="16.2-ooiatdfglsurt.html#cb454-7" aria-hidden="true" tabindex="-1"></a><span class="co"># plot logarithm of the PCE Price Index</span></span>
+<span id="cb454-8"><a href="16.2-ooiatdfglsurt.html#cb454-8" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(PCECTPI,</span>
+<span id="cb454-9"><a href="16.2-ooiatdfglsurt.html#cb454-9" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">&quot;Log of United States PCE Price Index&quot;</span>,</span>
+<span id="cb454-10"><a href="16.2-ooiatdfglsurt.html#cb454-10" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">&quot;Logarithm&quot;</span>,</span>
+<span id="cb454-11"><a href="16.2-ooiatdfglsurt.html#cb454-11" aria-hidden="true" tabindex="-1"></a>     <span class="at">col =</span> <span class="st">&quot;steelblue&quot;</span>, </span>
+<span id="cb454-12"><a href="16.2-ooiatdfglsurt.html#cb454-12" aria-hidden="true" tabindex="-1"></a>     <span class="at">lwd =</span> <span class="dv">2</span>)</span></code></pre></div>
 <p><img src="ITER_files/figure-html/unnamed-chunk-726-1.png" width="80%" style="display: block; margin: auto;" /></p>
+<p>The logarithm of the price level has a smoothly varying trend. This is typical for an <span class="math inline">\(I(2)\)</span> series. If the price level is indeed <span class="math inline">\(I(2)\)</span>, the first differences of this series should be <span class="math inline">\(I(1)\)</span>. Since we are considering the logarithm of the price level, we obtain growth rates by taking first differences. Therefore, the differenced price level series is the series of quarterly inflation rates. This is quickly done in <tt>R</tt> using the function <tt>diff()</tt> from the package <tt>base</tt>. As explained in Chapter <a href="14.2-tsdasc.html#tsdasc">14.2</a>, multiplying the quarterly inflation rates by <span class="math inline">\(400\)</span> yields the quarterly rate of inflation, measured in percentage points at an annual rate.</p>
+<div class="sourceCode" id="cb455"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb455-1"><a href="16.2-ooiatdfglsurt.html#cb455-1" aria-hidden="true" tabindex="-1"></a><span class="co"># plot U.S. Inflation Rate</span></span>
+<span id="cb455-2"><a href="16.2-ooiatdfglsurt.html#cb455-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="dv">400</span> <span class="sc">*</span> <span class="fu">diff</span>(PCECTPI),</span>
+<span id="cb455-3"><a href="16.2-ooiatdfglsurt.html#cb455-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">&quot;United States Inflation Rate&quot;</span>,</span>
+<span id="cb455-4"><a href="16.2-ooiatdfglsurt.html#cb455-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">&quot;Percent per annum&quot;</span>,</span>
+<span id="cb455-5"><a href="16.2-ooiatdfglsurt.html#cb455-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">col =</span> <span class="st">&quot;steelblue&quot;</span>, </span>
+<span id="cb455-6"><a href="16.2-ooiatdfglsurt.html#cb455-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">lwd =</span> <span class="dv">2</span>)</span>
+<span id="cb455-7"><a href="16.2-ooiatdfglsurt.html#cb455-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb455-8"><a href="16.2-ooiatdfglsurt.html#cb455-8" aria-hidden="true" tabindex="-1"></a><span class="co"># add a dashed line at y =  0 </span></span>
+<span id="cb455-9"><a href="16.2-ooiatdfglsurt.html#cb455-9" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="at">lty =</span> <span class="dv">2</span>)</span></code></pre></div>
+<p><img src="ITER_files/figure-html/unnamed-chunk-727-1.png" width="80%" style="display: block; margin: auto;" /></p>
 <p>The inflation rate behaves much more erratically than the smooth graph of the logarithm of the PCE price index.</p>
 <div id="the-df-gls-test-for-a-unit-root" class="section level4 unnumbered hasAnchor">
 <h4>The DF-GLS Test for a Unit Root<a href="16.2-ooiatdfglsurt.html#the-df-gls-test-for-a-unit-root" class="anchor-section" aria-label="Anchor link to header"></a></h4>
 <p>The DF-GLS test for a unit root has been developed by <span class="citation">Elliott, Rothenberg, and Stock (<a href="#ref-elliott1996" role="doc-biblioref">1996</a>)</span> and has higher power than the ADF test when the autoregressive root is large but less than one. That is, the DF-GLS has a higher probability of rejecting the false null of a stochastic trend when the sample data stems from a time series that is close to being integrated.</p>
 <p>The idea of the DF-GLS test is to test for an autoregressive unit root in the detrended series, whereby GLS estimates of the deterministic components are used to obtain the detrended version of the original series. See Chapter 16.3 of the book for a more detailed explanation of the approach.</p>
 <p>A function that performs the DF-GLS test is implemented in the package <tt>urca</tt> (this package is a dependency of the package <tt>vars</tt> so it should be already loaded if <tt>vars</tt> is attached). The function that computes the test statistic is <tt>ur.ers</tt>.</p>
-<div class="sourceCode" id="cb455"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb455-1"><a href="16.2-ooiatdfglsurt.html#cb455-1" aria-hidden="true" tabindex="-1"></a><span class="co"># DF-GLS test for unit root in GDP</span></span>
-<span id="cb455-2"><a href="16.2-ooiatdfglsurt.html#cb455-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">ur.ers</span>(<span class="fu">log</span>(<span class="fu">window</span>(GDP, <span class="at">start =</span> <span class="fu">c</span>(<span class="dv">1962</span>, <span class="dv">1</span>), <span class="at">end =</span> <span class="fu">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>))),</span>
-<span id="cb455-3"><a href="16.2-ooiatdfglsurt.html#cb455-3" aria-hidden="true" tabindex="-1"></a>        <span class="at">model =</span> <span class="st">&quot;trend&quot;</span>, </span>
-<span id="cb455-4"><a href="16.2-ooiatdfglsurt.html#cb455-4" aria-hidden="true" tabindex="-1"></a>        <span class="at">lag.max =</span> <span class="dv">2</span>))</span>
-<span id="cb455-5"><a href="16.2-ooiatdfglsurt.html#cb455-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb455-6"><a href="16.2-ooiatdfglsurt.html#cb455-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ############################################### </span></span>
-<span id="cb455-7"><a href="16.2-ooiatdfglsurt.html#cb455-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # Elliot, Rothenberg and Stock Unit Root Test # </span></span>
-<span id="cb455-8"><a href="16.2-ooiatdfglsurt.html#cb455-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ############################################### </span></span>
-<span id="cb455-9"><a href="16.2-ooiatdfglsurt.html#cb455-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb455-10"><a href="16.2-ooiatdfglsurt.html#cb455-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Test of type DF-GLS </span></span>
-<span id="cb455-11"><a href="16.2-ooiatdfglsurt.html#cb455-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; detrending of series with intercept and trend </span></span>
-<span id="cb455-12"><a href="16.2-ooiatdfglsurt.html#cb455-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb455-13"><a href="16.2-ooiatdfglsurt.html#cb455-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb455-14"><a href="16.2-ooiatdfglsurt.html#cb455-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Call:</span></span>
-<span id="cb455-15"><a href="16.2-ooiatdfglsurt.html#cb455-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; lm(formula = dfgls.form, data = data.dfgls)</span></span>
-<span id="cb455-16"><a href="16.2-ooiatdfglsurt.html#cb455-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb455-17"><a href="16.2-ooiatdfglsurt.html#cb455-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Residuals:</span></span>
-<span id="cb455-18"><a href="16.2-ooiatdfglsurt.html#cb455-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       Min        1Q    Median        3Q       Max </span></span>
-<span id="cb455-19"><a href="16.2-ooiatdfglsurt.html#cb455-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -0.025739 -0.004054  0.000017  0.004619  0.033620 </span></span>
-<span id="cb455-20"><a href="16.2-ooiatdfglsurt.html#cb455-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb455-21"><a href="16.2-ooiatdfglsurt.html#cb455-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Coefficients:</span></span>
-<span id="cb455-22"><a href="16.2-ooiatdfglsurt.html#cb455-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;              Estimate Std. Error t value Pr(&gt;|t|)    </span></span>
-<span id="cb455-23"><a href="16.2-ooiatdfglsurt.html#cb455-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; yd.lag       -0.01213    0.01012  -1.199  0.23207    </span></span>
-<span id="cb455-24"><a href="16.2-ooiatdfglsurt.html#cb455-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; yd.diff.lag1  0.28583    0.07002   4.082 6.47e-05 ***</span></span>
-<span id="cb455-25"><a href="16.2-ooiatdfglsurt.html#cb455-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; yd.diff.lag2  0.19320    0.07058   2.737  0.00676 ** </span></span>
-<span id="cb455-26"><a href="16.2-ooiatdfglsurt.html#cb455-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ---</span></span>
-<span id="cb455-27"><a href="16.2-ooiatdfglsurt.html#cb455-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span>
-<span id="cb455-28"><a href="16.2-ooiatdfglsurt.html#cb455-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb455-29"><a href="16.2-ooiatdfglsurt.html#cb455-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Residual standard error: 0.007807 on 198 degrees of freedom</span></span>
-<span id="cb455-30"><a href="16.2-ooiatdfglsurt.html#cb455-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Multiple R-squared:  0.1504, Adjusted R-squared:  0.1376 </span></span>
-<span id="cb455-31"><a href="16.2-ooiatdfglsurt.html#cb455-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; F-statistic: 11.69 on 3 and 198 DF,  p-value: 4.392e-07</span></span>
-<span id="cb455-32"><a href="16.2-ooiatdfglsurt.html#cb455-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb455-33"><a href="16.2-ooiatdfglsurt.html#cb455-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb455-34"><a href="16.2-ooiatdfglsurt.html#cb455-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Value of test-statistic is: -1.1987 </span></span>
-<span id="cb455-35"><a href="16.2-ooiatdfglsurt.html#cb455-35" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb455-36"><a href="16.2-ooiatdfglsurt.html#cb455-36" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Critical values of DF-GLS are:</span></span>
-<span id="cb455-37"><a href="16.2-ooiatdfglsurt.html#cb455-37" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                  1pct  5pct 10pct</span></span>
-<span id="cb455-38"><a href="16.2-ooiatdfglsurt.html#cb455-38" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; critical values -3.48 -2.89 -2.57</span></span></code></pre></div>
-<p>The summary of the test shows that the test statistic is about <span class="math inline">\(-1.2\)</span>. The the <span class="math inline">\(10\%\)</span> critical value for the DF-GLS test is <span class="math inline">\(-2.57\)</span>. This is, however, <strong>not</strong> the appropriate critical value for the ADF test when an intercept and a time trend are included in the Dickey-Fuller regression: the asymptotic distributions of both test statistics differ and so do their critical values!</p>
+<div class="sourceCode" id="cb456"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb456-1"><a href="16.2-ooiatdfglsurt.html#cb456-1" aria-hidden="true" tabindex="-1"></a><span class="co"># DF-GLS test for unit root in GDP</span></span>
+<span id="cb456-2"><a href="16.2-ooiatdfglsurt.html#cb456-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">ur.ers</span>(<span class="fu">log</span>(<span class="fu">window</span>(GDP, <span class="at">start =</span> <span class="fu">c</span>(<span class="dv">1962</span>, <span class="dv">1</span>), <span class="at">end =</span> <span class="fu">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>))),</span>
+<span id="cb456-3"><a href="16.2-ooiatdfglsurt.html#cb456-3" aria-hidden="true" tabindex="-1"></a>        <span class="at">model =</span> <span class="st">&quot;trend&quot;</span>, </span>
+<span id="cb456-4"><a href="16.2-ooiatdfglsurt.html#cb456-4" aria-hidden="true" tabindex="-1"></a>        <span class="at">lag.max =</span> <span class="dv">2</span>))</span>
+<span id="cb456-5"><a href="16.2-ooiatdfglsurt.html#cb456-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb456-6"><a href="16.2-ooiatdfglsurt.html#cb456-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ############################################### </span></span>
+<span id="cb456-7"><a href="16.2-ooiatdfglsurt.html#cb456-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # Elliot, Rothenberg and Stock Unit Root Test # </span></span>
+<span id="cb456-8"><a href="16.2-ooiatdfglsurt.html#cb456-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ############################################### </span></span>
+<span id="cb456-9"><a href="16.2-ooiatdfglsurt.html#cb456-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb456-10"><a href="16.2-ooiatdfglsurt.html#cb456-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Test of type DF-GLS </span></span>
+<span id="cb456-11"><a href="16.2-ooiatdfglsurt.html#cb456-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; detrending of series with intercept and trend </span></span>
+<span id="cb456-12"><a href="16.2-ooiatdfglsurt.html#cb456-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb456-13"><a href="16.2-ooiatdfglsurt.html#cb456-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb456-14"><a href="16.2-ooiatdfglsurt.html#cb456-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Call:</span></span>
+<span id="cb456-15"><a href="16.2-ooiatdfglsurt.html#cb456-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; lm(formula = dfgls.form, data = data.dfgls)</span></span>
+<span id="cb456-16"><a href="16.2-ooiatdfglsurt.html#cb456-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb456-17"><a href="16.2-ooiatdfglsurt.html#cb456-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Residuals:</span></span>
+<span id="cb456-18"><a href="16.2-ooiatdfglsurt.html#cb456-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;       Min        1Q    Median        3Q       Max </span></span>
+<span id="cb456-19"><a href="16.2-ooiatdfglsurt.html#cb456-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; -0.025739 -0.004054  0.000017  0.004619  0.033620 </span></span>
+<span id="cb456-20"><a href="16.2-ooiatdfglsurt.html#cb456-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb456-21"><a href="16.2-ooiatdfglsurt.html#cb456-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Coefficients:</span></span>
+<span id="cb456-22"><a href="16.2-ooiatdfglsurt.html#cb456-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;              Estimate Std. Error t value Pr(&gt;|t|)    </span></span>
+<span id="cb456-23"><a href="16.2-ooiatdfglsurt.html#cb456-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; yd.lag       -0.01213    0.01012  -1.199  0.23207    </span></span>
+<span id="cb456-24"><a href="16.2-ooiatdfglsurt.html#cb456-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; yd.diff.lag1  0.28583    0.07002   4.082 6.47e-05 ***</span></span>
+<span id="cb456-25"><a href="16.2-ooiatdfglsurt.html#cb456-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; yd.diff.lag2  0.19320    0.07058   2.737  0.00676 ** </span></span>
+<span id="cb456-26"><a href="16.2-ooiatdfglsurt.html#cb456-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ---</span></span>
+<span id="cb456-27"><a href="16.2-ooiatdfglsurt.html#cb456-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span>
+<span id="cb456-28"><a href="16.2-ooiatdfglsurt.html#cb456-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb456-29"><a href="16.2-ooiatdfglsurt.html#cb456-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Residual standard error: 0.007807 on 198 degrees of freedom</span></span>
+<span id="cb456-30"><a href="16.2-ooiatdfglsurt.html#cb456-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Multiple R-squared:  0.1504, Adjusted R-squared:  0.1376 </span></span>
+<span id="cb456-31"><a href="16.2-ooiatdfglsurt.html#cb456-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; F-statistic: 11.69 on 3 and 198 DF,  p-value: 4.392e-07</span></span>
+<span id="cb456-32"><a href="16.2-ooiatdfglsurt.html#cb456-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb456-33"><a href="16.2-ooiatdfglsurt.html#cb456-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb456-34"><a href="16.2-ooiatdfglsurt.html#cb456-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Value of test-statistic is: -1.1987 </span></span>
+<span id="cb456-35"><a href="16.2-ooiatdfglsurt.html#cb456-35" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb456-36"><a href="16.2-ooiatdfglsurt.html#cb456-36" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Critical values of DF-GLS are:</span></span>
+<span id="cb456-37"><a href="16.2-ooiatdfglsurt.html#cb456-37" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                  1pct  5pct 10pct</span></span>
+<span id="cb456-38"><a href="16.2-ooiatdfglsurt.html#cb456-38" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; critical values -3.48 -2.89 -2.57</span></span></code></pre></div>
+<p>The summary of the test shows that the test statistic is about <span class="math inline">\(-1.2\)</span>. The <span class="math inline">\(10\%\)</span> critical value for the DF-GLS test is <span class="math inline">\(-2.57\)</span>. This is, however, <strong>not</strong> the appropriate critical value for the ADF test when an intercept and a time trend are included in the Dickey-Fuller regression: the asymptotic distributions of both test statistics differ and so do their critical values!</p>
 <p>The test is left-sided so we cannot reject the null hypothesis that U.S. inflation is nonstationary, using the DF-GLS test.</p>
 </div>
 </div>
