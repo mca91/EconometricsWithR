@@ -4,7 +4,7 @@ This chapter discusses statistical tools that are commonly applied in program ev
 
 Such *experimental* data is fundamentally different from *observational* data. For example, one might use a randomized controlled experiment to measure how much the performance of students in a standardized test differs between two classes where one has a "regular"" student-teacher ratio and the other one has fewer students. The data produced by such an experiment would be different from, e.g., the observed cross-section data on the students' performance used throughout Chapters \@ref(lrwor) to \@ref(nrf) where class sizes are not randomly assigned to students but instead are the results of an economic decision where educational objectives and budgetary aspects were balanced.
 
-For economists, randomized controlled experiments are often difficult or even indefeasible to implement. For example, due to ethic, moral and legal reasons it is practically impossible for a business owner to estimate the causal effect on the productivity of workers of setting them under psychological stress using an experiment where workers are randomly assigned either to the treatment group that is under time pressure or to the control group where work is under regular conditions, at best without knowledge of being in an experiment (see the box *The Hawthorne Effect* on p. 528 of the book).
+For economists, randomized controlled experiments are often difficult or even infeasible to implement. For example, due to ethic, moral and legal reasons it is practically impossible for a business owner to estimate the causal effect on the productivity of workers of setting them under psychological stress using an experiment where workers are randomly assigned either to the treatment group that is under time pressure or to the control group where work is under regular conditions, at best without knowledge of being in an experiment (see the box *The Hawthorne Effect* on p. 528 of the book).
 
 However, sometimes external circumstances produce what is called a *quasi-experiment* or *natural experiment*. This "as if" randomness allows for estimation of causal effects that are of interest for economists using tools which are very similar to those valid for ideal randomized controlled experiments. These tools draw heavily on the theory of multiple regression and also on IV regression (see Chapter \@ref(ivr)). We will review the core aspects of these methods and demonstrate how to apply them in R using the STAR data set (see the [description](https://dataverse.harvard.edu/dataset.xhtml?persistentId=hdl:1902.1/10766) of the data set).
 
@@ -45,7 +45,7 @@ In an ideal randomized controlled experiment the following conditions are fulfil
 1. The subjects are selected at random from the population. 
 2. The subjects are randomly assigned to treatment and control group.
 
-Condition 1 guarantees that the subjects' potential outcomes are drawn randomly from the same distribution such that the expected value of the causal effect in the sample is equal to the average causal effect in the distribution. Condition 2 ensures that the receipt of treatment is independent from the subjects' potential outcomes. If both conditions are fulfilled, the expected causal effect is the expected outcome in the treatment group minus the expected outcome in the control group. Using conditional expectations we have $$\text{Average causal effect} =  E(Y_i\vert X_i=1) -  E(Y_i\vert X_i=0),$$ where $X_i$ is a binary treatment indicator.
+Condition 1 guarantees that the subjects' potential outcomes are drawn randomly from the same population distribution such that the expected value of the causal effect in the sample is equal to the average causal effect in the population. Condition 2 ensures that the receipt of treatment is independent from the subjects' potential outcomes. If both conditions are fulfilled, the expected causal effect is the expected outcome in the treatment group minus the expected outcome in the control group. Using conditional expectations we have $$\text{Average causal effect} =  E(Y_i\vert X_i=1) -  E(Y_i\vert X_i=0),$$ where $X_i$ is a binary treatment indicator.
 
 The average causal effect can be estimated using the *differences estimator*, which is nothing but the OLS estimator in the simple regression model 
 \begin{align}
@@ -57,7 +57,7 @@ The OLS estimator in the regression model
 \begin{align}
   Y_i = \beta_0 + \beta_1 X_i + \beta_2 W_{1i} + \dots + \beta_{1+r} W_{ri} + u_i \ \ , \ \ i=1,\dots,n (\#eq:diffestwar)
 \end{align}
-with additional regressors $W_1,\dots,W_r$ is called the *differences estimator with additional regressors*. It is assumed that treatment $X_i$ is randomly assigned so that it is independent of the the pretreatment characteristic $W_i$. This is assumption is called *conditional mean independence* and implies $$E(u_i\vert X_i , W_i) = E(u_i\vert W_i) = 0,$$ so the conditional expectation of the error $u_i$ given the treatment indicator $X_i$ and the pretreatment characteristic $W_i$ does not depend on the $X_i$. Conditional mean independence replaces the first least squares assumption in Key Concept 6.4 and thus ensures that the differences estimator of $\beta_1$ is unbiased. The *differences estimator with additional regressors* is more efficient than the *differences estimator* if the additional regressors explain some of the variation in the $Y_i$.
+with additional regressors $W_1,\dots,W_r$ is called the *differences estimator with additional regressors*. It is assumed that treatment assignment $X_i$ is random and independent of the pretreatment characteristic $W_i$. This assumption is called *conditional mean independence* and implies $$E(u_i\vert X_i , W_i) = E(u_i\vert W_i) = 0,$$ so the conditional expectation of the error $u_i$ given the treatment indicator $X_i$ and the pretreatment characteristic $W_i$ does not depend on the $X_i$. Conditional mean independence replaces the first least squares assumption in Key Concept 6.4 and thus ensures that the differences estimator of $\beta_1$ is unbiased. The *differences estimator with additional regressors* is more efficient than the *differences estimator* if the additional regressors explain some of the variation in the $Y_i$.
 
 ## Threats to Validity of Experiments
 
@@ -71,11 +71,11 @@ The concepts of internal and external validity discussed in Key Concept 9.1 are 
     
 2. **Failure to Follow the Treatment Protocol**
 
-    If subjects do not follow the treatment protocol, i.e., some subjects in the treatment group manage to avoid receiving the treatment and/or some subjects in the control group manage to receive the treatment (*partial compliance*), there is correlation between $X_i$ und $u_i$ such that the OLS estimator of the average treatment effect will be biased. If there are data on *both* treatment actually recieved ($X_i$) and initial random assignment ($Z_i$), IV regression of the models \@ref(eq:diffest) and \@ref(eq:diffestwar) is a remedy.
+    If subjects do not follow the treatment protocol, i.e., some subjects in the treatment group manage to avoid receiving the treatment and/or some subjects in the control group manage to receive the treatment (*partial compliance*), there is correlation between $X_i$ und $u_i$ such that the OLS estimator of the average treatment effect will be biased. If there are data on *both* treatment actually received ($X_i$) and initial random assignment ($Z_i$), IV regression of the models \@ref(eq:diffest) and \@ref(eq:diffestwar) is a remedy.
 
 3. **Attrition**
 
-    Attrition may result in a nonrandomly selected sample. If subjects systematically drop out of the study after beeing assigned to the control or the treatment group (systematic means that the reason of the dropout is related to the treatment) there will be correlation between $X_i$ and $u_i$ and hence bias in the OLS estimator of the treatment effect.
+    Attrition may result in a nonrandomly selected sample. If subjects systematically drop out of the study after being assigned to the control or the treatment group (systematic means that the reason of the dropout is related to the treatment) there will be correlation between $X_i$ and $u_i$ and hence bias in the OLS estimator of the treatment effect.
 
 4. **Experimental Effects**
   
@@ -94,7 +94,7 @@ The concepts of internal and external validity discussed in Key Concept 9.1 are 
 
 2. **Nonrepresentative Program or Policy**
 
-    If the program or policy for the population studied differs considerably from the program (to be) applied to population(s) of interest, the results cannot be generalized. For example, a small-scale programm with low funding might have different effects than a widely available scaled-up program that is actually implemented. There are other factors like duration and the extent of monitoring that should be considered here. 
+    If the program or policy for the population studied differs considerably from the program (to be) applied to population(s) of interest, the results cannot be generalized. For example, a small-scale program with low funding might have different effects than a widely available scaled-up program that is actually implemented. There are other factors like duration and the extent of monitoring that should be considered here. 
     
 3. **General Equilibrium Effects**
 
@@ -104,7 +104,7 @@ The concepts of internal and external validity discussed in Key Concept 9.1 are 
 
 ### Experimental Design and the Data Set {-}
 
-The Project *Student-Teacher Achievement Ratio* (STAR) was a large randomized controlled experiment with the aim of asserting whether a class size reduction is effective in improving education outcomes. It has been conducted in 80 Tennessee elementary schools over a period of four years during the 1980s by the State Department of Education.
+The Project *Student-Teacher Achievement Ratio* (STAR) was a large randomized controlled experiment with the aim of asserting whether a class size reduction is effective in improving education outcomes. It was conducted in 80 Tennessee elementary schools over a period of four years during the 1980s by the State Department of Education.
 
 In the first year, about 6400 students were randomly assigned into one of three interventions: small class (13 to 17 students per teacher), regular class (22 to 25 students per teacher), and regular-with-aide class (22 to 25 students with a full-time teacher's aide). Teachers were also randomly assigned to the classes they taught. The interventions were initiated as the students entered school in kindergarten and continued through to third grade. Control and treatment groups across grades are summarized in Table \@ref(tab:starstructure).
 
@@ -141,9 +141,9 @@ names(STAR)
 
 A majority of the variable names contain a suffix (`r ttcode("k")`, `r ttcode("1")`, `r ttcode("2")` or `r ttcode("3")`) stating the grade which the respective variable is referring to. This facilitates regression analysis because it allows to adjust the `r ttcode("formula")` argument in `r ttcode("lm()")` for each grade by simply changing the variables' suffixes accordingly.
 
-The outcome produced by `r ttcode("head()")` shows that some values recorded are `r ttcode("NA")` and `r ttcode("<NA>")`, i.e., there is no data on this variable for the student under consideration. This lies in the nature of the data: for example, take the first observation `STAR[1,]`. 
+The outcome produced by `r ttcode("head()")` shows that some recorded values are `r ttcode("NA")` and thus, there is no data on this variable for the student under consideration. This lies in the nature of the data: for example, take the first observation `STAR[1,]`. 
 
-In the output of `head(STAR, 2)` we find that the student entered the experiment in third grade in a regular class, which is why the class size is recorded in `r ttcode("star3")` and the other class type indicator variables are `r ttcode("<NA>")`. For the same reason there are no recordings of her math and reading score but for the third grade. It is straightforward to only get her non-`r ttcode("NA")`/`r ttcode("<NA>")` recordings: simply drop the `r ttcode("NA")`s using `r ttcode("!is.na()")`.
+In the output of `head(STAR, 2)` we find that the student entered the experiment in third grade in a regular class, which is why the class size is recorded in `r ttcode("star3")` and the other class type indicator variables are `r ttcode("NA")`. For the same reason there are no recordings of her math and reading score but for the third grade. It is straightforward to only get her non-`r ttcode("NA")`/`r ttcode("<NA>")` recordings: simply drop the `r ttcode("NA")`s using `r ttcode("!is.na()")`.
 
 ```{r}
 # drop NA recordings for the first observation and print to the console
@@ -187,7 +187,7 @@ We gather the results and present them in a table using `r ttcode("stargazer()")
 rob_se_1 <- list(sqrt(diag(vcovHC(fmk, type = "HC1"))),
                  sqrt(diag(vcovHC(fm1, type = "HC1"))),
                  sqrt(diag(vcovHC(fm2, type = "HC1"))),
-                 sqrt(diag(vcovHC(fm2, type = "HC1"))))
+                 sqrt(diag(vcovHC(fm3, type = "HC1"))))
 ```
 
 ```{r, message=F, warning=F, results='asis', eval=FALSE}
@@ -334,7 +334,7 @@ rob_se_2 <- list(sqrt(diag(vcovHC(fmk, type = "HC1"))),
 ```
 
 ```{r, message=F, warning=F, results='asis', eval=FALSE}
-stargazer(fmk, fm1, fm2, fm3,
+stargazer(fmk, gradeK1, gradeK2, gradeK3,
   title = "Project STAR - Differences Estimates with 
   Additional Regressors for Kindergarten",
   header = FALSE, 
@@ -475,7 +475,7 @@ stargazer(df,
           summary = FALSE)
 ```
 
-The estimated effect of a small classes is largest for grade 1. As pointed out in the book, this is probably because students in the control group for grade 1 did poorly on the test for some unknown reason or simply due to random variation. The difference between the estimated effect of being in a small class and being in a regular classes with an aide is roughly 0.2 standard deviations for all grades. This leads to the conclusion that the effect of being in a regular sized class with an aide is zero and the effect of being in a small class is roughly the same for all grades.
+The estimated effect of a small class is largest for grade 1. As pointed out in the book, this is probably because students in the control group for grade 1 did poorly on the test for some unknown reason or simply due to random variation. The difference between the estimated effect of being in a small class and being in a regular class with an aide is roughly 0.2 standard deviations for all grades. This leads to the conclusion that the effect of being in a regular sized class with an aide is zero and the effect of being in a small class is roughly the same for all grades.
 
 The remainder of Chapter 13.3 in the book discusses to what extent these experimental estimates are comparable with observational estimates obtained using data on school districts in California and Massachusetts in Chapter \@ref(asbomr). It turns out that the estimates are indeed very similar. Please refer to the aforementioned section in the book for a more detailed discussion.
 
@@ -630,7 +630,7 @@ points(jitter(post, 0.6),
 ```
 
 
-Observations from both the control and treatment group have a higher mean after the treatment but that the increase is stronger for the treatment group. Using DID we may estimate how much of that difference is due to the treatment.
+After the treatment, both the control and treatment groups have a higher mean, but the increase is stronger in the treatment group. Using DID we may estimate how much of that difference is due to the treatment.
 
 It is straightforward to compute the DID estimate in the fashion of \@ref(eq:DID).
 
