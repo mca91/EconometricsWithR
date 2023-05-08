@@ -132,7 +132,7 @@ coeftest(cig_s2, vcov = vcovHC)
 Thus estimating the model \@ref(eq:cigstsls) using TSLS yields 
 
 \begin{align}
-  \widehat{\log(Q_i^{cigarettes})} = \underset{(1.70)}{9.72} + \underset{(0.36)}{1.08} \log(P_i^{cigarettes}), (\#eq:ecigstsls)
+  \widehat{\log(Q_i^{cigarettes})} = \underset{(1.70)}{9.72} - \underset{(0.36)}{1.08} \log(P_i^{cigarettes}), (\#eq:ecigstsls)
 \end{align}
 
 where we write $\log(P_i^{cigarettes})$ instead of $\widehat{\log(P_i^{cigarettes})}$ for consistency with the book.
@@ -150,7 +150,7 @@ We find that the coefficient estimates coincide for both approaches.
 
 **Two Notes on the Computation of TSLS Standard Errors**
 
-1. We have demonstrated that running the individual regressions for each stage of TSLS using `r ttcode("lm()")` leads to the same coefficient estimates as when using `r ttcode("ivreg()")`. However, the standard errors reported for the second-stage regression, e.g., by `r ttcode("coeftest()")` or `r ttcode("summary()")`, are *invalid*: neither adjusts for using predictions from the first-stage regression as regressors in the second-stage regression. Fortunately, `r ttcode("ivreg()")` performs the necessary adjustment automatically. This is another advantage over manual step-by-step estimation which we have done above for demonstrating the mechanics of the procedure.
+1. We have demonstrated that running the individual regressions for each stage of TSLS using `r ttcode("lm()")` leads to the same coefficient estimates as when using `r ttcode("ivreg()")`. However, the standard errors reported for the second-stage regression (e.g.,`r ttcode("coeftest()")` or `r ttcode("summary()")`) are *invalid* because they do not account for the use of predictions from the first-stage regression as regressors in the second-stage regression. Fortunately, `r ttcode("ivreg()")` performs the necessary adjustment automatically. This is another advantage over manual step-by-step estimation which we have done above for demonstrating the mechanics of the procedure.
   
 2. Just like in multiple regression it is important to compute heteroskedasticity-robust standard errors as we have done above using `r ttcode("vcovHC()")`.
 
@@ -215,7 +215,7 @@ While computing both stages of TSLS individually is not a big deal in  \@ref(eq:
 
 Estimating regression models with TSLS using multiple instruments by means of `r ttcode("ivreg()")` is straightforward. There are, however, some subtleties in correctly specifying the regression formula. 
 
-Assume that you want to estimate the model $$Y_i = \beta_0 + \beta_1 X_{1i} + \beta_2 X_{2i} + W_{1i} + u_i$$ where $X_{1i}$ and $X_{2i}$ are endogenous regressors that shall be instrumented by $Z_{1i}$, $Z_{2i}$ and $Z_{3i}$ and $W_{1i}$ is an exogenous regressor. The corresponding data is available in a `r ttcode("data.frame")` with column names `r ttcode("y")`, `r ttcode("x1")`, `r ttcode("x1")`, `r ttcode("w1")`, `r ttcode("z1")`, `r ttcode("z2")` and `r ttcode("z3")`. It might be tempting to specify the argument `r ttcode("formula")` in your call of `r ttcode("ivreg()")` as `r ttcode("y ~ x1 + x2 + w1 | z1 + z2 + z3")` which is wrong. As explained in the documentation of `r ttcode("ivreg()")` (see `?ivreg`), it is necessary to list *all* exogenous variables as instruments too, that is joining them by `r ttcode("+")`'s on the right of the vertical bar: `r ttcode("y ~ x1 + x2 + w1 | w1 + z1 + z2 + z3")` where `r ttcode("w1")` is "instrumenting itself". 
+Assume that you want to estimate the model $$Y_i = \beta_0 + \beta_1 X_{1i} + \beta_2 X_{2i} + W_{1i} + u_i$$ where $X_{1i}$ and $X_{2i}$ are endogenous regressors that shall be instrumented by $Z_{1i}$, $Z_{2i}$ and $Z_{3i}$ and $W_{1i}$ is an exogenous regressor. The corresponding data is available in a `r ttcode("data.frame")` with column names `r ttcode("y")`, `r ttcode("x1")`, `r ttcode("x2")`, `r ttcode("w1")`, `r ttcode("z1")`, `r ttcode("z2")` and `r ttcode("z3")`. It might be tempting to specify the argument `r ttcode("formula")` in your call of `r ttcode("ivreg()")` as `r ttcode("y ~ x1 + x2 + w1 | z1 + z2 + z3")` which is wrong. As explained in the documentation of `r ttcode("ivreg()")` (see `?ivreg`), it is necessary to list *all* exogenous variables as instruments too, that is joining them by `r ttcode("+")`'s on the right of the vertical bar: `r ttcode("y ~ x1 + x2 + w1 | w1 + z1 + z2 + z3")` where `r ttcode("w1")` is "instrumenting itself". 
 
 If there is a large number of exogenous variables it may be convenient to provide an update formula with a `r ttcode(".")` (this includes all variables except for the dependent variable) right after the `r ttcode("|")` and to exclude all endogenous variables using a `r ttcode("-")`. For example, if there is one exogenous regressor `r ttcode("w1")` and one endogenous regressor `r ttcode("x1")` with instrument `r ttcode("z1")`, the appropriate formula would be `r ttcode("y ~ w1 + x1 | w1 + z1")` which is equivalent to `r ttcode("y ~ w1 + x1 | . - x1 + z1")`.
 
@@ -475,7 +475,7 @@ As for the procedure shown in Key Concept 12.6, the application in the next sect
 
 Are the general sales tax and the cigarette-specific tax valid instruments? If not, TSLS is not helpful to estimate the demand elasticity for cigarettes discussed in Chapter \@ref(TGIVRM). As discussed in Chapter \@ref(TIVEWASRAASI), both variables are likely to be relevant but whether they are exogenous is a different question.
 
-The book argues that cigarette-specific taxes could be endogenous because there might be state specific historical factors like economic importance of the tobacco farming and cigarette production industry that lobby for low cigarette specific taxes. Since it is plausible that tobacco growing states have higher rates of smoking than others, this would lead to endogeneity of cigarette specific taxes. If we had data on the size on the tobacco and cigarette industry, we could solve this potential issue by including the information in the regression. Unfortunately, this is not the case.
+The book argues that cigarette-specific taxes could be endogenous because there might be state specific historical factors like economic importance of the tobacco farming and cigarette production industry that lobby for low cigarette specific taxes. Since it is plausible that tobacco growing states have higher rates of smoking than others, this would lead to endogeneity of cigarette specific taxes. If we had data on the size of the tobacco and cigarette industry, we could solve this potential issue by including the information in the regression. Unfortunately, this is not the case.
 
 However, since the role of the tobacco and cigarette industry is a factor that can be assumed to differ across states but not over time we may exploit the panel structure of `r ttcode("CigarettesSW")` instead: as shown in Chapter \@ref(PDWTTP), regression using data on *changes*  between two time periods eliminates such state specific and time invariant effects. Following the book we consider changes in variables between 1985 and 1995. That is, we are interested in estimating the *long-run elasticity* of the demand for cigarettes.
 
@@ -483,7 +483,7 @@ The model to be estimated by TSLS using the general sales tax and the cigarette-
 
 \begin{align}
 \begin{split}
-  \log(Q_{i,1995}^{cigarettes}) - \log(Q_{i,1995}^{cigarettes}) =& \, \beta_0 + \beta_1 \left[\log(P_{i,1995}^{cigarettes}) - \log(P_{i,1985}^{cigarettes}) \right] \\ &+ \beta_2 \left[\log(income_{i,1995}) - \log(income_{i,1985})\right] + u_i. \end{split}(\#eq:diffivreg)
+  \log(Q_{i,1995}^{cigarettes}) - \log(Q_{i,1985}^{cigarettes}) =& \, \beta_0 + \beta_1 \left[\log(P_{i,1995}^{cigarettes}) - \log(P_{i,1985}^{cigarettes}) \right] \\ &+ \beta_2 \left[\log(income_{i,1995}) - \log(income_{i,1985})\right] + u_i. \end{split}(\#eq:diffivreg)
 \end{align}
 
 We first create differences from 1985 to 1995 for the dependent variable, the regressors and both instruments. 
@@ -724,7 +724,7 @@ The <tt>AER</tt> package has been attached. The data set <tt>CollegeDistance</tt
 
 + Regress the *logarithm* of <tt>wage</tt> on <tt>education</tt>, that is, estimate the model $$\\log(wage_i) = \\beta_0 + \\beta_1 education_i + u_i$$ Save the result to <tt>wage_mod_1</tt>.
 
-+ Augment the model by including the regressors <tt>unemp</tt>, <tt>hispanic</tt>, <tt>af-am</tt>, <tt>female</tt> and <tt>urban</tt>. Save the result to <tt>wage_mod_2</tt>
++ Augment the model by including the regressors <tt>unemp</tt>, <tt>ethnicity</tt>, <tt>gender</tt> and <tt>urban</tt>. Save the result to <tt>wage_mod_2</tt>
 
 + Obtain summaries on the estimated coefficients in both models.
 
@@ -748,7 +748,7 @@ The <tt>AER</tt> package has been attached. The data set <tt>CollegeDistance</tt
 
 **Instructions:**
 
-+ Compute the correlations of the instrument <tt>distance</tt> with the edogenous regressor <tt>education</tt> and the dependent variable <tt>wage</tt>.
++ Compute the correlations of the instrument <tt>distance</tt> with the endogenous regressor <tt>education</tt> and the dependent variable <tt>wage</tt>.
 
 + How much of the variation in <tt>education</tt> is explained by the *first-stage regression* which uses <tt>distance</tt> as a regressor? Save the result to <tt>R2</tt>.
 
@@ -804,9 +804,9 @@ Convince yourself of the following:
 
 1. It is likely that the bias of the estimated coefficient on <tt>education</tt> in the simple regression model <tt>wage_mod_1</tt> is subtantial because the regressor is endogenous due to omitting variables from the model which correlate with <tt>education</tt> and impact wage income. 
 
-2. Due to the selection problem in described in Exercise 2, the estimate of the coefficient of interest is not trustworthy even in the multiple regression model <tt>wage_mod_2</tt> which includes several socio-economic control variables. The coeffiecient on <tt>education</tt> is not significant and its estimate is close to zero).
+2. Due to the selection problem described in Exercise 2, the estimate of the coefficient of interest is not trustworthy even in the multiple regression model <tt>wage_mod_2</tt> which includes several socio-economic control variables. The coeffiecient on <tt>education</tt> is not significant and its estimate is close to zero).
 
-3. Instrumenting education by the college distance as done in <tt>wage_mod_iv1</tt> yields the IV estimate of the coefficient of interest. The result should, however, not be considered reliable because this simple model probably suffers from omitted variables bias just as the multiple regression model <tt>wage_mod_2</tt> from Exercise 2, see 1. Again,  the coeffiecient on <tt>education</tt> is not significant its estimate is quite small.  
+3. Instrumenting education by the college distance as done in <tt>wage_mod_iv1</tt> yields the IV estimate of the coefficient of interest. The result should, however, not be considered reliable because this simple model probably suffers from omitted variables bias just as the multiple regression model <tt>wage_mod_2</tt> from Exercise 2, see 1. Again,  the coefficient on <tt>education</tt> is not significant as its estimate is quite small.  
 
 4. <tt>wage_mod_iv2</tt>, the multiple regression model where we include demographic control variables and instrumend <tt>education</tt> by <tt>distance</tt> delivers the most reliable estimate of the impact of education on wage income among all the models considered. The coefficient is highly significant and the estimate is about $0.067$. Following Key Concept 8.2, the interpretation is that an additional year of schooling is expected to increases wage income by roughly $0.067 \\cdot 100\\% = 6.7\\%$.
 
