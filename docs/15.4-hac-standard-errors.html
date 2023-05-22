@@ -23,7 +23,7 @@
 <meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber, and Martin Schmelzer" />
 
 
-<meta name="date" content="2023-03-23" />
+<meta name="date" content="2023-05-05" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -500,65 +500,65 @@ is a correction factor that adjusts for serially correlated errors and involves 
   m = \left \lceil{0.75 \cdot T^{1/3}}\right\rceil. \tag{15.6}
 \end{align}\]</span></p>
 <p>We simulate a time series that, as stated above, follows a distributed lag model with autocorrelated errors and then show how to compute the Newey-West HAC estimate of <span class="math inline">\(SE(\widehat{\beta}_1)\)</span> using <tt>R</tt>. This is done via two separate but, as we will see, identical approaches: at first we follow the derivation presented in the book step-by-step and compute the estimate “manually”. We then show that the result is exactly the estimate obtained when using the function <tt>NeweyWest()</tt>.</p>
-<div class="sourceCode" id="cb420"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb420-1"><a href="15.4-hac-standard-errors.html#cb420-1" aria-hidden="true" tabindex="-1"></a><span class="co"># function that computes rho tilde</span></span>
-<span id="cb420-2"><a href="15.4-hac-standard-errors.html#cb420-2" aria-hidden="true" tabindex="-1"></a>acf_c <span class="ot">&lt;-</span> <span class="cf">function</span>(x, j) {</span>
-<span id="cb420-3"><a href="15.4-hac-standard-errors.html#cb420-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(</span>
-<span id="cb420-4"><a href="15.4-hac-standard-errors.html#cb420-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">t</span>(x[<span class="sc">-</span><span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span>j)]) <span class="sc">%*%</span> <span class="fu">na.omit</span>(<span class="fu">Lag</span>(x, j)) <span class="sc">/</span> <span class="fu">t</span>(x) <span class="sc">%*%</span> x</span>
-<span id="cb420-5"><a href="15.4-hac-standard-errors.html#cb420-5" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb420-6"><a href="15.4-hac-standard-errors.html#cb420-6" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb420-7"><a href="15.4-hac-standard-errors.html#cb420-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb420-8"><a href="15.4-hac-standard-errors.html#cb420-8" aria-hidden="true" tabindex="-1"></a><span class="co"># simulate time series with serially correlated errors</span></span>
-<span id="cb420-9"><a href="15.4-hac-standard-errors.html#cb420-9" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
-<span id="cb420-10"><a href="15.4-hac-standard-errors.html#cb420-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb420-11"><a href="15.4-hac-standard-errors.html#cb420-11" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">100</span></span>
-<span id="cb420-12"><a href="15.4-hac-standard-errors.html#cb420-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb420-13"><a href="15.4-hac-standard-errors.html#cb420-13" aria-hidden="true" tabindex="-1"></a>eps <span class="ot">&lt;-</span> <span class="fu">arima.sim</span>(<span class="at">n =</span> N, <span class="at">model =</span> <span class="fu">list</span>(<span class="at">ma =</span> <span class="fl">0.5</span>))</span>
-<span id="cb420-14"><a href="15.4-hac-standard-errors.html#cb420-14" aria-hidden="true" tabindex="-1"></a>X <span class="ot">&lt;-</span> <span class="fu">runif</span>(N, <span class="dv">1</span>, <span class="dv">10</span>)</span>
-<span id="cb420-15"><a href="15.4-hac-standard-errors.html#cb420-15" aria-hidden="true" tabindex="-1"></a>Y <span class="ot">&lt;-</span> <span class="fl">0.5</span> <span class="sc">*</span> X <span class="sc">+</span> eps</span>
-<span id="cb420-16"><a href="15.4-hac-standard-errors.html#cb420-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb420-17"><a href="15.4-hac-standard-errors.html#cb420-17" aria-hidden="true" tabindex="-1"></a><span class="co"># compute OLS residuals</span></span>
-<span id="cb420-18"><a href="15.4-hac-standard-errors.html#cb420-18" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">lm</span>(Y <span class="sc">~</span> X)<span class="sc">$</span>res</span>
-<span id="cb420-19"><a href="15.4-hac-standard-errors.html#cb420-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb420-20"><a href="15.4-hac-standard-errors.html#cb420-20" aria-hidden="true" tabindex="-1"></a><span class="co"># compute v</span></span>
-<span id="cb420-21"><a href="15.4-hac-standard-errors.html#cb420-21" aria-hidden="true" tabindex="-1"></a>v <span class="ot">&lt;-</span> (X <span class="sc">-</span> <span class="fu">mean</span>(X)) <span class="sc">*</span> res</span>
-<span id="cb420-22"><a href="15.4-hac-standard-errors.html#cb420-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb420-23"><a href="15.4-hac-standard-errors.html#cb420-23" aria-hidden="true" tabindex="-1"></a><span class="co"># compute robust estimate of beta_1 variance</span></span>
-<span id="cb420-24"><a href="15.4-hac-standard-errors.html#cb420-24" aria-hidden="true" tabindex="-1"></a>var_beta_hat <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">/</span>N <span class="sc">*</span> (<span class="dv">1</span><span class="sc">/</span>(N<span class="dv">-2</span>) <span class="sc">*</span> <span class="fu">sum</span>((X <span class="sc">-</span> <span class="fu">mean</span>(X))<span class="sc">^</span><span class="dv">2</span> <span class="sc">*</span> res<span class="sc">^</span><span class="dv">2</span>) ) <span class="sc">/</span> </span>
-<span id="cb420-25"><a href="15.4-hac-standard-errors.html#cb420-25" aria-hidden="true" tabindex="-1"></a>                        (<span class="dv">1</span><span class="sc">/</span>N <span class="sc">*</span> <span class="fu">sum</span>((X <span class="sc">-</span> <span class="fu">mean</span>(X))<span class="sc">^</span><span class="dv">2</span>))<span class="sc">^</span><span class="dv">2</span></span>
-<span id="cb420-26"><a href="15.4-hac-standard-errors.html#cb420-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb420-27"><a href="15.4-hac-standard-errors.html#cb420-27" aria-hidden="true" tabindex="-1"></a><span class="co"># rule of thumb truncation parameter</span></span>
-<span id="cb420-28"><a href="15.4-hac-standard-errors.html#cb420-28" aria-hidden="true" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="fu">floor</span>(<span class="fl">0.75</span> <span class="sc">*</span> N<span class="sc">^</span>(<span class="dv">1</span><span class="sc">/</span><span class="dv">3</span>))</span>
-<span id="cb420-29"><a href="15.4-hac-standard-errors.html#cb420-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb420-30"><a href="15.4-hac-standard-errors.html#cb420-30" aria-hidden="true" tabindex="-1"></a><span class="co"># compute correction factor</span></span>
-<span id="cb420-31"><a href="15.4-hac-standard-errors.html#cb420-31" aria-hidden="true" tabindex="-1"></a>f_hat_T <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">+</span> <span class="dv">2</span> <span class="sc">*</span> <span class="fu">sum</span>(</span>
-<span id="cb420-32"><a href="15.4-hac-standard-errors.html#cb420-32" aria-hidden="true" tabindex="-1"></a>  (m <span class="sc">-</span> <span class="dv">1</span><span class="sc">:</span>(m<span class="dv">-1</span>))<span class="sc">/</span>m <span class="sc">*</span> <span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span>(m <span class="sc">-</span> <span class="dv">1</span>), <span class="cf">function</span>(i) <span class="fu">acf_c</span>(<span class="at">x =</span> v, <span class="at">j =</span> i))</span>
-<span id="cb420-33"><a href="15.4-hac-standard-errors.html#cb420-33" aria-hidden="true" tabindex="-1"></a>  ) </span>
-<span id="cb420-34"><a href="15.4-hac-standard-errors.html#cb420-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb420-35"><a href="15.4-hac-standard-errors.html#cb420-35" aria-hidden="true" tabindex="-1"></a><span class="co"># compute Newey-West HAC estimate of the standard error </span></span>
-<span id="cb420-36"><a href="15.4-hac-standard-errors.html#cb420-36" aria-hidden="true" tabindex="-1"></a><span class="fu">sqrt</span>(var_beta_hat <span class="sc">*</span> f_hat_T)</span>
-<span id="cb420-37"><a href="15.4-hac-standard-errors.html#cb420-37" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.04036208</span></span></code></pre></div>
+<div class="sourceCode" id="cb421"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb421-1"><a href="15.4-hac-standard-errors.html#cb421-1" aria-hidden="true" tabindex="-1"></a><span class="co"># function that computes rho tilde</span></span>
+<span id="cb421-2"><a href="15.4-hac-standard-errors.html#cb421-2" aria-hidden="true" tabindex="-1"></a>acf_c <span class="ot">&lt;-</span> <span class="cf">function</span>(x, j) {</span>
+<span id="cb421-3"><a href="15.4-hac-standard-errors.html#cb421-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(</span>
+<span id="cb421-4"><a href="15.4-hac-standard-errors.html#cb421-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">t</span>(x[<span class="sc">-</span><span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span>j)]) <span class="sc">%*%</span> <span class="fu">na.omit</span>(<span class="fu">Lag</span>(x, j)) <span class="sc">/</span> <span class="fu">t</span>(x) <span class="sc">%*%</span> x</span>
+<span id="cb421-5"><a href="15.4-hac-standard-errors.html#cb421-5" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb421-6"><a href="15.4-hac-standard-errors.html#cb421-6" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb421-7"><a href="15.4-hac-standard-errors.html#cb421-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb421-8"><a href="15.4-hac-standard-errors.html#cb421-8" aria-hidden="true" tabindex="-1"></a><span class="co"># simulate time series with serially correlated errors</span></span>
+<span id="cb421-9"><a href="15.4-hac-standard-errors.html#cb421-9" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb421-10"><a href="15.4-hac-standard-errors.html#cb421-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb421-11"><a href="15.4-hac-standard-errors.html#cb421-11" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">100</span></span>
+<span id="cb421-12"><a href="15.4-hac-standard-errors.html#cb421-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb421-13"><a href="15.4-hac-standard-errors.html#cb421-13" aria-hidden="true" tabindex="-1"></a>eps <span class="ot">&lt;-</span> <span class="fu">arima.sim</span>(<span class="at">n =</span> N, <span class="at">model =</span> <span class="fu">list</span>(<span class="at">ma =</span> <span class="fl">0.5</span>))</span>
+<span id="cb421-14"><a href="15.4-hac-standard-errors.html#cb421-14" aria-hidden="true" tabindex="-1"></a>X <span class="ot">&lt;-</span> <span class="fu">runif</span>(N, <span class="dv">1</span>, <span class="dv">10</span>)</span>
+<span id="cb421-15"><a href="15.4-hac-standard-errors.html#cb421-15" aria-hidden="true" tabindex="-1"></a>Y <span class="ot">&lt;-</span> <span class="fl">0.5</span> <span class="sc">*</span> X <span class="sc">+</span> eps</span>
+<span id="cb421-16"><a href="15.4-hac-standard-errors.html#cb421-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb421-17"><a href="15.4-hac-standard-errors.html#cb421-17" aria-hidden="true" tabindex="-1"></a><span class="co"># compute OLS residuals</span></span>
+<span id="cb421-18"><a href="15.4-hac-standard-errors.html#cb421-18" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">lm</span>(Y <span class="sc">~</span> X)<span class="sc">$</span>res</span>
+<span id="cb421-19"><a href="15.4-hac-standard-errors.html#cb421-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb421-20"><a href="15.4-hac-standard-errors.html#cb421-20" aria-hidden="true" tabindex="-1"></a><span class="co"># compute v</span></span>
+<span id="cb421-21"><a href="15.4-hac-standard-errors.html#cb421-21" aria-hidden="true" tabindex="-1"></a>v <span class="ot">&lt;-</span> (X <span class="sc">-</span> <span class="fu">mean</span>(X)) <span class="sc">*</span> res</span>
+<span id="cb421-22"><a href="15.4-hac-standard-errors.html#cb421-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb421-23"><a href="15.4-hac-standard-errors.html#cb421-23" aria-hidden="true" tabindex="-1"></a><span class="co"># compute robust estimate of beta_1 variance</span></span>
+<span id="cb421-24"><a href="15.4-hac-standard-errors.html#cb421-24" aria-hidden="true" tabindex="-1"></a>var_beta_hat <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">/</span>N <span class="sc">*</span> (<span class="dv">1</span><span class="sc">/</span>(N<span class="dv">-2</span>) <span class="sc">*</span> <span class="fu">sum</span>((X <span class="sc">-</span> <span class="fu">mean</span>(X))<span class="sc">^</span><span class="dv">2</span> <span class="sc">*</span> res<span class="sc">^</span><span class="dv">2</span>) ) <span class="sc">/</span> </span>
+<span id="cb421-25"><a href="15.4-hac-standard-errors.html#cb421-25" aria-hidden="true" tabindex="-1"></a>                        (<span class="dv">1</span><span class="sc">/</span>N <span class="sc">*</span> <span class="fu">sum</span>((X <span class="sc">-</span> <span class="fu">mean</span>(X))<span class="sc">^</span><span class="dv">2</span>))<span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb421-26"><a href="15.4-hac-standard-errors.html#cb421-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb421-27"><a href="15.4-hac-standard-errors.html#cb421-27" aria-hidden="true" tabindex="-1"></a><span class="co"># rule of thumb truncation parameter</span></span>
+<span id="cb421-28"><a href="15.4-hac-standard-errors.html#cb421-28" aria-hidden="true" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="fu">floor</span>(<span class="fl">0.75</span> <span class="sc">*</span> N<span class="sc">^</span>(<span class="dv">1</span><span class="sc">/</span><span class="dv">3</span>))</span>
+<span id="cb421-29"><a href="15.4-hac-standard-errors.html#cb421-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb421-30"><a href="15.4-hac-standard-errors.html#cb421-30" aria-hidden="true" tabindex="-1"></a><span class="co"># compute correction factor</span></span>
+<span id="cb421-31"><a href="15.4-hac-standard-errors.html#cb421-31" aria-hidden="true" tabindex="-1"></a>f_hat_T <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">+</span> <span class="dv">2</span> <span class="sc">*</span> <span class="fu">sum</span>(</span>
+<span id="cb421-32"><a href="15.4-hac-standard-errors.html#cb421-32" aria-hidden="true" tabindex="-1"></a>  (m <span class="sc">-</span> <span class="dv">1</span><span class="sc">:</span>(m<span class="dv">-1</span>))<span class="sc">/</span>m <span class="sc">*</span> <span class="fu">sapply</span>(<span class="dv">1</span><span class="sc">:</span>(m <span class="sc">-</span> <span class="dv">1</span>), <span class="cf">function</span>(i) <span class="fu">acf_c</span>(<span class="at">x =</span> v, <span class="at">j =</span> i))</span>
+<span id="cb421-33"><a href="15.4-hac-standard-errors.html#cb421-33" aria-hidden="true" tabindex="-1"></a>  ) </span>
+<span id="cb421-34"><a href="15.4-hac-standard-errors.html#cb421-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb421-35"><a href="15.4-hac-standard-errors.html#cb421-35" aria-hidden="true" tabindex="-1"></a><span class="co"># compute Newey-West HAC estimate of the standard error </span></span>
+<span id="cb421-36"><a href="15.4-hac-standard-errors.html#cb421-36" aria-hidden="true" tabindex="-1"></a><span class="fu">sqrt</span>(var_beta_hat <span class="sc">*</span> f_hat_T)</span>
+<span id="cb421-37"><a href="15.4-hac-standard-errors.html#cb421-37" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.04036208</span></span></code></pre></div>
 <p>For the code to be reusable in other applications, we use <tt>sapply()</tt> to estimate the <span class="math inline">\(m-1\)</span> autocorrelations <span class="math inline">\(\overset{\sim}{\rho}_j\)</span>.</p>
-<div class="sourceCode" id="cb421"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb421-1"><a href="15.4-hac-standard-errors.html#cb421-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Using NeweyWest():</span></span>
-<span id="cb421-2"><a href="15.4-hac-standard-errors.html#cb421-2" aria-hidden="true" tabindex="-1"></a>NW_VCOV <span class="ot">&lt;-</span> <span class="fu">NeweyWest</span>(<span class="fu">lm</span>(Y <span class="sc">~</span> X), </span>
-<span id="cb421-3"><a href="15.4-hac-standard-errors.html#cb421-3" aria-hidden="true" tabindex="-1"></a>              <span class="at">lag =</span> m <span class="sc">-</span> <span class="dv">1</span>, <span class="at">prewhite =</span> F, </span>
-<span id="cb421-4"><a href="15.4-hac-standard-errors.html#cb421-4" aria-hidden="true" tabindex="-1"></a>              <span class="at">adjust =</span> T)</span>
-<span id="cb421-5"><a href="15.4-hac-standard-errors.html#cb421-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb421-6"><a href="15.4-hac-standard-errors.html#cb421-6" aria-hidden="true" tabindex="-1"></a><span class="co"># compute standard error</span></span>
-<span id="cb421-7"><a href="15.4-hac-standard-errors.html#cb421-7" aria-hidden="true" tabindex="-1"></a><span class="fu">sqrt</span>(<span class="fu">diag</span>(NW_VCOV))[<span class="dv">2</span>]</span>
-<span id="cb421-8"><a href="15.4-hac-standard-errors.html#cb421-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;          X </span></span>
-<span id="cb421-9"><a href="15.4-hac-standard-errors.html#cb421-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 0.04036208</span></span></code></pre></div>
+<div class="sourceCode" id="cb422"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb422-1"><a href="15.4-hac-standard-errors.html#cb422-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Using NeweyWest():</span></span>
+<span id="cb422-2"><a href="15.4-hac-standard-errors.html#cb422-2" aria-hidden="true" tabindex="-1"></a>NW_VCOV <span class="ot">&lt;-</span> <span class="fu">NeweyWest</span>(<span class="fu">lm</span>(Y <span class="sc">~</span> X), </span>
+<span id="cb422-3"><a href="15.4-hac-standard-errors.html#cb422-3" aria-hidden="true" tabindex="-1"></a>              <span class="at">lag =</span> m <span class="sc">-</span> <span class="dv">1</span>, <span class="at">prewhite =</span> F, </span>
+<span id="cb422-4"><a href="15.4-hac-standard-errors.html#cb422-4" aria-hidden="true" tabindex="-1"></a>              <span class="at">adjust =</span> T)</span>
+<span id="cb422-5"><a href="15.4-hac-standard-errors.html#cb422-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb422-6"><a href="15.4-hac-standard-errors.html#cb422-6" aria-hidden="true" tabindex="-1"></a><span class="co"># compute standard error</span></span>
+<span id="cb422-7"><a href="15.4-hac-standard-errors.html#cb422-7" aria-hidden="true" tabindex="-1"></a><span class="fu">sqrt</span>(<span class="fu">diag</span>(NW_VCOV))[<span class="dv">2</span>]</span>
+<span id="cb422-8"><a href="15.4-hac-standard-errors.html#cb422-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;          X </span></span>
+<span id="cb422-9"><a href="15.4-hac-standard-errors.html#cb422-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 0.04036208</span></span></code></pre></div>
 <p>By choosing <tt>lag = m-1</tt> we ensure that the maximum order of autocorrelations used is <span class="math inline">\(m-1\)</span> — just as in equation <a href="15.4-hac-standard-errors.html#eq:nwhacf">(15.5)</a>. Notice that we set the arguments <tt>prewhite = F</tt> and <tt>adjust = T</tt> to ensure that the formula <a href="15.4-hac-standard-errors.html#eq:nwhac">(15.4)</a> is used and finite sample adjustments are made.</p>
 <p>We find that the computed standard errors coincide. Of course, a variance-covariance matrix estimate as computed by <tt>NeweyWest()</tt> can be supplied as the argument <tt>vcov</tt> in <tt>coeftest()</tt> such that HAC <span class="math inline">\(t\)</span>-statistics and <span class="math inline">\(p\)</span>-values are provided by the latter.</p>
-<div class="sourceCode" id="cb422"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb422-1"><a href="15.4-hac-standard-errors.html#cb422-1" aria-hidden="true" tabindex="-1"></a>example_mod <span class="ot">&lt;-</span> <span class="fu">lm</span>(Y <span class="sc">~</span> X)</span>
-<span id="cb422-2"><a href="15.4-hac-standard-errors.html#cb422-2" aria-hidden="true" tabindex="-1"></a><span class="fu">coeftest</span>(example_mod, <span class="at">vcov =</span> NW_VCOV)</span>
-<span id="cb422-3"><a href="15.4-hac-standard-errors.html#cb422-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb422-4"><a href="15.4-hac-standard-errors.html#cb422-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; t test of coefficients:</span></span>
-<span id="cb422-5"><a href="15.4-hac-standard-errors.html#cb422-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb422-6"><a href="15.4-hac-standard-errors.html#cb422-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;             Estimate Std. Error t value Pr(&gt;|t|)    </span></span>
-<span id="cb422-7"><a href="15.4-hac-standard-errors.html#cb422-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; (Intercept) 0.542310   0.235423  2.3036  0.02336 *  </span></span>
-<span id="cb422-8"><a href="15.4-hac-standard-errors.html#cb422-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; X           0.423305   0.040362 10.4877  &lt; 2e-16 ***</span></span>
-<span id="cb422-9"><a href="15.4-hac-standard-errors.html#cb422-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ---</span></span>
-<span id="cb422-10"><a href="15.4-hac-standard-errors.html#cb422-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span></code></pre></div>
+<div class="sourceCode" id="cb423"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb423-1"><a href="15.4-hac-standard-errors.html#cb423-1" aria-hidden="true" tabindex="-1"></a>example_mod <span class="ot">&lt;-</span> <span class="fu">lm</span>(Y <span class="sc">~</span> X)</span>
+<span id="cb423-2"><a href="15.4-hac-standard-errors.html#cb423-2" aria-hidden="true" tabindex="-1"></a><span class="fu">coeftest</span>(example_mod, <span class="at">vcov =</span> NW_VCOV)</span>
+<span id="cb423-3"><a href="15.4-hac-standard-errors.html#cb423-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb423-4"><a href="15.4-hac-standard-errors.html#cb423-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; t test of coefficients:</span></span>
+<span id="cb423-5"><a href="15.4-hac-standard-errors.html#cb423-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb423-6"><a href="15.4-hac-standard-errors.html#cb423-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;             Estimate Std. Error t value Pr(&gt;|t|)    </span></span>
+<span id="cb423-7"><a href="15.4-hac-standard-errors.html#cb423-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; (Intercept) 0.542310   0.235423  2.3036  0.02336 *  </span></span>
+<span id="cb423-8"><a href="15.4-hac-standard-errors.html#cb423-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; X           0.423305   0.040362 10.4877  &lt; 2e-16 ***</span></span>
+<span id="cb423-9"><a href="15.4-hac-standard-errors.html#cb423-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ---</span></span>
+<span id="cb423-10"><a href="15.4-hac-standard-errors.html#cb423-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span></code></pre></div>
 </div>
 <h3>References<a href="references.html#references" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <div id="refs" class="references csl-bib-body hanging-indent">

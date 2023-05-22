@@ -23,7 +23,7 @@
 <meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber, and Martin Schmelzer" />
 
 
-<meta name="date" content="2023-03-23" />
+<meta name="date" content="2023-05-05" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -467,79 +467,79 @@ This book is in <b>Open Review</b>. We want your feedback to make the book bette
 <h2><span class="header-section-number">15.1</span> The Orange Juice Data<a href="15.1-the-orange-juice-data.html#the-orange-juice-data" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>The largest cultivation region for oranges in the U.S. is located in Florida which usually has ideal climate for the fruit growth. It thus is the source of almost all frozen juice concentrate produced in the country. However, from time to time and depending on their severeness, cold snaps cause a loss of harvests such that the supply of oranges decreases and consequently the price of frozen juice concentrate rises. The timing of the price increases is complicated: a cut in today’s supply of concentrate influences not just today’s price but also future prices because supply in future periods will decrease, too. Clearly, the magnitude of today’s and future prices increases due to freeze is an empirical question that can be investigated using a distributed lag model — a time series model that relates price changes to weather conditions.</p>
 <p>To begin with the analysis, we reproduce Figure 15.1 of the book which displays plots of the price index for frozen concentrated orange juice, percentage changes in the price as well as monthly freezing degree days in Orlando, the center of Florida’s orange-growing region.</p>
-<div class="sourceCode" id="cb412"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb412-1"><a href="15.1-the-orange-juice-data.html#cb412-1" aria-hidden="true" tabindex="-1"></a><span class="co"># load the frozen orange juice data set</span></span>
-<span id="cb412-2"><a href="15.1-the-orange-juice-data.html#cb412-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;FrozenJuice&quot;</span>)</span>
-<span id="cb412-3"><a href="15.1-the-orange-juice-data.html#cb412-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb412-4"><a href="15.1-the-orange-juice-data.html#cb412-4" aria-hidden="true" tabindex="-1"></a><span class="co"># compute the price index for frozen concentrated juice</span></span>
-<span id="cb412-5"><a href="15.1-the-orange-juice-data.html#cb412-5" aria-hidden="true" tabindex="-1"></a>FOJCPI <span class="ot">&lt;-</span> FrozenJuice[, <span class="st">&quot;price&quot;</span>]<span class="sc">/</span>FrozenJuice[, <span class="st">&quot;ppi&quot;</span>]</span>
-<span id="cb412-6"><a href="15.1-the-orange-juice-data.html#cb412-6" aria-hidden="true" tabindex="-1"></a>FOJC_pctc <span class="ot">&lt;-</span> <span class="dv">100</span> <span class="sc">*</span> <span class="fu">diff</span>(<span class="fu">log</span>(FOJCPI))</span>
-<span id="cb412-7"><a href="15.1-the-orange-juice-data.html#cb412-7" aria-hidden="true" tabindex="-1"></a>FDD <span class="ot">&lt;-</span> FrozenJuice[, <span class="st">&quot;fdd&quot;</span>]</span></code></pre></div>
-<div class="sourceCode" id="cb413"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb413-1"><a href="15.1-the-orange-juice-data.html#cb413-1" aria-hidden="true" tabindex="-1"></a><span class="co"># convert series to xts objects</span></span>
-<span id="cb413-2"><a href="15.1-the-orange-juice-data.html#cb413-2" aria-hidden="true" tabindex="-1"></a>FOJCPI_xts <span class="ot">&lt;-</span> <span class="fu">as.xts</span>(FOJCPI)</span>
-<span id="cb413-3"><a href="15.1-the-orange-juice-data.html#cb413-3" aria-hidden="true" tabindex="-1"></a>FDD_xts <span class="ot">&lt;-</span> <span class="fu">as.xts</span>(FrozenJuice[, <span class="dv">3</span>])</span>
-<span id="cb413-4"><a href="15.1-the-orange-juice-data.html#cb413-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb413-5"><a href="15.1-the-orange-juice-data.html#cb413-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot orange juice price index</span></span>
-<span id="cb413-6"><a href="15.1-the-orange-juice-data.html#cb413-6" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">as.zoo</span>(FOJCPI),</span>
-<span id="cb413-7"><a href="15.1-the-orange-juice-data.html#cb413-7" aria-hidden="true" tabindex="-1"></a>     <span class="at">col =</span> <span class="st">&quot;steelblue&quot;</span>, </span>
-<span id="cb413-8"><a href="15.1-the-orange-juice-data.html#cb413-8" aria-hidden="true" tabindex="-1"></a>     <span class="at">lwd =</span> <span class="dv">2</span>,</span>
-<span id="cb413-9"><a href="15.1-the-orange-juice-data.html#cb413-9" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">&quot;Date&quot;</span>,</span>
-<span id="cb413-10"><a href="15.1-the-orange-juice-data.html#cb413-10" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">&quot;Price index&quot;</span>, </span>
-<span id="cb413-11"><a href="15.1-the-orange-juice-data.html#cb413-11" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">&quot;Frozen Concentrated Orange Juice&quot;</span>)</span></code></pre></div>
-<p><img src="ITER_files/figure-html/unnamed-chunk-670-1.png" width="80%" style="display: block; margin: auto;" /></p>
-<div class="sourceCode" id="cb414"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb414-1"><a href="15.1-the-orange-juice-data.html#cb414-1" aria-hidden="true" tabindex="-1"></a><span class="co"># divide plotting area</span></span>
-<span id="cb414-2"><a href="15.1-the-orange-juice-data.html#cb414-2" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">1</span>))</span>
-<span id="cb414-3"><a href="15.1-the-orange-juice-data.html#cb414-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb414-4"><a href="15.1-the-orange-juice-data.html#cb414-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot percentage changes in prices</span></span>
-<span id="cb414-5"><a href="15.1-the-orange-juice-data.html#cb414-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">as.zoo</span>(FOJC_pctc),</span>
-<span id="cb414-6"><a href="15.1-the-orange-juice-data.html#cb414-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">col =</span> <span class="st">&quot;steelblue&quot;</span>, </span>
-<span id="cb414-7"><a href="15.1-the-orange-juice-data.html#cb414-7" aria-hidden="true" tabindex="-1"></a>     <span class="at">lwd =</span> <span class="dv">2</span>,</span>
-<span id="cb414-8"><a href="15.1-the-orange-juice-data.html#cb414-8" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">&quot;Date&quot;</span>,</span>
-<span id="cb414-9"><a href="15.1-the-orange-juice-data.html#cb414-9" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">&quot;Percent&quot;</span>,</span>
-<span id="cb414-10"><a href="15.1-the-orange-juice-data.html#cb414-10" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">&quot;Monthly Changes in the Price of Frozen Conentrated Orange Juice&quot;</span>)</span>
-<span id="cb414-11"><a href="15.1-the-orange-juice-data.html#cb414-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb414-12"><a href="15.1-the-orange-juice-data.html#cb414-12" aria-hidden="true" tabindex="-1"></a><span class="co"># plot freezing degree days</span></span>
-<span id="cb414-13"><a href="15.1-the-orange-juice-data.html#cb414-13" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">as.zoo</span>(FDD),</span>
-<span id="cb414-14"><a href="15.1-the-orange-juice-data.html#cb414-14" aria-hidden="true" tabindex="-1"></a>     <span class="at">col =</span> <span class="st">&quot;steelblue&quot;</span>, </span>
-<span id="cb414-15"><a href="15.1-the-orange-juice-data.html#cb414-15" aria-hidden="true" tabindex="-1"></a>     <span class="at">lwd =</span> <span class="dv">2</span>,</span>
-<span id="cb414-16"><a href="15.1-the-orange-juice-data.html#cb414-16" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">&quot;Date&quot;</span>,</span>
-<span id="cb414-17"><a href="15.1-the-orange-juice-data.html#cb414-17" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">&quot;Freezing degree days&quot;</span>,</span>
-<span id="cb414-18"><a href="15.1-the-orange-juice-data.html#cb414-18" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">&quot;Monthly Freezing Degree Days in Orlando, FL&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb413"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb413-1"><a href="15.1-the-orange-juice-data.html#cb413-1" aria-hidden="true" tabindex="-1"></a><span class="co"># load the frozen orange juice data set</span></span>
+<span id="cb413-2"><a href="15.1-the-orange-juice-data.html#cb413-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;FrozenJuice&quot;</span>)</span>
+<span id="cb413-3"><a href="15.1-the-orange-juice-data.html#cb413-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb413-4"><a href="15.1-the-orange-juice-data.html#cb413-4" aria-hidden="true" tabindex="-1"></a><span class="co"># compute the price index for frozen concentrated juice</span></span>
+<span id="cb413-5"><a href="15.1-the-orange-juice-data.html#cb413-5" aria-hidden="true" tabindex="-1"></a>FOJCPI <span class="ot">&lt;-</span> FrozenJuice[, <span class="st">&quot;price&quot;</span>]<span class="sc">/</span>FrozenJuice[, <span class="st">&quot;ppi&quot;</span>]</span>
+<span id="cb413-6"><a href="15.1-the-orange-juice-data.html#cb413-6" aria-hidden="true" tabindex="-1"></a>FOJC_pctc <span class="ot">&lt;-</span> <span class="dv">100</span> <span class="sc">*</span> <span class="fu">diff</span>(<span class="fu">log</span>(FOJCPI))</span>
+<span id="cb413-7"><a href="15.1-the-orange-juice-data.html#cb413-7" aria-hidden="true" tabindex="-1"></a>FDD <span class="ot">&lt;-</span> FrozenJuice[, <span class="st">&quot;fdd&quot;</span>]</span></code></pre></div>
+<div class="sourceCode" id="cb414"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb414-1"><a href="15.1-the-orange-juice-data.html#cb414-1" aria-hidden="true" tabindex="-1"></a><span class="co"># convert series to xts objects</span></span>
+<span id="cb414-2"><a href="15.1-the-orange-juice-data.html#cb414-2" aria-hidden="true" tabindex="-1"></a>FOJCPI_xts <span class="ot">&lt;-</span> <span class="fu">as.xts</span>(FOJCPI)</span>
+<span id="cb414-3"><a href="15.1-the-orange-juice-data.html#cb414-3" aria-hidden="true" tabindex="-1"></a>FDD_xts <span class="ot">&lt;-</span> <span class="fu">as.xts</span>(FrozenJuice[, <span class="dv">3</span>])</span>
+<span id="cb414-4"><a href="15.1-the-orange-juice-data.html#cb414-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb414-5"><a href="15.1-the-orange-juice-data.html#cb414-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot orange juice price index</span></span>
+<span id="cb414-6"><a href="15.1-the-orange-juice-data.html#cb414-6" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">as.zoo</span>(FOJCPI),</span>
+<span id="cb414-7"><a href="15.1-the-orange-juice-data.html#cb414-7" aria-hidden="true" tabindex="-1"></a>     <span class="at">col =</span> <span class="st">&quot;steelblue&quot;</span>, </span>
+<span id="cb414-8"><a href="15.1-the-orange-juice-data.html#cb414-8" aria-hidden="true" tabindex="-1"></a>     <span class="at">lwd =</span> <span class="dv">2</span>,</span>
+<span id="cb414-9"><a href="15.1-the-orange-juice-data.html#cb414-9" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">&quot;Date&quot;</span>,</span>
+<span id="cb414-10"><a href="15.1-the-orange-juice-data.html#cb414-10" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">&quot;Price index&quot;</span>, </span>
+<span id="cb414-11"><a href="15.1-the-orange-juice-data.html#cb414-11" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">&quot;Frozen Concentrated Orange Juice&quot;</span>)</span></code></pre></div>
 <p><img src="ITER_files/figure-html/unnamed-chunk-671-1.png" width="80%" style="display: block; margin: auto;" /></p>
+<div class="sourceCode" id="cb415"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb415-1"><a href="15.1-the-orange-juice-data.html#cb415-1" aria-hidden="true" tabindex="-1"></a><span class="co"># divide plotting area</span></span>
+<span id="cb415-2"><a href="15.1-the-orange-juice-data.html#cb415-2" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">1</span>))</span>
+<span id="cb415-3"><a href="15.1-the-orange-juice-data.html#cb415-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb415-4"><a href="15.1-the-orange-juice-data.html#cb415-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot percentage changes in prices</span></span>
+<span id="cb415-5"><a href="15.1-the-orange-juice-data.html#cb415-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">as.zoo</span>(FOJC_pctc),</span>
+<span id="cb415-6"><a href="15.1-the-orange-juice-data.html#cb415-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">col =</span> <span class="st">&quot;steelblue&quot;</span>, </span>
+<span id="cb415-7"><a href="15.1-the-orange-juice-data.html#cb415-7" aria-hidden="true" tabindex="-1"></a>     <span class="at">lwd =</span> <span class="dv">2</span>,</span>
+<span id="cb415-8"><a href="15.1-the-orange-juice-data.html#cb415-8" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">&quot;Date&quot;</span>,</span>
+<span id="cb415-9"><a href="15.1-the-orange-juice-data.html#cb415-9" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">&quot;Percent&quot;</span>,</span>
+<span id="cb415-10"><a href="15.1-the-orange-juice-data.html#cb415-10" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">&quot;Monthly Changes in the Price of Frozen Conentrated Orange Juice&quot;</span>)</span>
+<span id="cb415-11"><a href="15.1-the-orange-juice-data.html#cb415-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb415-12"><a href="15.1-the-orange-juice-data.html#cb415-12" aria-hidden="true" tabindex="-1"></a><span class="co"># plot freezing degree days</span></span>
+<span id="cb415-13"><a href="15.1-the-orange-juice-data.html#cb415-13" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">as.zoo</span>(FDD),</span>
+<span id="cb415-14"><a href="15.1-the-orange-juice-data.html#cb415-14" aria-hidden="true" tabindex="-1"></a>     <span class="at">col =</span> <span class="st">&quot;steelblue&quot;</span>, </span>
+<span id="cb415-15"><a href="15.1-the-orange-juice-data.html#cb415-15" aria-hidden="true" tabindex="-1"></a>     <span class="at">lwd =</span> <span class="dv">2</span>,</span>
+<span id="cb415-16"><a href="15.1-the-orange-juice-data.html#cb415-16" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">&quot;Date&quot;</span>,</span>
+<span id="cb415-17"><a href="15.1-the-orange-juice-data.html#cb415-17" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">&quot;Freezing degree days&quot;</span>,</span>
+<span id="cb415-18"><a href="15.1-the-orange-juice-data.html#cb415-18" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">&quot;Monthly Freezing Degree Days in Orlando, FL&quot;</span>)</span></code></pre></div>
+<p><img src="ITER_files/figure-html/unnamed-chunk-672-1.png" width="80%" style="display: block; margin: auto;" /></p>
 <p>Periods with a high amount of freezing degree days are followed by large month-to-month price changes. These coinciding movements motivate a simple regression of price changes (<span class="math inline">\(\%ChgOJC_t\)</span>) on freezing degree days (<span class="math inline">\(FDD_t\)</span>) to estimate the effect of an additional freezing degree day one the price in the current month. For this, as for all other regressions in this chapter, we use <span class="math inline">\(T=611\)</span> observations (January 1950 to December 2000).</p>
-<div class="sourceCode" id="cb415"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb415-1"><a href="15.1-the-orange-juice-data.html#cb415-1" aria-hidden="true" tabindex="-1"></a><span class="co"># simple regression of percentage changes on freezing degree days</span></span>
-<span id="cb415-2"><a href="15.1-the-orange-juice-data.html#cb415-2" aria-hidden="true" tabindex="-1"></a>orange_SR <span class="ot">&lt;-</span> <span class="fu">dynlm</span>(FOJC_pctc <span class="sc">~</span> FDD)</span>
-<span id="cb415-3"><a href="15.1-the-orange-juice-data.html#cb415-3" aria-hidden="true" tabindex="-1"></a><span class="fu">coeftest</span>(orange_SR, <span class="at">vcov. =</span> vcovHAC)</span>
-<span id="cb415-4"><a href="15.1-the-orange-juice-data.html#cb415-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb415-5"><a href="15.1-the-orange-juice-data.html#cb415-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; t test of coefficients:</span></span>
-<span id="cb415-6"><a href="15.1-the-orange-juice-data.html#cb415-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb415-7"><a href="15.1-the-orange-juice-data.html#cb415-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;             Estimate Std. Error t value  Pr(&gt;|t|)    </span></span>
-<span id="cb415-8"><a href="15.1-the-orange-juice-data.html#cb415-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; (Intercept) -0.42095    0.18683 -2.2531 0.0246064 *  </span></span>
-<span id="cb415-9"><a href="15.1-the-orange-juice-data.html#cb415-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; FDD          0.46724    0.13385  3.4906 0.0005167 ***</span></span>
-<span id="cb415-10"><a href="15.1-the-orange-juice-data.html#cb415-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ---</span></span>
-<span id="cb415-11"><a href="15.1-the-orange-juice-data.html#cb415-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span></code></pre></div>
+<div class="sourceCode" id="cb416"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb416-1"><a href="15.1-the-orange-juice-data.html#cb416-1" aria-hidden="true" tabindex="-1"></a><span class="co"># simple regression of percentage changes on freezing degree days</span></span>
+<span id="cb416-2"><a href="15.1-the-orange-juice-data.html#cb416-2" aria-hidden="true" tabindex="-1"></a>orange_SR <span class="ot">&lt;-</span> <span class="fu">dynlm</span>(FOJC_pctc <span class="sc">~</span> FDD)</span>
+<span id="cb416-3"><a href="15.1-the-orange-juice-data.html#cb416-3" aria-hidden="true" tabindex="-1"></a><span class="fu">coeftest</span>(orange_SR, <span class="at">vcov. =</span> vcovHAC)</span>
+<span id="cb416-4"><a href="15.1-the-orange-juice-data.html#cb416-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb416-5"><a href="15.1-the-orange-juice-data.html#cb416-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; t test of coefficients:</span></span>
+<span id="cb416-6"><a href="15.1-the-orange-juice-data.html#cb416-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb416-7"><a href="15.1-the-orange-juice-data.html#cb416-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;             Estimate Std. Error t value  Pr(&gt;|t|)    </span></span>
+<span id="cb416-8"><a href="15.1-the-orange-juice-data.html#cb416-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; (Intercept) -0.42095    0.18683 -2.2531 0.0246064 *  </span></span>
+<span id="cb416-9"><a href="15.1-the-orange-juice-data.html#cb416-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; FDD          0.46724    0.13385  3.4906 0.0005167 ***</span></span>
+<span id="cb416-10"><a href="15.1-the-orange-juice-data.html#cb416-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ---</span></span>
+<span id="cb416-11"><a href="15.1-the-orange-juice-data.html#cb416-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span></code></pre></div>
 <p>Notice that the standard errors are computed using a “HAC” estimator of the variance-covariance matrix, see Chapter <a href="14.5-apatadlm.html#apatadlm">14.5</a> for a discussion of this estimator.</p>
 <p><span class="math display">\[\begin{align*}
   \widehat{\%ChgOJC_t} = -\underset{(0.19)}{0.42} + \underset{(0.13)}{0.47} FDD_t
 \end{align*}\]</span></p>
 <p>The estimated coefficient on <span class="math inline">\(FDD_t\)</span> has the following interpretation: an additional freezing degree day in month <span class="math inline">\(t\)</span> leads to a price increase 0f <span class="math inline">\(0.47\)</span> percentage points in the same month.</p>
 <p>To consider effects of cold snaps on the orange juice price over the subsequent periods, we include lagged values of <span class="math inline">\(FDD_t\)</span> in our model which leads to a <em>distributed lag regression model</em>. We estimate a specification using a contemporaneous and six lagged values of <span class="math inline">\(FDD_t\)</span> as regressors.</p>
-<div class="sourceCode" id="cb416"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb416-1"><a href="15.1-the-orange-juice-data.html#cb416-1" aria-hidden="true" tabindex="-1"></a><span class="co"># distributed lag model with 6 lags of freezing degree days</span></span>
-<span id="cb416-2"><a href="15.1-the-orange-juice-data.html#cb416-2" aria-hidden="true" tabindex="-1"></a>orange_DLM <span class="ot">&lt;-</span> <span class="fu">dynlm</span>(FOJC_pctc <span class="sc">~</span> FDD <span class="sc">+</span> <span class="fu">L</span>(FDD, <span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>))</span>
-<span id="cb416-3"><a href="15.1-the-orange-juice-data.html#cb416-3" aria-hidden="true" tabindex="-1"></a><span class="fu">coeftest</span>(orange_DLM, <span class="at">vcov. =</span> vcovHAC)</span>
-<span id="cb416-4"><a href="15.1-the-orange-juice-data.html#cb416-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb416-5"><a href="15.1-the-orange-juice-data.html#cb416-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; t test of coefficients:</span></span>
-<span id="cb416-6"><a href="15.1-the-orange-juice-data.html#cb416-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb416-7"><a href="15.1-the-orange-juice-data.html#cb416-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;               Estimate Std. Error t value  Pr(&gt;|t|)    </span></span>
-<span id="cb416-8"><a href="15.1-the-orange-juice-data.html#cb416-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; (Intercept)  -0.692961   0.212445 -3.2618 0.0011700 ** </span></span>
-<span id="cb416-9"><a href="15.1-the-orange-juice-data.html#cb416-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; FDD           0.471433   0.135195  3.4871 0.0005242 ***</span></span>
-<span id="cb416-10"><a href="15.1-the-orange-juice-data.html#cb416-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; L(FDD, 1:6)1  0.145021   0.081557  1.7782 0.0758853 .  </span></span>
-<span id="cb416-11"><a href="15.1-the-orange-juice-data.html#cb416-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; L(FDD, 1:6)2  0.058364   0.058911  0.9907 0.3222318    </span></span>
-<span id="cb416-12"><a href="15.1-the-orange-juice-data.html#cb416-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; L(FDD, 1:6)3  0.074166   0.047143  1.5732 0.1162007    </span></span>
-<span id="cb416-13"><a href="15.1-the-orange-juice-data.html#cb416-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; L(FDD, 1:6)4  0.036304   0.029335  1.2376 0.2163670    </span></span>
-<span id="cb416-14"><a href="15.1-the-orange-juice-data.html#cb416-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; L(FDD, 1:6)5  0.048756   0.031370  1.5543 0.1206535    </span></span>
-<span id="cb416-15"><a href="15.1-the-orange-juice-data.html#cb416-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; L(FDD, 1:6)6  0.050246   0.045129  1.1134 0.2659919    </span></span>
-<span id="cb416-16"><a href="15.1-the-orange-juice-data.html#cb416-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ---</span></span>
-<span id="cb416-17"><a href="15.1-the-orange-juice-data.html#cb416-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span></code></pre></div>
+<div class="sourceCode" id="cb417"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb417-1"><a href="15.1-the-orange-juice-data.html#cb417-1" aria-hidden="true" tabindex="-1"></a><span class="co"># distributed lag model with 6 lags of freezing degree days</span></span>
+<span id="cb417-2"><a href="15.1-the-orange-juice-data.html#cb417-2" aria-hidden="true" tabindex="-1"></a>orange_DLM <span class="ot">&lt;-</span> <span class="fu">dynlm</span>(FOJC_pctc <span class="sc">~</span> FDD <span class="sc">+</span> <span class="fu">L</span>(FDD, <span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>))</span>
+<span id="cb417-3"><a href="15.1-the-orange-juice-data.html#cb417-3" aria-hidden="true" tabindex="-1"></a><span class="fu">coeftest</span>(orange_DLM, <span class="at">vcov. =</span> vcovHAC)</span>
+<span id="cb417-4"><a href="15.1-the-orange-juice-data.html#cb417-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb417-5"><a href="15.1-the-orange-juice-data.html#cb417-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; t test of coefficients:</span></span>
+<span id="cb417-6"><a href="15.1-the-orange-juice-data.html#cb417-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb417-7"><a href="15.1-the-orange-juice-data.html#cb417-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;               Estimate Std. Error t value  Pr(&gt;|t|)    </span></span>
+<span id="cb417-8"><a href="15.1-the-orange-juice-data.html#cb417-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; (Intercept)  -0.692961   0.212445 -3.2618 0.0011700 ** </span></span>
+<span id="cb417-9"><a href="15.1-the-orange-juice-data.html#cb417-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; FDD           0.471433   0.135195  3.4871 0.0005242 ***</span></span>
+<span id="cb417-10"><a href="15.1-the-orange-juice-data.html#cb417-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; L(FDD, 1:6)1  0.145021   0.081557  1.7782 0.0758853 .  </span></span>
+<span id="cb417-11"><a href="15.1-the-orange-juice-data.html#cb417-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; L(FDD, 1:6)2  0.058364   0.058911  0.9907 0.3222318    </span></span>
+<span id="cb417-12"><a href="15.1-the-orange-juice-data.html#cb417-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; L(FDD, 1:6)3  0.074166   0.047143  1.5732 0.1162007    </span></span>
+<span id="cb417-13"><a href="15.1-the-orange-juice-data.html#cb417-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; L(FDD, 1:6)4  0.036304   0.029335  1.2376 0.2163670    </span></span>
+<span id="cb417-14"><a href="15.1-the-orange-juice-data.html#cb417-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; L(FDD, 1:6)5  0.048756   0.031370  1.5543 0.1206535    </span></span>
+<span id="cb417-15"><a href="15.1-the-orange-juice-data.html#cb417-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; L(FDD, 1:6)6  0.050246   0.045129  1.1134 0.2659919    </span></span>
+<span id="cb417-16"><a href="15.1-the-orange-juice-data.html#cb417-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ---</span></span>
+<span id="cb417-17"><a href="15.1-the-orange-juice-data.html#cb417-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span></code></pre></div>
 <p>As the result we obtain</p>
 <p><span class="math display" id="eq:orangemod1">\[\begin{align}
   \begin{split}
