@@ -139,7 +139,7 @@ linearHypothesis(cubic_model,
 
 We provide a hypothesis matrix as the argument `r ttcode("hypothesis.matrix")`. This is useful when the coefficients have long names, as is the case here due to using `r ttcode("poly()")`, or when the restrictions include multiple coefficients. How the hypothesis matrix $\mathbf{R}$ is interpreted by `r ttcode("linearHypothesis()")` is best seen using matrix algebra: 
 
-For the two linear constrains above, we have
+For the two linear constraints above, we have
 \begin{align*}
   \mathbf{R}\boldsymbol{\beta} =& \mathbf{s} \\
   \begin{pmatrix}
@@ -168,14 +168,14 @@ For the two linear constrains above, we have
 `r ttcode("linearHypothesis()")` uses the zero vector for $\mathbf{s}$ by default, see `?linearHypothesis`.
 
 
-The $p$-value for is very small so that we reject the null hypothesis. However, this does not tell us *which* $r$ to choose. In practice, one approach to determine the degree of the polynomial is to use *sequential testing*:
+The $p$-value for the test is very small so that we reject the null hypothesis. However, this does not tell us *which* $r$ to choose. In practice, one approach to determine the degree of the polynomial is to use *sequential testing*:
 
 1. Estimate a polynomial model for some maximum value $r$.
 2. Use a $t$-test to test $\beta_r = 0$. *Rejection* of the null means that $X^r$ belongs in the regression equation.
 3. *Acceptance* of the null in step 2 means that $X^r$ can be eliminated from the model. Continue by repeating step 1 with order $r-1$ and test whether $\beta_{r-1}=0$. If the test rejects, use a polynomial model of order $r-1$.
-4. If the tests from step 3 rejects, continue with the procedure until the coefficient on the highest power is statistically significant.
+4. If the test from step 3 rejects, continue with the procedure until the coefficient on the highest power is statistically significant.
 
-There is no unambiguous guideline how to choose $r$ in step one. However, as pointed out in @stock2015, economic data is often smooth such that it is appropriate to choose small orders like $2$, $3$, or $4$.
+There is no unambiguous guideline on how to choose $r$ in step one. However, as pointed out in @stock2015, economic data is often smooth such that it is appropriate to choose small orders like $2$, $3$, or $4$.
 
 We will demonstrate how to apply sequential testing by the example of the cubic model. 
 
@@ -185,9 +185,9 @@ summary(cubic_model)
 
 The estimated cubic model stored in `r ttcode("cubic_model")` is
 
-$$ \widehat{TestScore}_i = \underset{(5.83)}{600.1} + \underset{(0.86)}{5.02} \times income -\underset{(0.03)}{0.96} \times income^2 - \underset{(0.00047)}{0.00069} \times income^3. $$
+$$ \widehat{TestScore}_i = \underset{(5.83)}{600.1} + \underset{(0.86)}{5.02} \times income -\underset{(0.037)}{0.096} \times income^2 - \underset{(0.00047)}{0.00069} \times income^3. $$
 
-The $t$-statistic on $income^3$ is $1.42$ so the null that the relationship is quadratic cannot be rejected, even at the $10\%$ level. This is contrary to the result presented book which reports robust standard errors throughout so we will also use robust variance-covariance estimation to reproduce these results.
+The $t$-statistic on $income^3$ is $1.45$ so the null that the relationship is quadratic cannot be rejected, even at the $10\%$ level. This is contrary to the result presented in the book which reports robust standard errors throughout so we will also use robust variance-covariance estimation to reproduce these results.
 
 ```{r}
 # test the hypothesis using robust standard errors
@@ -203,11 +203,11 @@ linearHypothesis(cubic_model,
                  vcov. = vcovHC, type = "HC1")
 ```
 
-With a $p$-value of $9.043e^{-16}$, i.e., much less than $0.05$, the null hypothesis of linearity is rejected in favor of the alternative that the relationship is quadratic *or* cubic. 
+With a $p$-value of $8.945e-13$, i.e., much less than $0.05$, the null hypothesis of linearity is rejected in favor of the alternative that the relationship is quadratic *or* cubic. 
 
 #### Interpretation of Coefficients in Nonlinear Regression Models {-}
 
-The coefficients in polynomial regression do not have a simple interpretation. Why? Think of a quadratic model: it is not helpful to think of the coefficient on $X$ as the expected change in $Y$ associated with a change in $X$ holding the other regressors constant because $X^2$ changes as $X$ varies. This is also the case for other deviations from linearity, for example in models where regressors and/or the dependent variable are log-transformed. A way to approach this is to calculate the estimated effect on $Y$ associated with a change in $X$ for one or more values of $X$. This idea is summarized in Key Concept 8.1.
+The coefficients in the polynomial regressions do not have a simple interpretation. Why? Think of a quadratic model: it is not helpful to think of the coefficient on $X$ as the expected change in $Y$ associated with a change in $X$ holding the other regressors constant because $X^2$ changes as $X$ varies. This is also the case for other deviations from linearity, for example in models where regressors and/or the dependent variable are log-transformed. A way to approach this is to calculate the estimated effect on $Y$ associated with a change in $X$ for one or more values of $X$. This idea is summarized in Key Concept 8.1.
 
 ```{r, eval = my_output == "html", results='asis', echo=F, purl=F}
 cat('
@@ -269,13 +269,13 @@ To compute $\widehat{Y}$ using `r ttcode("R")` we may use `r ttcode("predict()")
 
 ```{r quadratic}
 # compute and assign the quadratic model
-quadriatic_model <- lm(score ~ income + I(income^2), data = CASchools)
+quadratic_model <- lm(score ~ income + I(income^2), data = CASchools)
 
 # set up data for prediction
 new_data <- data.frame(income = c(10, 11))
 
 # do the prediction
-Y_hat <- predict(quadriatic_model, newdata = new_data)
+Y_hat <- predict(quadratic_model, newdata = new_data)
 
 # compute the difference
 diff(Y_hat)
@@ -288,7 +288,7 @@ Analogously we can compute the effect of a change in district income from $40$ t
 new_data <- data.frame(income = c(40, 41))
 
 # do the prediction
-Y_hat <- predict(quadriatic_model, newdata = new_data)
+Y_hat <- predict(quadratic_model, newdata = new_data)
 
 # compute the difference
 diff(Y_hat)
@@ -313,7 +313,7 @@ The interpretation of the regression coefficients is different in each case.
 
 #### Case I: $X$ is in Logarithm, $Y$ is not. {-}
 
-The regression model then is  $$Y_i = \beta_0 + \beta_1 \times \ln(X_i) + u_i \text{, } i=1,...,n. $$ Similar as for polynomial regression we do not have to create a new variable before using `r ttcode("lm()")`. We can simply adjust the 
+The regression model then is  $$Y_i = \beta_0 + \beta_1 \times \ln(X_i) + u_i \text{, } i=1,...,n. $$ Similar as for polynomial regressions we do not have to create a new variable before using `r ttcode("lm()")`. We can simply adjust the 
 `r ttcode("formula")` argument of `r ttcode("lm()")` to tell `r ttcode("R")` that the log-transformation of a variable should be used.    
 
 ```{r}
