@@ -816,7 +816,7 @@ window(GDPGrowth_ts, c(2013, 1), c(2013, 1)) - ADL22_forecast
 
 The ADL($2$,$2$) forecast of GDP growth in 2013:Q1 is $2.27\%$ which implies a forecast error of $1.14\%$.
 
-Do the ADL models \@ref(eq:gdpgradl21) and \@ref(eq:gdpgradl22) improve upon the simple AR($2$) model \@ref(eq:GDPGRAR2)? The answer is yes: while $SER$ and $\bar{R}^2$ improve only slightly, an $F$-test on the term spread coefficients in \@ref(eq:gdpgradl22) provides evidence that the model does better in explaining GDP growth than the AR($2$) model as the hypothesis that both coefficients are zero cannot be rejected at the level of $5\%$.
+Do the ADL models \@ref(eq:gdpgradl21) and \@ref(eq:gdpgradl22) improve upon the simple AR($2$) model \@ref(eq:GDPGRAR2)? The answer is yes: while $SER$ and $\bar{R}^2$ improve only slightly, an $F$-test on the term spread coefficients in \@ref(eq:gdpgradl22) provides evidence that the model does better in explaining GDP growth than the AR($2$) model as the hypothesis that both coefficients are zero can be rejected at the level of $5\%$.
 
 ```{r}
 # compare adj. R2
@@ -891,11 +891,11 @@ For estimation we make the following assumptions:
 
 1. The error term $u_t$ has conditional mean zero given all regressors and their lags: $$E(u_t\\vert Y_{t-1}, Y_{t-2}, \\dots, X_{1,t-1}, X_{1,t-2} \\dots, X_{k,t-1}, X_{k,t-2}, \\dots)$$ This assumption is an extension of the conditional mean zero assumption used for AR and ADL models and guarantees that the general time series regression model stated above gives the best forecast of $Y_t$ given its lags, the additional regressors $X_{1,t},\\dots,X_{k,t}$ and their lags.  
 
-2. The i.i.d. assumption for cross-sectional data is not (entirely) meaningful for time series data. We replace it by the following assumption witch consists of two parts:
+2. The i.i.d. assumption for cross-sectional data is not (entirely) meaningful for time series data. We replace it by the following assumption which consists of two parts:
 
-    (a) The $(Y_{t}, X_{1,t}, \\dots, X_{k,t})$ have a stationary distribution (the "identically distributed" part of the i.i.d. assumption for cross-setional data). If this does not hold, forecasts *may* be biased and inference *can* be strongly misleading.    
+    (a) The $(Y_{t}, X_{1,t}, \\dots, X_{k,t})$ have a stationary distribution (the "identically distributed" part of the i.i.d. assumption for cross-sectional data). If this does not hold, forecasts *may* be biased and inference *can* be strongly misleading.    
   
-    (b) $(Y_{t}, X_{1,t}, \\dots, X_{k,t})$ and $(Y_{t-j}, X_{1,t-j}, \\dots, X_{k,t-j})$ become independent as $j$ gets large (the "idependently" distributed part of the i.i.d. assumption for cross-sectional data). This assumption is also called *weak dependence*. It ensures that the WLLN and the CLT hold in large samples.
+    (b) $(Y_{t}, X_{1,t}, \\dots, X_{k,t})$ and $(Y_{t-j}, X_{1,t-j}, \\dots, X_{k,t-j})$ become independent as $j$ gets large (the "independently" distributed part of the i.i.d. assumption for cross-sectional data). This assumption is also called *weak dependence*. It ensures that the WLLN and the CLT hold in large samples.
     
 3. Large outliers are unlikely: $E(X_{1,t}^4), E(X_{2,t}^4), \\dots, E(X_{k,t}^4)$ and $E(Y_t^4)$ have nonzero, finite fourth moments.  
 
@@ -972,11 +972,11 @@ where $u_t$ is a homoskedastic error term. The forecast error is
 \begin{align*}
   Y_{T+1} - \widehat{Y}_{T+1\vert T} = u_{T+1} - \left[(\widehat{\beta}_0 - \beta_0) + (\widehat{\beta}_1 - \beta_1) Y_T + (\widehat{\delta_1} - \delta_1) X_T \right].
 \end{align*}
-The mean squared forecast error (MSFE) and the RMFSE are
+The mean squared forecast error (MSFE) and the RMSFE are
 \begin{align*}
-  MFSE =& \, E\left[(Y_{T+1} - \widehat{Y}_{T+1\vert T})^2 \right] \\
+  MSFE =& \, E\left[(Y_{T+1} - \widehat{Y}_{T+1\vert T})^2 \right] \\
        =& \, \sigma_u^2 + Var\left[ (\widehat{\beta}_0 - \beta_0) + (\widehat{\beta}_1 - \beta_1) Y_T + (\widehat{\delta_1} - \delta_1) X_T \right], \\
-  RMFSE =& \, \sqrt{\sigma_u^2 + Var\left[ (\widehat{\beta}_0 - \beta_0) + (\widehat{\beta}_1 - \beta_1) Y_T + (\widehat{\delta_1} - \delta_1) X_T \right]}.
+  RMSFE =& \, \sqrt{\sigma_u^2 + Var\left[ (\widehat{\beta}_0 - \beta_0) + (\widehat{\beta}_1 - \beta_1) Y_T + (\widehat{\delta_1} - \delta_1) X_T \right]}.
 \end{align*}
 
 A $95\%$ forecast interval is an interval that covers the true value of $Y_{T+1}$ in $95\%$ of repeated applications. There is a major difference in computing a confidence interval and a forecast interval: when computing a confidence interval of a point estimate we use large sample approximations that are justified by the CLT and thus are valid for a large range of error term distributions. For computation of a forecast interval of $Y_{T+1}$, however, we must make an additional assumption about the distribution of $u_{T+1}$, the error term in period $T+1$. Assuming that $u_{T+1}$ is normally distributed one can construct a $95\%$ *forecast interval* for $Y_{T+1}$ using $SE(Y_{T+1} - \widehat{Y}_{T+1\vert T})$, an estimate of the RMSFE: 
@@ -1014,7 +1014,7 @@ plot(fc,
 
 We choose `r ttcode("level = seq(5, 99, 10)")` in the call of `r ttcode("forecast()")` such that forecast intervals with levels $5\%, 15\%, \dots, 95\%$ are computed for each point forecast of the series. 
 
-The dashed red line shows point forecasts of the series for the next 25 periods based on an $ADL(1,1)$ model and the shaded areas represent the prediction intervals. The degree of shading indicates the level of the prediction interval. The darkest of the blue bands displays the $5\%$ forecast intervals and the color fades towards grey as the level of the intervals increases.
+The dashed red line shows point forecasts of the series for the next 25 periods based on an $AR(2)$ model and the shaded areas represent the prediction intervals. The degree of shading indicates the level of the prediction interval. The darkest of the blue bands displays the $5\%$ forecast intervals and the color fades towards grey as the level of the intervals increases.
 
 ## Lag Length Selection Using Information Criteria {#llsuic}
 
@@ -1024,7 +1024,7 @@ The order of an AR model can be determined using two approaches:
 
 1. **The F-test approach**
 
-    Estimate an AR($p$) model and test the significance of the largest lag(s). If the test rejects, drop the respective lag(s) from the model. This approach has the tendency to produce models where the order is too large: in a significance test we always face the risk of rejecting a true null hypothesis!
+    Estimate an AR($p$) model and test the significance of the largest lag(s). If the test indicates that a particular lag(s) is not significant, we can consider removing it from the model. This approach has the tendency to produce models where the order is too large: in a significance test we always face the risk of rejecting a true null hypothesis!
 
 2. **Relying on an information criterion**
 
@@ -1040,7 +1040,7 @@ The order of an AR model can be determined using two approaches:
 
     Both criteria are estimators of the optimal lag length $p$. The lag order $\widehat{p}$ that minimizes the respective criterion is called the *BIC estimate* or the *AIC estimate* of the optimal model order. The basic idea of both criteria is that the $SSR$ decreases as additional lags are added to the model such that the first term decreases whereas the second increases as the lag order grows. One can show that the the $BIC$ is a consistent estimator of the true lag order while the AIC is not which is due to the differing factors in the second addend. Nevertheless, both estimators are used in practice where the $AIC$ is sometimes used as an alternative when the $BIC$ yields a model with "too few" lags.
 
-The function `r ttcode("dynlm()")` does not compute information criteria by default. We will therefore write a short function that reports the $BIC$ (along with the chosen lag order $p$ and $R^2$) for objects of class `r ttcode("dynlm")`.
+The function `r ttcode("dynlm()")` does not compute information criteria by default. We will therefore write a short function that reports the $BIC$ (along with the chosen lag order $p$ and $\bar{R}^2$) for objects of class `r ttcode("dynlm")`.
 
 ```{r}
 # compute BIC for AR model objects of class 'dynlm'
@@ -1053,7 +1053,7 @@ BIC <- function(model) {
   return(
     round(c("p" = npar - 1,
           "BIC" = log(ssr/t) + npar * log(t)/t,
-          "R2" = summary(model)$r.squared), 4)
+          "Adj.R2" = summary(model)$adj.r.squared), 4)
   )
 }
 ```
@@ -1072,8 +1072,7 @@ BICs <- sapply(order, function(x)
 
 BICs
 ```
-
-Note that increasing the lag order increases $R^2$ because the $SSR$ decreases as additional lags are added to the model but according to the $BIC$, we should settle for the AR($2$) model instead of the AR($6$) model. It helps us to decide whether the decrease in $SSR$ is enough to justify adding an additional regressor. 
+Note that increasing the lag order increases $R^2$ because the $SSR$ decreases as additional lags are added to the model. However, $\bar{R}^2$ takes into account the number of parameters in the model and adjusts for the increase in $R^2$ due to adding more variables, but according to the $BIC$, we should settle for the AR($2$) model instead of the AR($5$) model. It helps us to decide whether the decrease in $SSR$ is enough to justify adding an additional regressor. 
 
 If we had to compare a bigger set of models, a convenient way to select the model with the lowest $BIC$ is using the function `r ttcode("which.min()")`.
 
@@ -1256,7 +1255,6 @@ plot(merge(as.zoo(USUnemp), as.zoo(JPIndProd)),
      xlab = "Date",
      ylab = "",
      main = "Spurious Regression: Macroeconomic Time series")
-
 # add a legend
 legend("topleft", 
        legend = c("USUnemp", "JPIndProd"),
@@ -1315,14 +1313,14 @@ cat('
 <p>
 Consider the regression
 \\begin{align}
-  \\Delta Y_t = \\beta_0 + \\delta Y_{t-1} + \\gamma_1 \\Delta_1 Y_{t-1} + \\gamma_2 \\Delta Y_{t-2} + \\dots + \\gamma_p \\Delta Y_{t-p} + u_t. (\\#eq:ADFreg1)
+  \\Delta Y_t = \\beta_0 + \\delta Y_{t-1} + \\gamma_1 \\Delta Y_{t-1} + \\gamma_2 \\Delta Y_{t-2} + \\dots + \\gamma_p \\Delta Y_{t-p} + u_t. (\\#eq:ADFreg1)
 \\end{align}
 
 The ADF test for a unit autoregressive root tests the hypothesis $H_0: \\delta = 0$ (stochastic trend) against the one-sided alternative $H_1: \\delta < 0$ (stationarity) using the usual OLS $t$-statistic.
 
 If it is assumed that $Y_t$ is stationary around a deterministic linear time trend, the model is augmented by the regressor $t$:
 \\begin{align}
-  \\Delta Y_t = \\beta_0 + at + \\delta Y_{t-1} + \\gamma_1 \\Delta_1 Y_{t-1} + \\gamma_2 \\Delta Y_{t-2} + \\dots + \\gamma_p \\Delta Y_{t-p} + u_t,  (\\#eq:ADFreg2)
+  \\Delta Y_t = \\beta_0 + at + \\delta Y_{t-1} + \\gamma_1 \\Delta Y_{t-1} + \\gamma_2 \\Delta Y_{t-2} + \\dots + \\gamma_p \\Delta Y_{t-p+1} + u_t,  (\\#eq:ADFreg2)
 \\end{align}
 where again $H_0: \\delta = 0$ is tested against $H_1: \\delta < 0$.
 
@@ -1526,7 +1524,7 @@ summary(ur.df(LogGDP,
               selectlags = "Fixed"))
 ```
 
-The first test statistic at the bottom of the output is the one we are interested in. The number of test statistics reported depends on the test regression. For `r ttcode('type = "trend"')`, the second statistics corresponds to the test that there is no unit root and no time trend while the third one corresponds to a test of the hypothesis that there is a unit root, no time trend and no drift term.
+The first test statistic at the bottom of the output is the one we are interested in. The number of test statistics reported depends on the test regression. For `r ttcode('type = "trend"')`, the second statistics corresponds to the test that there is unit root and no time trend while the third one corresponds to a test of the hypothesis that there is a unit root, no time trend and no drift term.
 
 ## Nonstationarity II: Breaks {#niib}
 
@@ -1558,7 +1556,7 @@ The most important properties are:
 
 + The QLR test can be applied to test whether a subset of the coefficients in the population regression function breaks but the test also rejects if there is a slow evolution of the regression function. 
 
-+ When there is a single discrete break in the population regression function that lying at a date within the range tested, the $QLR$ test statistic is $F(\\widehat{\\tau})$ and $\\widehat{\\tau}/T$ is a consistent estimator of fraction of the sample at which the break is.
++ When there is a single discrete break in the population regression function that lying at a date within the range tested, the $QLR$ test statistic is $F(\\widehat{\\tau})$ and $\\widehat{\\tau}/T$ is a consistent estimator of the fraction of the sample at which the break is.
 
 + The large-sample distribution of $QLR$ depends on $q$, the number of restrictions being tested and both ratios of end points to the sample size, $\\tau_0/T, \\tau_1/T$. 
 
@@ -1577,7 +1575,7 @@ The QLR test can be used to test for a break in the population regression functi
 The most important properties are:
 \\begin{itemize}
 \\item The QLR test can be applied to test whether a subset of the coefficients in the population regression function breaks but the test also rejects if there is a slow evolution of the regression function. 
-When there is a single discrete break in the population regression function that lying at a date within the range tested, the $QLR$ test statistic is $F(\\widehat{\\tau})$ and $\\widehat{\\tau}/T$ is a consistent estimator of fraction of the sample at which the break is.
+When there is a single discrete break in the population regression function that lying at a date within the range tested, the $QLR$ test statistic is $F(\\widehat{\\tau})$ and $\\widehat{\\tau}/T$ is a consistent estimator of the fraction of the sample at which the break is.
 \\item The large-sample distribution of $QLR$ depends on $q$, the number of restrictions being tested and both ratios of end points to the sample size, $\\tau_0/T, \\tau_1/T$. 
 \\item Similar to the ADF test, the large-sample distribution of $QLR$ is nonstandard. Critical values are presented in Table 14.5 of the book.
 \\end{itemize}
@@ -1815,7 +1813,7 @@ The hypothesis cannot be rejected at the $10\%$ significance level. Altogether t
 
 ## Can You Beat the Market? (Part II)
 
-The dividend yield (the ratio of current dividends to the stock price) can be considered as an indicator of future dividends: if a stock has a high current dividend yield, it can be considered undervalued and it can be presumed that the price of the stock goes up in the future, meaning that future excess returns go up.
+The dividend yield (the ratio of current dividends to the stock price) can be considered as an indicator of future excess returns: if a stock has a high current dividend yield, it can be considered undervalued and it can be presumed that the price of the stock goes up in the future, meaning that future excess returns go up.
 
 This presumption can be examined using ADL models of excess returns, where lags of the logarithm of the stock's dividend yield serve as additional regressors. 
 
@@ -1843,7 +1841,7 @@ summary(ur.df(window(StockReturns[, 2],
               lags = 0))
 ```
 
-We use `r ttcode("window()")` to get observations from January 1960 to December 2012 only.
+We use `r ttcode("window()")` to get observations from January 1960 to December 2002 only.
 
 Since the $t$-value for the coefficient on the lagged logarithm of the dividend yield is $-1.27$, the hypothesis that the true coefficient is zero cannot be rejected, even at the $10\%$ significance level. 
 
@@ -1874,7 +1872,7 @@ CRSP_ADL_2 <- dynlm(ExReturn ~ L(ExReturn) + L(ExReturn, 2)
 # ADL(1,1) (level of log dividend yield)
 CRSP_ADL_3 <- dynlm(ExReturn ~ L(ExReturn) + L(ln_DivYield),
                     data = StockReturns,
-                    start = c(1960, 1), end = c(1992, 12))
+                    start = c(1960, 1), end = c(2002, 12))
 ```
 
 ```{r}
