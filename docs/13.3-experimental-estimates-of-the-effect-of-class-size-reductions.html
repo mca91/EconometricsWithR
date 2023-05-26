@@ -23,7 +23,7 @@
 <meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber, and Martin Schmelzer" />
 
 
-<meta name="date" content="2023-05-05" />
+<meta name="date" content="2023-05-26" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -467,7 +467,7 @@ This book is in <b>Open Review</b>. We want your feedback to make the book bette
 <h2><span class="header-section-number">13.3</span> Experimental Estimates of the Effect of Class Size Reductions<a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#experimental-estimates-of-the-effect-of-class-size-reductions" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <div id="experimental-design-and-the-data-set" class="section level3 unnumbered hasAnchor">
 <h3>Experimental Design and the Data Set<a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#experimental-design-and-the-data-set" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>The Project <em>Student-Teacher Achievement Ratio</em> (STAR) was a large randomized controlled experiment with the aim of asserting whether a class size reduction is effective in improving education outcomes. It has been conducted in 80 Tennessee elementary schools over a period of four years during the 1980s by the State Department of Education.</p>
+<p>The Project <em>Student-Teacher Achievement Ratio</em> (STAR) was a large randomized controlled experiment with the aim of asserting whether a class size reduction is effective in improving education outcomes. It was conducted in 80 Tennessee elementary schools over a period of four years during the 1980s by the State Department of Education.</p>
 <p>In the first year, about 6400 students were randomly assigned into one of three interventions: small class (13 to 17 students per teacher), regular class (22 to 25 students per teacher), and regular-with-aide class (22 to 25 students with a full-time teacher’s aide). Teachers were also randomly assigned to the classes they taught. The interventions were initiated as the students entered school in kindergarten and continued through to third grade. Control and treatment groups across grades are summarized in Table <a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#tab:starstructure">13.1</a>.</p>
 <table>
 <caption><span id="tab:starstructure">Table 13.1: </span> Control and treatment groups in the STAR experiment</caption>
@@ -552,8 +552,8 @@ This book is in <b>Open Review</b>. We want your feedback to make the book bette
 <span id="cb310-11"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb310-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [41] &quot;system1&quot;     &quot;system2&quot;     &quot;system3&quot;     &quot;schoolidk&quot;   &quot;schoolid1&quot;  </span></span>
 <span id="cb310-12"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb310-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [46] &quot;schoolid2&quot;   &quot;schoolid3&quot;</span></span></code></pre></div>
 <p>A majority of the variable names contain a suffix (<tt>k</tt>, <tt>1</tt>, <tt>2</tt> or <tt>3</tt>) stating the grade which the respective variable is referring to. This facilitates regression analysis because it allows to adjust the <tt>formula</tt> argument in <tt>lm()</tt> for each grade by simply changing the variables’ suffixes accordingly.</p>
-<p>The outcome produced by <tt>head()</tt> shows that some values recorded are <tt>NA</tt> and <tt><NA></tt>, i.e., there is no data on this variable for the student under consideration. This lies in the nature of the data: for example, take the first observation <code>STAR[1,]</code>.</p>
-<p>In the output of <code>head(STAR, 2)</code> we find that the student entered the experiment in third grade in a regular class, which is why the class size is recorded in <tt>star3</tt> and the other class type indicator variables are <tt><NA></tt>. For the same reason there are no recordings of her math and reading score but for the third grade. It is straightforward to only get her non-<tt>NA</tt>/<tt><NA></tt> recordings: simply drop the <tt>NA</tt>s using <tt>!is.na()</tt>.</p>
+<p>The outcome produced by <tt>head()</tt> shows that some recorded values are <tt>NA</tt> and thus, there is no data on this variable for the student under consideration. This lies in the nature of the data: for example, take the first observation <code>STAR[1,]</code>.</p>
+<p>In the output of <code>head(STAR, 2)</code> we find that the student entered the experiment in third grade in a regular class, which is why the class size is recorded in <tt>star3</tt> and the other class type indicator variables are <tt>NA</tt>. For the same reason there are no recordings of her math and reading score but for the third grade. It is straightforward to only get her non-<tt>NA</tt>/<tt><NA></tt> recordings: simply drop the <tt>NA</tt>s using <tt>!is.na()</tt>.</p>
 <div class="sourceCode" id="cb311"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb311-1"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb311-1" aria-hidden="true" tabindex="-1"></a><span class="co"># drop NA recordings for the first observation and print to the console</span></span>
 <span id="cb311-2"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb311-2" aria-hidden="true" tabindex="-1"></a>STAR[<span class="dv">1</span>, <span class="sc">!</span><span class="fu">is.na</span>(STAR[<span class="dv">1</span>, ])]</span>
 <span id="cb311-3"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb311-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      gender ethnicity   birth   star3 read3 math3 lunch3  school3  degree3</span></span>
@@ -622,7 +622,7 @@ with test score <span class="math inline">\(Y_i\)</span>, the small class indica
 <span id="cb314-2"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb314-2" aria-hidden="true" tabindex="-1"></a>rob_se_1 <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="fu">sqrt</span>(<span class="fu">diag</span>(<span class="fu">vcovHC</span>(fmk, <span class="at">type =</span> <span class="st">&quot;HC1&quot;</span>))),</span>
 <span id="cb314-3"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb314-3" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">sqrt</span>(<span class="fu">diag</span>(<span class="fu">vcovHC</span>(fm1, <span class="at">type =</span> <span class="st">&quot;HC1&quot;</span>))),</span>
 <span id="cb314-4"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb314-4" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">sqrt</span>(<span class="fu">diag</span>(<span class="fu">vcovHC</span>(fm2, <span class="at">type =</span> <span class="st">&quot;HC1&quot;</span>))),</span>
-<span id="cb314-5"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb314-5" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">sqrt</span>(<span class="fu">diag</span>(<span class="fu">vcovHC</span>(fm2, <span class="at">type =</span> <span class="st">&quot;HC1&quot;</span>))))</span></code></pre></div>
+<span id="cb314-5"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb314-5" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">sqrt</span>(<span class="fu">diag</span>(<span class="fu">vcovHC</span>(fm3, <span class="at">type =</span> <span class="st">&quot;HC1&quot;</span>))))</span></code></pre></div>
 <div class="sourceCode" id="cb315"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb315-1"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb315-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(stargazer)</span>
 <span id="cb315-2"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb315-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb315-3"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb315-3" aria-hidden="true" tabindex="-1"></a><span class="fu">stargazer</span>(fmk,fm1,fm2,fm3,</span>
@@ -660,14 +660,14 @@ with test score <span class="math inline">\(Y_i\)</span>, the small class indica
 <tr><td style="text-align:left">star2regular+aide</td><td></td><td></td><td>3.48</td><td></td></tr>
 <tr><td style="text-align:left"></td><td></td><td></td><td>(2.54)</td><td></td></tr>
 <tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
-<tr><td style="text-align:left">star3small</td><td></td><td></td><td></td><td>15.59</td></tr>
-<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left">star3small</td><td></td><td></td><td></td><td>15.59<sup>***</sup></td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td>(2.40)</td></tr>
 <tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
 <tr><td style="text-align:left">star3regular+aide</td><td></td><td></td><td></td><td>-0.29</td></tr>
-<tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
+<tr><td style="text-align:left"></td><td></td><td></td><td></td><td>(2.27)</td></tr>
 <tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
 <tr><td style="text-align:left">Constant</td><td>918.04<sup>***</sup></td><td>1,039.39<sup>***</sup></td><td>1,157.81<sup>***</sup></td><td>1,228.51<sup>***</sup></td></tr>
-<tr><td style="text-align:left"></td><td>(1.63)</td><td>(1.78)</td><td>(1.82)</td><td>(1.82)</td></tr>
+<tr><td style="text-align:left"></td><td>(1.63)</td><td>(1.78)</td><td>(1.82)</td><td>(1.68)</td></tr>
 <tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td></tr>
 <tr><td colspan="5" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left">Observations</td><td>5,786</td><td>6,379</td><td>6,049</td><td>5,967</td></tr>
 <tr><td style="text-align:left">R<sup>2</sup></td><td>0.01</td><td>0.02</td><td>0.01</td><td>0.01</td></tr>
@@ -772,7 +772,7 @@ Y_i =&amp; \beta_0 + \beta_1 SmallClass_i + \beta_2 RegAide_i + \beta_3 experien
 <span id="cb319-3"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb319-3" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">sqrt</span>(<span class="fu">diag</span>(<span class="fu">vcovHC</span>(gradeK1, <span class="at">type =</span> <span class="st">&quot;HC1&quot;</span>))),</span>
 <span id="cb319-4"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb319-4" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">sqrt</span>(<span class="fu">diag</span>(<span class="fu">vcovHC</span>(gradeK2, <span class="at">type =</span> <span class="st">&quot;HC1&quot;</span>))),</span>
 <span id="cb319-5"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb319-5" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">sqrt</span>(<span class="fu">diag</span>(<span class="fu">vcovHC</span>(gradeK3, <span class="at">type =</span> <span class="st">&quot;HC1&quot;</span>))))</span></code></pre></div>
-<div class="sourceCode" id="cb320"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb320-1"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb320-1" aria-hidden="true" tabindex="-1"></a><span class="fu">stargazer</span>(fmk, fm1, fm2, fm3,</span>
+<div class="sourceCode" id="cb320"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb320-1"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb320-1" aria-hidden="true" tabindex="-1"></a><span class="fu">stargazer</span>(fmk, gradeK1, gradeK2, gradeK3,</span>
 <span id="cb320-2"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb320-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">title =</span> <span class="st">&quot;Project STAR - Differences Estimates with </span></span>
 <span id="cb320-3"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb320-3" aria-hidden="true" tabindex="-1"></a><span class="st">  Additional Regressors for Kindergarten&quot;</span>,</span>
 <span id="cb320-4"><a href="13.3-experimental-estimates-of-the-effect-of-class-size-reductions.html#cb320-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">header =</span> <span class="cn">FALSE</span>, </span>
@@ -875,7 +875,7 @@ Y_i =&amp; \beta_0 + \beta_1 SmallClass_i + \beta_2 RegAide_i + \beta_3 experien
 
 <table style="text-align:center"><tr><td colspan="5" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left"></td><td>K</td><td>1</td><td>2</td><td>3</td></tr>
 <tr><td colspan="5" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left">Small</td><td>0.190</td><td>0.330</td><td>0.230</td><td>0.210</td></tr>
-<tr><td style="text-align:left">SmallSE</td><td>0.030</td><td>0.030</td><td>0.030</td><td>0.040</td></tr>
+<tr><td style="text-align:left">SmallSE</td><td>0.030</td><td>0.030</td><td>0.030</td><td>0.030</td></tr>
 <tr><td style="text-align:left">RegAide</td><td>0</td><td>0.130</td><td>0.040</td><td>0</td></tr>
 <tr><td style="text-align:left">RegAideSE</td><td>0.030</td><td>0.030</td><td>0.030</td><td>0.030</td></tr>
 <tr><td style="text-align:left">SSD</td><td>73.750</td><td>91.280</td><td>84.080</td><td>73.270</td></tr>
@@ -884,7 +884,7 @@ Y_i =&amp; \beta_0 + \beta_1 SmallClass_i + \beta_2 RegAide_i + \beta_3 experien
           (in Units of Standard Deviations)</p></caption>
 
 
-<p>The estimated effect of a small classes is largest for grade 1. As pointed out in the book, this is probably because students in the control group for grade 1 did poorly on the test for some unknown reason or simply due to random variation. The difference between the estimated effect of being in a small class and being in a regular classes with an aide is roughly 0.2 standard deviations for all grades. This leads to the conclusion that the effect of being in a regular sized class with an aide is zero and the effect of being in a small class is roughly the same for all grades.</p>
+<p>The estimated effect of a small class is largest for grade 1. As pointed out in the book, this is probably because students in the control group for grade 1 did poorly on the test for some unknown reason or simply due to random variation. The difference between the estimated effect of being in a small class and being in a regular class with an aide is roughly 0.2 standard deviations for all grades. This leads to the conclusion that the effect of being in a regular sized class with an aide is zero and the effect of being in a small class is roughly the same for all grades.</p>
 <p>The remainder of Chapter 13.3 in the book discusses to what extent these experimental estimates are comparable with observational estimates obtained using data on school districts in California and Massachusetts in Chapter <a href="9-asbomr.html#asbomr">9</a>. It turns out that the estimates are indeed very similar. Please refer to the aforementioned section in the book for a more detailed discussion.</p>
 </div>
 </div>

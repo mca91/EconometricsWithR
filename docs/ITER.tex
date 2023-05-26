@@ -188,7 +188,7 @@ colback=kcblue,colframe=kcdarkblue,fonttitle=\bfseries, title=Key Concept~#2, af
 
 \title{Introduction to Econometrics with R}
 \author{Christoph Hanck, Martin Arnold, Alexander Gerber, and Martin Schmelzer}
-\date{2023-05-05}
+\date{2023-05-26}
 
 \begin{document}
 \maketitle
@@ -201,7 +201,7 @@ colback=kcblue,colframe=kcdarkblue,fonttitle=\bfseries, title=Key Concept~#2, af
 \chapter*{Preface}\label{preface}}
 \addcontentsline{toc}{chapter}{Preface}
 
-Chair of Econometrics Department of Business Administration and Economics University of Duisburg-Essen Essen, Germany info@econometrics-with-r.org Last updated on Friday, May 05, 2023
+Chair of Econometrics Department of Business Administration and Economics University of Duisburg-Essen Essen, Germany info@econometrics-with-r.org Last updated on Friday, May 26, 2023
 
 Over the last few years, the statistical programming language R has become an integral part of the curricula of econometrics classes we teach at the University of Duisburg-Essen. We regularly found that a large share of the students, especially in our introductory undergraduate econometrics courses, had not been exposed to any programming language before and thus had difficulty to engage with learning R on their own. With little background in statistics and econometrics, beginners naturally have a hard time understanding the benefits of having R skills for learning and applying econometrics. These particularly include the ability to conduct, document and communicate empirical studies and having the ability to program simulation studies which is helpful for, e.g., comprehending and validating theorems which usually are not easily grasped by mere brooding over formulas. Being applied economists and econometricians, we value and wish to share with our students all of these capabilities.
 
@@ -251,7 +251,7 @@ Most commonly we display R code together with the generated output in code chunk
 \begin{Highlighting}[]
 \CommentTok{\# check the number of R packages available on CRAN}
 \FunctionTok{nrow}\NormalTok{(}\FunctionTok{available.packages}\NormalTok{(}\AttributeTok{repos =} \StringTok{"http://cran.us.r{-}project.org"}\NormalTok{))}
-\CommentTok{\#\textgreater{} [1] 19448}
+\CommentTok{\#\textgreater{} [1] 19559}
 \end{Highlighting}
 \end{Shaded}
 
@@ -265,7 +265,7 @@ Note that some lines in the widget are out-commented which ask you to assign a n
 This book was built with:
 
 \begin{verbatim}
-#> - Session info ------------------------------------------------------------------------------------
+#> - Session info ----------------------------------------------------------------------
 #>  setting  value
 #>  version  R version 4.2.3 (2023-03-15)
 #>  os       macOS Ventura 13.1
@@ -275,10 +275,10 @@ This book was built with:
 #>  collate  en_US.UTF-8
 #>  ctype    en_US.UTF-8
 #>  tz       Europe/Berlin
-#>  date     2023-05-05
+#>  date     2023-05-26
 #>  pandoc   2.19.2 @ /Applications/RStudio.app/Contents/Resources/app/quarto/bin/tools/ (via rmarkdown)
 #> 
-#> - Packages ----------------------------------------------------------------------------------------
+#> - Packages --------------------------------------------------------------------------
 #>  package       * version    date (UTC) lib source
 #>  abind           1.4-5      2016-07-21 [1] CRAN (R 4.2.0)
 #>  AER             1.2-10     2022-06-14 [1] CRAN (R 4.2.0)
@@ -458,7 +458,7 @@ This book was built with:
 #> 
 #>  [1] /Library/Frameworks/R.framework/Versions/4.2-arm64/Resources/library
 #> 
-#> ---------------------------------------------------------------------------------------------------
+#> -------------------------------------------------------------------------------------
 \end{verbatim}
 
 \hypertarget{a-very-short-introduction-to-and-rstudio}{%
@@ -595,7 +595,7 @@ A basic function to draw random samples from a specified set of elements is the 
 \begin{Shaded}
 \begin{Highlighting}[]
 \FunctionTok{sample}\NormalTok{(}\DecValTok{1}\SpecialCharTok{:}\DecValTok{6}\NormalTok{, }\DecValTok{1}\NormalTok{) }
-\CommentTok{\#\textgreater{} [1] 4}
+\CommentTok{\#\textgreater{} [1] 2}
 \end{Highlighting}
 \end{Shaded}
 
@@ -6565,7 +6565,7 @@ This is a joint null hypothesis with \(r-1\) restrictions so it can be tested us
 
 We provide a hypothesis matrix as the argument \texttt{hypothesis.matrix}. This is useful when the coefficients have long names, as is the case here due to using \texttt{poly()}, or when the restrictions include multiple coefficients. How the hypothesis matrix \(\mathbf{R}\) is interpreted by \texttt{linearHypothesis()} is best seen using matrix algebra:
 
-For the two linear constrains above, we have
+For the two linear constraints above, we have
 \begin{align*}
   \mathbf{R}\boldsymbol{\beta} =& \mathbf{s} \\
   \begin{pmatrix}
@@ -6593,7 +6593,7 @@ For the two linear constrains above, we have
 \end{align*}
 \texttt{linearHypothesis()} uses the zero vector for \(\mathbf{s}\) by default, see \texttt{?linearHypothesis}.
 
-The \(p\)-value for is very small so that we reject the null hypothesis. However, this does not tell us \emph{which} \(r\) to choose. In practice, one approach to determine the degree of the polynomial is to use \emph{sequential testing}:
+The \(p\)-value for the test is very small so that we reject the null hypothesis. However, this does not tell us \emph{which} \(r\) to choose. In practice, one approach to determine the degree of the polynomial is to use \emph{sequential testing}:
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
@@ -6605,10 +6605,10 @@ The \(p\)-value for is very small so that we reject the null hypothesis. However
 \item
   \emph{Acceptance} of the null in step 2 means that \(X^r\) can be eliminated from the model. Continue by repeating step 1 with order \(r-1\) and test whether \(\beta_{r-1}=0\). If the test rejects, use a polynomial model of order \(r-1\).
 \item
-  If the tests from step 3 rejects, continue with the procedure until the coefficient on the highest power is statistically significant.
+  If the test from step 3 rejects, continue with the procedure until the coefficient on the highest power is statistically significant.
 \end{enumerate}
 
-There is no unambiguous guideline how to choose \(r\) in step one. However, as pointed out in \citet{stock2015}, economic data is often smooth such that it is appropriate to choose small orders like \(2\), \(3\), or \(4\).
+There is no unambiguous guideline on how to choose \(r\) in step one. However, as pointed out in \citet{stock2015}, economic data is often smooth such that it is appropriate to choose small orders like \(2\), \(3\), or \(4\).
 
 We will demonstrate how to apply sequential testing by the example of the cubic model.
 
@@ -6645,9 +6645,9 @@ We will demonstrate how to apply sequential testing by the example of the cubic 
 
 The estimated cubic model stored in \texttt{cubic\_model} is
 
-\[ \widehat{TestScore}_i = \underset{(5.83)}{600.1} + \underset{(0.86)}{5.02} \times income -\underset{(0.03)}{0.96} \times income^2 - \underset{(0.00047)}{0.00069} \times income^3. \]
+\[ \widehat{TestScore}_i = \underset{(5.83)}{600.1} + \underset{(0.86)}{5.02} \times income -\underset{(0.037)}{0.096} \times income^2 - \underset{(0.00047)}{0.00069} \times income^3. \]
 
-The \(t\)-statistic on \(income^3\) is \(1.42\) so the null that the relationship is quadratic cannot be rejected, even at the \(10\%\) level. This is contrary to the result presented book which reports robust standard errors throughout so we will also use robust variance-covariance estimation to reproduce these results.
+The \(t\)-statistic on \(income^3\) is \(1.45\) so the null that the relationship is quadratic cannot be rejected, even at the \(10\%\) level. This is contrary to the result presented in the book which reports robust standard errors throughout so we will also use robust variance-covariance estimation to reproduce these results.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -6698,13 +6698,13 @@ The reported standard errors have changed. Furthermore, the coefficient for \tex
 \end{Highlighting}
 \end{Shaded}
 
-With a \(p\)-value of \(9.043e^{-16}\), i.e., much less than \(0.05\), the null hypothesis of linearity is rejected in favor of the alternative that the relationship is quadratic \emph{or} cubic.
+With a \(p\)-value of \(8.945e-13\), i.e., much less than \(0.05\), the null hypothesis of linearity is rejected in favor of the alternative that the relationship is quadratic \emph{or} cubic.
 
 \hypertarget{interpretation-of-coefficients-in-nonlinear-regression-models}{%
 \subsubsection*{Interpretation of Coefficients in Nonlinear Regression Models}\label{interpretation-of-coefficients-in-nonlinear-regression-models}}
 \addcontentsline{toc}{subsubsection}{Interpretation of Coefficients in Nonlinear Regression Models}
 
-The coefficients in polynomial regression do not have a simple interpretation. Why? Think of a quadratic model: it is not helpful to think of the coefficient on \(X\) as the expected change in \(Y\) associated with a change in \(X\) holding the other regressors constant because \(X^2\) changes as \(X\) varies. This is also the case for other deviations from linearity, for example in models where regressors and/or the dependent variable are log-transformed. A way to approach this is to calculate the estimated effect on \(Y\) associated with a change in \(X\) for one or more values of \(X\). This idea is summarized in Key Concept 8.1.
+The coefficients in the polynomial regressions do not have a simple interpretation. Why? Think of a quadratic model: it is not helpful to think of the coefficient on \(X\) as the expected change in \(Y\) associated with a change in \(X\) holding the other regressors constant because \(X^2\) changes as \(X\) varies. This is also the case for other deviations from linearity, for example in models where regressors and/or the dependent variable are log-transformed. A way to approach this is to calculate the estimated effect on \(Y\) associated with a change in \(X\) for one or more values of \(X\). This idea is summarized in Key Concept 8.1.
 
 \begin{keyconcepts}[The Expected Effect on $Y$ of a Change in $X_1$ in a Nonlinear Regression Model]{8.1}
 Consider the nonlinear population regression model
@@ -6744,13 +6744,13 @@ To compute \(\widehat{Y}\) using \texttt{R} we may use \texttt{predict()}.
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{\# compute and assign the quadratic model}
-\NormalTok{quadriatic\_model }\OtherTok{\textless{}{-}} \FunctionTok{lm}\NormalTok{(score }\SpecialCharTok{\textasciitilde{}}\NormalTok{ income }\SpecialCharTok{+} \FunctionTok{I}\NormalTok{(income}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{), }\AttributeTok{data =}\NormalTok{ CASchools)}
+\NormalTok{quadratic\_model }\OtherTok{\textless{}{-}} \FunctionTok{lm}\NormalTok{(score }\SpecialCharTok{\textasciitilde{}}\NormalTok{ income }\SpecialCharTok{+} \FunctionTok{I}\NormalTok{(income}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{), }\AttributeTok{data =}\NormalTok{ CASchools)}
 
 \CommentTok{\# set up data for prediction}
 \NormalTok{new\_data }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}\AttributeTok{income =} \FunctionTok{c}\NormalTok{(}\DecValTok{10}\NormalTok{, }\DecValTok{11}\NormalTok{))}
 
 \CommentTok{\# do the prediction}
-\NormalTok{Y\_hat }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(quadriatic\_model, }\AttributeTok{newdata =}\NormalTok{ new\_data)}
+\NormalTok{Y\_hat }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(quadratic\_model, }\AttributeTok{newdata =}\NormalTok{ new\_data)}
 
 \CommentTok{\# compute the difference}
 \FunctionTok{diff}\NormalTok{(Y\_hat)}
@@ -6767,7 +6767,7 @@ Analogously we can compute the effect of a change in district income from \(40\)
 \NormalTok{new\_data }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}\AttributeTok{income =} \FunctionTok{c}\NormalTok{(}\DecValTok{40}\NormalTok{, }\DecValTok{41}\NormalTok{))}
 
 \CommentTok{\# do the prediction}
-\NormalTok{Y\_hat }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(quadriatic\_model, }\AttributeTok{newdata =}\NormalTok{ new\_data)}
+\NormalTok{Y\_hat }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(quadratic\_model, }\AttributeTok{newdata =}\NormalTok{ new\_data)}
 
 \CommentTok{\# compute the difference}
 \FunctionTok{diff}\NormalTok{(Y\_hat)}
@@ -6803,7 +6803,7 @@ The interpretation of the regression coefficients is different in each case.
 \subsubsection*{\texorpdfstring{Case I: \(X\) is in Logarithm, \(Y\) is not.}{Case I: X is in Logarithm, Y is not.}}\label{case-i-x-is-in-logarithm-y-is-not.}}
 \addcontentsline{toc}{subsubsection}{Case I: \(X\) is in Logarithm, \(Y\) is not.}
 
-The regression model then is \[Y_i = \beta_0 + \beta_1 \times \ln(X_i) + u_i \text{, } i=1,...,n. \] Similar as for polynomial regression we do not have to create a new variable before using \texttt{lm()}. We can simply adjust the
+The regression model then is \[Y_i = \beta_0 + \beta_1 \times \ln(X_i) + u_i \text{, } i=1,...,n. \] Similar as for polynomial regressions we do not have to create a new variable before using \texttt{lm()}. We can simply adjust the
 \texttt{formula} argument of \texttt{lm()} to tell \texttt{R} that the log-transformation of a variable should be used.
 
 \begin{Shaded}
@@ -7502,13 +7502,13 @@ For the interpretation, let us consider the quartiles of \(PctEL\).
 
 According to \eqref{eq:generalinteraction}, if \(PctEL\) is at its median value of \(8.78\), the slope of the regression function relating test scores and the student teacher ratio is predicted to be \(-1.12 + 0.0012 \times 8.78 = -1.11\). This means that increasing the student-teacher ratio by one unit is expected to deteriorate test scores by \(1.11\) points. For the \(75\%\) quantile, the estimated change on \(TestScore\) of a one-unit increase in \(STR\) is estimated by \(-1.12 + 0.0012 \times 23.0 = -1.09\) so the slope is somewhat lower. The interpretation is that for a school district with a share of \(23\%\) English learners, a reduction of the student-teacher ratio by one unit is expected to increase test scores by only \(1.09\) points.
 
-However, the output of \texttt{summary()} indicates that the difference of the effect for the median and the \(75\%\) quantile is not statistically significant. \(H_0: \beta_3 = 0\) cannot be rejected at the \(5\%\) level of significance (the \(p\)-value is \(0.95\)).
+However, the output of \texttt{coeftest()} indicates that the difference of the effect for the median and the \(75\%\) quantile is not statistically significant. \(H_0: \beta_3 = 0\) cannot be rejected at the \(5\%\) level of significance (the \(p\)-value is \(0.95\)).
 
 \hypertarget{example-the-demand-for-economic-journals}{%
 \subsubsection*{Example: The Demand for Economic Journals}\label{example-the-demand-for-economic-journals}}
 \addcontentsline{toc}{subsubsection}{Example: The Demand for Economic Journals}
 
-In this section we replicate the empirical example \textit{The Demand for Economic Journals} presented at pages 336 - 337 of the book. The central question is: how elastic is the demand by libraries for economic journals? The idea here is to analyze the relationship between the number of subscription to a journal at U.S. libraries and the journal's subscription price. The study uses the data set \texttt{Journals} which is provided with the \texttt{AER} package and contains observations for \(180\) economic journals for the year 2000. You can use the help function (\texttt{?Journals}) to get more information on the data after loading the package.
+In this section we replicate the empirical example \textit{The Demand for Economic Journals} presented on pages 336 - 337 of the book. The central question is: how elastic is the demand by libraries for economic journals? The idea here is to analyze the relationship between the number of subscriptions to a journal at U.S. libraries and the journal's subscription price. The study uses the data set \texttt{Journals} which is provided with the \texttt{AER} package and contains observations for \(180\) economic journals for the year 2000. You can use the help function (\texttt{?Journals}) to get more information on the data after loading the package.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -7553,7 +7553,7 @@ We now estimate four different model specifications. All models are log-log mode
   (III)\quad \ln(Subscriptions_i) =& \, \beta_0 + \beta_1 \ln(PricePerCitation_i) + \beta_2 \ln(PricePerCitation_i)^2 \\
   +& \, \beta_3 \ln(PricePerCitation_i)^3 + \beta_4 \ln(Age_i) + \beta_5 \left[\ln(Age_i) \times \ln(PricePerCitation_i)\right] \\ +& \, \beta_6 \ln(Characters_i) + u_i \\
   \\
-  (IV)\quad \ln(Subscriptions_i) =& \, \beta_0 + \beta_1 \ln(PricePerCitation_i) + \beta_4 \ln(Age_i) + \beta_6 \ln(Characters_i) + u_i
+  (IV)\quad \ln(Subscriptions_i) =& \, \beta_0 + \beta_1 \ln(PricePerCitation_i) + \beta_4 \ln(Age_i) + \beta_5 \left[\ln(Age_i) \times \ln(PricePerCitation_i)\right] +& \, \beta_6 \ln(Characters_i) + u_i
 \end{align*}
 
 \begin{Shaded}
@@ -8158,7 +8158,7 @@ There are two conditions for internal validity to exist:
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
 \item
-  The estimator of the causal effect, which is measured the coefficient(s) of interest, should be unbiased and consistent.
+  The estimator of the causal effect, which is measured by the coefficient(s) of interest, should be unbiased and consistent.
 \item
   Statistical inference is valid, that is, hypothesis tests should have the desired size and confidence intervals should have the desired coverage probability.
 \end{enumerate}
@@ -8318,7 +8318,7 @@ which implies inconsistency as \(\sigma_{X}^2, \sigma_{w}^2 > 0\) such that the 
   if \(\sigma_{w}^2 \gg \sigma_{X}^2\) we have \(\widehat{\beta}_1 \xrightarrow{p}{0}\). This is the case if the measurement error is so large that there essentially is no information on \(X\) in the data that can be used to estimate \(\beta_1\).
 \end{enumerate}
 
-The most obvious way to deal with errors-in-variables bias is to use an accurately measured \(X\). If this not possible, instrumental variables regression is an option. One might also deal with the issue by using a mathematical model of the measurement error and adjust the estimates appropriately: if it is plausible that the classical measurement error model applies and if there is information that can be used to estimate the ratio in equation \eqref{eq:cmembias}, one could compute an estimate that corrects for the downward bias.
+The most obvious way to deal with errors-in-variables bias is to use an accurately measured \(X\). If this is not possible, instrumental variables regression is an option. One might also deal with the issue by using a mathematical model of the measurement error and adjust the estimates appropriately: if it is plausible that the classical measurement error model applies and if there is information that can be used to estimate the ratio in equation \eqref{eq:cmembias}, one could compute an estimate that corrects for the downward bias.
 
 For example, consider two bivariate normally distributed random variables \(X,Y\). It is a \href{https://en.wikipedia.org/wiki/Multivariate_normal_distribution\#Bivariate_case}{well known result} that the conditional expectation function of \(Y\) given \(X\) has the form
 \begin{align}
@@ -8433,7 +8433,7 @@ There are three cases of sample selection. Only one of them poses a threat to in
 
 Let us jump back to the example of variables \(X\) and \(Y\) distributed as stated in equation \eqref{eq:bvnormd} and illustrate all three cases using \texttt{R}.
 
-If data are missing at random, this is nothing but loosing observations. For example, loosing \(50\%\) of the sample would be the same as never having seen the (randomly chosen) half of the sample observed. Therefore, missing data do not introduce an estimation bias and ``only'' lead to less efficient estimators.
+If data are missing at random, this is nothing but losing the observations. For example, losing \(50\%\) of the sample would be the same as never having seen the (randomly chosen) half of the sample observed. Therefore, missing data do not introduce an estimation bias and ``only'' lead to less efficient estimators.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -8532,6 +8532,7 @@ Selecting data randomly based on the value of a regressor has also the effect of
 \FunctionTok{abline}\NormalTok{(noerror\_mod)}
 
 \CommentTok{\# estimate model case 1, add regression line}
+\NormalTok{id }\OtherTok{\textless{}{-}} \FunctionTok{which}\NormalTok{(dat}\SpecialCharTok{$}\NormalTok{X }\SpecialCharTok{\textgreater{}=} \DecValTok{45}\NormalTok{)}
 \NormalTok{dat }\OtherTok{\textless{}{-}}\NormalTok{ dat[}\SpecialCharTok{{-}}\NormalTok{id, ]}
 
 \NormalTok{c2\_mod }\OtherTok{\textless{}{-}} \FunctionTok{lm}\NormalTok{(dat}\SpecialCharTok{$}\NormalTok{Y }\SpecialCharTok{\textasciitilde{}}\NormalTok{ dat}\SpecialCharTok{$}\NormalTok{X, }\AttributeTok{data =}\NormalTok{ dat)}
@@ -8729,7 +8730,7 @@ The parent need not care if the coefficient on \(STR\) has causal interpretation
 
 Thus, the threats to internal validity as summarized in Key Concept 9.7 are negligible for the parent. This is, as instanced in the book, different for a superintendent who has been tasked to take measures that increase test scores: she requires a more reliable model that does not suffer from the threats listed in Key Concept 9.7.
 
-Consult Chapter 9.3 of the book for the corresponding discussion.
+Consult Chapter 9.3 of the book (Stock and Watson) for the corresponding discussion.
 
 \hypertarget{etsacs}{%
 \section{Example: Test Scores and Class Size}\label{etsacs}}
@@ -8908,10 +8909,10 @@ We continue by estimating most of the model specifications used for analysis of 
 \NormalTok{TestScore\_MA\_mod4 }\OtherTok{\textless{}{-}} \FunctionTok{lm}\NormalTok{(score }\SpecialCharTok{\textasciitilde{}}\NormalTok{ STR }\SpecialCharTok{+} \FunctionTok{I}\NormalTok{(STR}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{I}\NormalTok{(STR}\SpecialCharTok{\^{}}\DecValTok{3}\NormalTok{) }\SpecialCharTok{+}\NormalTok{ english }\SpecialCharTok{+}\NormalTok{ lunch }\SpecialCharTok{+}\NormalTok{ income }
                         \SpecialCharTok{+} \FunctionTok{I}\NormalTok{(income}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{I}\NormalTok{(income}\SpecialCharTok{\^{}}\DecValTok{3}\NormalTok{), }\AttributeTok{data =}\NormalTok{ MASchools)}
 
-\NormalTok{TestScore\_MA\_mod5 }\OtherTok{\textless{}{-}} \FunctionTok{lm}\NormalTok{(score }\SpecialCharTok{\textasciitilde{}}\NormalTok{ STR }\SpecialCharTok{+} \FunctionTok{I}\NormalTok{(income}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{I}\NormalTok{(income}\SpecialCharTok{\^{}}\DecValTok{3}\NormalTok{) }\SpecialCharTok{+}\NormalTok{ HiEL}\SpecialCharTok{:}\NormalTok{STR }\SpecialCharTok{+}\NormalTok{ lunch }
+\NormalTok{TestScore\_MA\_mod5 }\OtherTok{\textless{}{-}} \FunctionTok{lm}\NormalTok{(score }\SpecialCharTok{\textasciitilde{}}\NormalTok{ STR }\SpecialCharTok{+}\NormalTok{ HiEL }\SpecialCharTok{+} \FunctionTok{I}\NormalTok{(income}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{I}\NormalTok{(income}\SpecialCharTok{\^{}}\DecValTok{3}\NormalTok{) }\SpecialCharTok{+}\NormalTok{ HiEL}\SpecialCharTok{:}\NormalTok{STR }\SpecialCharTok{+}\NormalTok{ lunch }
                         \SpecialCharTok{+}\NormalTok{ income, }\AttributeTok{data =}\NormalTok{ MASchools)}
 
-\NormalTok{TestScore\_MA\_mod6 }\OtherTok{\textless{}{-}} \FunctionTok{lm}\NormalTok{(score }\SpecialCharTok{\textasciitilde{}}\NormalTok{ STR }\SpecialCharTok{+} \FunctionTok{I}\NormalTok{(income}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{I}\NormalTok{(income}\SpecialCharTok{\^{}}\DecValTok{3}\NormalTok{) }\SpecialCharTok{+}\NormalTok{ HiEL }\SpecialCharTok{+}\NormalTok{ HiEL}\SpecialCharTok{:}\NormalTok{STR }\SpecialCharTok{+}\NormalTok{ lunch }
+\NormalTok{TestScore\_MA\_mod6 }\OtherTok{\textless{}{-}} \FunctionTok{lm}\NormalTok{(score }\SpecialCharTok{\textasciitilde{}}\NormalTok{ STR }\SpecialCharTok{+} \FunctionTok{I}\NormalTok{(income}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{I}\NormalTok{(income}\SpecialCharTok{\^{}}\DecValTok{3}\NormalTok{)}\SpecialCharTok{+}\NormalTok{ lunch }
                         \SpecialCharTok{+}\NormalTok{ income, }\AttributeTok{data =}\NormalTok{ MASchools)}
 
 \CommentTok{\# gather robust standard errors}
@@ -8925,7 +8926,7 @@ We continue by estimating most of the model specifications used for analysis of 
 \CommentTok{\# generate a table with \textquotesingle{}stargazer()\textquotesingle{}}
 \FunctionTok{library}\NormalTok{(stargazer)}
 
-\FunctionTok{stargazer}\NormalTok{(Linear\_model\_MA, TestScore\_MA\_mod2, TestScore\_MA\_mod3, }
+\FunctionTok{stargazer}\NormalTok{(TestScore\_MA\_mod1, TestScore\_MA\_mod2, TestScore\_MA\_mod3, }
 \NormalTok{          TestScore\_MA\_mod4, TestScore\_MA\_mod5, TestScore\_MA\_mod6,}
           \AttributeTok{title =} \StringTok{"Regressions Using Massachusetts Test Score Data"}\NormalTok{,}
           \AttributeTok{type =} \StringTok{"latex"}\NormalTok{,}
@@ -9007,7 +9008,7 @@ Next we reproduce the \(F\)-statistics and \(p\)-values for testing exclusion of
 \CommentTok{\# F{-}test model (3)}
 \FunctionTok{linearHypothesis}\NormalTok{(TestScore\_MA\_mod3, }
                  \FunctionTok{c}\NormalTok{(}\StringTok{"I(income\^{}2)=0"}\NormalTok{, }\StringTok{"I(income\^{}3)=0"}\NormalTok{), }
-                 \AttributeTok{vcov. =}\NormalTok{ vcovHC, }\AttributeTok{type =} \StringTok{"HC1"}\NormalTok{)}
+                 \AttributeTok{vcov. =} \FunctionTok{vcovHC}\NormalTok{(TestScore\_MA\_mod3, }\AttributeTok{type =} \StringTok{"HC1"}\NormalTok{))}
 \CommentTok{\#\textgreater{} Linear hypothesis test}
 \CommentTok{\#\textgreater{} }
 \CommentTok{\#\textgreater{} Hypothesis:}
@@ -9019,16 +9020,16 @@ Next we reproduce the \(F\)-statistics and \(p\)-values for testing exclusion of
 \CommentTok{\#\textgreater{} }
 \CommentTok{\#\textgreater{} Note: Coefficient covariance matrix supplied.}
 \CommentTok{\#\textgreater{} }
-\CommentTok{\#\textgreater{}   Res.Df Df     F   Pr(\textgreater{}F)   }
-\CommentTok{\#\textgreater{} 1    215                     }
-\CommentTok{\#\textgreater{} 2    213  2 6.227 0.002354 **}
+\CommentTok{\#\textgreater{}   Res.Df Df      F    Pr(\textgreater{}F)    }
+\CommentTok{\#\textgreater{} 1    215                        }
+\CommentTok{\#\textgreater{} 2    213  2 7.7448 0.0005664 ***}
 \CommentTok{\#\textgreater{} {-}{-}{-}}
 \CommentTok{\#\textgreater{} Signif. codes:  0 \textquotesingle{}***\textquotesingle{} 0.001 \textquotesingle{}**\textquotesingle{} 0.01 \textquotesingle{}*\textquotesingle{} 0.05 \textquotesingle{}.\textquotesingle{} 0.1 \textquotesingle{} \textquotesingle{} 1}
 
 \CommentTok{\# F{-}tests model (4)}
 \FunctionTok{linearHypothesis}\NormalTok{(TestScore\_MA\_mod4, }
                  \FunctionTok{c}\NormalTok{(}\StringTok{"STR=0"}\NormalTok{, }\StringTok{"I(STR\^{}2)=0"}\NormalTok{, }\StringTok{"I(STR\^{}3)=0"}\NormalTok{), }
-                 \AttributeTok{vcov. =}\NormalTok{ vcovHC, }\AttributeTok{type =} \StringTok{"HC1"}\NormalTok{)}
+                 \AttributeTok{vcov. =} \FunctionTok{vcovHC}\NormalTok{(TestScore\_MA\_mod4, }\AttributeTok{type =} \StringTok{"HC1"}\NormalTok{))}
 \CommentTok{\#\textgreater{} Linear hypothesis test}
 \CommentTok{\#\textgreater{} }
 \CommentTok{\#\textgreater{} Hypothesis:}
@@ -9044,13 +9045,13 @@ Next we reproduce the \(F\)-statistics and \(p\)-values for testing exclusion of
 \CommentTok{\#\textgreater{} }
 \CommentTok{\#\textgreater{}   Res.Df Df      F  Pr(\textgreater{}F)  }
 \CommentTok{\#\textgreater{} 1    214                    }
-\CommentTok{\#\textgreater{} 2    211  3 2.3364 0.07478 .}
+\CommentTok{\#\textgreater{} 2    211  3 2.8565 0.03809 *}
 \CommentTok{\#\textgreater{} {-}{-}{-}}
 \CommentTok{\#\textgreater{} Signif. codes:  0 \textquotesingle{}***\textquotesingle{} 0.001 \textquotesingle{}**\textquotesingle{} 0.01 \textquotesingle{}*\textquotesingle{} 0.05 \textquotesingle{}.\textquotesingle{} 0.1 \textquotesingle{} \textquotesingle{} 1}
 
 \FunctionTok{linearHypothesis}\NormalTok{(TestScore\_MA\_mod4, }
                  \FunctionTok{c}\NormalTok{(}\StringTok{"I(STR\^{}2)=0"}\NormalTok{, }\StringTok{"I(STR\^{}3)=0"}\NormalTok{), }
-                 \AttributeTok{vcov. =}\NormalTok{ vcovHC, }\AttributeTok{type =} \StringTok{"HC1"}\NormalTok{)}
+                 \AttributeTok{vcov. =} \FunctionTok{vcovHC}\NormalTok{(TestScore\_MA\_mod4, }\AttributeTok{type =} \StringTok{"HC1"}\NormalTok{))}
 \CommentTok{\#\textgreater{} Linear hypothesis test}
 \CommentTok{\#\textgreater{} }
 \CommentTok{\#\textgreater{} Hypothesis:}
@@ -9065,11 +9066,11 @@ Next we reproduce the \(F\)-statistics and \(p\)-values for testing exclusion of
 \CommentTok{\#\textgreater{} }
 \CommentTok{\#\textgreater{}   Res.Df Df      F Pr(\textgreater{}F)}
 \CommentTok{\#\textgreater{} 1    213                 }
-\CommentTok{\#\textgreater{} 2    211  2 0.3396 0.7124}
+\CommentTok{\#\textgreater{} 2    211  2 0.4463 0.6406}
 
 \FunctionTok{linearHypothesis}\NormalTok{(TestScore\_MA\_mod4, }
                  \FunctionTok{c}\NormalTok{(}\StringTok{"I(income\^{}2)=0"}\NormalTok{, }\StringTok{"I(income\^{}3)=0"}\NormalTok{), }
-                 \AttributeTok{vcov. =}\NormalTok{ vcovHC, }\AttributeTok{type =} \StringTok{"HC1"}\NormalTok{)}
+                 \AttributeTok{vcov. =} \FunctionTok{vcovHC}\NormalTok{(TestScore\_MA\_mod4, }\AttributeTok{type =} \StringTok{"HC1"}\NormalTok{))}
 \CommentTok{\#\textgreater{} Linear hypothesis test}
 \CommentTok{\#\textgreater{} }
 \CommentTok{\#\textgreater{} Hypothesis:}
@@ -9082,16 +9083,16 @@ Next we reproduce the \(F\)-statistics and \(p\)-values for testing exclusion of
 \CommentTok{\#\textgreater{} }
 \CommentTok{\#\textgreater{} Note: Coefficient covariance matrix supplied.}
 \CommentTok{\#\textgreater{} }
-\CommentTok{\#\textgreater{}   Res.Df Df      F   Pr(\textgreater{}F)   }
-\CommentTok{\#\textgreater{} 1    213                      }
-\CommentTok{\#\textgreater{} 2    211  2 5.7043 0.003866 **}
+\CommentTok{\#\textgreater{}   Res.Df Df      F    Pr(\textgreater{}F)    }
+\CommentTok{\#\textgreater{} 1    213                        }
+\CommentTok{\#\textgreater{} 2    211  2 7.7487 0.0005657 ***}
 \CommentTok{\#\textgreater{} {-}{-}{-}}
 \CommentTok{\#\textgreater{} Signif. codes:  0 \textquotesingle{}***\textquotesingle{} 0.001 \textquotesingle{}**\textquotesingle{} 0.01 \textquotesingle{}*\textquotesingle{} 0.05 \textquotesingle{}.\textquotesingle{} 0.1 \textquotesingle{} \textquotesingle{} 1}
-
-\CommentTok{\# F{-}tests model (5)}
-\FunctionTok{linearHypothesis}\NormalTok{(TestScore\_MA\_mod5, }
-                 \FunctionTok{c}\NormalTok{(}\StringTok{"STR=0"}\NormalTok{, }\StringTok{"STR:HiEL=0"}\NormalTok{), }
-                 \AttributeTok{vcov. =}\NormalTok{ vcovHC, }\AttributeTok{type =} \StringTok{"HC1"}\NormalTok{)}
+                 
+ \CommentTok{\#F{-}tests model (5)}
+  \FunctionTok{linearHypothesis}\NormalTok{(TestScore\_MA\_mod5, }
+                  \FunctionTok{c}\NormalTok{(}\StringTok{"STR=0"}\NormalTok{, }\StringTok{"STR:HiEL=0"}\NormalTok{), }
+                  \AttributeTok{vcov. =} \FunctionTok{vcovHC}\NormalTok{(TestScore\_MA\_mod5, }\AttributeTok{type =} \StringTok{"HC1"}\NormalTok{))}
 \CommentTok{\#\textgreater{} Linear hypothesis test}
 \CommentTok{\#\textgreater{} }
 \CommentTok{\#\textgreater{} Hypothesis:}
@@ -9106,13 +9107,12 @@ Next we reproduce the \(F\)-statistics and \(p\)-values for testing exclusion of
 \CommentTok{\#\textgreater{} }
 \CommentTok{\#\textgreater{}   Res.Df Df      F Pr(\textgreater{}F)  }
 \CommentTok{\#\textgreater{} 1    214                   }
-\CommentTok{\#\textgreater{} 2    212  2 3.7663 0.0247 *}
+\CommentTok{\#\textgreater{} 2    212  2 4.0062 0.0196 *}
 \CommentTok{\#\textgreater{} {-}{-}{-}}
 \CommentTok{\#\textgreater{} Signif. codes:  0 \textquotesingle{}***\textquotesingle{} 0.001 \textquotesingle{}**\textquotesingle{} 0.01 \textquotesingle{}*\textquotesingle{} 0.05 \textquotesingle{}.\textquotesingle{} 0.1 \textquotesingle{} \textquotesingle{} 1}
-
-\FunctionTok{linearHypothesis}\NormalTok{(TestScore\_MA\_mod5, }
-                 \FunctionTok{c}\NormalTok{(}\StringTok{"I(income\^{}2)=0"}\NormalTok{, }\StringTok{"I(income\^{}3)=0"}\NormalTok{), }
-                 \AttributeTok{vcov. =}\NormalTok{ vcovHC, }\AttributeTok{type =} \StringTok{"HC1"}\NormalTok{)}
+ \FunctionTok{linearHypothesis}\NormalTok{(TestScore\_MA\_mod5, }
+                  \FunctionTok{c}\NormalTok{(}\StringTok{"I(income\^{}2)=0"}\NormalTok{, }\StringTok{"I(income\^{}3)=0"}\NormalTok{), }
+                  \AttributeTok{vcov. =} \FunctionTok{vcovHC}\NormalTok{(TestScore\_MA\_mod5, }\AttributeTok{type =} \StringTok{"HC1"}\NormalTok{))}
 \CommentTok{\#\textgreater{} Linear hypothesis test}
 \CommentTok{\#\textgreater{} }
 \CommentTok{\#\textgreater{} Hypothesis:}
@@ -9125,15 +9125,14 @@ Next we reproduce the \(F\)-statistics and \(p\)-values for testing exclusion of
 \CommentTok{\#\textgreater{} }
 \CommentTok{\#\textgreater{} Note: Coefficient covariance matrix supplied.}
 \CommentTok{\#\textgreater{} }
-\CommentTok{\#\textgreater{}   Res.Df Df      F  Pr(\textgreater{}F)  }
-\CommentTok{\#\textgreater{} 1    214                    }
-\CommentTok{\#\textgreater{} 2    212  2 3.2201 0.04191 *}
+\CommentTok{\#\textgreater{}   Res.Df Df      F   Pr(\textgreater{}F)   }
+\CommentTok{\#\textgreater{} 1    214                      }
+\CommentTok{\#\textgreater{} 2    212  2 5.8468 0.003375 **}
 \CommentTok{\#\textgreater{} {-}{-}{-}}
 \CommentTok{\#\textgreater{} Signif. codes:  0 \textquotesingle{}***\textquotesingle{} 0.001 \textquotesingle{}**\textquotesingle{} 0.01 \textquotesingle{}*\textquotesingle{} 0.05 \textquotesingle{}.\textquotesingle{} 0.1 \textquotesingle{} \textquotesingle{} 1}
-
-\FunctionTok{linearHypothesis}\NormalTok{(TestScore\_MA\_mod5, }
-                 \FunctionTok{c}\NormalTok{(}\StringTok{"HiEL=0"}\NormalTok{, }\StringTok{"STR:HiEL=0"}\NormalTok{), }
-                 \AttributeTok{vcov. =}\NormalTok{ vcovHC, }\AttributeTok{type =} \StringTok{"HC1"}\NormalTok{)}
+ \FunctionTok{linearHypothesis}\NormalTok{(TestScore\_MA\_mod5, }
+                  \FunctionTok{c}\NormalTok{(}\StringTok{"HiEL=0"}\NormalTok{, }\StringTok{"STR:HiEL=0"}\NormalTok{), }
+                  \AttributeTok{vcov. =} \FunctionTok{vcovHC}\NormalTok{(TestScore\_MA\_mod5, }\AttributeTok{type =} \StringTok{"HC1"}\NormalTok{))}
 \CommentTok{\#\textgreater{} Linear hypothesis test}
 \CommentTok{\#\textgreater{} }
 \CommentTok{\#\textgreater{} Hypothesis:}
@@ -9148,12 +9147,12 @@ Next we reproduce the \(F\)-statistics and \(p\)-values for testing exclusion of
 \CommentTok{\#\textgreater{} }
 \CommentTok{\#\textgreater{}   Res.Df Df      F Pr(\textgreater{}F)}
 \CommentTok{\#\textgreater{} 1    214                 }
-\CommentTok{\#\textgreater{} 2    212  2 1.4674 0.2328}
+\CommentTok{\#\textgreater{} 2    212  2 1.5835 0.2077}
 
-\CommentTok{\# F{-}test Model (6)}
+\CommentTok{\# F{-}tests model (6)}
 \FunctionTok{linearHypothesis}\NormalTok{(TestScore\_MA\_mod6, }
-                 \FunctionTok{c}\NormalTok{(}\StringTok{"I(income\^{}2)=0"}\NormalTok{, }\StringTok{"I(income\^{}3)=0"}\NormalTok{), }
-                 \AttributeTok{vcov. =}\NormalTok{ vcovHC, }\AttributeTok{type =} \StringTok{"HC1"}\NormalTok{)}
+                  \FunctionTok{c}\NormalTok{(}\StringTok{"I(income\^{}2)=0"}\NormalTok{, }\StringTok{"I(income\^{}3)=0"}\NormalTok{), }
+                  \AttributeTok{vcov. =} \FunctionTok{vcovHC}\NormalTok{(TestScore\_MA\_mod6, }\AttributeTok{type =} \StringTok{"HC1"}\NormalTok{))}
 \CommentTok{\#\textgreater{} Linear hypothesis test}
 \CommentTok{\#\textgreater{} }
 \CommentTok{\#\textgreater{} Hypothesis:}
@@ -9165,9 +9164,9 @@ Next we reproduce the \(F\)-statistics and \(p\)-values for testing exclusion of
 \CommentTok{\#\textgreater{} }
 \CommentTok{\#\textgreater{} Note: Coefficient covariance matrix supplied.}
 \CommentTok{\#\textgreater{} }
-\CommentTok{\#\textgreater{}   Res.Df Df      F  Pr(\textgreater{}F)  }
-\CommentTok{\#\textgreater{} 1    216                    }
-\CommentTok{\#\textgreater{} 2    214  2 4.2776 0.01508 *}
+\CommentTok{\#\textgreater{}   Res.Df Df      F   Pr(\textgreater{}F)   }
+\CommentTok{\#\textgreater{} 1    216                      }
+\CommentTok{\#\textgreater{} 2    214  2 6.5479 0.001737 **}
 \CommentTok{\#\textgreater{} {-}{-}{-}}
 \CommentTok{\#\textgreater{} Signif. codes:  0 \textquotesingle{}***\textquotesingle{} 0.001 \textquotesingle{}**\textquotesingle{} 0.01 \textquotesingle{}*\textquotesingle{} 0.05 \textquotesingle{}.\textquotesingle{} 0.1 \textquotesingle{} \textquotesingle{} 1}
 \end{Highlighting}
@@ -9260,7 +9259,8 @@ The following chapters address techniques that can be remedies to all the threat
 \hypertarget{rwpd}{%
 \chapter{Regression with Panel Data}\label{rwpd}}
 
-Regression using panel data may mitigate omitted variable bias when there is no information on variables that correlate with both the regressors of interest and the independent variable and if these variables are constant in the time dimension or across entities. Provided that panel data is available panel regression methods may improve upon multiple regression models which, as discussed in Chapter \ref{asbomr}, produce results that are not internally valid in such a setting.
+Regression using panel data may mitigate omitted variable bias when there is no information on variables that correlate with both the regressors of interest and the dependent variable and if these variables are constant in the time dimension or across entities.
+When panel data is available, panel regression methods can be used to improve upon multiple regression models. This is because multiple regression models may produce results that lack internal validity in such a setting, as discussed in Chapter \ref{asbomr}.
 
 This chapter covers the following topics:
 
@@ -9312,9 +9312,12 @@ Sometimes panel data is also called longitudinal data as it adds a temporal dime
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{\# load the package and the dataset}
+\CommentTok{\# load the packagees and the dataset}
 \FunctionTok{library}\NormalTok{(AER)}
+\FunctionTok{library}\NormalTok{(plm)}
 \FunctionTok{data}\NormalTok{(Fatalities)}
+\CommentTok{\# pdata.frame() declares the data as panel data.}
+\NormalTok{Fatalities}\OtherTok{\textless{}{-}} \FunctionTok{pdata.frame}\NormalTok{(Fatalities, }\AttributeTok{index =} \FunctionTok{c}\NormalTok{(}\StringTok{"state"}\NormalTok{, }\StringTok{"year"}\NormalTok{))}
 \end{Highlighting}
 \end{Shaded}
 
@@ -9331,41 +9334,180 @@ Sometimes panel data is also called longitudinal data as it adds a temporal dime
 \begin{Shaded}
 \begin{Highlighting}[]
 \FunctionTok{str}\NormalTok{(Fatalities)}
-\CommentTok{\#\textgreater{} \textquotesingle{}data.frame\textquotesingle{}:    336 obs. of  34 variables:}
+\CommentTok{\#\textgreater{} Classes \textquotesingle{}pdata.frame\textquotesingle{} and \textquotesingle{}data.frame\textquotesingle{}:  336 obs. of  34 variables:}
 \CommentTok{\#\textgreater{}  $ state       : Factor w/ 48 levels "al","az","ar",..: 1 1 1 1 1 1 1 2 2 2 ...}
+\CommentTok{\#\textgreater{}   ..{-} attr(*, "names")= chr [1:336] "al{-}1982" "al{-}1983" "al{-}1984" "al{-}1985" ...}
+\CommentTok{\#\textgreater{}   ..{-} attr(*, "index")=Classes \textquotesingle{}pindex\textquotesingle{} and \textquotesingle{}data.frame\textquotesingle{}:    336 obs. of  2 variables:}
+\CommentTok{\#\textgreater{}   .. ..$ state: Factor w/ 48 levels "al","az","ar",..: 1 1 1 1 1 1 1 2 2 2 ...}
+\CommentTok{\#\textgreater{}   .. ..$ year : Factor w/ 7 levels "1982","1983",..: 1 2 3 4 5 6 7 1 2 3 ...}
 \CommentTok{\#\textgreater{}  $ year        : Factor w/ 7 levels "1982","1983",..: 1 2 3 4 5 6 7 1 2 3 ...}
-\CommentTok{\#\textgreater{}  $ spirits     : num  1.37 1.36 1.32 1.28 1.23 ...}
-\CommentTok{\#\textgreater{}  $ unemp       : num  14.4 13.7 11.1 8.9 9.8 ...}
-\CommentTok{\#\textgreater{}  $ income      : num  10544 10733 11109 11333 11662 ...}
-\CommentTok{\#\textgreater{}  $ emppop      : num  50.7 52.1 54.2 55.3 56.5 ...}
-\CommentTok{\#\textgreater{}  $ beertax     : num  1.54 1.79 1.71 1.65 1.61 ...}
-\CommentTok{\#\textgreater{}  $ baptist     : num  30.4 30.3 30.3 30.3 30.3 ...}
-\CommentTok{\#\textgreater{}  $ mormon      : num  0.328 0.343 0.359 0.376 0.393 ...}
-\CommentTok{\#\textgreater{}  $ drinkage    : num  19 19 19 19.7 21 ...}
-\CommentTok{\#\textgreater{}  $ dry         : num  25 23 24 23.6 23.5 ...}
-\CommentTok{\#\textgreater{}  $ youngdrivers: num  0.212 0.211 0.211 0.211 0.213 ...}
-\CommentTok{\#\textgreater{}  $ miles       : num  7234 7836 8263 8727 8953 ...}
+\CommentTok{\#\textgreater{}   ..{-} attr(*, "names")= chr [1:336] "al{-}1982" "al{-}1983" "al{-}1984" "al{-}1985" ...}
+\CommentTok{\#\textgreater{}   ..{-} attr(*, "index")=Classes \textquotesingle{}pindex\textquotesingle{} and \textquotesingle{}data.frame\textquotesingle{}:    336 obs. of  2 variables:}
+\CommentTok{\#\textgreater{}   .. ..$ state: Factor w/ 48 levels "al","az","ar",..: 1 1 1 1 1 1 1 2 2 2 ...}
+\CommentTok{\#\textgreater{}   .. ..$ year : Factor w/ 7 levels "1982","1983",..: 1 2 3 4 5 6 7 1 2 3 ...}
+\CommentTok{\#\textgreater{}  $ spirits     : \textquotesingle{}pseries\textquotesingle{} Named num  1.37 1.36 1.32 1.28 1.23 ...}
+\CommentTok{\#\textgreater{}   ..{-} attr(*, "names")= chr [1:336] "al{-}1982" "al{-}1983" "al{-}1984" "al{-}1985" ...}
+\CommentTok{\#\textgreater{}   ..{-} attr(*, "index")=Classes \textquotesingle{}pindex\textquotesingle{} and \textquotesingle{}data.frame\textquotesingle{}:    336 obs. of  2 variables:}
+\CommentTok{\#\textgreater{}   .. ..$ state: Factor w/ 48 levels "al","az","ar",..: 1 1 1 1 1 1 1 2 2 2 ...}
+\CommentTok{\#\textgreater{}   .. ..$ year : Factor w/ 7 levels "1982","1983",..: 1 2 3 4 5 6 7 1 2 3 ...}
+\CommentTok{\#\textgreater{}  $ unemp       : \textquotesingle{}pseries\textquotesingle{} Named num  14.4 13.7 11.1 8.9 9.8 ...}
+\CommentTok{\#\textgreater{}   ..{-} attr(*, "names")= chr [1:336] "al{-}1982" "al{-}1983" "al{-}1984" "al{-}1985" ...}
+\CommentTok{\#\textgreater{}   ..{-} attr(*, "index")=Classes \textquotesingle{}pindex\textquotesingle{} and \textquotesingle{}data.frame\textquotesingle{}:    336 obs. of  2 variables:}
+\CommentTok{\#\textgreater{}   .. ..$ state: Factor w/ 48 levels "al","az","ar",..: 1 1 1 1 1 1 1 2 2 2 ...}
+\CommentTok{\#\textgreater{}   .. ..$ year : Factor w/ 7 levels "1982","1983",..: 1 2 3 4 5 6 7 1 2 3 ...}
+\CommentTok{\#\textgreater{}  $ income      : \textquotesingle{}pseries\textquotesingle{} Named num  10544 10733 11109 11333 11662 ...}
+\CommentTok{\#\textgreater{}   ..{-} attr(*, "names")= chr [1:336] "al{-}1982" "al{-}1983" "al{-}1984" "al{-}1985" ...}
+\CommentTok{\#\textgreater{}   ..{-} attr(*, "index")=Classes \textquotesingle{}pindex\textquotesingle{} and \textquotesingle{}data.frame\textquotesingle{}:    336 obs. of  2 variables:}
+\CommentTok{\#\textgreater{}   .. ..$ state: Factor w/ 48 levels "al","az","ar",..: 1 1 1 1 1 1 1 2 2 2 ...}
+\CommentTok{\#\textgreater{}   .. ..$ year : Factor w/ 7 levels "1982","1983",..: 1 2 3 4 5 6 7 1 2 3 ...}
+\CommentTok{\#\textgreater{}  $ emppop      : \textquotesingle{}pseries\textquotesingle{} Named num  50.7 52.1 54.2 55.3 56.5 ...}
+\CommentTok{\#\textgreater{}   ..{-} attr(*, "names")= chr [1:336] "al{-}1982" "al{-}1983" "al{-}1984" "al{-}1985" ...}
+\CommentTok{\#\textgreater{}   ..{-} attr(*, "index")=Classes \textquotesingle{}pindex\textquotesingle{} and \textquotesingle{}data.frame\textquotesingle{}:    336 obs. of  2 variables:}
+\CommentTok{\#\textgreater{}   .. ..$ state: Factor w/ 48 levels "al","az","ar",..: 1 1 1 1 1 1 1 2 2 2 ...}
+\CommentTok{\#\textgreater{}   .. ..$ year : Factor w/ 7 levels "1982","1983",..: 1 2 3 4 5 6 7 1 2 3 ...}
+\CommentTok{\#\textgreater{}  $ beertax     : \textquotesingle{}pseries\textquotesingle{} Named num  1.54 1.79 1.71 1.65 1.61 ...}
+\CommentTok{\#\textgreater{}   ..{-} attr(*, "names")= chr [1:336] "al{-}1982" "al{-}1983" "al{-}1984" "al{-}1985" ...}
+\CommentTok{\#\textgreater{}   ..{-} attr(*, "index")=Classes \textquotesingle{}pindex\textquotesingle{} and \textquotesingle{}data.frame\textquotesingle{}:    336 obs. of  2 variables:}
+\CommentTok{\#\textgreater{}   .. ..$ state: Factor w/ 48 levels "al","az","ar",..: 1 1 1 1 1 1 1 2 2 2 ...}
+\CommentTok{\#\textgreater{}   .. ..$ year : Factor w/ 7 levels "1982","1983",..: 1 2 3 4 5 6 7 1 2 3 ...}
+\CommentTok{\#\textgreater{}  $ baptist     : \textquotesingle{}pseries\textquotesingle{} Named num  30.4 30.3 30.3 30.3 30.3 ...}
+\CommentTok{\#\textgreater{}   ..{-} attr(*, "names")= chr [1:336] "al{-}1982" "al{-}1983" "al{-}1984" "al{-}1985" ...}
+\CommentTok{\#\textgreater{}   ..{-} attr(*, "index")=Classes \textquotesingle{}pindex\textquotesingle{} and \textquotesingle{}data.frame\textquotesingle{}:    336 obs. of  2 variables:}
+\CommentTok{\#\textgreater{}   .. ..$ state: Factor w/ 48 levels "al","az","ar",..: 1 1 1 1 1 1 1 2 2 2 ...}
+\CommentTok{\#\textgreater{}   .. ..$ year : Factor w/ 7 levels "1982","1983",..: 1 2 3 4 5 6 7 1 2 3 ...}
+\CommentTok{\#\textgreater{}  $ mormon      : \textquotesingle{}pseries\textquotesingle{} Named num  0.328 0.343 0.359 0.376 0.393 ...}
+\CommentTok{\#\textgreater{}   ..{-} attr(*, "names")= chr [1:336] "al{-}1982" "al{-}1983" "al{-}1984" "al{-}1985" ...}
+\CommentTok{\#\textgreater{}   ..{-} attr(*, "index")=Classes \textquotesingle{}pindex\textquotesingle{} and \textquotesingle{}data.frame\textquotesingle{}:    336 obs. of  2 variables:}
+\CommentTok{\#\textgreater{}   .. ..$ state: Factor w/ 48 levels "al","az","ar",..: 1 1 1 1 1 1 1 2 2 2 ...}
+\CommentTok{\#\textgreater{}   .. ..$ year : Factor w/ 7 levels "1982","1983",..: 1 2 3 4 5 6 7 1 2 3 ...}
+\CommentTok{\#\textgreater{}  $ drinkage    : \textquotesingle{}pseries\textquotesingle{} Named num  19 19 19 19.7 21 ...}
+\CommentTok{\#\textgreater{}   ..{-} attr(*, "names")= chr [1:336] "al{-}1982" "al{-}1983" "al{-}1984" "al{-}1985" ...}
+\CommentTok{\#\textgreater{}   ..{-} attr(*, "index")=Classes \textquotesingle{}pindex\textquotesingle{} and \textquotesingle{}data.frame\textquotesingle{}:    336 obs. of  2 variables:}
+\CommentTok{\#\textgreater{}   .. ..$ state: Factor w/ 48 levels "al","az","ar",..: 1 1 1 1 1 1 1 2 2 2 ...}
+\CommentTok{\#\textgreater{}   .. ..$ year : Factor w/ 7 levels "1982","1983",..: 1 2 3 4 5 6 7 1 2 3 ...}
+\CommentTok{\#\textgreater{}  $ dry         : \textquotesingle{}pseries\textquotesingle{} Named num  25 23 24 23.6 23.5 ...}
+\CommentTok{\#\textgreater{}   ..{-} attr(*, "names")= chr [1:336] "al{-}1982" "al{-}1983" "al{-}1984" "al{-}1985" ...}
+\CommentTok{\#\textgreater{}   ..{-} attr(*, "index")=Classes \textquotesingle{}pindex\textquotesingle{} and \textquotesingle{}data.frame\textquotesingle{}:    336 obs. of  2 variables:}
+\CommentTok{\#\textgreater{}   .. ..$ state: Factor w/ 48 levels "al","az","ar",..: 1 1 1 1 1 1 1 2 2 2 ...}
+\CommentTok{\#\textgreater{}   .. ..$ year : Factor w/ 7 levels "1982","1983",..: 1 2 3 4 5 6 7 1 2 3 ...}
+\CommentTok{\#\textgreater{}  $ youngdrivers: \textquotesingle{}pseries\textquotesingle{} Named num  0.212 0.211 0.211 0.211 0.213 ...}
+\CommentTok{\#\textgreater{}   ..{-} attr(*, "names")= chr [1:336] "al{-}1982" "al{-}1983" "al{-}1984" "al{-}1985" ...}
+\CommentTok{\#\textgreater{}   ..{-} attr(*, "index")=Classes \textquotesingle{}pindex\textquotesingle{} and \textquotesingle{}data.frame\textquotesingle{}:    336 obs. of  2 variables:}
+\CommentTok{\#\textgreater{}   .. ..$ state: Factor w/ 48 levels "al","az","ar",..: 1 1 1 1 1 1 1 2 2 2 ...}
+\CommentTok{\#\textgreater{}   .. ..$ year : Factor w/ 7 levels "1982","1983",..: 1 2 3 4 5 6 7 1 2 3 ...}
+\CommentTok{\#\textgreater{}  $ miles       : \textquotesingle{}pseries\textquotesingle{} Named num  7234 7836 8263 8727 8953 ...}
+\CommentTok{\#\textgreater{}   ..{-} attr(*, "names")= chr [1:336] "al{-}1982" "al{-}1983" "al{-}1984" "al{-}1985" ...}
+\CommentTok{\#\textgreater{}   ..{-} attr(*, "index")=Classes \textquotesingle{}pindex\textquotesingle{} and \textquotesingle{}data.frame\textquotesingle{}:    336 obs. of  2 variables:}
+\CommentTok{\#\textgreater{}   .. ..$ state: Factor w/ 48 levels "al","az","ar",..: 1 1 1 1 1 1 1 2 2 2 ...}
+\CommentTok{\#\textgreater{}   .. ..$ year : Factor w/ 7 levels "1982","1983",..: 1 2 3 4 5 6 7 1 2 3 ...}
 \CommentTok{\#\textgreater{}  $ breath      : Factor w/ 2 levels "no","yes": 1 1 1 1 1 1 1 1 1 1 ...}
+\CommentTok{\#\textgreater{}   ..{-} attr(*, "names")= chr [1:336] "al{-}1982" "al{-}1983" "al{-}1984" "al{-}1985" ...}
+\CommentTok{\#\textgreater{}   ..{-} attr(*, "index")=Classes \textquotesingle{}pindex\textquotesingle{} and \textquotesingle{}data.frame\textquotesingle{}:    336 obs. of  2 variables:}
+\CommentTok{\#\textgreater{}   .. ..$ state: Factor w/ 48 levels "al","az","ar",..: 1 1 1 1 1 1 1 2 2 2 ...}
+\CommentTok{\#\textgreater{}   .. ..$ year : Factor w/ 7 levels "1982","1983",..: 1 2 3 4 5 6 7 1 2 3 ...}
 \CommentTok{\#\textgreater{}  $ jail        : Factor w/ 2 levels "no","yes": 1 1 1 1 1 1 1 2 2 2 ...}
+\CommentTok{\#\textgreater{}   ..{-} attr(*, "names")= chr [1:336] "al{-}1982" "al{-}1983" "al{-}1984" "al{-}1985" ...}
+\CommentTok{\#\textgreater{}   ..{-} attr(*, "index")=Classes \textquotesingle{}pindex\textquotesingle{} and \textquotesingle{}data.frame\textquotesingle{}:    336 obs. of  2 variables:}
+\CommentTok{\#\textgreater{}   .. ..$ state: Factor w/ 48 levels "al","az","ar",..: 1 1 1 1 1 1 1 2 2 2 ...}
+\CommentTok{\#\textgreater{}   .. ..$ year : Factor w/ 7 levels "1982","1983",..: 1 2 3 4 5 6 7 1 2 3 ...}
 \CommentTok{\#\textgreater{}  $ service     : Factor w/ 2 levels "no","yes": 1 1 1 1 1 1 1 2 2 2 ...}
-\CommentTok{\#\textgreater{}  $ fatal       : int  839 930 932 882 1081 1110 1023 724 675 869 ...}
-\CommentTok{\#\textgreater{}  $ nfatal      : int  146 154 165 146 172 181 139 131 112 149 ...}
-\CommentTok{\#\textgreater{}  $ sfatal      : int  99 98 94 98 119 114 89 76 60 81 ...}
-\CommentTok{\#\textgreater{}  $ fatal1517   : int  53 71 49 66 82 94 66 40 40 51 ...}
-\CommentTok{\#\textgreater{}  $ nfatal1517  : int  9 8 7 9 10 11 8 7 7 8 ...}
-\CommentTok{\#\textgreater{}  $ fatal1820   : int  99 108 103 100 120 127 105 81 83 118 ...}
-\CommentTok{\#\textgreater{}  $ nfatal1820  : int  34 26 25 23 23 31 24 16 19 34 ...}
-\CommentTok{\#\textgreater{}  $ fatal2124   : int  120 124 118 114 119 138 123 96 80 123 ...}
-\CommentTok{\#\textgreater{}  $ nfatal2124  : int  32 35 34 45 29 30 25 36 17 33 ...}
-\CommentTok{\#\textgreater{}  $ afatal      : num  309 342 305 277 361 ...}
-\CommentTok{\#\textgreater{}  $ pop         : num  3942002 3960008 3988992 4021008 4049994 ...}
-\CommentTok{\#\textgreater{}  $ pop1517     : num  209000 202000 197000 195000 204000 ...}
-\CommentTok{\#\textgreater{}  $ pop1820     : num  221553 219125 216724 214349 212000 ...}
-\CommentTok{\#\textgreater{}  $ pop2124     : num  290000 290000 288000 284000 263000 ...}
-\CommentTok{\#\textgreater{}  $ milestot    : num  28516 31032 32961 35091 36259 ...}
-\CommentTok{\#\textgreater{}  $ unempus     : num  9.7 9.6 7.5 7.2 7 ...}
-\CommentTok{\#\textgreater{}  $ emppopus    : num  57.8 57.9 59.5 60.1 60.7 ...}
-\CommentTok{\#\textgreater{}  $ gsp         : num  {-}0.0221 0.0466 0.0628 0.0275 0.0321 ...}
+\CommentTok{\#\textgreater{}   ..{-} attr(*, "names")= chr [1:336] "al{-}1982" "al{-}1983" "al{-}1984" "al{-}1985" ...}
+\CommentTok{\#\textgreater{}   ..{-} attr(*, "index")=Classes \textquotesingle{}pindex\textquotesingle{} and \textquotesingle{}data.frame\textquotesingle{}:    336 obs. of  2 variables:}
+\CommentTok{\#\textgreater{}   .. ..$ state: Factor w/ 48 levels "al","az","ar",..: 1 1 1 1 1 1 1 2 2 2 ...}
+\CommentTok{\#\textgreater{}   .. ..$ year : Factor w/ 7 levels "1982","1983",..: 1 2 3 4 5 6 7 1 2 3 ...}
+\CommentTok{\#\textgreater{}  $ fatal       : \textquotesingle{}pseries\textquotesingle{} Named int  839 930 932 882 1081 1110 1023 724 675 869 ...}
+\CommentTok{\#\textgreater{}   ..{-} attr(*, "names")= chr [1:336] "al{-}1982" "al{-}1983" "al{-}1984" "al{-}1985" ...}
+\CommentTok{\#\textgreater{}   ..{-} attr(*, "index")=Classes \textquotesingle{}pindex\textquotesingle{} and \textquotesingle{}data.frame\textquotesingle{}:    336 obs. of  2 variables:}
+\CommentTok{\#\textgreater{}   .. ..$ state: Factor w/ 48 levels "al","az","ar",..: 1 1 1 1 1 1 1 2 2 2 ...}
+\CommentTok{\#\textgreater{}   .. ..$ year : Factor w/ 7 levels "1982","1983",..: 1 2 3 4 5 6 7 1 2 3 ...}
+\CommentTok{\#\textgreater{}  $ nfatal      : \textquotesingle{}pseries\textquotesingle{} Named int  146 154 165 146 172 181 139 131 112 149 ...}
+\CommentTok{\#\textgreater{}   ..{-} attr(*, "names")= chr [1:336] "al{-}1982" "al{-}1983" "al{-}1984" "al{-}1985" ...}
+\CommentTok{\#\textgreater{}   ..{-} attr(*, "index")=Classes \textquotesingle{}pindex\textquotesingle{} and \textquotesingle{}data.frame\textquotesingle{}:    336 obs. of  2 variables:}
+\CommentTok{\#\textgreater{}   .. ..$ state: Factor w/ 48 levels "al","az","ar",..: 1 1 1 1 1 1 1 2 2 2 ...}
+\CommentTok{\#\textgreater{}   .. ..$ year : Factor w/ 7 levels "1982","1983",..: 1 2 3 4 5 6 7 1 2 3 ...}
+\CommentTok{\#\textgreater{}  $ sfatal      : \textquotesingle{}pseries\textquotesingle{} Named int  99 98 94 98 119 114 89 76 60 81 ...}
+\CommentTok{\#\textgreater{}   ..{-} attr(*, "names")= chr [1:336] "al{-}1982" "al{-}1983" "al{-}1984" "al{-}1985" ...}
+\CommentTok{\#\textgreater{}   ..{-} attr(*, "index")=Classes \textquotesingle{}pindex\textquotesingle{} and \textquotesingle{}data.frame\textquotesingle{}:    336 obs. of  2 variables:}
+\CommentTok{\#\textgreater{}   .. ..$ state: Factor w/ 48 levels "al","az","ar",..: 1 1 1 1 1 1 1 2 2 2 ...}
+\CommentTok{\#\textgreater{}   .. ..$ year : Factor w/ 7 levels "1982","1983",..: 1 2 3 4 5 6 7 1 2 3 ...}
+\CommentTok{\#\textgreater{}  $ fatal1517   : \textquotesingle{}pseries\textquotesingle{} Named int  53 71 49 66 82 94 66 40 40 51 ...}
+\CommentTok{\#\textgreater{}   ..{-} attr(*, "names")= chr [1:336] "al{-}1982" "al{-}1983" "al{-}1984" "al{-}1985" ...}
+\CommentTok{\#\textgreater{}   ..{-} attr(*, "index")=Classes \textquotesingle{}pindex\textquotesingle{} and \textquotesingle{}data.frame\textquotesingle{}:    336 obs. of  2 variables:}
+\CommentTok{\#\textgreater{}   .. ..$ state: Factor w/ 48 levels "al","az","ar",..: 1 1 1 1 1 1 1 2 2 2 ...}
+\CommentTok{\#\textgreater{}   .. ..$ year : Factor w/ 7 levels "1982","1983",..: 1 2 3 4 5 6 7 1 2 3 ...}
+\CommentTok{\#\textgreater{}  $ nfatal1517  : \textquotesingle{}pseries\textquotesingle{} Named int  9 8 7 9 10 11 8 7 7 8 ...}
+\CommentTok{\#\textgreater{}   ..{-} attr(*, "names")= chr [1:336] "al{-}1982" "al{-}1983" "al{-}1984" "al{-}1985" ...}
+\CommentTok{\#\textgreater{}   ..{-} attr(*, "index")=Classes \textquotesingle{}pindex\textquotesingle{} and \textquotesingle{}data.frame\textquotesingle{}:    336 obs. of  2 variables:}
+\CommentTok{\#\textgreater{}   .. ..$ state: Factor w/ 48 levels "al","az","ar",..: 1 1 1 1 1 1 1 2 2 2 ...}
+\CommentTok{\#\textgreater{}   .. ..$ year : Factor w/ 7 levels "1982","1983",..: 1 2 3 4 5 6 7 1 2 3 ...}
+\CommentTok{\#\textgreater{}  $ fatal1820   : \textquotesingle{}pseries\textquotesingle{} Named int  99 108 103 100 120 127 105 81 83 118 ...}
+\CommentTok{\#\textgreater{}   ..{-} attr(*, "names")= chr [1:336] "al{-}1982" "al{-}1983" "al{-}1984" "al{-}1985" ...}
+\CommentTok{\#\textgreater{}   ..{-} attr(*, "index")=Classes \textquotesingle{}pindex\textquotesingle{} and \textquotesingle{}data.frame\textquotesingle{}:    336 obs. of  2 variables:}
+\CommentTok{\#\textgreater{}   .. ..$ state: Factor w/ 48 levels "al","az","ar",..: 1 1 1 1 1 1 1 2 2 2 ...}
+\CommentTok{\#\textgreater{}   .. ..$ year : Factor w/ 7 levels "1982","1983",..: 1 2 3 4 5 6 7 1 2 3 ...}
+\CommentTok{\#\textgreater{}  $ nfatal1820  : \textquotesingle{}pseries\textquotesingle{} Named int  34 26 25 23 23 31 24 16 19 34 ...}
+\CommentTok{\#\textgreater{}   ..{-} attr(*, "names")= chr [1:336] "al{-}1982" "al{-}1983" "al{-}1984" "al{-}1985" ...}
+\CommentTok{\#\textgreater{}   ..{-} attr(*, "index")=Classes \textquotesingle{}pindex\textquotesingle{} and \textquotesingle{}data.frame\textquotesingle{}:    336 obs. of  2 variables:}
+\CommentTok{\#\textgreater{}   .. ..$ state: Factor w/ 48 levels "al","az","ar",..: 1 1 1 1 1 1 1 2 2 2 ...}
+\CommentTok{\#\textgreater{}   .. ..$ year : Factor w/ 7 levels "1982","1983",..: 1 2 3 4 5 6 7 1 2 3 ...}
+\CommentTok{\#\textgreater{}  $ fatal2124   : \textquotesingle{}pseries\textquotesingle{} Named int  120 124 118 114 119 138 123 96 80 123 ...}
+\CommentTok{\#\textgreater{}   ..{-} attr(*, "names")= chr [1:336] "al{-}1982" "al{-}1983" "al{-}1984" "al{-}1985" ...}
+\CommentTok{\#\textgreater{}   ..{-} attr(*, "index")=Classes \textquotesingle{}pindex\textquotesingle{} and \textquotesingle{}data.frame\textquotesingle{}:    336 obs. of  2 variables:}
+\CommentTok{\#\textgreater{}   .. ..$ state: Factor w/ 48 levels "al","az","ar",..: 1 1 1 1 1 1 1 2 2 2 ...}
+\CommentTok{\#\textgreater{}   .. ..$ year : Factor w/ 7 levels "1982","1983",..: 1 2 3 4 5 6 7 1 2 3 ...}
+\CommentTok{\#\textgreater{}  $ nfatal2124  : \textquotesingle{}pseries\textquotesingle{} Named int  32 35 34 45 29 30 25 36 17 33 ...}
+\CommentTok{\#\textgreater{}   ..{-} attr(*, "names")= chr [1:336] "al{-}1982" "al{-}1983" "al{-}1984" "al{-}1985" ...}
+\CommentTok{\#\textgreater{}   ..{-} attr(*, "index")=Classes \textquotesingle{}pindex\textquotesingle{} and \textquotesingle{}data.frame\textquotesingle{}:    336 obs. of  2 variables:}
+\CommentTok{\#\textgreater{}   .. ..$ state: Factor w/ 48 levels "al","az","ar",..: 1 1 1 1 1 1 1 2 2 2 ...}
+\CommentTok{\#\textgreater{}   .. ..$ year : Factor w/ 7 levels "1982","1983",..: 1 2 3 4 5 6 7 1 2 3 ...}
+\CommentTok{\#\textgreater{}  $ afatal      : \textquotesingle{}pseries\textquotesingle{} Named num  309 342 305 277 361 ...}
+\CommentTok{\#\textgreater{}   ..{-} attr(*, "names")= chr [1:336] "al{-}1982" "al{-}1983" "al{-}1984" "al{-}1985" ...}
+\CommentTok{\#\textgreater{}   ..{-} attr(*, "index")=Classes \textquotesingle{}pindex\textquotesingle{} and \textquotesingle{}data.frame\textquotesingle{}:    336 obs. of  2 variables:}
+\CommentTok{\#\textgreater{}   .. ..$ state: Factor w/ 48 levels "al","az","ar",..: 1 1 1 1 1 1 1 2 2 2 ...}
+\CommentTok{\#\textgreater{}   .. ..$ year : Factor w/ 7 levels "1982","1983",..: 1 2 3 4 5 6 7 1 2 3 ...}
+\CommentTok{\#\textgreater{}  $ pop         : \textquotesingle{}pseries\textquotesingle{} Named num  3942002 3960008 3988992 4021008 4049994 ...}
+\CommentTok{\#\textgreater{}   ..{-} attr(*, "names")= chr [1:336] "al{-}1982" "al{-}1983" "al{-}1984" "al{-}1985" ...}
+\CommentTok{\#\textgreater{}   ..{-} attr(*, "index")=Classes \textquotesingle{}pindex\textquotesingle{} and \textquotesingle{}data.frame\textquotesingle{}:    336 obs. of  2 variables:}
+\CommentTok{\#\textgreater{}   .. ..$ state: Factor w/ 48 levels "al","az","ar",..: 1 1 1 1 1 1 1 2 2 2 ...}
+\CommentTok{\#\textgreater{}   .. ..$ year : Factor w/ 7 levels "1982","1983",..: 1 2 3 4 5 6 7 1 2 3 ...}
+\CommentTok{\#\textgreater{}  $ pop1517     : \textquotesingle{}pseries\textquotesingle{} Named num  209000 202000 197000 195000 204000 ...}
+\CommentTok{\#\textgreater{}   ..{-} attr(*, "names")= chr [1:336] "al{-}1982" "al{-}1983" "al{-}1984" "al{-}1985" ...}
+\CommentTok{\#\textgreater{}   ..{-} attr(*, "index")=Classes \textquotesingle{}pindex\textquotesingle{} and \textquotesingle{}data.frame\textquotesingle{}:    336 obs. of  2 variables:}
+\CommentTok{\#\textgreater{}   .. ..$ state: Factor w/ 48 levels "al","az","ar",..: 1 1 1 1 1 1 1 2 2 2 ...}
+\CommentTok{\#\textgreater{}   .. ..$ year : Factor w/ 7 levels "1982","1983",..: 1 2 3 4 5 6 7 1 2 3 ...}
+\CommentTok{\#\textgreater{}  $ pop1820     : \textquotesingle{}pseries\textquotesingle{} Named num  221553 219125 216724 214349 212000 ...}
+\CommentTok{\#\textgreater{}   ..{-} attr(*, "names")= chr [1:336] "al{-}1982" "al{-}1983" "al{-}1984" "al{-}1985" ...}
+\CommentTok{\#\textgreater{}   ..{-} attr(*, "index")=Classes \textquotesingle{}pindex\textquotesingle{} and \textquotesingle{}data.frame\textquotesingle{}:    336 obs. of  2 variables:}
+\CommentTok{\#\textgreater{}   .. ..$ state: Factor w/ 48 levels "al","az","ar",..: 1 1 1 1 1 1 1 2 2 2 ...}
+\CommentTok{\#\textgreater{}   .. ..$ year : Factor w/ 7 levels "1982","1983",..: 1 2 3 4 5 6 7 1 2 3 ...}
+\CommentTok{\#\textgreater{}  $ pop2124     : \textquotesingle{}pseries\textquotesingle{} Named num  290000 290000 288000 284000 263000 ...}
+\CommentTok{\#\textgreater{}   ..{-} attr(*, "names")= chr [1:336] "al{-}1982" "al{-}1983" "al{-}1984" "al{-}1985" ...}
+\CommentTok{\#\textgreater{}   ..{-} attr(*, "index")=Classes \textquotesingle{}pindex\textquotesingle{} and \textquotesingle{}data.frame\textquotesingle{}:    336 obs. of  2 variables:}
+\CommentTok{\#\textgreater{}   .. ..$ state: Factor w/ 48 levels "al","az","ar",..: 1 1 1 1 1 1 1 2 2 2 ...}
+\CommentTok{\#\textgreater{}   .. ..$ year : Factor w/ 7 levels "1982","1983",..: 1 2 3 4 5 6 7 1 2 3 ...}
+\CommentTok{\#\textgreater{}  $ milestot    : \textquotesingle{}pseries\textquotesingle{} Named num  28516 31032 32961 35091 36259 ...}
+\CommentTok{\#\textgreater{}   ..{-} attr(*, "names")= chr [1:336] "al{-}1982" "al{-}1983" "al{-}1984" "al{-}1985" ...}
+\CommentTok{\#\textgreater{}   ..{-} attr(*, "index")=Classes \textquotesingle{}pindex\textquotesingle{} and \textquotesingle{}data.frame\textquotesingle{}:    336 obs. of  2 variables:}
+\CommentTok{\#\textgreater{}   .. ..$ state: Factor w/ 48 levels "al","az","ar",..: 1 1 1 1 1 1 1 2 2 2 ...}
+\CommentTok{\#\textgreater{}   .. ..$ year : Factor w/ 7 levels "1982","1983",..: 1 2 3 4 5 6 7 1 2 3 ...}
+\CommentTok{\#\textgreater{}  $ unempus     : \textquotesingle{}pseries\textquotesingle{} Named num  9.7 9.6 7.5 7.2 7 ...}
+\CommentTok{\#\textgreater{}   ..{-} attr(*, "names")= chr [1:336] "al{-}1982" "al{-}1983" "al{-}1984" "al{-}1985" ...}
+\CommentTok{\#\textgreater{}   ..{-} attr(*, "index")=Classes \textquotesingle{}pindex\textquotesingle{} and \textquotesingle{}data.frame\textquotesingle{}:    336 obs. of  2 variables:}
+\CommentTok{\#\textgreater{}   .. ..$ state: Factor w/ 48 levels "al","az","ar",..: 1 1 1 1 1 1 1 2 2 2 ...}
+\CommentTok{\#\textgreater{}   .. ..$ year : Factor w/ 7 levels "1982","1983",..: 1 2 3 4 5 6 7 1 2 3 ...}
+\CommentTok{\#\textgreater{}  $ emppopus    : \textquotesingle{}pseries\textquotesingle{} Named num  57.8 57.9 59.5 60.1 60.7 ...}
+\CommentTok{\#\textgreater{}   ..{-} attr(*, "names")= chr [1:336] "al{-}1982" "al{-}1983" "al{-}1984" "al{-}1985" ...}
+\CommentTok{\#\textgreater{}   ..{-} attr(*, "index")=Classes \textquotesingle{}pindex\textquotesingle{} and \textquotesingle{}data.frame\textquotesingle{}:    336 obs. of  2 variables:}
+\CommentTok{\#\textgreater{}   .. ..$ state: Factor w/ 48 levels "al","az","ar",..: 1 1 1 1 1 1 1 2 2 2 ...}
+\CommentTok{\#\textgreater{}   .. ..$ year : Factor w/ 7 levels "1982","1983",..: 1 2 3 4 5 6 7 1 2 3 ...}
+\CommentTok{\#\textgreater{}  $ gsp         : \textquotesingle{}pseries\textquotesingle{} Named num  {-}0.0221 0.0466 0.0628 0.0275 0.0321 ...}
+\CommentTok{\#\textgreater{}   ..{-} attr(*, "names")= chr [1:336] "al{-}1982" "al{-}1983" "al{-}1984" "al{-}1985" ...}
+\CommentTok{\#\textgreater{}   ..{-} attr(*, "index")=Classes \textquotesingle{}pindex\textquotesingle{} and \textquotesingle{}data.frame\textquotesingle{}:    336 obs. of  2 variables:}
+\CommentTok{\#\textgreater{}   .. ..$ state: Factor w/ 48 levels "al","az","ar",..: 1 1 1 1 1 1 1 2 2 2 ...}
+\CommentTok{\#\textgreater{}   .. ..$ year : Factor w/ 7 levels "1982","1983",..: 1 2 3 4 5 6 7 1 2 3 ...}
+\CommentTok{\#\textgreater{}  {-} attr(*, "index")=Classes \textquotesingle{}pindex\textquotesingle{} and \textquotesingle{}data.frame\textquotesingle{}:   336 obs. of  2 variables:}
+\CommentTok{\#\textgreater{}   ..$ state: Factor w/ 48 levels "al","az","ar",..: 1 1 1 1 1 1 1 2 2 2 ...}
+\CommentTok{\#\textgreater{}   ..$ year : Factor w/ 7 levels "1982","1983",..: 1 2 3 4 5 6 7 1 2 3 ...}
 \end{Highlighting}
 \end{Shaded}
 
@@ -9373,34 +9515,41 @@ Sometimes panel data is also called longitudinal data as it adds a temporal dime
 \begin{Highlighting}[]
 \CommentTok{\# list the first few observations}
 \FunctionTok{head}\NormalTok{(Fatalities)}
-\CommentTok{\#\textgreater{}   state year spirits unemp   income   emppop  beertax baptist  mormon drinkage}
-\CommentTok{\#\textgreater{} 1    al 1982    1.37  14.4 10544.15 50.69204 1.539379 30.3557 0.32829    19.00}
-\CommentTok{\#\textgreater{} 2    al 1983    1.36  13.7 10732.80 52.14703 1.788991 30.3336 0.34341    19.00}
-\CommentTok{\#\textgreater{} 3    al 1984    1.32  11.1 11108.79 54.16809 1.714286 30.3115 0.35924    19.00}
-\CommentTok{\#\textgreater{} 4    al 1985    1.28   8.9 11332.63 55.27114 1.652542 30.2895 0.37579    19.67}
-\CommentTok{\#\textgreater{} 5    al 1986    1.23   9.8 11661.51 56.51450 1.609907 30.2674 0.39311    21.00}
-\CommentTok{\#\textgreater{} 6    al 1987    1.18   7.8 11944.00 57.50988 1.560000 30.2453 0.41123    21.00}
-\CommentTok{\#\textgreater{}       dry youngdrivers    miles breath jail service fatal nfatal sfatal}
-\CommentTok{\#\textgreater{} 1 25.0063     0.211572 7233.887     no   no      no   839    146     99}
-\CommentTok{\#\textgreater{} 2 22.9942     0.210768 7836.348     no   no      no   930    154     98}
-\CommentTok{\#\textgreater{} 3 24.0426     0.211484 8262.990     no   no      no   932    165     94}
-\CommentTok{\#\textgreater{} 4 23.6339     0.211140 8726.917     no   no      no   882    146     98}
-\CommentTok{\#\textgreater{} 5 23.4647     0.213400 8952.854     no   no      no  1081    172    119}
-\CommentTok{\#\textgreater{} 6 23.7924     0.215527 9166.302     no   no      no  1110    181    114}
-\CommentTok{\#\textgreater{}   fatal1517 nfatal1517 fatal1820 nfatal1820 fatal2124 nfatal2124  afatal}
-\CommentTok{\#\textgreater{} 1        53          9        99         34       120         32 309.438}
-\CommentTok{\#\textgreater{} 2        71          8       108         26       124         35 341.834}
-\CommentTok{\#\textgreater{} 3        49          7       103         25       118         34 304.872}
-\CommentTok{\#\textgreater{} 4        66          9       100         23       114         45 276.742}
-\CommentTok{\#\textgreater{} 5        82         10       120         23       119         29 360.716}
-\CommentTok{\#\textgreater{} 6        94         11       127         31       138         30 368.421}
-\CommentTok{\#\textgreater{}       pop  pop1517  pop1820  pop2124 milestot unempus emppopus         gsp}
-\CommentTok{\#\textgreater{} 1 3942002 208999.6 221553.4 290000.1    28516     9.7     57.8 {-}0.02212476}
-\CommentTok{\#\textgreater{} 2 3960008 202000.1 219125.5 290000.2    31032     9.6     57.9  0.04655825}
-\CommentTok{\#\textgreater{} 3 3988992 197000.0 216724.1 288000.2    32961     7.5     59.5  0.06279784}
-\CommentTok{\#\textgreater{} 4 4021008 194999.7 214349.0 284000.3    35091     7.2     60.1  0.02748997}
-\CommentTok{\#\textgreater{} 5 4049994 203999.9 212000.0 263000.3    36259     7.0     60.7  0.03214295}
-\CommentTok{\#\textgreater{} 6 4082999 204999.8 208998.5 258999.8    37426     6.2     61.5  0.04897637}
+\CommentTok{\#\textgreater{}         state year spirits unemp   income   emppop  beertax baptist  mormon}
+\CommentTok{\#\textgreater{} al{-}1982    al 1982    1.37  14.4 10544.15 50.69204 1.539379 30.3557 0.32829}
+\CommentTok{\#\textgreater{} al{-}1983    al 1983    1.36  13.7 10732.80 52.14703 1.788991 30.3336 0.34341}
+\CommentTok{\#\textgreater{} al{-}1984    al 1984    1.32  11.1 11108.79 54.16809 1.714286 30.3115 0.35924}
+\CommentTok{\#\textgreater{} al{-}1985    al 1985    1.28   8.9 11332.63 55.27114 1.652542 30.2895 0.37579}
+\CommentTok{\#\textgreater{} al{-}1986    al 1986    1.23   9.8 11661.51 56.51450 1.609907 30.2674 0.39311}
+\CommentTok{\#\textgreater{} al{-}1987    al 1987    1.18   7.8 11944.00 57.50988 1.560000 30.2453 0.41123}
+\CommentTok{\#\textgreater{}         drinkage     dry youngdrivers    miles breath jail service fatal nfatal}
+\CommentTok{\#\textgreater{} al{-}1982    19.00 25.0063     0.211572 7233.887     no   no      no   839    146}
+\CommentTok{\#\textgreater{} al{-}1983    19.00 22.9942     0.210768 7836.348     no   no      no   930    154}
+\CommentTok{\#\textgreater{} al{-}1984    19.00 24.0426     0.211484 8262.990     no   no      no   932    165}
+\CommentTok{\#\textgreater{} al{-}1985    19.67 23.6339     0.211140 8726.917     no   no      no   882    146}
+\CommentTok{\#\textgreater{} al{-}1986    21.00 23.4647     0.213400 8952.854     no   no      no  1081    172}
+\CommentTok{\#\textgreater{} al{-}1987    21.00 23.7924     0.215527 9166.302     no   no      no  1110    181}
+\CommentTok{\#\textgreater{}         sfatal fatal1517 nfatal1517 fatal1820 nfatal1820 fatal2124 nfatal2124}
+\CommentTok{\#\textgreater{} al{-}1982     99        53          9        99         34       120         32}
+\CommentTok{\#\textgreater{} al{-}1983     98        71          8       108         26       124         35}
+\CommentTok{\#\textgreater{} al{-}1984     94        49          7       103         25       118         34}
+\CommentTok{\#\textgreater{} al{-}1985     98        66          9       100         23       114         45}
+\CommentTok{\#\textgreater{} al{-}1986    119        82         10       120         23       119         29}
+\CommentTok{\#\textgreater{} al{-}1987    114        94         11       127         31       138         30}
+\CommentTok{\#\textgreater{}          afatal     pop  pop1517  pop1820  pop2124 milestot unempus emppopus}
+\CommentTok{\#\textgreater{} al{-}1982 309.438 3942002 208999.6 221553.4 290000.1    28516     9.7     57.8}
+\CommentTok{\#\textgreater{} al{-}1983 341.834 3960008 202000.1 219125.5 290000.2    31032     9.6     57.9}
+\CommentTok{\#\textgreater{} al{-}1984 304.872 3988992 197000.0 216724.1 288000.2    32961     7.5     59.5}
+\CommentTok{\#\textgreater{} al{-}1985 276.742 4021008 194999.7 214349.0 284000.3    35091     7.2     60.1}
+\CommentTok{\#\textgreater{} al{-}1986 360.716 4049994 203999.9 212000.0 263000.3    36259     7.0     60.7}
+\CommentTok{\#\textgreater{} al{-}1987 368.421 4082999 204999.8 208998.5 258999.8    37426     6.2     61.5}
+\CommentTok{\#\textgreater{}                 gsp}
+\CommentTok{\#\textgreater{} al{-}1982 {-}0.02212476}
+\CommentTok{\#\textgreater{} al{-}1983  0.04655825}
+\CommentTok{\#\textgreater{} al{-}1984  0.06279784}
+\CommentTok{\#\textgreater{} al{-}1985  0.02748997}
+\CommentTok{\#\textgreater{} al{-}1986  0.03214295}
+\CommentTok{\#\textgreater{} al{-}1987  0.04897637}
 \end{Highlighting}
 \end{Shaded}
 
@@ -9475,8 +9624,8 @@ The estimated regression functions are
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{\# plot the observations and add the estimated regression line for 1982 data}
-\FunctionTok{plot}\NormalTok{(}\AttributeTok{x =}\NormalTok{ Fatalities1982}\SpecialCharTok{$}\NormalTok{beertax, }
-     \AttributeTok{y =}\NormalTok{ Fatalities1982}\SpecialCharTok{$}\NormalTok{fatal\_rate, }
+\FunctionTok{plot}\NormalTok{(}\AttributeTok{x =} \FunctionTok{as.double}\NormalTok{(Fatalities1982}\SpecialCharTok{$}\NormalTok{beertax), }
+     \AttributeTok{y =} \FunctionTok{as.double}\NormalTok{(Fatalities1982}\SpecialCharTok{$}\NormalTok{fatal\_rate), }
      \AttributeTok{xlab =} \StringTok{"Beer tax (in 1988 dollars)"}\NormalTok{,}
      \AttributeTok{ylab =} \StringTok{"Fatality rate (fatalities per 10000)"}\NormalTok{,}
      \AttributeTok{main =} \StringTok{"Traffic Fatality Rates and Beer Taxes in 1982"}\NormalTok{,}
@@ -9494,8 +9643,8 @@ The estimated regression functions are
 \begin{Highlighting}[]
 
 \CommentTok{\# plot observations and add estimated regression line for 1988 data}
-\FunctionTok{plot}\NormalTok{(}\AttributeTok{x =}\NormalTok{ Fatalities1988}\SpecialCharTok{$}\NormalTok{beertax, }
-     \AttributeTok{y =}\NormalTok{ Fatalities1988}\SpecialCharTok{$}\NormalTok{fatal\_rate, }
+\FunctionTok{plot}\NormalTok{(}\AttributeTok{x =} \FunctionTok{as.double}\NormalTok{(Fatalities1988}\SpecialCharTok{$}\NormalTok{beertax), }
+     \AttributeTok{y =} \FunctionTok{as.double}\NormalTok{(Fatalities1988}\SpecialCharTok{$}\NormalTok{fatal\_rate), }
      \AttributeTok{xlab =} \StringTok{"Beer tax (in 1988 dollars)"}\NormalTok{,}
      \AttributeTok{ylab =} \StringTok{"Fatality rate (fatalities per 10000)"}\NormalTok{,}
      \AttributeTok{main =} \StringTok{"Traffic Fatality Rates and Beer Taxes in 1988"}\NormalTok{,}
@@ -9509,12 +9658,12 @@ The estimated regression functions are
 
 \begin{center}\includegraphics[width=0.8\linewidth]{ITER_files/figure-latex/unnamed-chunk-419-2} \end{center}
 
-In both plots, each point represents observations of beer tax and fatality rate for a given state in the respective year. The regression results indicate a positive relationship between the beer tax and the fatality rate for both years. The estimated coefficient on beer tax for the 1988 data is almost three times as large as for the 1988 dataset. This is contrary to our expectations: alcohol taxes are supposed to \emph{lower} the rate of traffic fatalities. As we known from Chapter \ref{rmwmr}, this is possibly due to omitted variable bias, since both models do not include any covariates, e.g., economic conditions. This could be corrected for using a multiple regression approach. However, this cannot account for omitted \emph{unobservable} factors that differ from state to state but can be assumed to be constant over the observation span, e.g., the populations' attitude towards drunk driving. As shown in the next section, panel data allow us to hold such factors constant.
+In both plots, each point represents observations of beer tax and fatality rate for a given state in the respective year. The regression results indicate a positive relationship between the beer tax and the fatality rate for both years. The estimated coefficient on beer tax for the 1988 data is almost three times as large as for the 1982 dataset. This is contrary to our expectations: alcohol taxes are supposed to \emph{lower} the rate of traffic fatalities. As we known from Chapter \ref{rmwmr}, this is possibly due to omitted variable bias, since both models do not include any covariates, e.g., economic conditions. This could be corrected for using a multiple regression approach. However, this cannot account for omitted \emph{unobservable} factors that differ from state to state but can be assumed to be constant over the observation span, e.g., the populations' attitude towards drunk driving. As shown in the next section, panel data allow us to hold such factors constant.
 
 \hypertarget{PDWTTP}{%
 \section{Panel Data with Two Time Periods: ``Before and After'' Comparisons}\label{PDWTTP}}
 
-Suppose there are only \(T=2\) time periods \(t=1982,1988\). This allows us to analyze differences in changes of the the fatality rate from year 1982 to 1988. We start by considering the population regression model \[FatalityRate_{it} = \beta_0 + \beta_1 BeerTax_{it} + \beta_2 Z_{i} + u_{it}\] where the \(Z_i\) are state specific characteristics that differ between states but are \emph{constant over time}. For \(t=1982\) and \(t=1988\) we have
+Suppose there are only \(T=2\) time periods \(t=1982,1988\). This allows us to analyze differences in changes of the fatality rate from year 1982 to 1988. We start by considering the population regression model \[FatalityRate_{it} = \beta_0 + \beta_1 BeerTax_{it} + \beta_2 Z_{i} + u_{it}\] where the \(Z_i\) are state specific characteristics that differ between states but are \emph{constant over time}. For \(t=1982\) and \(t=1988\) we have
 \begin{align*}
   FatalityRate_{i1982} =&\, \beta_0 + \beta_1 BeerTax_{i1982} + \beta_2 Z_i + u_{i1982}, \\
   FatalityRate_{i1988} =&\, \beta_0 + \beta_1 BeerTax_{i1988} + \beta_2 Z_i + u_{i1988}.
@@ -9522,7 +9671,7 @@ Suppose there are only \(T=2\) time periods \(t=1982,1988\). This allows us to a
 
 We can eliminate the \(Z_i\) by regressing the difference in the fatality rate between 1988 and 1982 on the difference in beer tax between those years:
 \[FatalityRate_{i1988} - FatalityRate_{i1982} = \beta_1 (BeerTax_{i1988} - BeerTax_{i1982}) + u_{i1988} - u_{i1982}\]
-This regression model yields an estimate for \(\beta_1\) robust a possible bias due to omission of the \(Z_i\), since these influences are eliminated from the model. Next we use use \texttt{R} to estimate a regression based on the differenced data and plot the estimated regression function.
+This regression model, where the difference in fatality rate between 1988 and 1982 is regressed on the difference in beer tax between those years, yields an estimate for \(\beta_1\) that is robust to a possible bias due to omission of \(Z_i\), as these influences are eliminated from the model. Next we will use \texttt{R} to estimate a regression based on the differenced data and to plot the estimated regression function.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -9552,8 +9701,8 @@ We obtain the OLS estimated regression function \[\widehat{FatalityRate_{i1988} 
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{\# plot the differenced data}
-\FunctionTok{plot}\NormalTok{(}\AttributeTok{x =}\NormalTok{ diff\_beertax, }
-     \AttributeTok{y =}\NormalTok{ diff\_fatal\_rate, }
+\FunctionTok{plot}\NormalTok{(}\AttributeTok{x =} \FunctionTok{as.double}\NormalTok{(diff\_beertax), }
+     \AttributeTok{y =} \FunctionTok{as.double}\NormalTok{(diff\_fatal\_rate), }
      \AttributeTok{xlab =} \StringTok{"Change in beer tax (in 1988 dollars)"}\NormalTok{,}
      \AttributeTok{ylab =} \StringTok{"Change in fatality rate (fatalities per 10000)"}\NormalTok{,}
      \AttributeTok{main =} \StringTok{"Changes in Traffic Fatality Rates and Beer Taxes in 1982{-}1988"}\NormalTok{,}
@@ -9581,7 +9730,7 @@ The estimated coefficient on beer tax is now negative and significantly differen
 
 Once more this outcome is likely to be a consequence of omitting factors in the single-year regression that influence the fatality rate and are correlated with the beer tax \emph{and} change over time. The message is that we need to be more careful and control for such factors before drawing conclusions about the effect of a raise in beer taxes.
 
-The approach presented in this section discards information for years \(1983\) to \(1987\). A method that allows to use data for more than \(T=2\) time periods and enables us to add control variables is the fixed effects regression approach.
+The approach presented in this section discards information for years \(1983\) to \(1987\). The fixed effects method that allows us to use data for more than \(T = 2\) time periods and enables us to add control variables to the analysis.
 
 \hypertarget{fixed-effects-regression}{%
 \section{Fixed Effects Regression}\label{fixed-effects-regression}}
@@ -9598,7 +9747,7 @@ The variation in the \(\alpha_i\), \(i=1,\dots,n\) comes from the \(Z_i\). \eqre
 \begin{align}
 Y_{it} = \beta_0 + \beta_1 X_{it} + \gamma_2 D2_i + \gamma_3 D3_i + \cdots + \gamma_n Dn_i + u_{it} \label{eq:drmodel}.
 \end{align}
-Model \eqref{eq:drmodel} has \(n\) different intercepts --- one for every entity. \eqref{eq:femodel} and \eqref{eq:drmodel} are equivalent representations of the fixed effects model.
+Model \eqref{eq:drmodel} has \(n\) different intercepts --- one for every entity. \eqref{eq:femodel} and \eqref{eq:drmodel} are equivalent representations of the fixed effects model.(Note: \(\beta_0\) is intercept of the fixed effect model in equation 10.2)
 
 The fixed effects model can be generalized to contain more than just one determinant of \(Y\) that is correlated with \(X\) and changes over time. Key Concept 10.2 presents the generalized fixed effects regression model.
 
@@ -9620,9 +9769,9 @@ where the $D2_i,D3_i,\dots,Dn_i$ are dummy variables.
 
 Software packages use a so-called ``entity-demeaned'' OLS algorithm which is computationally more efficient than estimating regression models with \(k+n\) regressors as needed for models \eqref{eq:gfemodel} and \eqref{eq:gdrmodel}.
 
-Taking averages on both sides of \eqref{eq:femodel} we obtain
+Taking averages across time on both sides of \eqref{eq:femodel} we obtain
 \begin{align*}
-\frac{1}{T} \sum_{t=1}^T Y_{it} =& \, \beta_1 \frac{1}{T} \sum_{t=1}^T X_{it} + \frac{1}{T} \sum_{t=1}^T \alpha_i + \frac{1}{T} \sum_{t=1}^T u_{it} \\
+\frac{1}{T} \sum_{t=1}^T Y_{it} =& \, \beta_1 \frac{1}{T} \sum_{t=1}^T X_{it} + \alpha_i + \frac{1}{T} \sum_{t=1}^T u_{it} \\
 \overline{Y}_i =& \, \beta_1 \overline{X}_i + \alpha_i + \overline{u}_i. 
 \end{align*}
 Subtraction from \eqref{eq:femodel} yields
@@ -9644,7 +9793,7 @@ We conclude that there are two ways of estimating \(\beta_1\) in the fixed effec
   OLS using the entity demeaned data as in \eqref{eq:edols}
 \end{enumerate}
 
-Provided the fixed effects regression assumptions stated in Key Concept 10.3 hold, the sampling distribution of the OLS estimator in the fixed effects regression model is normal in large samples. The variance of the estimates can be estimated and we can compute standard errors, \(t\)-statistics and confidence intervals for coefficients. In the next section, we see how to estimate a fixed effects model using \texttt{R} and how to obtain a model summary that reports heteroskedasticity-robust standard errors. We leave aside complicated formulas of the estimators. See Chapter 10.5 and Appendix 10.2 of the book for a discussion of theoretical aspects.
+Provided that the fixed effects regression assumptions stated in Key Concept 10.3 hold, the sampling distribution of the OLS estimator in the fixed effects regression model is normal in large samples. The variance of the estimates can be estimated and we can compute standard errors, \(t\)-statistics and confidence intervals for coefficients. In the next section, we see how to estimate a fixed effects model using \texttt{R} and how to obtain a model summary that reports heteroskedasticity-robust standard errors. We leave aside complicated formulas of the estimators. See Chapter 10.5 and Appendix 10.2 of the book for a discussion of theoretical aspects.
 
 \hypertarget{application-to-traffic-deaths}{%
 \subsection*{Application to Traffic Deaths}\label{application-to-traffic-deaths}}
@@ -9802,9 +9951,9 @@ Before discussing the outcomes we convince ourselves that \texttt{state} and \te
 \begin{Highlighting}[]
 \CommentTok{\# check the class of \textquotesingle{}state\textquotesingle{} and \textquotesingle{}year\textquotesingle{}}
 \FunctionTok{class}\NormalTok{(Fatalities}\SpecialCharTok{$}\NormalTok{state)}
-\CommentTok{\#\textgreater{} [1] "factor"}
+\CommentTok{\#\textgreater{} [1] "pseries" "factor"}
 \FunctionTok{class}\NormalTok{(Fatalities}\SpecialCharTok{$}\NormalTok{year)}
-\CommentTok{\#\textgreater{} [1] "factor"}
+\CommentTok{\#\textgreater{} [1] "pseries" "factor"}
 \end{Highlighting}
 \end{Shaded}
 
@@ -9816,7 +9965,7 @@ The estimated regression function is
 \end{align}
 The result \(-0.66\) is close to the estimated coefficient for the regression model including only entity fixed effects. Unsurprisingly, the coefficient is less precisely estimated but significantly different from zero at \(10\%\).
 
-In view of \eqref{eq:efemod} and \eqref{eq:cbnfemod} we conclude that the estimated relationship between traffic fatalities and the real beer tax is not affected by omitted variable bias due to factors that are constant over time.
+In view of \eqref{eq:efemod} and \eqref{eq:cbnfemod} we conclude that the estimated relationship between traffic fatalities and the real beer tax is not affected by omitted variable bias due to factors that are constant either over time or across states..
 
 \hypertarget{tferaaseffer}{%
 \section{The Fixed Effects Regression Assumptions and Standard Errors for Fixed Effects Regression}\label{tferaaseffer}}
@@ -9836,7 +9985,7 @@ In the fixed effects regression model $$ Y_{it} = \beta_1 X_{it} + \alpha_i + u_
 When there are multiple regressors, $X_{it}$ is replaced by $X_{1,it}, X_{2,it}, \dots, X_{k,it}$.
 \end{keyconcepts}
 
-The first assumption is that the error is uncorrelated with \emph{all} observations of the variable \(X\) for the entity \(i\) over time. If this assumption is violated, we face omitted variables bias. The second assumption ensures that variables are i.i.d. \emph{across} entities \(i=1,\dots,n\). This does not require the observations to be uncorrelated \emph{within} an entity. The \(X_{it}\) are allowed to be \emph{autocorrelated} within entities. This is a common property of time series data. The same is allowed for errors \(u_{it}\). Consult Chapter \ref{tferaaseffer} of the book for a detailed explanation for why autocorrelation is plausible in panel applications. The second assumption is justified if the entities are selected by simple random sampling. The third and fourth assumptions are analogous to the multiple regression assumptions made in Key Concept 6.4.
+The first assumption is that the error is uncorrelated with \emph{all} observations of the variable \(X\) for the entity \(i\) over time. If this assumption is violated, we face omitted variables bias. The second assumption ensures that variables are i.i.d. \emph{across} entities \(i=1,\dots,n\). This does not require the observations to be uncorrelated \emph{within} an entity. The \(X_{it}\) are allowed to be \emph{autocorrelated} within entities. This is a common property of time series data. The same is allowed for errors \(u_{it}\). Consult Chapter 10.5 (Stock and Watson) of the book for a detailed explanation for why autocorrelation is plausible in panel applications. The second assumption is justified if the entities are selected by simple random sampling. The third and fourth assumptions are analogous to the multiple regression assumptions made in Key Concept 6.4.
 
 \hypertarget{standard-errors-for-fixed-effects-regression}{%
 \subsubsection*{Standard Errors for Fixed Effects Regression}\label{standard-errors-for-fixed-effects-regression}}
@@ -9844,9 +9993,9 @@ The first assumption is that the error is uncorrelated with \emph{all} observati
 
 Similar as for heteroskedasticity, autocorrelation invalidates the usual standard error formulas as well as heteroskedasticity-robust standard errors since these are derived under the assumption that there is no autocorrelation. When there is both heteroskedasticity \emph{and} autocorrelation so-called \emph{heteroskedasticity and autocorrelation-consistent (HAC) standard errors} need to be used. \emph{Clustered standard errors} belong to these type of standard errors. They allow for heteroskedasticity and autocorrelated errors within an entity but \emph{not} correlation across entities.
 
-As shown in the examples throughout this chapter, it is fairly easy to specify usage of clustered standard errors in regression summaries produced by function like \texttt{coeftest()} in conjunction with \texttt{vcovHC()} from the package \texttt{sandwich}. Conveniently, \texttt{vcovHC()} recognizes panel model objects (objects of class \texttt{plm}) and computes clustered standard errors by default.
+As shown in the examples throughout this chapter, it is fairly easy to specify usage of clustered standard errors in regression summaries produced by functions like \texttt{coeftest()} in conjunction with \texttt{vcovHC()} from the package \texttt{sandwich}. Conveniently, \texttt{vcovHC()} recognizes panel model objects (objects of class \texttt{plm}) and computes clustered standard errors by default.
 
-The regressions conducted in this chapter are a good examples for why usage of clustered standard errors is crucial in empirical applications of fixed effects models. For example, consider the entity and time fixed effects model for fatalities. Since \texttt{fatal\_tefe\_lm\_mod} is an object of class \texttt{lm}, \texttt{coeftest()} does not compute clustered standard errors but uses robust standard errors that are only valid in the absence of autocorrelated errors.
+The regressions conducted in this chapter are good examples for why usage of clustered standard errors is crucial in empirical applications of fixed effects models. For example, consider the entity and time fixed effects model for fatalities. Since \texttt{fatal\_tefe\_lm\_mod} is an object of class \texttt{lm}, \texttt{coeftest()} does not compute clustered standard errors but uses robust standard errors that are only valid in the absence of autocorrelated errors.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -9864,7 +10013,7 @@ The regressions conducted in this chapter are a good examples for why usage of c
 \FunctionTok{class}\NormalTok{(fatal\_tefe\_mod)}
 \CommentTok{\#\textgreater{} [1] "plm"        "panelmodel"}
 
-\CommentTok{\# obtain a summary based on clusterd standard errors }
+\CommentTok{\# obtain a summary based on clustered standard errors }
 \CommentTok{\# (adjustment for autocorrelation + heteroskedasticity)}
 \FunctionTok{coeftest}\NormalTok{(fatal\_tefe\_mod, }\AttributeTok{vcov =}\NormalTok{ vcovHC, }\AttributeTok{type =} \StringTok{"HC1"}\NormalTok{)}
 \CommentTok{\#\textgreater{} }
@@ -9877,7 +10026,7 @@ The regressions conducted in this chapter are a good examples for why usage of c
 \end{Highlighting}
 \end{Shaded}
 
-The outcomes differ rather strongly: imposing no autocorrelation we obtain a standard error of \(0.25\) which implies significance of \(\hat\beta_1\), the coefficient on \(BeerTax\) at the level of \(5\%\). On the contrary, using the clustered standard error \(0.35\) leads to acceptance of the hypothesis \(H_0: \beta_1 = 0\) at the same level, see equation \eqref{eq:cbnfemod}. Consult Appendix 10.2 of the book for insights on the computation of clustered standard errors.
+The outcomes differ rather strongly: imposing no autocorrelation we obtain a standard error of \(0.25\) which implies significance of \(\hat\beta_1\), the coefficient on \(BeerTax\) at the level of \(5\%\). On the contrary, using the clustered standard error \(0.35\) results in a failure to reject the null hypothesis \(H_0: \beta_1 = 0\) at the same level, see equation \eqref{eq:cbnfemod}. Consult Appendix 10.2 of the book for insights on the computation of clustered standard errors.
 
 \hypertarget{drunk-driving-laws-and-traffic-deaths}{%
 \section{Drunk Driving Laws and Traffic Deaths}\label{drunk-driving-laws-and-traffic-deaths}}
@@ -9891,13 +10040,13 @@ These covariates are defined as follows:
 \item
   \texttt{unemp}: a numeric variable stating the state specific unemployment rate.
 \item
-  \texttt{log(income)}: the logarithm of real per capita income (in prices of 1988).
+  \texttt{log(income)}: the logarithm of real per capita income (in 1988 dollars).
 \item
   \texttt{miles}: the state average miles per driver.
 \item
-  \texttt{drinkage}: the state specify minimum legal drinking age.
+  \texttt{drinkage}: the state specific minimum legal drinking age.
 \item
-  \texttt{drinkagc}: a discretized version of \texttt{drinkage} that classifies states into four categories of minimal drinking age; \(18\), \(19\), \(20\), \(21\) and older. \texttt{R} denotes this as \texttt{[18,19)}, \texttt{[19,20)}, \texttt{[20,21)} and \texttt{[21,22]}. These categories are included as dummy regressors where \texttt{[21,22]} is chosen as the reference category.
+  \texttt{drinkagec}: a discretized version of \texttt{drinkage} that classifies states into four categories of minimal drinking age; \(18\), \(19\), \(20\), \(21\) and older. \texttt{R} denotes this as \texttt{[18,19)}, \texttt{[19,20)}, \texttt{[20,21)} and \texttt{[21,22]}. These categories are included as dummy regressors where \texttt{[21,22]} is chosen as the reference category.
 \item
   \texttt{punish}: a dummy variable with levels \texttt{yes} and \texttt{no} that measures if drunk driving is severely punished by mandatory jail time or mandatory community service (first conviction).
 \end{itemize}
@@ -9915,7 +10064,7 @@ At first, we define the variables according to the regression results presented 
 \CommentTok{\# set minimum drinking age [21, 22] to be the baseline level}
 \NormalTok{Fatalities}\SpecialCharTok{$}\NormalTok{drinkagec }\OtherTok{\textless{}{-}} \FunctionTok{relevel}\NormalTok{(Fatalities}\SpecialCharTok{$}\NormalTok{drinkagec, }\StringTok{"[21,22]"}\NormalTok{)}
 
-\CommentTok{\# mandadory jail or community service?}
+\CommentTok{\# mandatory jail or community service?}
 \NormalTok{Fatalities}\SpecialCharTok{$}\NormalTok{punish }\OtherTok{\textless{}{-}} \FunctionTok{with}\NormalTok{(Fatalities, }\FunctionTok{factor}\NormalTok{(jail }\SpecialCharTok{==} \StringTok{"yes"} \SpecialCharTok{|}\NormalTok{ service }\SpecialCharTok{==} \StringTok{"yes"}\NormalTok{, }
                                              \AttributeTok{labels =} \FunctionTok{c}\NormalTok{(}\StringTok{"no"}\NormalTok{, }\StringTok{"yes"}\NormalTok{)))}
 
@@ -10059,7 +10208,7 @@ The model specifications (4) to (7) include covariates that shall capture the ef
 \item
   Including the covariates does not lead to a major reduction of the estimated effect of the beer tax. The coefficient is not significantly different from zero at the level of \(5\%\) as the estimate is rather imprecise.
 \item
-  The minimum legal drinking age \emph{does not} have an effect on traffic fatalities: none of the three dummy variables are significantly different from zero at any common level of significance. Moreover, an \(F\)-Test of the joint hypothesis that all three coefficients are zero does not reject. The next code chunk shows how to test this hypothesis.
+  The minimum legal drinking age \emph{does not} have an effect on traffic fatalities: none of the three dummy variables are significantly different from zero at any common level of significance. Moreover, an \(F\)-Test of the joint hypothesis that all three coefficients are zero does not reject the null hyptothesis. The next code chunk shows how to test this hypothesis.
 \end{enumerate}
 
 \begin{Shaded}
@@ -10146,7 +10295,7 @@ A powerful method that can be used if common panel regression approaches fail is
 \hypertarget{rwabdv}{%
 \chapter{Regression with a Binary Dependent Variable}\label{rwabdv}}
 
-This chapter, we discusses a special class of regression models that aim to explain a limited dependent variable. In particular, we consider models where the dependent variable is binary. We will see that in such models, the regression function can be interpreted as a conditional probability function of the binary dependent variable.
+This chapter, we discuss a special class of regression models that aim to explain a limited dependent variable. In particular, we consider models where the dependent variable is binary. We will see that in such models, the regression function can be interpreted as a conditional probability function of the binary dependent variable.
 
 We review the following concepts:
 
@@ -10339,7 +10488,7 @@ The estimated regression line is
 \end{align}
 The true coefficient on \(P/I \ ratio\) is statistically different from \(0\) at the \(1\%\) level. Its estimate can be interpreted as follows: a 1 percentage point increase in \(P/I \ ratio\) leads to an increase in the probability of a loan denial by \(0.604 \cdot 0.01 = 0.00604 \approx 0.6\%\).
 
-Following the book we augment the simple model \eqref{eq:denymod1} by an additional regressor \(black\) which equals \(1\) if the applicant is an African American and equals \(0\) otherwise. Such a specification is the baseline for investigating if there is racial discrimination in the mortgage market: if being black has a significant (positive) influence on the probability of a loan denial when we control for factors that allow for an objective assessment of an applicants credit worthiness, this is an indicator for discrimination.
+Following the book we augment the simple model \eqref{eq:denymod1} by an additional regressor \(black\) which equals \(1\) if the applicant is an African American and equals \(0\) otherwise. Such a specification is the baseline for investigating if there is racial discrimination in the mortgage market: if being black has a significant (positive) influence on the probability of a loan denial when we control for factors that allow for an objective assessment of an applicant's creditworthiness, this is an indicator for discrimination.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -10506,6 +10655,9 @@ We continue by using an augmented Probit model to estimate the effect of race on
 
 \begin{Shaded}
 \begin{Highlighting}[]
+\CommentTok{\#As a remainder, we have renamed the variable "afam" to "black" in Chapter 11.1}
+\CommentTok{\#colnames(HMDA)[colnames(HMDA) == "afam"] \textless{}{-} "black"}
+\CommentTok{\#We continue by using an augmented}
 \NormalTok{denyprobit2 }\OtherTok{\textless{}{-}} \FunctionTok{glm}\NormalTok{(deny }\SpecialCharTok{\textasciitilde{}}\NormalTok{ pirat }\SpecialCharTok{+}\NormalTok{ black, }
                    \AttributeTok{family =} \FunctionTok{binomial}\NormalTok{(}\AttributeTok{link =} \StringTok{"probit"}\NormalTok{), }
                    \AttributeTok{data =}\NormalTok{ HMDA)}
@@ -11302,7 +11454,7 @@ Next, we run the second stage regression which gives us the TSLS estimates we se
 Thus estimating the model \eqref{eq:cigstsls} using TSLS yields
 
 \begin{align}
-  \widehat{\log(Q_i^{cigarettes})} = \underset{(1.70)}{9.72} + \underset{(0.36)}{1.08} \log(P_i^{cigarettes}), \label{eq:ecigstsls}
+  \widehat{\log(Q_i^{cigarettes})} = \underset{(1.70)}{9.72} - \underset{(0.36)}{1.08} \log(P_i^{cigarettes}), \label{eq:ecigstsls}
 \end{align}
 
 where we write \(\log(P_i^{cigarettes})\) instead of \(\widehat{\log(P_i^{cigarettes})}\) for consistency with the book.
@@ -11333,7 +11485,7 @@ We find that the coefficient estimates coincide for both approaches.
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
 \item
-  We have demonstrated that running the individual regressions for each stage of TSLS using \texttt{lm()} leads to the same coefficient estimates as when using \texttt{ivreg()}. However, the standard errors reported for the second-stage regression, e.g., by \texttt{coeftest()} or \texttt{summary()}, are \emph{invalid}: neither adjusts for using predictions from the first-stage regression as regressors in the second-stage regression. Fortunately, \texttt{ivreg()} performs the necessary adjustment automatically. This is another advantage over manual step-by-step estimation which we have done above for demonstrating the mechanics of the procedure.
+  We have demonstrated that running the individual regressions for each stage of TSLS using \texttt{lm()} leads to the same coefficient estimates as when using \texttt{ivreg()}. However, the standard errors reported for the second-stage regression (e.g.,\texttt{coeftest()} or \texttt{summary()}) are \emph{invalid} because they do not account for the use of predictions from the first-stage regression as regressors in the second-stage regression. Fortunately, \texttt{ivreg()} performs the necessary adjustment automatically. This is another advantage over manual step-by-step estimation which we have done above for demonstrating the mechanics of the procedure.
 \item
   Just like in multiple regression it is important to compute heteroskedasticity-robust standard errors as we have done above using \texttt{vcovHC()}.
 \end{enumerate}
@@ -11367,7 +11519,7 @@ While computing both stages of TSLS individually is not a big deal in \eqref{eq:
 
 Estimating regression models with TSLS using multiple instruments by means of \texttt{ivreg()} is straightforward. There are, however, some subtleties in correctly specifying the regression formula.
 
-Assume that you want to estimate the model \[Y_i = \beta_0 + \beta_1 X_{1i} + \beta_2 X_{2i} + W_{1i} + u_i\] where \(X_{1i}\) and \(X_{2i}\) are endogenous regressors that shall be instrumented by \(Z_{1i}\), \(Z_{2i}\) and \(Z_{3i}\) and \(W_{1i}\) is an exogenous regressor. The corresponding data is available in a \texttt{data.frame} with column names \texttt{y}, \texttt{x1}, \texttt{x1}, \texttt{w1}, \texttt{z1}, \texttt{z2} and \texttt{z3}. It might be tempting to specify the argument \texttt{formula} in your call of \texttt{ivreg()} as \texttt{y \textasciitilde{} x1 + x2 + w1 | z1 + z2 + z3} which is wrong. As explained in the documentation of \texttt{ivreg()} (see \texttt{?ivreg}), it is necessary to list \emph{all} exogenous variables as instruments too, that is joining them by \texttt{+}'s on the right of the vertical bar: \texttt{y \textasciitilde{} x1 + x2 + w1 | w1 + z1 + z2 + z3} where \texttt{w1} is ``instrumenting itself''.
+Assume that you want to estimate the model \[Y_i = \beta_0 + \beta_1 X_{1i} + \beta_2 X_{2i} + W_{1i} + u_i\] where \(X_{1i}\) and \(X_{2i}\) are endogenous regressors that shall be instrumented by \(Z_{1i}\), \(Z_{2i}\) and \(Z_{3i}\) and \(W_{1i}\) is an exogenous regressor. The corresponding data is available in a \texttt{data.frame} with column names \texttt{y}, \texttt{x1}, \texttt{x2}, \texttt{w1}, \texttt{z1}, \texttt{z2} and \texttt{z3}. It might be tempting to specify the argument \texttt{formula} in your call of \texttt{ivreg()} as \texttt{y \textasciitilde{} x1 + x2 + w1 | z1 + z2 + z3} which is wrong. As explained in the documentation of \texttt{ivreg()} (see \texttt{?ivreg}), it is necessary to list \emph{all} exogenous variables as instruments too, that is joining them by \texttt{+}'s on the right of the vertical bar: \texttt{y \textasciitilde{} x1 + x2 + w1 | w1 + z1 + z2 + z3} where \texttt{w1} is ``instrumenting itself''.
 
 If there is a large number of exogenous variables it may be convenient to provide an update formula with a \texttt{.} (this includes all variables except for the dependent variable) right after the \texttt{|} and to exclude all endogenous variables using a \texttt{-}. For example, if there is one exogenous regressor \texttt{w1} and one endogenous regressor \texttt{x1} with instrument \texttt{z1}, the appropriate formula would be \texttt{y \textasciitilde{} w1 + x1 | w1 + z1} which is equivalent to \texttt{y \textasciitilde{} w1 + x1 | . - x1 + z1}.
 
@@ -11555,7 +11707,7 @@ As for the procedure shown in Key Concept 12.6, the application in the next sect
 
 Are the general sales tax and the cigarette-specific tax valid instruments? If not, TSLS is not helpful to estimate the demand elasticity for cigarettes discussed in Chapter \ref{TGIVRM}. As discussed in Chapter \ref{TIVEWASRAASI}, both variables are likely to be relevant but whether they are exogenous is a different question.
 
-The book argues that cigarette-specific taxes could be endogenous because there might be state specific historical factors like economic importance of the tobacco farming and cigarette production industry that lobby for low cigarette specific taxes. Since it is plausible that tobacco growing states have higher rates of smoking than others, this would lead to endogeneity of cigarette specific taxes. If we had data on the size on the tobacco and cigarette industry, we could solve this potential issue by including the information in the regression. Unfortunately, this is not the case.
+The book argues that cigarette-specific taxes could be endogenous because there might be state specific historical factors like economic importance of the tobacco farming and cigarette production industry that lobby for low cigarette specific taxes. Since it is plausible that tobacco growing states have higher rates of smoking than others, this would lead to endogeneity of cigarette specific taxes. If we had data on the size of the tobacco and cigarette industry, we could solve this potential issue by including the information in the regression. Unfortunately, this is not the case.
 
 However, since the role of the tobacco and cigarette industry is a factor that can be assumed to differ across states but not over time we may exploit the panel structure of \texttt{CigarettesSW} instead: as shown in Chapter \ref{PDWTTP}, regression using data on \emph{changes} between two time periods eliminates such state specific and time invariant effects. Following the book we consider changes in variables between 1985 and 1995. That is, we are interested in estimating the \emph{long-run elasticity} of the demand for cigarettes.
 
@@ -11563,7 +11715,7 @@ The model to be estimated by TSLS using the general sales tax and the cigarette-
 
 \begin{align}
 \begin{split}
-  \log(Q_{i,1995}^{cigarettes}) - \log(Q_{i,1995}^{cigarettes}) =& \, \beta_0 + \beta_1 \left[\log(P_{i,1995}^{cigarettes}) - \log(P_{i,1985}^{cigarettes}) \right] \\ &+ \beta_2 \left[\log(income_{i,1995}) - \log(income_{i,1985})\right] + u_i. \end{split}\label{eq:diffivreg}
+  \log(Q_{i,1995}^{cigarettes}) - \log(Q_{i,1985}^{cigarettes}) =& \, \beta_0 + \beta_1 \left[\log(P_{i,1995}^{cigarettes}) - \log(P_{i,1985}^{cigarettes}) \right] \\ &+ \beta_2 \left[\log(income_{i,1995}) - \log(income_{i,1985})\right] + u_i. \end{split}\label{eq:diffivreg}
 \end{align}
 
 We first create differences from 1985 to 1995 for the dependent variable, the regressors and both instruments.
@@ -11880,7 +12032,7 @@ This chapter discusses statistical tools that are commonly applied in program ev
 
 Such \emph{experimental} data is fundamentally different from \emph{observational} data. For example, one might use a randomized controlled experiment to measure how much the performance of students in a standardized test differs between two classes where one has a ``regular'''' student-teacher ratio and the other one has fewer students. The data produced by such an experiment would be different from, e.g., the observed cross-section data on the students' performance used throughout Chapters \ref{lrwor} to \ref{nrf} where class sizes are not randomly assigned to students but instead are the results of an economic decision where educational objectives and budgetary aspects were balanced.
 
-For economists, randomized controlled experiments are often difficult or even indefeasible to implement. For example, due to ethic, moral and legal reasons it is practically impossible for a business owner to estimate the causal effect on the productivity of workers of setting them under psychological stress using an experiment where workers are randomly assigned either to the treatment group that is under time pressure or to the control group where work is under regular conditions, at best without knowledge of being in an experiment (see the box \emph{The Hawthorne Effect} on p.~528 of the book).
+For economists, randomized controlled experiments are often difficult or even infeasible to implement. For example, due to ethic, moral and legal reasons it is practically impossible for a business owner to estimate the causal effect on the productivity of workers of setting them under psychological stress using an experiment where workers are randomly assigned either to the treatment group that is under time pressure or to the control group where work is under regular conditions, at best without knowledge of being in an experiment (see the box \emph{The Hawthorne Effect} on p.~528 of the book).
 
 However, sometimes external circumstances produce what is called a \emph{quasi-experiment} or \emph{natural experiment}. This ``as if'' randomness allows for estimation of causal effects that are of interest for economists using tools which are very similar to those valid for ideal randomized controlled experiments. These tools draw heavily on the theory of multiple regression and also on IV regression (see Chapter \ref{ivr}). We will review the core aspects of these methods and demonstrate how to apply them in R using the STAR data set (see the \href{https://dataverse.harvard.edu/dataset.xhtml?persistentId=hdl:1902.1/10766}{description} of the data set).
 
@@ -11943,7 +12095,7 @@ In an ideal randomized controlled experiment the following conditions are fulfil
   The subjects are randomly assigned to treatment and control group.
 \end{enumerate}
 
-Condition 1 guarantees that the subjects' potential outcomes are drawn randomly from the same distribution such that the expected value of the causal effect in the sample is equal to the average causal effect in the distribution. Condition 2 ensures that the receipt of treatment is independent from the subjects' potential outcomes. If both conditions are fulfilled, the expected causal effect is the expected outcome in the treatment group minus the expected outcome in the control group. Using conditional expectations we have \[\text{Average causal effect} =  E(Y_i\vert X_i=1) -  E(Y_i\vert X_i=0),\] where \(X_i\) is a binary treatment indicator.
+Condition 1 guarantees that the subjects' potential outcomes are drawn randomly from the same population distribution such that the expected value of the causal effect in the sample is equal to the average causal effect in the population. Condition 2 ensures that the receipt of treatment is independent from the subjects' potential outcomes. If both conditions are fulfilled, the expected causal effect is the expected outcome in the treatment group minus the expected outcome in the control group. Using conditional expectations we have \[\text{Average causal effect} =  E(Y_i\vert X_i=1) -  E(Y_i\vert X_i=0),\] where \(X_i\) is a binary treatment indicator.
 
 The average causal effect can be estimated using the \emph{differences estimator}, which is nothing but the OLS estimator in the simple regression model
 \begin{align}
@@ -11955,7 +12107,7 @@ The OLS estimator in the regression model
 \begin{align}
   Y_i = \beta_0 + \beta_1 X_i + \beta_2 W_{1i} + \dots + \beta_{1+r} W_{ri} + u_i \ \ , \ \ i=1,\dots,n \label{eq:diffestwar}
 \end{align}
-with additional regressors \(W_1,\dots,W_r\) is called the \emph{differences estimator with additional regressors}. It is assumed that treatment \(X_i\) is randomly assigned so that it is independent of the the pretreatment characteristic \(W_i\). This is assumption is called \emph{conditional mean independence} and implies \[E(u_i\vert X_i , W_i) = E(u_i\vert W_i) = 0,\] so the conditional expectation of the error \(u_i\) given the treatment indicator \(X_i\) and the pretreatment characteristic \(W_i\) does not depend on the \(X_i\). Conditional mean independence replaces the first least squares assumption in Key Concept 6.4 and thus ensures that the differences estimator of \(\beta_1\) is unbiased. The \emph{differences estimator with additional regressors} is more efficient than the \emph{differences estimator} if the additional regressors explain some of the variation in the \(Y_i\).
+with additional regressors \(W_1,\dots,W_r\) is called the \emph{differences estimator with additional regressors}. It is assumed that treatment assignment \(X_i\) is random and independent of the pretreatment characteristic \(W_i\). This assumption is called \emph{conditional mean independence} and implies \[E(u_i\vert X_i , W_i) = E(u_i\vert W_i) = 0,\] so the conditional expectation of the error \(u_i\) given the treatment indicator \(X_i\) and the pretreatment characteristic \(W_i\) does not depend on the \(X_i\). Conditional mean independence replaces the first least squares assumption in Key Concept 6.4 and thus ensures that the differences estimator of \(\beta_1\) is unbiased. The \emph{differences estimator with additional regressors} is more efficient than the \emph{differences estimator} if the additional regressors explain some of the variation in the \(Y_i\).
 
 \hypertarget{threats-to-validity-of-experiments}{%
 \section{Threats to Validity of Experiments}\label{threats-to-validity-of-experiments}}
@@ -11975,11 +12127,11 @@ The concepts of internal and external validity discussed in Key Concept 9.1 are 
 \item
   \textbf{Failure to Follow the Treatment Protocol}
 
-  If subjects do not follow the treatment protocol, i.e., some subjects in the treatment group manage to avoid receiving the treatment and/or some subjects in the control group manage to receive the treatment (\emph{partial compliance}), there is correlation between \(X_i\) und \(u_i\) such that the OLS estimator of the average treatment effect will be biased. If there are data on \emph{both} treatment actually recieved (\(X_i\)) and initial random assignment (\(Z_i\)), IV regression of the models \eqref{eq:diffest} and \eqref{eq:diffestwar} is a remedy.
+  If subjects do not follow the treatment protocol, i.e., some subjects in the treatment group manage to avoid receiving the treatment and/or some subjects in the control group manage to receive the treatment (\emph{partial compliance}), there is correlation between \(X_i\) und \(u_i\) such that the OLS estimator of the average treatment effect will be biased. If there are data on \emph{both} treatment actually received (\(X_i\)) and initial random assignment (\(Z_i\)), IV regression of the models \eqref{eq:diffest} and \eqref{eq:diffestwar} is a remedy.
 \item
   \textbf{Attrition}
 
-  Attrition may result in a nonrandomly selected sample. If subjects systematically drop out of the study after beeing assigned to the control or the treatment group (systematic means that the reason of the dropout is related to the treatment) there will be correlation between \(X_i\) and \(u_i\) and hence bias in the OLS estimator of the treatment effect.
+  Attrition may result in a nonrandomly selected sample. If subjects systematically drop out of the study after being assigned to the control or the treatment group (systematic means that the reason of the dropout is related to the treatment) there will be correlation between \(X_i\) and \(u_i\) and hence bias in the OLS estimator of the treatment effect.
 \item
   \textbf{Experimental Effects}
 
@@ -12003,7 +12155,7 @@ The concepts of internal and external validity discussed in Key Concept 9.1 are 
 \item
   \textbf{Nonrepresentative Program or Policy}
 
-  If the program or policy for the population studied differs considerably from the program (to be) applied to population(s) of interest, the results cannot be generalized. For example, a small-scale programm with low funding might have different effects than a widely available scaled-up program that is actually implemented. There are other factors like duration and the extent of monitoring that should be considered here.
+  If the program or policy for the population studied differs considerably from the program (to be) applied to population(s) of interest, the results cannot be generalized. For example, a small-scale program with low funding might have different effects than a widely available scaled-up program that is actually implemented. There are other factors like duration and the extent of monitoring that should be considered here.
 \item
   \textbf{General Equilibrium Effects}
 
@@ -12017,7 +12169,7 @@ The concepts of internal and external validity discussed in Key Concept 9.1 are 
 \subsection*{Experimental Design and the Data Set}\label{experimental-design-and-the-data-set}}
 \addcontentsline{toc}{subsection}{Experimental Design and the Data Set}
 
-The Project \emph{Student-Teacher Achievement Ratio} (STAR) was a large randomized controlled experiment with the aim of asserting whether a class size reduction is effective in improving education outcomes. It has been conducted in 80 Tennessee elementary schools over a period of four years during the 1980s by the State Department of Education.
+The Project \emph{Student-Teacher Achievement Ratio} (STAR) was a large randomized controlled experiment with the aim of asserting whether a class size reduction is effective in improving education outcomes. It was conducted in 80 Tennessee elementary schools over a period of four years during the 1980s by the State Department of Education.
 
 In the first year, about 6400 students were randomly assigned into one of three interventions: small class (13 to 17 students per teacher), regular class (22 to 25 students per teacher), and regular-with-aide class (22 to 25 students with a full-time teacher's aide). Teachers were also randomly assigned to the classes they taught. The interventions were initiated as the students entered school in kindergarten and continued through to third grade. Control and treatment groups across grades are summarized in Table \ref{tab:starstructure}.
 
@@ -12120,9 +12272,9 @@ The STAR data set is part of the package \texttt{AER}.
 
 A majority of the variable names contain a suffix (\texttt{k}, \texttt{1}, \texttt{2} or \texttt{3}) stating the grade which the respective variable is referring to. This facilitates regression analysis because it allows to adjust the \texttt{formula} argument in \texttt{lm()} for each grade by simply changing the variables' suffixes accordingly.
 
-The outcome produced by \texttt{head()} shows that some values recorded are \texttt{NA} and \texttt{<NA>}, i.e., there is no data on this variable for the student under consideration. This lies in the nature of the data: for example, take the first observation \texttt{STAR{[}1,{]}}.
+The outcome produced by \texttt{head()} shows that some recorded values are \texttt{NA} and thus, there is no data on this variable for the student under consideration. This lies in the nature of the data: for example, take the first observation \texttt{STAR{[}1,{]}}.
 
-In the output of \texttt{head(STAR,\ 2)} we find that the student entered the experiment in third grade in a regular class, which is why the class size is recorded in \texttt{star3} and the other class type indicator variables are \texttt{<NA>}. For the same reason there are no recordings of her math and reading score but for the third grade. It is straightforward to only get her non-\texttt{NA}/\texttt{<NA>} recordings: simply drop the \texttt{NA}s using \texttt{!is.na()}.
+In the output of \texttt{head(STAR,\ 2)} we find that the student entered the experiment in third grade in a regular class, which is why the class size is recorded in \texttt{star3} and the other class type indicator variables are \texttt{NA}. For the same reason there are no recordings of her math and reading score but for the third grade. It is straightforward to only get her non-\texttt{NA}/\texttt{<NA>} recordings: simply drop the \texttt{NA}s using \texttt{!is.na()}.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -12215,7 +12367,7 @@ We gather the results and present them in a table using \texttt{stargazer()}.
 \NormalTok{rob\_se\_1 }\OtherTok{\textless{}{-}} \FunctionTok{list}\NormalTok{(}\FunctionTok{sqrt}\NormalTok{(}\FunctionTok{diag}\NormalTok{(}\FunctionTok{vcovHC}\NormalTok{(fmk, }\AttributeTok{type =} \StringTok{"HC1"}\NormalTok{))),}
                  \FunctionTok{sqrt}\NormalTok{(}\FunctionTok{diag}\NormalTok{(}\FunctionTok{vcovHC}\NormalTok{(fm1, }\AttributeTok{type =} \StringTok{"HC1"}\NormalTok{))),}
                  \FunctionTok{sqrt}\NormalTok{(}\FunctionTok{diag}\NormalTok{(}\FunctionTok{vcovHC}\NormalTok{(fm2, }\AttributeTok{type =} \StringTok{"HC1"}\NormalTok{))),}
-                 \FunctionTok{sqrt}\NormalTok{(}\FunctionTok{diag}\NormalTok{(}\FunctionTok{vcovHC}\NormalTok{(fm2, }\AttributeTok{type =} \StringTok{"HC1"}\NormalTok{))))}
+                 \FunctionTok{sqrt}\NormalTok{(}\FunctionTok{diag}\NormalTok{(}\FunctionTok{vcovHC}\NormalTok{(fm3, }\AttributeTok{type =} \StringTok{"HC1"}\NormalTok{))))}
 \end{Highlighting}
 \end{Shaded}
 
@@ -12265,14 +12417,14 @@ We gather the results and present them in a table using \texttt{stargazer()}.
  star2regular+aide &  &  & 3.479 &  \\ 
   &  &  & (2.545) &  \\ 
   & & & & \\ 
- star3small &  &  &  & 15.587 \\ 
-  &  &  &  &  \\ 
+ star3small &  &  &  & 15.587$^{***}$ \\ 
+  &  &  &  & (2.396) \\ 
   & & & & \\ 
  star3regular+aide &  &  &  & $-$0.291 \\ 
-  &  &  &  &  \\ 
+  &  &  &  & (2.273) \\ 
   & & & & \\ 
  Constant & 918.043$^{***}$ & 1,039.393$^{***}$ & 1,157.807$^{***}$ & 1,228.506$^{***}$ \\ 
-  & (1.633) & (1.785) & (1.815) & (1.815) \\ 
+  & (1.633) & (1.785) & (1.815) & (1.680) \\ 
   & & & & \\ 
 \hline \\[-1.8ex] 
 Observations & 5,786 & 6,379 & 6,049 & 5,967 \\ 
@@ -12427,7 +12579,7 @@ We now use \texttt{stargazer()} to gather all relevant information in a structur
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\FunctionTok{stargazer}\NormalTok{(fmk, fm1, fm2, fm3,}
+\FunctionTok{stargazer}\NormalTok{(fmk, gradeK1, gradeK2, gradeK3,}
   \AttributeTok{title =} \StringTok{"Project STAR {-} Differences Estimates with }
 \StringTok{  Additional Regressors for Kindergarten"}\NormalTok{,}
   \AttributeTok{header =} \ConstantTok{FALSE}\NormalTok{, }
@@ -12559,7 +12711,7 @@ It is fairly easy to turn the \texttt{data.frame} \texttt{df} into a table.
  & K & 1 & 2 & 3 \\ 
 \hline \\[-1.8ex] 
 Small & $0.190$ & $0.330$ & $0.230$ & $0.210$ \\ 
-SmallSE & $0.030$ & $0.030$ & $0.030$ & $0.040$ \\ 
+SmallSE & $0.030$ & $0.030$ & $0.030$ & $0.030$ \\ 
 RegAide & $0$ & $0.130$ & $0.040$ & $0$ \\ 
 RegAideSE & $0.030$ & $0.030$ & $0.030$ & $0.030$ \\ 
 SSD & $73.750$ & $91.280$ & $84.080$ & $73.270$ \\ 
@@ -12567,7 +12719,7 @@ SSD & $73.750$ & $91.280$ & $84.080$ & $73.270$ \\
 \end{tabular} 
 \end{table}
 
-The estimated effect of a small classes is largest for grade 1. As pointed out in the book, this is probably because students in the control group for grade 1 did poorly on the test for some unknown reason or simply due to random variation. The difference between the estimated effect of being in a small class and being in a regular classes with an aide is roughly 0.2 standard deviations for all grades. This leads to the conclusion that the effect of being in a regular sized class with an aide is zero and the effect of being in a small class is roughly the same for all grades.
+The estimated effect of a small class is largest for grade 1. As pointed out in the book, this is probably because students in the control group for grade 1 did poorly on the test for some unknown reason or simply due to random variation. The difference between the estimated effect of being in a small class and being in a regular class with an aide is roughly 0.2 standard deviations for all grades. This leads to the conclusion that the effect of being in a regular sized class with an aide is zero and the effect of being in a small class is roughly the same for all grades.
 
 The remainder of Chapter 13.3 in the book discusses to what extent these experimental estimates are comparable with observational estimates obtained using data on school districts in California and Massachusetts in Chapter \ref{asbomr}. It turns out that the estimates are indeed very similar. Please refer to the aforementioned section in the book for a more detailed discussion.
 
@@ -12738,7 +12890,7 @@ Next plot the data. The function \texttt{jitter()} is used to add some artificia
 
 \begin{center}\includegraphics[width=0.8\linewidth]{ITER_files/figure-latex/unnamed-chunk-551-1} \end{center}
 
-Observations from both the control and treatment group have a higher mean after the treatment but that the increase is stronger for the treatment group. Using DID we may estimate how much of that difference is due to the treatment.
+After the treatment, both the control and treatment groups have a higher mean, but the increase is stronger in the treatment group. Using DID we may estimate how much of that difference is due to the treatment.
 
 It is straightforward to compute the DID estimate in the fashion of \eqref{eq:DID}.
 
@@ -13990,7 +14142,7 @@ The coefficients on both lags of the term spread are not significant at the \(10
 
 The ADL(\(2\),\(2\)) forecast of GDP growth in 2013:Q1 is \(2.27\%\) which implies a forecast error of \(1.14\%\).
 
-Do the ADL models \eqref{eq:gdpgradl21} and \eqref{eq:gdpgradl22} improve upon the simple AR(\(2\)) model \eqref{eq:GDPGRAR2}? The answer is yes: while \(SER\) and \(\bar{R}^2\) improve only slightly, an \(F\)-test on the term spread coefficients in \eqref{eq:gdpgradl22} provides evidence that the model does better in explaining GDP growth than the AR(\(2\)) model as the hypothesis that both coefficients are zero cannot be rejected at the level of \(5\%\).
+Do the ADL models \eqref{eq:gdpgradl21} and \eqref{eq:gdpgradl22} improve upon the simple AR(\(2\)) model \eqref{eq:GDPGRAR2}? The answer is yes: while \(SER\) and \(\bar{R}^2\) improve only slightly, an \(F\)-test on the term spread coefficients in \eqref{eq:gdpgradl22} provides evidence that the model does better in explaining GDP growth than the AR(\(2\)) model as the hypothesis that both coefficients are zero can be rejected at the level of \(5\%\).
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -14109,11 +14261,11 @@ where \(u_t\) is a homoskedastic error term. The forecast error is
 \begin{align*}
   Y_{T+1} - \widehat{Y}_{T+1\vert T} = u_{T+1} - \left[(\widehat{\beta}_0 - \beta_0) + (\widehat{\beta}_1 - \beta_1) Y_T + (\widehat{\delta_1} - \delta_1) X_T \right].
 \end{align*}
-The mean squared forecast error (MSFE) and the RMFSE are
+The mean squared forecast error (MSFE) and the RMSFE are
 \begin{align*}
-  MFSE =& \, E\left[(Y_{T+1} - \widehat{Y}_{T+1\vert T})^2 \right] \\
+  MSFE =& \, E\left[(Y_{T+1} - \widehat{Y}_{T+1\vert T})^2 \right] \\
        =& \, \sigma_u^2 + Var\left[ (\widehat{\beta}_0 - \beta_0) + (\widehat{\beta}_1 - \beta_1) Y_T + (\widehat{\delta_1} - \delta_1) X_T \right], \\
-  RMFSE =& \, \sqrt{\sigma_u^2 + Var\left[ (\widehat{\beta}_0 - \beta_0) + (\widehat{\beta}_1 - \beta_1) Y_T + (\widehat{\delta_1} - \delta_1) X_T \right]}.
+  RMSFE =& \, \sqrt{\sigma_u^2 + Var\left[ (\widehat{\beta}_0 - \beta_0) + (\widehat{\beta}_1 - \beta_1) Y_T + (\widehat{\delta_1} - \delta_1) X_T \right]}.
 \end{align*}
 
 A \(95\%\) forecast interval is an interval that covers the true value of \(Y_{T+1}\) in \(95\%\) of repeated applications. There is a major difference in computing a confidence interval and a forecast interval: when computing a confidence interval of a point estimate we use large sample approximations that are justified by the CLT and thus are valid for a large range of error term distributions. For computation of a forecast interval of \(Y_{T+1}\), however, we must make an additional assumption about the distribution of \(u_{T+1}\), the error term in period \(T+1\). Assuming that \(u_{T+1}\) is normally distributed one can construct a \(95\%\) \emph{forecast interval} for \(Y_{T+1}\) using \(SE(Y_{T+1} - \widehat{Y}_{T+1\vert T})\), an estimate of the RMSFE:
@@ -14153,7 +14305,7 @@ In some applications it is useful to report multiple forecast intervals for subs
 
 We choose \texttt{level = seq(5, 99, 10)} in the call of \texttt{forecast()} such that forecast intervals with levels \(5\%, 15\%, \dots, 95\%\) are computed for each point forecast of the series.
 
-The dashed red line shows point forecasts of the series for the next 25 periods based on an \(ADL(1,1)\) model and the shaded areas represent the prediction intervals. The degree of shading indicates the level of the prediction interval. The darkest of the blue bands displays the \(5\%\) forecast intervals and the color fades towards grey as the level of the intervals increases.
+The dashed red line shows point forecasts of the series for the next 25 periods based on an \(AR(2)\) model and the shaded areas represent the prediction intervals. The degree of shading indicates the level of the prediction interval. The darkest of the blue bands displays the \(5\%\) forecast intervals and the color fades towards grey as the level of the intervals increases.
 
 \hypertarget{llsuic}{%
 \section{Lag Length Selection Using Information Criteria}\label{llsuic}}
@@ -14167,7 +14319,7 @@ The order of an AR model can be determined using two approaches:
 \item
   \textbf{The F-test approach}
 
-  Estimate an AR(\(p\)) model and test the significance of the largest lag(s). If the test rejects, drop the respective lag(s) from the model. This approach has the tendency to produce models where the order is too large: in a significance test we always face the risk of rejecting a true null hypothesis!
+  Estimate an AR(\(p\)) model and test the significance of the largest lag(s). If the test indicates that a particular lag(s) is not significant, we can consider removing it from the model. This approach has the tendency to produce models where the order is too large: in a significance test we always face the risk of rejecting a true null hypothesis!
 \item
   \textbf{Relying on an information criterion}
 
@@ -14187,7 +14339,7 @@ The order of an AR model can be determined using two approaches:
   Both criteria are estimators of the optimal lag length \(p\). The lag order \(\widehat{p}\) that minimizes the respective criterion is called the \emph{BIC estimate} or the \emph{AIC estimate} of the optimal model order. The basic idea of both criteria is that the \(SSR\) decreases as additional lags are added to the model such that the first term decreases whereas the second increases as the lag order grows. One can show that the the \(BIC\) is a consistent estimator of the true lag order while the AIC is not which is due to the differing factors in the second addend. Nevertheless, both estimators are used in practice where the \(AIC\) is sometimes used as an alternative when the \(BIC\) yields a model with ``too few'' lags.
 \end{enumerate}
 
-The function \texttt{dynlm()} does not compute information criteria by default. We will therefore write a short function that reports the \(BIC\) (along with the chosen lag order \(p\) and \(R^2\)) for objects of class \texttt{dynlm}.
+The function \texttt{dynlm()} does not compute information criteria by default. We will therefore write a short function that reports the \(BIC\) (along with the chosen lag order \(p\) and \(\bar{R}^2\)) for objects of class \texttt{dynlm}.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -14201,7 +14353,7 @@ The function \texttt{dynlm()} does not compute information criteria by default. 
   \FunctionTok{return}\NormalTok{(}
     \FunctionTok{round}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\StringTok{"p"} \OtherTok{=}\NormalTok{ npar }\SpecialCharTok{{-}} \DecValTok{1}\NormalTok{,}
           \StringTok{"BIC"} \OtherTok{=} \FunctionTok{log}\NormalTok{(ssr}\SpecialCharTok{/}\NormalTok{t) }\SpecialCharTok{+}\NormalTok{ npar }\SpecialCharTok{*} \FunctionTok{log}\NormalTok{(t)}\SpecialCharTok{/}\NormalTok{t,}
-          \StringTok{"R2"} \OtherTok{=} \FunctionTok{summary}\NormalTok{(model)}\SpecialCharTok{$}\NormalTok{r.squared), }\DecValTok{4}\NormalTok{)}
+          \StringTok{"Adj.R2"} \OtherTok{=} \FunctionTok{summary}\NormalTok{(model)}\SpecialCharTok{$}\NormalTok{adj.r.squared), }\DecValTok{4}\NormalTok{)}
 \NormalTok{  )}
 \NormalTok{\}}
 \end{Highlighting}
@@ -14213,7 +14365,7 @@ Table 14.3 of the book presents a breakdown of how the \(BIC\) is computed for A
 \begin{Highlighting}[]
 \CommentTok{\# apply the BIC() to an intercept{-}only model of GDP growth}
 \FunctionTok{BIC}\NormalTok{(}\FunctionTok{dynlm}\NormalTok{(}\FunctionTok{ts}\NormalTok{(GDPGR\_level) }\SpecialCharTok{\textasciitilde{}} \DecValTok{1}\NormalTok{))}
-\CommentTok{\#\textgreater{}      p    BIC     R2 }
+\CommentTok{\#\textgreater{}      p    BIC Adj.R2 }
 \CommentTok{\#\textgreater{} 0.0000 2.4394 0.0000}
 
 \CommentTok{\# loop BIC over models of different orders}
@@ -14223,14 +14375,14 @@ Table 14.3 of the book presents a breakdown of how the \(BIC\) is computed for A
         \StringTok{"AR"} \OtherTok{=} \FunctionTok{BIC}\NormalTok{(}\FunctionTok{dynlm}\NormalTok{(}\FunctionTok{ts}\NormalTok{(GDPGR\_level) }\SpecialCharTok{\textasciitilde{}} \FunctionTok{L}\NormalTok{(}\FunctionTok{ts}\NormalTok{(GDPGR\_level), }\DecValTok{1}\SpecialCharTok{:}\NormalTok{x))))}
 
 \NormalTok{BICs}
-\CommentTok{\#\textgreater{}       [,1]   [,2]   [,3]   [,4]   [,5]   [,6]}
-\CommentTok{\#\textgreater{} p   1.0000 2.0000 3.0000 4.0000 5.0000 6.0000}
-\CommentTok{\#\textgreater{} BIC 2.3486 2.3475 2.3774 2.4034 2.4188 2.4429}
-\CommentTok{\#\textgreater{} R2  0.1143 0.1425 0.1434 0.1478 0.1604 0.1591}
+\CommentTok{\#\textgreater{}          [,1]   [,2]   [,3]   [,4]   [,5]   [,6]}
+\CommentTok{\#\textgreater{} p      1.0000 2.0000 3.0000 4.0000 5.0000 6.0000}
+\CommentTok{\#\textgreater{} BIC    2.3486 2.3475 2.3774 2.4034 2.4188 2.4429}
+\CommentTok{\#\textgreater{} Adj.R2 0.1099 0.1339 0.1303 0.1303 0.1385 0.1325}
 \end{Highlighting}
 \end{Shaded}
 
-Note that increasing the lag order increases \(R^2\) because the \(SSR\) decreases as additional lags are added to the model but according to the \(BIC\), we should settle for the AR(\(2\)) model instead of the AR(\(6\)) model. It helps us to decide whether the decrease in \(SSR\) is enough to justify adding an additional regressor.
+Note that increasing the lag order increases \(R^2\) because the \(SSR\) decreases as additional lags are added to the model. However, \(\bar{R}^2\) takes into account the number of parameters in the model and adjusts for the increase in \(R^2\) due to adding more variables, but according to the \(BIC\), we should settle for the AR(\(2\)) model instead of the AR(\(5\)) model. It helps us to decide whether the decrease in \(SSR\) is enough to justify adding an additional regressor.
 
 If we had to compare a bigger set of models, a convenient way to select the model with the lowest \(BIC\) is using the function \texttt{which.min()}.
 
@@ -14238,8 +14390,8 @@ If we had to compare a bigger set of models, a convenient way to select the mode
 \begin{Highlighting}[]
 \CommentTok{\# select the AR model with the smallest BIC}
 \NormalTok{BICs[, }\FunctionTok{which.min}\NormalTok{(BICs[}\DecValTok{2}\NormalTok{, ])]}
-\CommentTok{\#\textgreater{}      p    BIC     R2 }
-\CommentTok{\#\textgreater{} 2.0000 2.3475 0.1425}
+\CommentTok{\#\textgreater{}      p    BIC Adj.R2 }
+\CommentTok{\#\textgreater{} 2.0000 2.3475 0.1339}
 \end{Highlighting}
 \end{Shaded}
 
@@ -14261,14 +14413,14 @@ To give an example, we estimate ADL(\(p\),\(q\)) models of GDP growth where, as 
                    \AttributeTok{start =} \FunctionTok{c}\NormalTok{(}\DecValTok{1962}\NormalTok{, }\DecValTok{1}\NormalTok{), }\AttributeTok{end =} \FunctionTok{c}\NormalTok{(}\DecValTok{2012}\NormalTok{, }\DecValTok{4}\NormalTok{))))}
 
 \NormalTok{BICs}
-\CommentTok{\#\textgreater{}       [,1]   [,2]   [,3]   [,4]    [,5]    [,6]    [,7]    [,8]    [,9]   [,10]}
-\CommentTok{\#\textgreater{} p   2.0000 4.0000 6.0000 8.0000 10.0000 12.0000 14.0000 16.0000 18.0000 20.0000}
-\CommentTok{\#\textgreater{} BIC 2.3411 2.3408 2.3813 2.4181  2.4568  2.5048  2.5539  2.6029  2.6182  2.6646}
-\CommentTok{\#\textgreater{} R2  0.1417 0.1855 0.1950 0.2072  0.2178  0.2211  0.2234  0.2253  0.2581  0.2678}
-\CommentTok{\#\textgreater{}       [,11]   [,12]}
-\CommentTok{\#\textgreater{} p   22.0000 24.0000}
-\CommentTok{\#\textgreater{} BIC  2.7205  2.7664}
-\CommentTok{\#\textgreater{} R2   0.2702  0.2803}
+\CommentTok{\#\textgreater{}          [,1]   [,2]   [,3]   [,4]    [,5]    [,6]    [,7]    [,8]    [,9]}
+\CommentTok{\#\textgreater{} p      2.0000 4.0000 6.0000 8.0000 10.0000 12.0000 14.0000 16.0000 18.0000}
+\CommentTok{\#\textgreater{} BIC    2.3411 2.3408 2.3813 2.4181  2.4568  2.5048  2.5539  2.6029  2.6182}
+\CommentTok{\#\textgreater{} Adj.R2 0.1332 0.1692 0.1704 0.1747  0.1773  0.1721  0.1659  0.1586  0.1852}
+\CommentTok{\#\textgreater{}          [,10]   [,11]   [,12]}
+\CommentTok{\#\textgreater{} p      20.0000 22.0000 24.0000}
+\CommentTok{\#\textgreater{} BIC     2.6646  2.7205  2.7664}
+\CommentTok{\#\textgreater{} Adj.R2  0.1864  0.1795  0.1810}
 \end{Highlighting}
 \end{Shaded}
 
@@ -14278,8 +14430,8 @@ From the definition of \texttt{BIC()}, for ADL models with \(p=q\) it follows th
 \begin{Highlighting}[]
 \CommentTok{\# select the ADL model with the smallest BIC}
 \NormalTok{BICs[, }\FunctionTok{which.min}\NormalTok{(BICs[}\DecValTok{2}\NormalTok{, ])]}
-\CommentTok{\#\textgreater{}      p    BIC     R2 }
-\CommentTok{\#\textgreater{} 4.0000 2.3408 0.1855}
+\CommentTok{\#\textgreater{}      p    BIC Adj.R2 }
+\CommentTok{\#\textgreater{} 4.0000 2.3408 0.1692}
 \end{Highlighting}
 \end{Shaded}
 
@@ -14453,7 +14605,6 @@ As an empirical example, consider the U.S. unemployment rate and the Japanese in
      \AttributeTok{xlab =} \StringTok{"Date"}\NormalTok{,}
      \AttributeTok{ylab =} \StringTok{""}\NormalTok{,}
      \AttributeTok{main =} \StringTok{"Spurious Regression: Macroeconomic Time series"}\NormalTok{)}
-
 \CommentTok{\# add a legend}
 \FunctionTok{legend}\NormalTok{(}\StringTok{"topleft"}\NormalTok{, }
        \AttributeTok{legend =} \FunctionTok{c}\NormalTok{(}\StringTok{"USUnemp"}\NormalTok{, }\StringTok{"JPIndProd"}\NormalTok{),}
@@ -14793,7 +14944,7 @@ The ADF test can be done conveniently using \texttt{ur.df()} from the package \t
 \end{Highlighting}
 \end{Shaded}
 
-The first test statistic at the bottom of the output is the one we are interested in. The number of test statistics reported depends on the test regression. For \texttt{type = "trend"}, the second statistics corresponds to the test that there is no unit root and no time trend while the third one corresponds to a test of the hypothesis that there is a unit root, no time trend and no drift term.
+The first test statistic at the bottom of the output is the one we are interested in. The number of test statistics reported depends on the test regression. For \texttt{type = "trend"}, the second statistics corresponds to the test that there is unit root and no time trend while the third one corresponds to a test of the hypothesis that there is a unit root, no time trend and no drift term.
 
 \hypertarget{niib}{%
 \section{Nonstationarity II: Breaks}\label{niib}}
@@ -14819,7 +14970,7 @@ The QLR test can be used to test for a break in the population regression functi
 The most important properties are:
 \begin{itemize}
 \item The QLR test can be applied to test whether a subset of the coefficients in the population regression function breaks but the test also rejects if there is a slow evolution of the regression function. 
-When there is a single discrete break in the population regression function that lying at a date within the range tested, the $QLR$ test statistic is $F(\widehat{\tau})$ and $\widehat{\tau}/T$ is a consistent estimator of fraction of the sample at which the break is.
+When there is a single discrete break in the population regression function that lying at a date within the range tested, the $QLR$ test statistic is $F(\widehat{\tau})$ and $\widehat{\tau}/T$ is a consistent estimator of the fraction of the sample at which the break is.
 \item The large-sample distribution of $QLR$ depends on $q$, the number of restrictions being tested and both ratios of end points to the sample size, $\tau_0/T, \tau_1/T$. 
 \item Similar to the ADF test, the large-sample distribution of $QLR$ is nonstandard. Critical values are presented in Table 14.5 of the book.
 \end{itemize}
@@ -15076,7 +15227,7 @@ The hypothesis cannot be rejected at the \(10\%\) significance level. Altogether
 \hypertarget{can-you-beat-the-market-part-ii}{%
 \section{Can You Beat the Market? (Part II)}\label{can-you-beat-the-market-part-ii}}
 
-The dividend yield (the ratio of current dividends to the stock price) can be considered as an indicator of future dividends: if a stock has a high current dividend yield, it can be considered undervalued and it can be presumed that the price of the stock goes up in the future, meaning that future excess returns go up.
+The dividend yield (the ratio of current dividends to the stock price) can be considered as an indicator of future excess returns: if a stock has a high current dividend yield, it can be considered undervalued and it can be presumed that the price of the stock goes up in the future, meaning that future excess returns go up.
 
 This presumption can be examined using ADL models of excess returns, where lags of the logarithm of the stock's dividend yield serve as additional regressors.
 
@@ -15139,7 +15290,7 @@ The Dickey-Fuller test statistic for an autoregressive unit root in an AR(\(1\))
 \end{Highlighting}
 \end{Shaded}
 
-We use \texttt{window()} to get observations from January 1960 to December 2012 only.
+We use \texttt{window()} to get observations from January 1960 to December 2002 only.
 
 Since the \(t\)-value for the coefficient on the lagged logarithm of the dividend yield is \(-1.27\), the hypothesis that the true coefficient is zero cannot be rejected, even at the \(10\%\) significance level.
 
@@ -15171,7 +15322,7 @@ That is we estimate three different specifications:
 \CommentTok{\# ADL(1,1) (level of log dividend yield)}
 \NormalTok{CRSP\_ADL\_3 }\OtherTok{\textless{}{-}} \FunctionTok{dynlm}\NormalTok{(ExReturn }\SpecialCharTok{\textasciitilde{}} \FunctionTok{L}\NormalTok{(ExReturn) }\SpecialCharTok{+} \FunctionTok{L}\NormalTok{(ln\_DivYield),}
                     \AttributeTok{data =}\NormalTok{ StockReturns,}
-                    \AttributeTok{start =} \FunctionTok{c}\NormalTok{(}\DecValTok{1960}\NormalTok{, }\DecValTok{1}\NormalTok{), }\AttributeTok{end =} \FunctionTok{c}\NormalTok{(}\DecValTok{1992}\NormalTok{, }\DecValTok{12}\NormalTok{))}
+                    \AttributeTok{start =} \FunctionTok{c}\NormalTok{(}\DecValTok{1960}\NormalTok{, }\DecValTok{1}\NormalTok{), }\AttributeTok{end =} \FunctionTok{c}\NormalTok{(}\DecValTok{2002}\NormalTok{, }\DecValTok{12}\NormalTok{))}
 \end{Highlighting}
 \end{Shaded}
 
@@ -15219,24 +15370,24 @@ A tabular representation of the results can then be generated using \texttt{star
  & ADL(1,1) & ADL(2,2) & ADL(1,1) \\ 
 \\[-1.8ex] & (1) & (2) & (3)\\ 
 \hline \\[-1.8ex] 
- $excess return_{t-1}$ & 0.059 & 0.042 & 0.078 \\ 
-  & (0.158) & (0.162) & (0.057) \\ 
+ $excess return_{t-1}$ & 0.059 & 0.042 & 0.055 \\ 
+  & (0.158) & (0.162) & (0.051) \\ 
   $excess return_{t-2}$ &  & $-$0.213 &  \\ 
   &  & (0.193) &  \\ 
   $1^{st} diff log(dividend yield_{t-1})$ & 0.009 & $-$0.012 &  \\ 
   & (0.157) & (0.163) &  \\ 
   $1^{st} diff log(dividend yield_{t-2})$ &  & $-$0.161 &  \\ 
   &  & (0.185) &  \\ 
-  $log(dividend yield_{t-1})$ &  &  & 0.026$^{**}$ \\ 
-  &  &  & (0.012) \\ 
-  Constant & 0.309 & 0.372$^{*}$ & 8.987$^{**}$ \\ 
-  & (0.199) & (0.208) & (3.912) \\ 
+  $log(dividend yield_{t-1})$ &  &  & 0.010 \\ 
+  &  &  & (0.006) \\ 
+  Constant & 0.309 & 0.372$^{*}$ & 3.892$^{*}$ \\ 
+  & (0.199) & (0.208) & (2.222) \\ 
  \hline \\[-1.8ex] 
-Observations & 516 & 516 & 396 \\ 
-R$^{2}$ & 0.003 & 0.007 & 0.018 \\ 
-Adjusted R$^{2}$ & $-$0.001 & $-$0.001 & 0.013 \\ 
-Residual Std. Error & 4.338 (df = 513) & 4.337 (df = 511) & 4.407 (df = 393) \\ 
-F Statistic & 0.653 (df = 2; 513) & 0.897 (df = 4; 511) & 3.683$^{**}$ (df = 2; 393) \\ 
+Observations & 516 & 516 & 516 \\ 
+R$^{2}$ & 0.003 & 0.007 & 0.009 \\ 
+Adjusted R$^{2}$ & $-$0.001 & $-$0.001 & 0.005 \\ 
+Residual Std. Error & 4.338 (df = 513) & 4.337 (df = 511) & 4.325 (df = 513) \\ 
+F Statistic & 0.653 (df = 2; 513) & 0.897 (df = 4; 511) & 2.234 (df = 2; 513) \\ 
 \hline 
 \hline \\[-1.8ex] 
 \textit{Note:}  & \multicolumn{3}{r}{$^{*}$p$<$0.1; $^{**}$p$<$0.05; $^{***}$p$<$0.01} \\ 

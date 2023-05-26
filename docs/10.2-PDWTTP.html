@@ -23,7 +23,7 @@
 <meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber, and Martin Schmelzer" />
 
 
-<meta name="date" content="2023-05-05" />
+<meta name="date" content="2023-05-26" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -465,14 +465,14 @@ This book is in <b>Open Review</b>. We want your feedback to make the book bette
 </div>
 <div id="PDWTTP" class="section level2 hasAnchor" number="10.2">
 <h2><span class="header-section-number">10.2</span> Panel Data with Two Time Periods: “Before and After” Comparisons<a href="10.2-PDWTTP.html#PDWTTP" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Suppose there are only <span class="math inline">\(T=2\)</span> time periods <span class="math inline">\(t=1982,1988\)</span>. This allows us to analyze differences in changes of the the fatality rate from year 1982 to 1988. We start by considering the population regression model <span class="math display">\[FatalityRate_{it} = \beta_0 + \beta_1 BeerTax_{it} + \beta_2 Z_{i} + u_{it}\]</span> where the <span class="math inline">\(Z_i\)</span> are state specific characteristics that differ between states but are <em>constant over time</em>. For <span class="math inline">\(t=1982\)</span> and <span class="math inline">\(t=1988\)</span> we have
+<p>Suppose there are only <span class="math inline">\(T=2\)</span> time periods <span class="math inline">\(t=1982,1988\)</span>. This allows us to analyze differences in changes of the fatality rate from year 1982 to 1988. We start by considering the population regression model <span class="math display">\[FatalityRate_{it} = \beta_0 + \beta_1 BeerTax_{it} + \beta_2 Z_{i} + u_{it}\]</span> where the <span class="math inline">\(Z_i\)</span> are state specific characteristics that differ between states but are <em>constant over time</em>. For <span class="math inline">\(t=1982\)</span> and <span class="math inline">\(t=1988\)</span> we have
 <span class="math display">\[\begin{align*}
   FatalityRate_{i1982} =&amp;\, \beta_0 + \beta_1 BeerTax_{i1982} + \beta_2 Z_i + u_{i1982}, \\
   FatalityRate_{i1988} =&amp;\, \beta_0 + \beta_1 BeerTax_{i1988} + \beta_2 Z_i + u_{i1988}.
 \end{align*}\]</span></p>
 <p>We can eliminate the <span class="math inline">\(Z_i\)</span> by regressing the difference in the fatality rate between 1988 and 1982 on the difference in beer tax between those years:
 <span class="math display">\[FatalityRate_{i1988} - FatalityRate_{i1982} = \beta_1 (BeerTax_{i1988} - BeerTax_{i1982}) + u_{i1988} - u_{i1982}\]</span>
-This regression model yields an estimate for <span class="math inline">\(\beta_1\)</span> robust a possible bias due to omission of the <span class="math inline">\(Z_i\)</span>, since these influences are eliminated from the model. Next we use use <tt>R</tt> to estimate a regression based on the differenced data and plot the estimated regression function.</p>
+This regression model, where the difference in fatality rate between 1988 and 1982 is regressed on the difference in beer tax between those years, yields an estimate for <span class="math inline">\(\beta_1\)</span> that is robust to a possible bias due to omission of <span class="math inline">\(Z_i\)</span>, as these influences are eliminated from the model. Next we will use <tt>R</tt> to estimate a regression based on the differenced data and to plot the estimated regression function.</p>
 <div class="sourceCode" id="cb245"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb245-1"><a href="10.2-PDWTTP.html#cb245-1" aria-hidden="true" tabindex="-1"></a><span class="co"># compute the differences </span></span>
 <span id="cb245-2"><a href="10.2-PDWTTP.html#cb245-2" aria-hidden="true" tabindex="-1"></a>diff_fatal_rate <span class="ot">&lt;-</span> Fatalities1988<span class="sc">$</span>fatal_rate <span class="sc">-</span> Fatalities1982<span class="sc">$</span>fatal_rate</span>
 <span id="cb245-3"><a href="10.2-PDWTTP.html#cb245-3" aria-hidden="true" tabindex="-1"></a>diff_beertax <span class="ot">&lt;-</span> Fatalities1988<span class="sc">$</span>beertax <span class="sc">-</span> Fatalities1982<span class="sc">$</span>beertax</span>
@@ -492,8 +492,8 @@ This regression model yields an estimate for <span class="math inline">\(\beta_1
 <p>Including the intercept allows for a change in the mean fatality rate in the time between 1982 and 1988 in the absence of a change in the beer tax.</p>
 <p>We obtain the OLS estimated regression function <span class="math display">\[\widehat{FatalityRate_{i1988} - FatalityRate_{i1982}} = -\underset{(0.065)}{0.072} -\underset{(0.36)}{1.04} \times (BeerTax_{i1988}-BeerTax_{i1982}).\]</span></p>
 <div class="sourceCode" id="cb246"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb246-1"><a href="10.2-PDWTTP.html#cb246-1" aria-hidden="true" tabindex="-1"></a><span class="co"># plot the differenced data</span></span>
-<span id="cb246-2"><a href="10.2-PDWTTP.html#cb246-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="at">x =</span> diff_beertax, </span>
-<span id="cb246-3"><a href="10.2-PDWTTP.html#cb246-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">y =</span> diff_fatal_rate, </span>
+<span id="cb246-2"><a href="10.2-PDWTTP.html#cb246-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="at">x =</span> <span class="fu">as.double</span>(diff_beertax), </span>
+<span id="cb246-3"><a href="10.2-PDWTTP.html#cb246-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">y =</span> <span class="fu">as.double</span>(diff_fatal_rate), </span>
 <span id="cb246-4"><a href="10.2-PDWTTP.html#cb246-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">&quot;Change in beer tax (in 1988 dollars)&quot;</span>,</span>
 <span id="cb246-5"><a href="10.2-PDWTTP.html#cb246-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">&quot;Change in fatality rate (fatalities per 10000)&quot;</span>,</span>
 <span id="cb246-6"><a href="10.2-PDWTTP.html#cb246-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">&quot;Changes in Traffic Fatality Rates and Beer Taxes in 1982-1988&quot;</span>,</span>
@@ -510,7 +510,7 @@ This regression model yields an estimate for <span class="math inline">\(\beta_1
 <span id="cb247-2"><a href="10.2-PDWTTP.html#cb247-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(Fatalities<span class="sc">$</span>fatal_rate)</span>
 <span id="cb247-3"><a href="10.2-PDWTTP.html#cb247-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 2.040444</span></span></code></pre></div>
 <p>Once more this outcome is likely to be a consequence of omitting factors in the single-year regression that influence the fatality rate and are correlated with the beer tax <em>and</em> change over time. The message is that we need to be more careful and control for such factors before drawing conclusions about the effect of a raise in beer taxes.</p>
-<p>The approach presented in this section discards information for years <span class="math inline">\(1983\)</span> to <span class="math inline">\(1987\)</span>. A method that allows to use data for more than <span class="math inline">\(T=2\)</span> time periods and enables us to add control variables is the fixed effects regression approach.</p>
+<p>The approach presented in this section discards information for years <span class="math inline">\(1983\)</span> to <span class="math inline">\(1987\)</span>. The fixed effects method that allows us to use data for more than <span class="math inline">\(T = 2\)</span> time periods and enables us to add control variables to the analysis.</p>
 </div>
             </section>
 
