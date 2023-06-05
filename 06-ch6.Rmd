@@ -13,7 +13,7 @@ library(MASS)
 
 ## Omitted Variable Bias
 
-The previous analysis of the relationship between test score and class size discussed in Chapters \@ref(lrwor) and \@ref(htaciitslrm) has a major flaw: we ignored other determinants of the dependent variable (test score) that correlate with the regressor (class size). Remember that influences on the dependent variable which are not captured by the model are collected in the error term, which we so far assumed to be uncorrelated with the regressor. However, this assumption is violated if we exclude determinants of the dependent variable which vary with the regressor. This might induce an estimation bias, i.e., the mean of the OLS estimator's sampling distribution is no longer equals the true mean. In our example we therefore wrongly estimate the causal effect on test scores of a unit change in the student-teacher ratio, on average. This issue is called *omitted variable bias* (OVB) and is summarized by Key Concept 6.1.
+The previous analysis of the relationship between test score and class size discussed in Chapters \@ref(lrwor) and \@ref(htaciitslrm) has a major flaw: we ignored other determinants of the dependent variable (test score) that correlate with the regressor (class size). Remember that influences on the dependent variable which are not captured by the model are collected in the error term, which we so far assumed to be uncorrelated with the regressor. However, this assumption is violated if we exclude determinants of the dependent variable which vary with the regressor. This might induce an estimation bias, i.e., the mean of the OLS estimator's sampling distribution is no longer equal to the true mean. In our example we therefore wrongly estimate the causal effect on test scores of a unit change in the student-teacher ratio, on average. This issue is called *omitted variable bias* (OVB) and is summarized by Key Concept 6.1.
 
 ```{r, eval = my_output == "html", results='asis', echo=F, purl=F}
 cat('
@@ -252,11 +252,11 @@ $$ s_{\hat u}^2 = \frac{1}{n-k-1} \, SSR $$
 
 with $k$ denoting the number of regressors *excluding* the intercept.
 
-While `r ttcode("summary()")` computes the $R^2$ just as in the case of a single regressor, it is no reliable measure for multiple regression models. This is due to $R^2$ increasing whenever an additional regressor is added to the model. Adding a regressor decreases the $SSR$ --- at least unless the respective estimated coefficient is exactly zero what practically never happens (see Chapter 6.4 of the book for a detailed argument). The adjusted $R^2$ takes this into consideration by "punishing" the addition of regressors using a correction factor. So the adjusted $R^2$, or simply $\bar{R}^2$, is a modified version of $R^2$. It is defined as
+While `r ttcode("summary()")` computes the $R^2$ just as in the case of a single regressor, it is no reliable measure for multiple regression models. This is due to $R^2$ increasing whenever an additional regressor is added to the model. Adding a regressor decreases the $SSR$ --- at least unless the respective estimated coefficient is exactly zero, which practically never happens (see Chapter 6.4 of the book for a detailed argument). The adjusted $R^2$ takes this into consideration by "punishing" the addition of regressors using a correction factor. So the adjusted $R^2$, or simply $\bar{R}^2$, is a modified version of $R^2$. It is defined as
 
 $$ \bar{R}^2 = 1-\frac{n-1}{n-k-1} \, \frac{SSR}{TSS}. $$
 
-As you may have already suspected, `r ttcode("summary()")` adjusts the formula for $SER$ and it computes $\bar{R}^2$ and of course $R^2$ by default, thereby leaving the decision which measure to rely on to the user. 
+As you may have already suspected, `r ttcode("summary()")` adjusts the formula for $SER$ and it computes $\bar{R}^2$ and of course $R^2$ by default, thereby leaving the decision of which measure to rely on to the user. 
 
 You can find both measures at the bottom of the output produced by calling `summary(mult.mod)`. 
 
@@ -306,7 +306,7 @@ cat('
 
 The multiple regression model is given by
 
-$$ Y_i = \\beta_0 + \\beta_1 X_{1i} + \\beta_1 X_{2i} + \\dots + \\beta_k X_{ki} + u_i \\ , \\ i=1,\\dots,n. $$
+$$ Y_i = \\beta_0 + \\beta_1 X_{1i} + \\beta_2 X_{2i} + \\dots + \\beta_k X_{ki} + u_i \\ , \\ i=1,\\dots,n. $$
 
 The OLS assumptions in the multiple regression model are an extension of the ones made for the simple regression model:
 
@@ -324,7 +324,7 @@ $$ E(u_i\\vert X_{1i}, X_{2i}, \\dots, X_{ki}) = 0. $$
 cat('\\begin{keyconcepts}[The Least Squares Assumptions in the Multiple Regression Model]{6.4}
 The multiple regression model is given by
 
-$$ Y_i = \\beta_0 + \\beta_1 X_{1i} + \\beta_1 X_{2i} + \\dots + \\beta_k X_{ki} + u_i \\ , \\ i=1,\\dots,n. $$
+$$ Y_i = \\beta_0 + \\beta_1 X_{1i} + \\beta_2 X_{2i} + \\dots + \\beta_k X_{ki} + u_i \\ , \\ i=1,\\dots,n. $$
 
 The OLS assumptions in the multiple regression model are an extension of the ones made for the simple regression model:\\newline
 
@@ -442,7 +442,7 @@ Another example of perfect multicollinearity is known as the *dummy variable tra
 
 Since the regions are mutually exclusive, for every school $i=1,\dots,n$ we have $$ North_i + West_i + South_i + East_i = 1. $$
 
-We run into problems when trying to estimate a model that includes a constant and *all four* direction dummies in the model, e.g., $$ TestScore = \beta_0 + \beta_1 \times STR + \beta_2 \times english + \beta_3 \times North_i + \beta_4 \times West_i + \beta_5 \times South_i + \beta_6 \times East_i + u_i \tag{6.8}$$
+We run into problems when trying to estimate a model that includes a constant and *all four* direction dummies in the model, e.g., $$TestScore = \beta_0 + \beta_1 \times STR + \beta_2 \times english + \beta_3 \times North_i + \beta_4 \times West_i + \beta_5 \times South_i +\\ \beta_6 \times East_i + u_i \tag{6.8}$$
 since then for all observations $i=1,\dots,n$ the constant term is a linear combination of the dummies:
 
 \begin{align}
@@ -517,7 +517,7 @@ In sum, undesirable consequences of imperfect multicollinearity are generally no
 
 Let us conduct a simulation study to illustrate the issues sketched above. 
 
-1. We use (<a href="#mjx-eqn-6.8">6.9</a>) as the data generating process and choose $\beta_0 = 5$, $\beta_1 = 2.5$ and $\beta_2 = 3$ and $u_i$ is an error term distributed as $\mathcal{N}(0,5)$. In a first step, we sample the regressor data from a bivariate normal distribution: $$ X_i = (X_{1i}, X_{2i}) \overset{i.i.d.}{\sim} \mathcal{N} \left[\begin{pmatrix} 0 \\ 0  \end{pmatrix}, \begin{pmatrix} 10 & 2.5 \\ 2.5 & 10 \end{pmatrix} \right] $$ It is straightforward to see that the correlation between $X_1$ and $X_2$ in the population is rather low:
+1. We use (<a href="#mjx-eqn-6.8">6.9</a>) as the data generating process and choose $\beta_0 = 5$, $\beta_1 = 2.5$ and $\beta_2 = 3$ and $u_i$ is an error term distributed as $\mathcal{N}(0,5)$. In the first step, we sample the regressor data from a bivariate normal distribution: $$ X_i = (X_{1i}, X_{2i}) \overset{i.i.d.}{\sim} \mathcal{N} \left[\begin{pmatrix} 0 \\ 0  \end{pmatrix}, \begin{pmatrix} 10 & 2.5 \\ 2.5 & 10 \end{pmatrix} \right] $$ It is straightforward to see that the correlation between $X_1$ and $X_2$ in the population is rather low:
 
 $$ \rho_{X_1,X_2} = \frac{Cov(X_1,X_2)}{\sqrt{Var(X_1)}\sqrt{Var{(X_2)}}} = \frac{2.5}{10} = 0.25 $$
 
@@ -546,13 +546,13 @@ set.seed(1)
 for (i in 1:10000) {
   
   # for cov(X_1,X_2) = 0.25
-  X <- rmvnorm(n, c(50, 100), sigma = cbind(c(10, 2.5), c(2.5, 10)))
+  X <- rmvnorm(n, c(0, 0), sigma = cbind(c(10, 2.5), c(2.5, 10)))
   u <- rnorm(n, sd = 5)
   Y <- 5 + 2.5 * X[, 1] + 3 * X[, 2] + u
   coefs1[i, ] <- lm(Y ~ X[, 1] + X[, 2])$coefficients[-1]
   
   # for cov(X_1,X_2) = 0.85
-  X <- rmvnorm(n, c(50, 100), sigma = cbind(c(10, 8.5), c(8.5, 10)))
+  X <- rmvnorm(n, c(0, 0), sigma = cbind(c(10, 8.5), c(8.5, 10)))
   Y <- 5 + 2.5 * X[, 1] + 3 * X[, 2] + u
   coefs2[i, ] <- lm(Y ~ X[, 1] + X[, 2])$coefficients[-1]
   
