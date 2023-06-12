@@ -23,7 +23,7 @@
 <meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber, and Martin Schmelzer" />
 
 
-<meta name="date" content="2023-05-05" />
+<meta name="date" content="2023-05-26" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -469,10 +469,10 @@ This book is in <b>Open Review</b>. We want your feedback to make the book bette
 <p>These covariates are defined as follows:</p>
 <ul>
 <li><tt>unemp</tt>: a numeric variable stating the state specific unemployment rate.</li>
-<li><tt>log(income)</tt>: the logarithm of real per capita income (in prices of 1988).</li>
+<li><tt>log(income)</tt>: the logarithm of real per capita income (in 1988 dollars).</li>
 <li><tt>miles</tt>: the state average miles per driver.</li>
-<li><tt>drinkage</tt>: the state specify minimum legal drinking age.</li>
-<li><tt>drinkagc</tt>: a discretized version of <tt>drinkage</tt> that classifies states into four categories of minimal drinking age; <span class="math inline">\(18\)</span>, <span class="math inline">\(19\)</span>, <span class="math inline">\(20\)</span>, <span class="math inline">\(21\)</span> and older. <tt>R</tt> denotes this as <tt>[18,19)</tt>, <tt>[19,20)</tt>, <tt>[20,21)</tt> and <tt>[21,22]</tt>. These categories are included as dummy regressors where <tt>[21,22]</tt> is chosen as the reference category.</li>
+<li><tt>drinkage</tt>: the state specific minimum legal drinking age.</li>
+<li><tt>drinkagec</tt>: a discretized version of <tt>drinkage</tt> that classifies states into four categories of minimal drinking age; <span class="math inline">\(18\)</span>, <span class="math inline">\(19\)</span>, <span class="math inline">\(20\)</span>, <span class="math inline">\(21\)</span> and older. <tt>R</tt> denotes this as <tt>[18,19)</tt>, <tt>[19,20)</tt>, <tt>[20,21)</tt> and <tt>[21,22]</tt>. These categories are included as dummy regressors where <tt>[21,22]</tt> is chosen as the reference category.</li>
 <li><tt>punish</tt>: a dummy variable with levels <tt>yes</tt> and <tt>no</tt> that measures if drunk driving is severely punished by mandatory jail time or mandatory community service (first conviction).</li>
 </ul>
 <p>At first, we define the variables according to the regression results presented in Table 10.1 of the book.</p>
@@ -485,7 +485,7 @@ This book is in <b>Open Review</b>. We want your feedback to make the book bette
 <span id="cb255-7"><a href="10.6-drunk-driving-laws-and-traffic-deaths.html#cb255-7" aria-hidden="true" tabindex="-1"></a><span class="co"># set minimum drinking age [21, 22] to be the baseline level</span></span>
 <span id="cb255-8"><a href="10.6-drunk-driving-laws-and-traffic-deaths.html#cb255-8" aria-hidden="true" tabindex="-1"></a>Fatalities<span class="sc">$</span>drinkagec <span class="ot">&lt;-</span> <span class="fu">relevel</span>(Fatalities<span class="sc">$</span>drinkagec, <span class="st">&quot;[21,22]&quot;</span>)</span>
 <span id="cb255-9"><a href="10.6-drunk-driving-laws-and-traffic-deaths.html#cb255-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb255-10"><a href="10.6-drunk-driving-laws-and-traffic-deaths.html#cb255-10" aria-hidden="true" tabindex="-1"></a><span class="co"># mandadory jail or community service?</span></span>
+<span id="cb255-10"><a href="10.6-drunk-driving-laws-and-traffic-deaths.html#cb255-10" aria-hidden="true" tabindex="-1"></a><span class="co"># mandatory jail or community service?</span></span>
 <span id="cb255-11"><a href="10.6-drunk-driving-laws-and-traffic-deaths.html#cb255-11" aria-hidden="true" tabindex="-1"></a>Fatalities<span class="sc">$</span>punish <span class="ot">&lt;-</span> <span class="fu">with</span>(Fatalities, <span class="fu">factor</span>(jail <span class="sc">==</span> <span class="st">&quot;yes&quot;</span> <span class="sc">|</span> service <span class="sc">==</span> <span class="st">&quot;yes&quot;</span>, </span>
 <span id="cb255-12"><a href="10.6-drunk-driving-laws-and-traffic-deaths.html#cb255-12" aria-hidden="true" tabindex="-1"></a>                                             <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">&quot;no&quot;</span>, <span class="st">&quot;yes&quot;</span>)))</span>
 <span id="cb255-13"><a href="10.6-drunk-driving-laws-and-traffic-deaths.html#cb255-13" aria-hidden="true" tabindex="-1"></a></span>
@@ -605,7 +605,7 @@ This book is in <b>Open Review</b>. We want your feedback to make the book bette
 <p>The model specifications (4) to (7) include covariates that shall capture the effect of overall state economic conditions as well as the legal framework. Considering (4) as the baseline specification, we observe four interesting results:</p>
 <ol style="list-style-type: decimal">
 <li><p>Including the covariates does not lead to a major reduction of the estimated effect of the beer tax. The coefficient is not significantly different from zero at the level of <span class="math inline">\(5\%\)</span> as the estimate is rather imprecise.</p></li>
-<li><p>The minimum legal drinking age <em>does not</em> have an effect on traffic fatalities: none of the three dummy variables are significantly different from zero at any common level of significance. Moreover, an <span class="math inline">\(F\)</span>-Test of the joint hypothesis that all three coefficients are zero does not reject. The next code chunk shows how to test this hypothesis.</p></li>
+<li><p>The minimum legal drinking age <em>does not</em> have an effect on traffic fatalities: none of the three dummy variables are significantly different from zero at any common level of significance. Moreover, an <span class="math inline">\(F\)</span>-Test of the joint hypothesis that all three coefficients are zero does not reject the null hyptothesis. The next code chunk shows how to test this hypothesis.</p></li>
 </ol>
 <div class="sourceCode" id="cb258"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb258-1"><a href="10.6-drunk-driving-laws-and-traffic-deaths.html#cb258-1" aria-hidden="true" tabindex="-1"></a><span class="co"># test if legal drinking age has no explanatory power</span></span>
 <span id="cb258-2"><a href="10.6-drunk-driving-laws-and-traffic-deaths.html#cb258-2" aria-hidden="true" tabindex="-1"></a><span class="fu">linearHypothesis</span>(fatalities_mod4,</span>

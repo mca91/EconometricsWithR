@@ -23,7 +23,7 @@
 <meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber, and Martin Schmelzer" />
 
 
-<meta name="date" content="2023-05-05" />
+<meta name="date" content="2023-05-26" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -573,7 +573,7 @@ Then it holds that
 <li><p>If there is no measurement error, <span class="math inline">\(\sigma_{w}^2=0\)</span> such that <span class="math inline">\(\widehat{\beta}_1 \xrightarrow{p}{\beta_1}\)</span>.</p></li>
 <li><p>if <span class="math inline">\(\sigma_{w}^2 \gg \sigma_{X}^2\)</span> we have <span class="math inline">\(\widehat{\beta}_1 \xrightarrow{p}{0}\)</span>. This is the case if the measurement error is so large that there essentially is no information on <span class="math inline">\(X\)</span> in the data that can be used to estimate <span class="math inline">\(\beta_1\)</span>.</p></li>
 </ol>
-<p>The most obvious way to deal with errors-in-variables bias is to use an accurately measured <span class="math inline">\(X\)</span>. If this not possible, instrumental variables regression is an option. One might also deal with the issue by using a mathematical model of the measurement error and adjust the estimates appropriately: if it is plausible that the classical measurement error model applies and if there is information that can be used to estimate the ratio in equation <a href="9.2-ttivomra.html#eq:cmembias">(9.1)</a>, one could compute an estimate that corrects for the downward bias.</p>
+<p>The most obvious way to deal with errors-in-variables bias is to use an accurately measured <span class="math inline">\(X\)</span>. If this is not possible, instrumental variables regression is an option. One might also deal with the issue by using a mathematical model of the measurement error and adjust the estimates appropriately: if it is plausible that the classical measurement error model applies and if there is information that can be used to estimate the ratio in equation <a href="9.2-ttivomra.html#eq:cmembias">(9.1)</a>, one could compute an estimate that corrects for the downward bias.</p>
 <p>For example, consider two bivariate normally distributed random variables <span class="math inline">\(X,Y\)</span>. It is a <a href="https://en.wikipedia.org/wiki/Multivariate_normal_distribution#Bivariate_case">well known result</a> that the conditional expectation function of <span class="math inline">\(Y\)</span> given <span class="math inline">\(X\)</span> has the form
 <span class="math display" id="eq:bnormexpfn">\[\begin{align}
   E(Y\vert X) = E(Y) + \rho_{X,Y} \frac{\sigma_{Y}}{\sigma_{X}}\left[X-E(X)\right]. \tag{9.2}
@@ -663,7 +663,7 @@ Sample Selection Bias
 <li><p>Data are missing due to a selection process which is related to the dependent variable.</p></li>
 </ol>
 <p>Let us jump back to the example of variables <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> distributed as stated in equation <a href="9.2-ttivomra.html#eq:bvnormd">(9.3)</a> and illustrate all three cases using <tt>R</tt>.</p>
-<p>If data are missing at random, this is nothing but loosing observations. For example, loosing <span class="math inline">\(50\%\)</span> of the sample would be the same as never having seen the (randomly chosen) half of the sample observed. Therefore, missing data do not introduce an estimation bias and “only” lead to less efficient estimators.</p>
+<p>If data are missing at random, this is nothing but losing the observations. For example, losing <span class="math inline">\(50\%\)</span> of the sample would be the same as never having seen the (randomly chosen) half of the sample observed. Therefore, missing data do not introduce an estimation bias and “only” lead to less efficient estimators.</p>
 <div class="sourceCode" id="cb221"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb221-1"><a href="9.2-ttivomra.html#cb221-1" aria-hidden="true" tabindex="-1"></a><span class="co"># set seed</span></span>
 <span id="cb221-2"><a href="9.2-ttivomra.html#cb221-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
 <span id="cb221-3"><a href="9.2-ttivomra.html#cb221-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -751,18 +751,19 @@ Sample Selection Bias
 <span id="cb222-34"><a href="9.2-ttivomra.html#cb222-34" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(noerror_mod)</span>
 <span id="cb222-35"><a href="9.2-ttivomra.html#cb222-35" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb222-36"><a href="9.2-ttivomra.html#cb222-36" aria-hidden="true" tabindex="-1"></a><span class="co"># estimate model case 1, add regression line</span></span>
-<span id="cb222-37"><a href="9.2-ttivomra.html#cb222-37" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> dat[<span class="sc">-</span>id, ]</span>
-<span id="cb222-38"><a href="9.2-ttivomra.html#cb222-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb222-39"><a href="9.2-ttivomra.html#cb222-39" aria-hidden="true" tabindex="-1"></a>c2_mod <span class="ot">&lt;-</span> <span class="fu">lm</span>(dat<span class="sc">$</span>Y <span class="sc">~</span> dat<span class="sc">$</span>X, <span class="at">data =</span> dat)</span>
-<span id="cb222-40"><a href="9.2-ttivomra.html#cb222-40" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(c2_mod, <span class="at">col =</span> <span class="st">&quot;purple&quot;</span>)</span>
-<span id="cb222-41"><a href="9.2-ttivomra.html#cb222-41" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb222-42"><a href="9.2-ttivomra.html#cb222-42" aria-hidden="true" tabindex="-1"></a><span class="co"># add legend</span></span>
-<span id="cb222-43"><a href="9.2-ttivomra.html#cb222-43" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">&quot;topleft&quot;</span>,</span>
-<span id="cb222-44"><a href="9.2-ttivomra.html#cb222-44" aria-hidden="true" tabindex="-1"></a>       <span class="at">lty =</span> <span class="dv">1</span>,</span>
-<span id="cb222-45"><a href="9.2-ttivomra.html#cb222-45" aria-hidden="true" tabindex="-1"></a>       <span class="at">bg =</span> <span class="st">&quot;transparent&quot;</span>,</span>
-<span id="cb222-46"><a href="9.2-ttivomra.html#cb222-46" aria-hidden="true" tabindex="-1"></a>       <span class="at">cex =</span> <span class="fl">0.8</span>,</span>
-<span id="cb222-47"><a href="9.2-ttivomra.html#cb222-47" aria-hidden="true" tabindex="-1"></a>       <span class="at">col =</span> <span class="fu">c</span>(<span class="st">&quot;darkgreen&quot;</span>, <span class="st">&quot;black&quot;</span>, <span class="st">&quot;purple&quot;</span>), </span>
-<span id="cb222-48"><a href="9.2-ttivomra.html#cb222-48" aria-hidden="true" tabindex="-1"></a>       <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">&quot;Population&quot;</span>, <span class="st">&quot;Full sample&quot;</span>, <span class="st">&quot;Obs. with X &lt;= 45&quot;</span>))</span></code></pre></div>
+<span id="cb222-37"><a href="9.2-ttivomra.html#cb222-37" aria-hidden="true" tabindex="-1"></a>id <span class="ot">&lt;-</span> <span class="fu">which</span>(dat<span class="sc">$</span>X <span class="sc">&gt;=</span> <span class="dv">45</span>)</span>
+<span id="cb222-38"><a href="9.2-ttivomra.html#cb222-38" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> dat[<span class="sc">-</span>id, ]</span>
+<span id="cb222-39"><a href="9.2-ttivomra.html#cb222-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb222-40"><a href="9.2-ttivomra.html#cb222-40" aria-hidden="true" tabindex="-1"></a>c2_mod <span class="ot">&lt;-</span> <span class="fu">lm</span>(dat<span class="sc">$</span>Y <span class="sc">~</span> dat<span class="sc">$</span>X, <span class="at">data =</span> dat)</span>
+<span id="cb222-41"><a href="9.2-ttivomra.html#cb222-41" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(c2_mod, <span class="at">col =</span> <span class="st">&quot;purple&quot;</span>)</span>
+<span id="cb222-42"><a href="9.2-ttivomra.html#cb222-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb222-43"><a href="9.2-ttivomra.html#cb222-43" aria-hidden="true" tabindex="-1"></a><span class="co"># add legend</span></span>
+<span id="cb222-44"><a href="9.2-ttivomra.html#cb222-44" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">&quot;topleft&quot;</span>,</span>
+<span id="cb222-45"><a href="9.2-ttivomra.html#cb222-45" aria-hidden="true" tabindex="-1"></a>       <span class="at">lty =</span> <span class="dv">1</span>,</span>
+<span id="cb222-46"><a href="9.2-ttivomra.html#cb222-46" aria-hidden="true" tabindex="-1"></a>       <span class="at">bg =</span> <span class="st">&quot;transparent&quot;</span>,</span>
+<span id="cb222-47"><a href="9.2-ttivomra.html#cb222-47" aria-hidden="true" tabindex="-1"></a>       <span class="at">cex =</span> <span class="fl">0.8</span>,</span>
+<span id="cb222-48"><a href="9.2-ttivomra.html#cb222-48" aria-hidden="true" tabindex="-1"></a>       <span class="at">col =</span> <span class="fu">c</span>(<span class="st">&quot;darkgreen&quot;</span>, <span class="st">&quot;black&quot;</span>, <span class="st">&quot;purple&quot;</span>), </span>
+<span id="cb222-49"><a href="9.2-ttivomra.html#cb222-49" aria-hidden="true" tabindex="-1"></a>       <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">&quot;Population&quot;</span>, <span class="st">&quot;Full sample&quot;</span>, <span class="st">&quot;Obs. with X &lt;= 45&quot;</span>))</span></code></pre></div>
 <p><img src="ITER_files/figure-html/unnamed-chunk-388-1.png" width="80%" style="display: block; margin: auto;" /></p>
 <p>Note that although we dropped more than <span class="math inline">\(90\%\)</span> of all observations, the estimated regression function is very close to the line estimated based on the full sample.</p>
 <p>In the third case we face sample selection bias. We can illustrate this by using only observations with <span class="math inline">\(X_i&lt;55\)</span> and <span class="math inline">\(Y_i&gt;100\)</span>. These observations are easily identified using the function <tt>which()</tt> and logical operators: <code>which(dat$X &lt; 55 &amp; dat$Y &gt; 100)</code></p>
