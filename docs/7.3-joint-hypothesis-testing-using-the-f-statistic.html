@@ -23,7 +23,7 @@
 <meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber, and Martin Schmelzer" />
 
 
-<meta name="date" content="2023-05-26" />
+<meta name="date" content="2023-06-12" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -466,26 +466,26 @@ This book is in <b>Open Review</b>. We want your feedback to make the book bette
 <div id="joint-hypothesis-testing-using-the-f-statistic" class="section level2 hasAnchor" number="7.3">
 <h2><span class="header-section-number">7.3</span> Joint Hypothesis Testing Using the F-Statistic<a href="7.3-joint-hypothesis-testing-using-the-f-statistic.html#joint-hypothesis-testing-using-the-f-statistic" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>The estimated model is</p>
-<p><span class="math display">\[ \widehat{TestScore} = \underset{(15.21)}{649.58} -\underset{(0.48)}{0.29} \times size - \underset{(0.04)}{0.66} \times english + \underset{(1.41)}{3.87} \times expenditure. \]</span></p>
+<p><span class="math display">\[ \widehat{TestScore} = \underset{(15.21)}{649.58} -\underset{(0.48)}{0.29} \times STR - \underset{(0.04)}{0.66} \times english + \underset{(1.41)}{3.87} \times expenditure. \]</span></p>
 <p>Now, can we reject the hypothesis that the coefficient on <span class="math inline">\(size\)</span> <em>and</em> the coefficient on <span class="math inline">\(expenditure\)</span> are zero? To answer this, we have to resort to joint hypothesis tests. A joint hypothesis imposes restrictions on multiple regression coefficients. This is different from conducting individual <span class="math inline">\(t\)</span>-tests where a restriction is imposed on a single coefficient. Chapter 7.2 of the book explains why testing hypotheses about the model coefficients one at a time is different from testing them jointly.</p>
 <p>The homoskedasticity-only <span class="math inline">\(F\)</span>-Statistic is given by</p>
 <p><span class="math display">\[ F = \frac{(SSR_{\text{restricted}} - SSR_{\text{unrestricted}})/q}{SSR_{\text{unrestricted}} / (n-k-1)} \]</span></p>
 <p>with <span class="math inline">\(SSR_{restricted}\)</span> being the sum of squared residuals from the restricted regression, i.e., the regression where we impose the restriction. <span class="math inline">\(SSR_{unrestricted}\)</span> is the sum of squared residuals from the full model, <span class="math inline">\(q\)</span> is the number of restrictions under the null and <span class="math inline">\(k\)</span> is the number of regressors in the unrestricted regression.</p>
 <p>It is fairly easy to conduct <span class="math inline">\(F\)</span>-tests in <tt>R</tt>. We can use the function <tt>linearHypothesis()</tt>contained in the package <tt>car</tt>.</p>
 <div class="sourceCode" id="cb160"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb160-1"><a href="7.3-joint-hypothesis-testing-using-the-f-statistic.html#cb160-1" aria-hidden="true" tabindex="-1"></a><span class="co"># estimate the multiple regression model</span></span>
-<span id="cb160-2"><a href="7.3-joint-hypothesis-testing-using-the-f-statistic.html#cb160-2" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">lm</span>(score <span class="sc">~</span> size <span class="sc">+</span> english <span class="sc">+</span> expenditure, <span class="at">data =</span> CASchools)</span>
+<span id="cb160-2"><a href="7.3-joint-hypothesis-testing-using-the-f-statistic.html#cb160-2" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">lm</span>(score <span class="sc">~</span> STR <span class="sc">+</span> english <span class="sc">+</span> expenditure, <span class="at">data =</span> CASchools)</span>
 <span id="cb160-3"><a href="7.3-joint-hypothesis-testing-using-the-f-statistic.html#cb160-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb160-4"><a href="7.3-joint-hypothesis-testing-using-the-f-statistic.html#cb160-4" aria-hidden="true" tabindex="-1"></a><span class="co"># execute the function on the model object and provide both linear restrictions </span></span>
 <span id="cb160-5"><a href="7.3-joint-hypothesis-testing-using-the-f-statistic.html#cb160-5" aria-hidden="true" tabindex="-1"></a><span class="co"># to be tested as strings</span></span>
-<span id="cb160-6"><a href="7.3-joint-hypothesis-testing-using-the-f-statistic.html#cb160-6" aria-hidden="true" tabindex="-1"></a><span class="fu">linearHypothesis</span>(model, <span class="fu">c</span>(<span class="st">&quot;size=0&quot;</span>, <span class="st">&quot;expenditure=0&quot;</span>))</span>
+<span id="cb160-6"><a href="7.3-joint-hypothesis-testing-using-the-f-statistic.html#cb160-6" aria-hidden="true" tabindex="-1"></a><span class="fu">linearHypothesis</span>(model, <span class="fu">c</span>(<span class="st">&quot;STR=0&quot;</span>, <span class="st">&quot;expenditure=0&quot;</span>))</span>
 <span id="cb160-7"><a href="7.3-joint-hypothesis-testing-using-the-f-statistic.html#cb160-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Linear hypothesis test</span></span>
 <span id="cb160-8"><a href="7.3-joint-hypothesis-testing-using-the-f-statistic.html#cb160-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb160-9"><a href="7.3-joint-hypothesis-testing-using-the-f-statistic.html#cb160-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Hypothesis:</span></span>
-<span id="cb160-10"><a href="7.3-joint-hypothesis-testing-using-the-f-statistic.html#cb160-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; size = 0</span></span>
+<span id="cb160-10"><a href="7.3-joint-hypothesis-testing-using-the-f-statistic.html#cb160-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; STR = 0</span></span>
 <span id="cb160-11"><a href="7.3-joint-hypothesis-testing-using-the-f-statistic.html#cb160-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; expenditure = 0</span></span>
 <span id="cb160-12"><a href="7.3-joint-hypothesis-testing-using-the-f-statistic.html#cb160-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb160-13"><a href="7.3-joint-hypothesis-testing-using-the-f-statistic.html#cb160-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Model 1: restricted model</span></span>
-<span id="cb160-14"><a href="7.3-joint-hypothesis-testing-using-the-f-statistic.html#cb160-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Model 2: score ~ size + english + expenditure</span></span>
+<span id="cb160-14"><a href="7.3-joint-hypothesis-testing-using-the-f-statistic.html#cb160-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Model 2: score ~ STR + english + expenditure</span></span>
 <span id="cb160-15"><a href="7.3-joint-hypothesis-testing-using-the-f-statistic.html#cb160-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb160-16"><a href="7.3-joint-hypothesis-testing-using-the-f-statistic.html#cb160-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   Res.Df   RSS Df Sum of Sq      F   Pr(&gt;F)    </span></span>
 <span id="cb160-17"><a href="7.3-joint-hypothesis-testing-using-the-f-statistic.html#cb160-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1    418 89000                                 </span></span>
@@ -495,15 +495,15 @@ This book is in <b>Open Review</b>. We want your feedback to make the book bette
 <p>The output reveals that the <span class="math inline">\(F\)</span>-statistic for this joint hypothesis test is about <span class="math inline">\(8.01\)</span> and the corresponding <span class="math inline">\(p\)</span>-value is <span class="math inline">\(0.0004\)</span>. Thus, we can reject the null hypothesis that both coefficients are zero at any level of significance commonly used in practice.</p>
 <p>A heteroskedasticity-robust version of this <span class="math inline">\(F\)</span>-test (which leads to the same conclusion) can be conducted as follows.</p>
 <div class="sourceCode" id="cb161"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb161-1"><a href="7.3-joint-hypothesis-testing-using-the-f-statistic.html#cb161-1" aria-hidden="true" tabindex="-1"></a><span class="co"># heteroskedasticity-robust F-test</span></span>
-<span id="cb161-2"><a href="7.3-joint-hypothesis-testing-using-the-f-statistic.html#cb161-2" aria-hidden="true" tabindex="-1"></a><span class="fu">linearHypothesis</span>(model, <span class="fu">c</span>(<span class="st">&quot;size=0&quot;</span>, <span class="st">&quot;expenditure=0&quot;</span>), <span class="at">white.adjust =</span> <span class="st">&quot;hc1&quot;</span>)</span>
+<span id="cb161-2"><a href="7.3-joint-hypothesis-testing-using-the-f-statistic.html#cb161-2" aria-hidden="true" tabindex="-1"></a><span class="fu">linearHypothesis</span>(model, <span class="fu">c</span>(<span class="st">&quot;STR=0&quot;</span>, <span class="st">&quot;expenditure=0&quot;</span>), <span class="at">white.adjust =</span> <span class="st">&quot;hc1&quot;</span>)</span>
 <span id="cb161-3"><a href="7.3-joint-hypothesis-testing-using-the-f-statistic.html#cb161-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Linear hypothesis test</span></span>
 <span id="cb161-4"><a href="7.3-joint-hypothesis-testing-using-the-f-statistic.html#cb161-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb161-5"><a href="7.3-joint-hypothesis-testing-using-the-f-statistic.html#cb161-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Hypothesis:</span></span>
-<span id="cb161-6"><a href="7.3-joint-hypothesis-testing-using-the-f-statistic.html#cb161-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; size = 0</span></span>
+<span id="cb161-6"><a href="7.3-joint-hypothesis-testing-using-the-f-statistic.html#cb161-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; STR = 0</span></span>
 <span id="cb161-7"><a href="7.3-joint-hypothesis-testing-using-the-f-statistic.html#cb161-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; expenditure = 0</span></span>
 <span id="cb161-8"><a href="7.3-joint-hypothesis-testing-using-the-f-statistic.html#cb161-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb161-9"><a href="7.3-joint-hypothesis-testing-using-the-f-statistic.html#cb161-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Model 1: restricted model</span></span>
-<span id="cb161-10"><a href="7.3-joint-hypothesis-testing-using-the-f-statistic.html#cb161-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Model 2: score ~ size + english + expenditure</span></span>
+<span id="cb161-10"><a href="7.3-joint-hypothesis-testing-using-the-f-statistic.html#cb161-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Model 2: score ~ STR + english + expenditure</span></span>
 <span id="cb161-11"><a href="7.3-joint-hypothesis-testing-using-the-f-statistic.html#cb161-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb161-12"><a href="7.3-joint-hypothesis-testing-using-the-f-statistic.html#cb161-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Note: Coefficient covariance matrix supplied.</span></span>
 <span id="cb161-13"><a href="7.3-joint-hypothesis-testing-using-the-f-statistic.html#cb161-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
@@ -517,16 +517,16 @@ This book is in <b>Open Review</b>. We want your feedback to make the book bette
 <p>We now check whether the <span class="math inline">\(F\)</span>-statistic belonging to the <span class="math inline">\(p\)</span>-value listed in the model’s summary coincides with the result reported by <tt>linearHypothesis()</tt>.</p>
 <div class="sourceCode" id="cb162"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb162-1"><a href="7.3-joint-hypothesis-testing-using-the-f-statistic.html#cb162-1" aria-hidden="true" tabindex="-1"></a><span class="co"># execute the function on the model object and provide the restrictions </span></span>
 <span id="cb162-2"><a href="7.3-joint-hypothesis-testing-using-the-f-statistic.html#cb162-2" aria-hidden="true" tabindex="-1"></a><span class="co"># to be tested as a character vector</span></span>
-<span id="cb162-3"><a href="7.3-joint-hypothesis-testing-using-the-f-statistic.html#cb162-3" aria-hidden="true" tabindex="-1"></a><span class="fu">linearHypothesis</span>(model, <span class="fu">c</span>(<span class="st">&quot;size=0&quot;</span>, <span class="st">&quot;english=0&quot;</span>, <span class="st">&quot;expenditure=0&quot;</span>))</span>
+<span id="cb162-3"><a href="7.3-joint-hypothesis-testing-using-the-f-statistic.html#cb162-3" aria-hidden="true" tabindex="-1"></a><span class="fu">linearHypothesis</span>(model, <span class="fu">c</span>(<span class="st">&quot;STR=0&quot;</span>, <span class="st">&quot;english=0&quot;</span>, <span class="st">&quot;expenditure=0&quot;</span>))</span>
 <span id="cb162-4"><a href="7.3-joint-hypothesis-testing-using-the-f-statistic.html#cb162-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Linear hypothesis test</span></span>
 <span id="cb162-5"><a href="7.3-joint-hypothesis-testing-using-the-f-statistic.html#cb162-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb162-6"><a href="7.3-joint-hypothesis-testing-using-the-f-statistic.html#cb162-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Hypothesis:</span></span>
-<span id="cb162-7"><a href="7.3-joint-hypothesis-testing-using-the-f-statistic.html#cb162-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; size = 0</span></span>
+<span id="cb162-7"><a href="7.3-joint-hypothesis-testing-using-the-f-statistic.html#cb162-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; STR = 0</span></span>
 <span id="cb162-8"><a href="7.3-joint-hypothesis-testing-using-the-f-statistic.html#cb162-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; english = 0</span></span>
 <span id="cb162-9"><a href="7.3-joint-hypothesis-testing-using-the-f-statistic.html#cb162-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; expenditure = 0</span></span>
 <span id="cb162-10"><a href="7.3-joint-hypothesis-testing-using-the-f-statistic.html#cb162-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb162-11"><a href="7.3-joint-hypothesis-testing-using-the-f-statistic.html#cb162-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Model 1: restricted model</span></span>
-<span id="cb162-12"><a href="7.3-joint-hypothesis-testing-using-the-f-statistic.html#cb162-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Model 2: score ~ size + english + expenditure</span></span>
+<span id="cb162-12"><a href="7.3-joint-hypothesis-testing-using-the-f-statistic.html#cb162-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Model 2: score ~ STR + english + expenditure</span></span>
 <span id="cb162-13"><a href="7.3-joint-hypothesis-testing-using-the-f-statistic.html#cb162-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb162-14"><a href="7.3-joint-hypothesis-testing-using-the-f-statistic.html#cb162-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   Res.Df    RSS Df Sum of Sq      F    Pr(&gt;F)    </span></span>
 <span id="cb162-15"><a href="7.3-joint-hypothesis-testing-using-the-f-statistic.html#cb162-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1    419 152110                                  </span></span>

@@ -23,7 +23,7 @@
 <meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber, and Martin Schmelzer" />
 
 
-<meta name="date" content="2023-05-26" />
+<meta name="date" content="2023-06-12" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -465,7 +465,7 @@ This book is in <b>Open Review</b>. We want your feedback to make the book bette
 </div>
 <div id="analysis-of-the-test-score-data-set" class="section level2 hasAnchor" number="7.6">
 <h2><span class="header-section-number">7.6</span> Analysis of the Test Score Data Set<a href="7.6-analysis-of-the-test-score-data-set.html#analysis-of-the-test-score-data-set" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Chapter <a href="6-rmwmr.html#rmwmr">6</a> and some of the previous sections have stressed that it is important to include control variables in regression models if it is plausible that there are omitted factors. In our example of test scores we want to estimate the causal effect of a change in the student-teacher ratio on test scores. We now provide an example how to use multiple regression in order to alleviate omitted variable bias and demonstrate how to report results using <tt>R</tt>.</p>
+<p>Chapter <a href="6-rmwmr.html#rmwmr">6</a> and some of the previous sections have stressed that it is important to include control variables in regression models if it is plausible that there are omitted factors. In our example of test scores we want to estimate the causal effect of a change in the student-teacher ratio on test scores. We now provide an example of how to use multiple regression in order to alleviate omitted variable bias and demonstrate how to report results using <tt>R</tt>.</p>
 <p>So far we have considered two variables that control for unobservable student characteristics which correlate with the student-teacher ratio <em>and</em> are assumed to have an impact on test scores:</p>
 <ul>
 <li><p><span class="math inline">\(English\)</span>, the percentage of English learning students</p></li>
@@ -475,7 +475,7 @@ This book is in <b>Open Review</b>. We want your feedback to make the book bette
 <div class="sourceCode" id="cb169"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb169-1"><a href="7.6-analysis-of-the-test-score-data-set.html#cb169-1" aria-hidden="true" tabindex="-1"></a><span class="co"># estimate the correlation between &#39;calworks&#39; and &#39;lunch&#39;</span></span>
 <span id="cb169-2"><a href="7.6-analysis-of-the-test-score-data-set.html#cb169-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(CASchools<span class="sc">$</span>calworks, CASchools<span class="sc">$</span>lunch)</span>
 <span id="cb169-3"><a href="7.6-analysis-of-the-test-score-data-set.html#cb169-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] 0.7394218</span></span></code></pre></div>
-<p>There is no unambiguous way to proceed when deciding which variable to use. In any case it may not a good idea to use both variables as regressors in view of collinearity. Therefore, we also consider alternative model specifications.</p>
+<p>There is no unambiguous way to proceed when deciding which variable to use. In any case it may not be a good idea to use both variables as regressors in view of collinearity. Therefore, we also consider alternative model specifications.</p>
 <p>For a start, we plot student characteristics against test scores.</p>
 <div class="sourceCode" id="cb170"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb170-1"><a href="7.6-analysis-of-the-test-score-data-set.html#cb170-1" aria-hidden="true" tabindex="-1"></a><span class="co"># set up arrangement of plots</span></span>
 <span id="cb170-2"><a href="7.6-analysis-of-the-test-score-data-set.html#cb170-2" aria-hidden="true" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="fu">rbind</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>), <span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">0</span>))</span>
@@ -516,22 +516,22 @@ This book is in <b>Open Review</b>. We want your feedback to make the book bette
 <span id="cb171-7"><a href="7.6-analysis-of-the-test-score-data-set.html#cb171-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] -0.6268533</span></span></code></pre></div>
 <p>We shall consider five different model equations:</p>
 <p><span class="math display">\[\begin{align*}
-  (I) \quad TestScore=&amp; \, \beta_0 + \beta_1 \times size + u, \\
-  (II) \quad TestScore=&amp; \, \beta_0 + \beta_1 \times size + \beta_2 \times english + u, \\
-  (III) \quad TestScore=&amp; \, \beta_0 + \beta_1 \times size + \beta_2 \times english + \beta_3 \times lunch + u, \\
-  (IV) \quad TestScore=&amp; \, \beta_0 + \beta_1 \times size + \beta_2 \times english + \beta_4 \times calworks + u, \\
-  (V) \quad TestScore=&amp; \, \beta_0 + \beta_1 \times size + \beta_2 \times english + \beta_3 \times lunch + \beta_4 \times calworks + u
+  (I) \quad TestScore=&amp; \, \beta_0 + \beta_1 \times STR + u, \\
+  (II) \quad TestScore=&amp; \, \beta_0 + \beta_1 \times STR + \beta_2 \times english + u, \\
+  (III) \quad TestScore=&amp; \, \beta_0 + \beta_1 \times STR + \beta_2 \times english + \beta_3 \times lunch + u, \\
+  (IV) \quad TestScore=&amp; \, \beta_0 + \beta_1 \times STR + \beta_2 \times english + \beta_4 \times calworks + u, \\
+  (V) \quad TestScore=&amp; \, \beta_0 + \beta_1 \times STR + \beta_2 \times english + \beta_3 \times lunch + \beta_4 \times calworks + u
 \end{align*}\]</span></p>
 <p>The best way to communicate regression results is in a table. The <tt>stargazer</tt> package is very convenient for this purpose. It provides a function that generates professionally looking HTML and LaTeX tables that satisfy scientific standards. One simply has to provide one or multiple object(s) of class <tt>lm</tt>. The rest is done by the function <tt>stargazer()</tt>.</p>
 <div class="sourceCode" id="cb172"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb172-1"><a href="7.6-analysis-of-the-test-score-data-set.html#cb172-1" aria-hidden="true" tabindex="-1"></a><span class="co"># load the stargazer library</span></span>
 <span id="cb172-2"><a href="7.6-analysis-of-the-test-score-data-set.html#cb172-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(stargazer)</span>
 <span id="cb172-3"><a href="7.6-analysis-of-the-test-score-data-set.html#cb172-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb172-4"><a href="7.6-analysis-of-the-test-score-data-set.html#cb172-4" aria-hidden="true" tabindex="-1"></a><span class="co"># estimate different model specifications</span></span>
-<span id="cb172-5"><a href="7.6-analysis-of-the-test-score-data-set.html#cb172-5" aria-hidden="true" tabindex="-1"></a>spec1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(score <span class="sc">~</span> size, <span class="at">data =</span> CASchools)</span>
-<span id="cb172-6"><a href="7.6-analysis-of-the-test-score-data-set.html#cb172-6" aria-hidden="true" tabindex="-1"></a>spec2 <span class="ot">&lt;-</span> <span class="fu">lm</span>(score <span class="sc">~</span> size <span class="sc">+</span> english, <span class="at">data =</span> CASchools)</span>
-<span id="cb172-7"><a href="7.6-analysis-of-the-test-score-data-set.html#cb172-7" aria-hidden="true" tabindex="-1"></a>spec3 <span class="ot">&lt;-</span> <span class="fu">lm</span>(score <span class="sc">~</span> size <span class="sc">+</span> english <span class="sc">+</span> lunch, <span class="at">data =</span> CASchools)</span>
-<span id="cb172-8"><a href="7.6-analysis-of-the-test-score-data-set.html#cb172-8" aria-hidden="true" tabindex="-1"></a>spec4 <span class="ot">&lt;-</span> <span class="fu">lm</span>(score <span class="sc">~</span> size <span class="sc">+</span> english <span class="sc">+</span> calworks, <span class="at">data =</span> CASchools)</span>
-<span id="cb172-9"><a href="7.6-analysis-of-the-test-score-data-set.html#cb172-9" aria-hidden="true" tabindex="-1"></a>spec5 <span class="ot">&lt;-</span> <span class="fu">lm</span>(score <span class="sc">~</span> size <span class="sc">+</span> english <span class="sc">+</span> lunch <span class="sc">+</span> calworks, <span class="at">data =</span> CASchools)</span>
+<span id="cb172-5"><a href="7.6-analysis-of-the-test-score-data-set.html#cb172-5" aria-hidden="true" tabindex="-1"></a>spec1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(score <span class="sc">~</span> STR, <span class="at">data =</span> CASchools)</span>
+<span id="cb172-6"><a href="7.6-analysis-of-the-test-score-data-set.html#cb172-6" aria-hidden="true" tabindex="-1"></a>spec2 <span class="ot">&lt;-</span> <span class="fu">lm</span>(score <span class="sc">~</span> STR <span class="sc">+</span> english, <span class="at">data =</span> CASchools)</span>
+<span id="cb172-7"><a href="7.6-analysis-of-the-test-score-data-set.html#cb172-7" aria-hidden="true" tabindex="-1"></a>spec3 <span class="ot">&lt;-</span> <span class="fu">lm</span>(score <span class="sc">~</span> STR <span class="sc">+</span> english <span class="sc">+</span> lunch, <span class="at">data =</span> CASchools)</span>
+<span id="cb172-8"><a href="7.6-analysis-of-the-test-score-data-set.html#cb172-8" aria-hidden="true" tabindex="-1"></a>spec4 <span class="ot">&lt;-</span> <span class="fu">lm</span>(score <span class="sc">~</span> STR <span class="sc">+</span> english <span class="sc">+</span> calworks, <span class="at">data =</span> CASchools)</span>
+<span id="cb172-9"><a href="7.6-analysis-of-the-test-score-data-set.html#cb172-9" aria-hidden="true" tabindex="-1"></a>spec5 <span class="ot">&lt;-</span> <span class="fu">lm</span>(score <span class="sc">~</span> STR <span class="sc">+</span> english <span class="sc">+</span> lunch <span class="sc">+</span> calworks, <span class="at">data =</span> CASchools)</span>
 <span id="cb172-10"><a href="7.6-analysis-of-the-test-score-data-set.html#cb172-10" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb172-11"><a href="7.6-analysis-of-the-test-score-data-set.html#cb172-11" aria-hidden="true" tabindex="-1"></a><span class="co"># gather robust standard errors in a list</span></span>
 <span id="cb172-12"><a href="7.6-analysis-of-the-test-score-data-set.html#cb172-12" aria-hidden="true" tabindex="-1"></a>rob_se <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="fu">sqrt</span>(<span class="fu">diag</span>(<span class="fu">vcovHC</span>(spec1, <span class="at">type =</span> <span class="st">&quot;HC1&quot;</span>))),</span>
@@ -554,7 +554,7 @@ This book is in <b>Open Review</b>. We want your feedback to make the book bette
 <tr><td style="text-align:left"></td><td colspan="5">score</td></tr>
 <tr><td style="text-align:left"></td><td>(I)</td><td>(II)</td><td>(III)</td><td>(IV)</td><td>(V)</td></tr>
 <tr><td style="text-align:left"></td><td>spec1</td><td>spec2</td><td>spec3</td><td>spec4</td><td>spec5</td></tr>
-<tr><td colspan="6" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left">size</td><td>-2.280<sup>***</sup></td><td>-1.101<sup>**</sup></td><td>-0.998<sup>***</sup></td><td>-1.308<sup>***</sup></td><td>-1.014<sup>***</sup></td></tr>
+<tr><td colspan="6" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left">STR</td><td>-2.280<sup>***</sup></td><td>-1.101<sup>**</sup></td><td>-0.998<sup>***</sup></td><td>-1.308<sup>***</sup></td><td>-1.014<sup>***</sup></td></tr>
 <tr><td style="text-align:left"></td><td>(0.519)</td><td>(0.433)</td><td>(0.270)</td><td>(0.339)</td><td>(0.269)</td></tr>
 <tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td><td></td></tr>
 <tr><td style="text-align:left">english</td><td></td><td>-0.650<sup>***</sup></td><td>-0.122<sup>***</sup></td><td>-0.488<sup>***</sup></td><td>-0.130<sup>***</sup></td></tr>
@@ -582,7 +582,7 @@ This book is in <b>Open Review</b>. We want your feedback to make the book bette
 <p>Table <a href="7.6-analysis-of-the-test-score-data-set.html#tab:rotsostracv">7.1</a> states that <span class="math inline">\(score\)</span> is the dependent variable and that we consider five models. We see that the columns of Table <a href="7.6-analysis-of-the-test-score-data-set.html#tab:rotsostracv">7.1</a> contain most of the information provided by <tt>coeftest()</tt> and <tt>summary()</tt> for the regression models under consideration: the coefficients estimates equipped with significance codes (the asterisks) and standard errors in parentheses below. Although there are no <span class="math inline">\(t\)</span>-statistics, it is straightforward for the reader to compute them simply by dividing a coefficient estimate by the corresponding standard error. The bottom of the table reports summary statistics for each model and a legend. For an in-depth discussion of the tabular presentation of regression results, see Chapter 7.6 of the book.</p>
 <p>What can we conclude from the model comparison?</p>
 <ol style="list-style-type: decimal">
-<li><p>We see that adding control variables roughly halves the coefficient on <tt>size</tt>. Also, the estimate is not sensitive to the set of control variables used. The conclusion is that decreasing the student-teacher ratio ceteris paribus by one unit leads to an estimated average increase in test scores of about <span class="math inline">\(1\)</span> point.</p></li>
+<li><p>We see that adding control variables roughly halves the coefficient on <tt>STR</tt>. Also, the estimate is not sensitive to the set of control variables used. The conclusion is that decreasing the student-teacher ratio ceteris paribus by one unit leads to an estimated average increase in test scores of about <span class="math inline">\(1\)</span> point.</p></li>
 <li><p>Adding student characteristics as controls increases <span class="math inline">\(R^2\)</span> and <span class="math inline">\(\bar{R}^2\)</span> from <span class="math inline">\(0.049\)</span> (<tt>spec1</tt>) up to <span class="math inline">\(0.773\)</span> (<tt>spec3</tt> and <tt>spec5</tt>), so we can consider these variables as suitable predictors for test scores. Moreover, the estimated coefficients on all control variables are consistent with the impressions gained from Figure 7.2 of the book.</p></li>
 <li><p>We see that the control variables are not statistically significant in all models. For example in <tt>spec5</tt>, the coefficient on <span class="math inline">\(calworks\)</span> is not significantly different from zero at <span class="math inline">\(5\%\)</span> since <span class="math inline">\(\lvert-0.048/0.059\rvert=0.81 &lt; 1.64\)</span>. We also observe that the effect on the estimate (and its standard error) of the coefficient on <span class="math inline">\(size\)</span> of adding <span class="math inline">\(calworks\)</span> to the base specification <tt>spec3</tt> is negligible. We can therefore consider <tt>calworks</tt> as a superfluous control variable, given the inclusion of <tt>lunch</tt> in this model.</p></li>
 </ol>
