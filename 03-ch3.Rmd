@@ -157,7 +157,7 @@ This expression says that the probability of observing a deviation from the true
 
 To examine properties of the sample mean as an estimator for the corresponding population mean, consider the following `r ttcode("R")` example.
 
-We generate a population `r ttcode("pop")` consisting of observations $Y_i$, $i=1,\dots,10000$ that origin from a normal distribution with mean $\mu = 10$ and variance $\sigma^2 = 1$.
+We generate a population, denoted as `r ttcode("pop")`, consisting of observations $Y_i$, where $i=1,\dots,10000$. These observations are generated from a normal distribution with mean $\mu = 10$ and variance $\sigma^2 = 1$.
 
 To investigate the behavior of the estimator $\hat{\mu} = \bar{Y}$ we can draw random samples from this population and calculate $\bar{Y}$ for each of them. This is easily done by making use of the function `r ttcode("replicate()")`. The argument `r ttcode("expr")` is evaluated `r ttcode("n")` times. In this case we draw samples of sizes $n=5$ and $n=25$, compute the sample means and repeat this exactly $N=25000$ times.
 
@@ -244,7 +244,7 @@ We encourage you to go ahead and modify the code. Try out different values for t
 
 #### $\overline{Y}$ is the Least Squares Estimator of $\mu_Y$ {-}
 
-Assume you have some observations $Y_1,\dots,Y_n$ on $Y \sim \mathcal{N}(10,1)$ (which is unknown) and would like to find an estimator $m$ that predicts the observations as well as possible. By good we mean to choose $m$ such that the total squared deviation between the predicted value and the observed values is small. Mathematically, this means we want to find an $m$ that minimizes
+Assume you have some observations $Y_1,\dots,Y_n$ on $Y \sim \mathcal{N}(10,1)$ (which is unknown) and would like to find an estimator $m$ that predicts the observations as well as possible. Here, we aim to find an estimator $m$ that results in a small total squared deviation between the predicted and observed values. Mathematically, this means we want to find an $m$ that minimizes
 
 \begin{equation}
   \sum_{i=1}^n (Y_i - m)^2. (\#eq:sqm)
@@ -307,20 +307,20 @@ Here <tt>Vectorize()</tt> comes into play. It generates a vectorized version of 
 
 So far, we assumed (sometimes implicitly) that the observed data $Y_1, \dots, Y_n$ are the result of a sampling process that satisfies the assumption of simple random sampling. This assumption often is fulfilled when estimating a population mean using $\overline{Y}$. If this is not the case, estimates may be biased.
 
-Let us fall back to `r ttcode("pop")`, the fictive population of $10000$ observations and compute the population mean $\mu_{\texttt{pop}}$:
+Let us fall back to `r ttcode("pop")`, the fictitious population of $10000$ observations and compute the population mean $\mu_{\texttt{pop}}$:
 
 ```{r}
 # compute the population mean of pop
 mean(pop)
 ```
 
-Next we sample $10$ observations from `r ttcode("pop")` with `r ttcode("sample()")` and estimate $\mu_{\texttt{pop}}$ using $\overline{Y}$ repeatedly. However, now we use a sampling scheme that deviates from simple random sampling: instead of ensuring that each member of the population has the same chance to end up in a sample, we assign a higher probability of being sampled to the $2500$ smallest observations of the population by setting the argument `r ttcode("prob")` to a suitable vector of probability weights: 
+Next we sample $25$ observations from `r ttcode("pop")` with `r ttcode("sample()")` and estimate $\mu_{\texttt{pop}}$ using $\overline{Y}$ repeatedly. However, now we use a sampling scheme that deviates from simple random sampling: instead of ensuring that each member of the population has the same chance to end up in a sample, we assign a higher probability of being sampled to the $2500$ smallest observations of the population by setting the argument `r ttcode("prob")` to a suitable vector of probability weights: 
 
 ```{r}
 # simulate outcomes for the sample mean when the i.i.d. assumption fails
 est3 <-  replicate(n = 25000, 
                    expr = mean(sample(x = sort(pop), 
-                                      size = 10, 
+                                      size = 25, 
                                       prob = c(rep(4, 2500), rep(1, 7500)))))
 
 # compute the sample mean of the outcomes
@@ -361,7 +361,7 @@ In this section we briefly review concepts in hypothesis testing and discuss how
 
 #### About Hypotheses and Hypothesis Testing {-}
 
-In a significance test we want to exploit the information contained in a sample as evidence in favor or against a hypothesis. Essentially, hypotheses are simple questions that can be answered by 'yes' or 'no'. In a hypothesis test we typically deal with two different hypotheses:
+In a significance test we want to exploit the information contained in a sample as evidence in favor of against a hypothesis. Essentially, hypotheses are simple questions that can be answered by 'yes' or 'no'. In a hypothesis test we typically deal with two different hypotheses:
 
 - The *null hypothesis*, denoted $H_0$, is the hypothesis we are interested in testing.
 
@@ -389,7 +389,7 @@ In the context of the population mean and the sample mean, this definition can b
 p \text{-value} = P_{H_0}\left[ \lvert \overline{Y} - \mu_{Y,0} \rvert > \lvert \overline{Y}^{act} - \mu_{Y,0} \rvert \right] (\#eq:pvalue)
 \end{equation}
 
-In \@ref(eq:pvalue), $\overline{Y}^{act}$ is the sample mean for the data at hand (a value). In order to compute the $p$-value as in \@ref(eq:pvalue), knowledge about the sampling distribution of $\overline{Y}$ (a random variable) when the null hypothesis is true (the *null distribution*) is required. However, in most cases the sampling distribution and thus the null distribution of $\overline{Y}$ are unknown. Fortunately, the CLT (see Key Concept 2.7) allows for the large-sample approximation $$ \overline{Y} \approx \mathcal{N}(\mu_{Y,0}, \, \sigma^2_{\overline{Y}}) \ \ , \ \ \sigma^2_{\overline{Y}} = \frac{\sigma_Y^2}{n}, $$ assuming the null hypothesis $H_0: E(Y) = \mu_{Y, 0}$ is true. With some algebra it follows for lage $n$ that
+In \@ref(eq:pvalue), $\overline{Y}^{act}$ is the sample mean for the data at hand (a value). In order to compute the $p$-value as in \@ref(eq:pvalue), knowledge about the sampling distribution of $\overline{Y}$ (a random variable) when the null hypothesis is true (the *null distribution*) is required. However, in most cases the sampling distribution and thus the null distribution of $\overline{Y}$ are unknown. Fortunately, the CLT (see Key Concept 2.7) allows for the large-sample approximation $$ \overline{Y} \approx \mathcal{N}(\mu_{Y,0}, \, \sigma^2_{\overline{Y}}) \ \ , \ \ \sigma^2_{\overline{Y}} = \frac{\sigma_Y^2}{n}, $$ assuming the null hypothesis $H_0: E(Y) = \mu_{Y, 0}$ is true. With some algebra it follows for large $n$ that
 
 $$ \frac{\overline{Y} - \mu_{Y,0}}{\sigma_Y/\sqrt{n}} \sim \mathcal{N}(0,1). $$
 
@@ -634,7 +634,7 @@ for (i in 1:10000) {
 }
 ```
 
-In the simulation above we estimate the variance of the $Y_i$ using `r ttcode("var(s)")`. This is more general then `r ttcode("mean(s)*(1-mean(s))")` since the latter requires that the data are Bernoulli distributed and that we know this.
+In the simulation above we estimate the variance of the $Y_i$ using `r ttcode("var(s)")`. This is more general than `r ttcode("mean(s)*(1-mean(s))")` since the latter requires that the data are Bernoulli distributed and that we know this.
 
 ```{r, fig.align='center'}
 # plot density and compare to N(0,1) density
@@ -674,7 +674,7 @@ An equivalent procedure is to reject the null hypothesis if the observed test st
 
 The **$p$-value** is the probability that, in repeated sampling under the same conditions a test statistic is observed that provides just as much evidence against the null hypothesis as the test statistic actually observed.
 
-The actual probability that the test rejects the true null hypothesis is called the **size of the test**. In an ideal setting, the size does equals the significance level.
+The actual probability that the test rejects the true null hypothesis is called the **size of the test**. In an ideal setting, the size does equal the significance level.
 
 The probability that the test correctly rejects a false null hypothesis is called **power**. 
 
@@ -759,7 +759,7 @@ cat('\\begin{keyconcepts}[Testing the Hypothesis $E(Y) = \\mu_{Y,0}$ Against the
 
 ### One-sided Alternatives {-}
 
-Sometimes we are interested in testing if the mean is bigger or smaller than some value hypothesized under the null. To stick to the book, take the presumed wage gap between well and less educated working individuals. Since we anticipate that such a differential exists, a relevant alternative (to the null hypothesis that there is no wage differential) is that well educated individuals earn more, i.e., that the average hourly wage for this group, $\mu_Y$ is *bigger* than $\mu_{Y,0}$, the average wage of less educated workers which we assume to be known here for simplicity (Section \@ref{cmfdp} discusses how to test the equivalence of to unknown population means).
+Sometimes we are interested in testing if the mean is bigger or smaller than some value hypothesized under the null. To stick to the book, take the presumed wage gap between well and less educated working individuals. Since we anticipate that such a differential exists, a relevant alternative (to the null hypothesis that there is no wage differential) is that well educated individuals earn more, i.e., that the average hourly wage for this group, $\mu_Y$ is *bigger* than $\mu_{Y,0}$, the average wage of less educated workers which we assume to be known here for simplicity (Section \@ref(cmfdp) discusses how to test the equivalence of to unknown population means).
 
 This is an example of a *right-sided test* and the hypotheses pair is chosen to be
 
@@ -918,7 +918,7 @@ Let us have a look at the whole standard output produced by `r ttcode("t.test()"
 t.test(sampledata)
 ```
 
-We see that `r ttcode("t.test()")` does not only compute a $95\%$ confidence interval but automatically conducts a two-sided significance test of the hypothesis $H_0: \mu_Y = 0$ at the level of $5\%$ and reports relevant parameters thereof: the alternative hypothesis, the estimated mean, the resulting $t$-statistic, the degrees of freedom of the underlying $t$ distribution (`r ttcode("t.test()")` does use perform the normal approximation) and the corresponding $p$-value. This is very convenient!
+We see that `r ttcode("t.test()")` does not only compute a $95\%$ confidence interval but automatically conducts a two-sided significance test of the hypothesis $H_0: \mu_Y = 0$ at the level of $5\%$ and reports relevant parameters thereof: the alternative hypothesis, the estimated mean, the resulting $t$-statistic, the degrees of freedom of the underlying $t$-distribution (note that `r ttcode("t.test()")` performs the normal approximation) and the corresponding $p$-value. This is very convenient!
 
 In this example, we come to the conclusion that the population mean *is* significantly different from $0$ (which is correct) at the level of $5\%$, since $\mu_Y = 0$ is not an element of the $95\%$ confidence interval
 
@@ -1046,7 +1046,7 @@ We observe virtually the same results as the ones presented in the book. The com
 
 ## Scatterplots, Sample Covariance and Sample Correlation
 
-A scatter plot represents two dimensional data, for example $n$ observation on $X_i$ and $Y_i$, by points in a coordinate system. It is very easy to generate scatter plots using the `r ttcode("plot()")` function in `r ttcode("R")`. Let us generate some artificial data on age and earnings of workers and plot it.
+A scatter plot represents two dimensional data, for example $n$ observations on $X_i$ and $Y_i$, by points in a coordinate system. It is very easy to generate scatter plots using the `r ttcode("plot()")` function in `r ttcode("R")`. Let us generate some artificial data on age and earnings of workers and plot it.
 
 ```{r, fig.align='center'}
 # set random seed
