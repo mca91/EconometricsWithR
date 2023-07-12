@@ -23,7 +23,7 @@
 <meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber, and Martin Schmelzer" />
 
 
-<meta name="date" content="2023-06-12" />
+<meta name="date" content="2023-07-12" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -665,7 +665,7 @@ SE(\hat{\beta}_1)_{HC1} = \sqrt{ \frac{1}{n} \cdot \frac{ \frac{1}{n-2} \sum_{i=
 <span id="cb131-8"><a href="5.4-hah.html#cb131-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; STR          -2.27981    0.51949 -4.3886 1.447e-05 ***</span></span>
 <span id="cb131-9"><a href="5.4-hah.html#cb131-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ---</span></span>
 <span id="cb131-10"><a href="5.4-hah.html#cb131-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span></code></pre></div>
-<p>We see that the values reported in the column <tt>Std. Error</tt> are equal those from <tt>sqrt(diag(vcov))</tt>.</p>
+<p>We see that the values reported in the column <tt>Std.Error</tt> are equal those from <tt>sqrt(diag(vcov))</tt>.</p>
 <p>How severe are the implications of using homoskedasticity-only standard errors in the presence of heteroskedasticity? The answer is: it depends. As mentioned above we face the risk of drawing wrong conclusions when conducting significance tests. <br> Let us illustrate this by generating another example of a heteroskedastic data set and using it to estimate a simple regression model. We take</p>
 <p><span class="math display">\[ Y_i = \beta_1 \cdot X_i + u_i \ \ , \ \ u_i \overset{i.i.d.}{\sim} \mathcal{N}(0,0.36 \cdot X_i^2)  \]</span></p>
 <p>with <span class="math inline">\(\beta_1=1\)</span> as the data generating process. Clearly, the assumption of homoskedasticity is violated here since the variance of the errors is a nonlinear, increasing function of <span class="math inline">\(X_i\)</span> but the errors have zero mean and are i.i.d. such that the assumptions made in Key Concept 4.3 are not violated. As before, we are interested in estimating <span class="math inline">\(\beta_1\)</span>.</p>
@@ -701,8 +701,9 @@ In <tt>linearHypothesis()</tt>, there are different ways to specify the hypothes
 <span id="cb134-3"><a href="5.4-hah.html#cb134-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] TRUE</span></span>
 <span id="cb134-4"><a href="5.4-hah.html#cb134-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb134-5"><a href="5.4-hah.html#cb134-5" aria-hidden="true" tabindex="-1"></a><span class="co"># test hypothesis using the robust standard error formula</span></span>
-<span id="cb134-6"><a href="5.4-hah.html#cb134-6" aria-hidden="true" tabindex="-1"></a><span class="fu">linearHypothesis</span>(reg, <span class="at">hypothesis.matrix =</span> <span class="st">&quot;X = 1&quot;</span>, <span class="at">white.adjust =</span> <span class="st">&quot;hc1&quot;</span>)<span class="sc">$</span><span class="st">&#39;Pr(&gt;F)&#39;</span>[<span class="dv">2</span>] <span class="sc">&lt;</span> <span class="fl">0.05</span></span>
-<span id="cb134-7"><a href="5.4-hah.html#cb134-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] FALSE</span></span></code></pre></div>
+<span id="cb134-6"><a href="5.4-hah.html#cb134-6" aria-hidden="true" tabindex="-1"></a><span class="fu">linearHypothesis</span>(reg, <span class="at">hypothesis.matrix =</span> <span class="st">&quot;X = 1&quot;</span>,</span>
+<span id="cb134-7"><a href="5.4-hah.html#cb134-7" aria-hidden="true" tabindex="-1"></a>                      <span class="at">white.adjust =</span> <span class="st">&quot;hc1&quot;</span>)<span class="sc">$</span><span class="st">&#39;Pr(&gt;F)&#39;</span>[<span class="dv">2</span>] <span class="sc">&lt;</span> <span class="fl">0.05</span></span>
+<span id="cb134-8"><a href="5.4-hah.html#cb134-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] FALSE</span></span></code></pre></div>
 <p>This is a good example of what can go wrong if we ignore heteroskedasticity: for the data set at hand the default method rejects the null hypothesis <span class="math inline">\(\beta_1 = 1\)</span> although it is true. When using the robust standard error formula the test does not reject the null. Of course, we could think this might just be a coincidence and both tests do equally well in maintaining the type I error rate of <span class="math inline">\(5\%\)</span>. This can be further investigated by computing <em>Monte Carlo</em> estimates of the rejection frequencies of both tests on the basis of a large number of random samples. We proceed as follows:</p>
 <ul>
 <li>initialize vectors <tt>t</tt> and <tt>t.rob</tt>.</li>

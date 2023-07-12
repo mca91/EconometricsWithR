@@ -23,7 +23,7 @@
 <meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber, and Martin Schmelzer" />
 
 
-<meta name="date" content="2023-06-12" />
+<meta name="date" content="2023-07-12" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -466,7 +466,7 @@ This book is in <b>Open Review</b>. We want your feedback to make the book bette
 <div id="aattggoe" class="section level2 hasAnchor" number="3.6">
 <h2><span class="header-section-number">3.6</span> An Application to the Gender Gap of Earnings<a href="3.6-aattggoe.html#aattggoe" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>This section discusses how to reproduce the results presented in the box <em>The Gender Gap of Earnings of College Graduates in the United States</em> of the book.</p>
-<p>In order to reproduce Table 3.1 of the book you need to download the replication data which are hosted by Pearson and can be downloaded <a href="https://wps.pearsoned.com/wps/media/objects/11422/11696965/datasets3e/datasets/cps_ch3.xlsx">here</a>. This file contains data that range from <span class="math inline">\(1992\)</span> to <span class="math inline">\(2008\)</span> and earnings are reported in prices of <span class="math inline">\(2008\)</span>.</p>
+<p>In order to reproduce Table 3.1 of the book you need to download the replication data which are hosted by Pearson and can be downloaded <a href="https://github.com/mca91/EconometricsWithR/raw/master/data/cps_ch3.xlsx">here</a>. This file contains data that range from <span class="math inline">\(1992\)</span> to <span class="math inline">\(2008\)</span> and earnings are reported in prices of <span class="math inline">\(2008\)</span>.</p>
 <p>There are several ways to import the <tt>.xlsx</tt>-files into <tt>R</tt>. Our suggestion is the function <tt>read_excel()</tt> from the <tt>readxl</tt> package <span class="citation">(<a href="#ref-R-readxl" role="doc-biblioref">Wickham and Bryan 2023</a>)</span>. The package is not part of <tt>R</tt>’s base version and has to be installed manually.</p>
 <div class="sourceCode" id="cb72"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb72-1"><a href="3.6-aattggoe.html#cb72-1" aria-hidden="true" tabindex="-1"></a><span class="co"># load the &#39;readxl&#39; package</span></span>
 <span id="cb72-2"><a href="3.6-aattggoe.html#cb72-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readxl)</span></code></pre></div>
@@ -524,25 +524,27 @@ This book is in <b>Open Review</b>. We want your feedback to make the book bette
 <span id="cb76-7"><a href="3.6-aattggoe.html#cb76-7" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(male)   <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Sex&quot;</span>, <span class="st">&quot;Year&quot;</span>, <span class="st">&quot;Y_bar_m&quot;</span>, <span class="st">&quot;s_m&quot;</span>, <span class="st">&quot;n_m&quot;</span>)</span>
 <span id="cb76-8"><a href="3.6-aattggoe.html#cb76-8" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(female) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Sex&quot;</span>, <span class="st">&quot;Year&quot;</span>, <span class="st">&quot;Y_bar_f&quot;</span>, <span class="st">&quot;s_f&quot;</span>, <span class="st">&quot;n_f&quot;</span>)</span>
 <span id="cb76-9"><a href="3.6-aattggoe.html#cb76-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb76-10"><a href="3.6-aattggoe.html#cb76-10" aria-hidden="true" tabindex="-1"></a><span class="co"># estimate gender gaps, compute standard errors and confidence intervals for all dates</span></span>
+<span id="cb76-10"><a href="3.6-aattggoe.html#cb76-10" aria-hidden="true" tabindex="-1"></a><span class="co"># estimate gender gaps</span></span>
 <span id="cb76-11"><a href="3.6-aattggoe.html#cb76-11" aria-hidden="true" tabindex="-1"></a>gap <span class="ot">&lt;-</span> male<span class="sc">$</span>Y_bar_m <span class="sc">-</span> female<span class="sc">$</span>Y_bar_f</span>
 <span id="cb76-12"><a href="3.6-aattggoe.html#cb76-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb76-13"><a href="3.6-aattggoe.html#cb76-13" aria-hidden="true" tabindex="-1"></a>gap_se <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(male<span class="sc">$</span>s_m<span class="sc">^</span><span class="dv">2</span> <span class="sc">/</span> male<span class="sc">$</span>n_m <span class="sc">+</span> female<span class="sc">$</span>s_f<span class="sc">^</span><span class="dv">2</span> <span class="sc">/</span> female<span class="sc">$</span>n_f)</span>
-<span id="cb76-14"><a href="3.6-aattggoe.html#cb76-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb76-15"><a href="3.6-aattggoe.html#cb76-15" aria-hidden="true" tabindex="-1"></a>gap_ci_l <span class="ot">&lt;-</span> gap <span class="sc">-</span> <span class="fl">1.96</span> <span class="sc">*</span> gap_se</span>
-<span id="cb76-16"><a href="3.6-aattggoe.html#cb76-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb76-17"><a href="3.6-aattggoe.html#cb76-17" aria-hidden="true" tabindex="-1"></a>gap_ci_u <span class="ot">&lt;-</span> gap <span class="sc">+</span> <span class="fl">1.96</span> <span class="sc">*</span> gap_se</span>
+<span id="cb76-13"><a href="3.6-aattggoe.html#cb76-13" aria-hidden="true" tabindex="-1"></a><span class="co"># compute standard errors</span></span>
+<span id="cb76-14"><a href="3.6-aattggoe.html#cb76-14" aria-hidden="true" tabindex="-1"></a>gap_se <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(male<span class="sc">$</span>s_m<span class="sc">^</span><span class="dv">2</span> <span class="sc">/</span> male<span class="sc">$</span>n_m <span class="sc">+</span> female<span class="sc">$</span>s_f<span class="sc">^</span><span class="dv">2</span> <span class="sc">/</span> female<span class="sc">$</span>n_f)</span>
+<span id="cb76-15"><a href="3.6-aattggoe.html#cb76-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-16"><a href="3.6-aattggoe.html#cb76-16" aria-hidden="true" tabindex="-1"></a><span class="co">#Compute confidence intervals for all dates</span></span>
+<span id="cb76-17"><a href="3.6-aattggoe.html#cb76-17" aria-hidden="true" tabindex="-1"></a>gap_ci_l <span class="ot">&lt;-</span> gap <span class="sc">-</span> <span class="fl">1.96</span> <span class="sc">*</span> gap_se</span>
 <span id="cb76-18"><a href="3.6-aattggoe.html#cb76-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb76-19"><a href="3.6-aattggoe.html#cb76-19" aria-hidden="true" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">cbind</span>(male[,<span class="sc">-</span><span class="dv">1</span>], female[,<span class="sc">-</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>)], gap, gap_se, gap_ci_l, gap_ci_u)</span>
+<span id="cb76-19"><a href="3.6-aattggoe.html#cb76-19" aria-hidden="true" tabindex="-1"></a>gap_ci_u <span class="ot">&lt;-</span> gap <span class="sc">+</span> <span class="fl">1.96</span> <span class="sc">*</span> gap_se</span>
 <span id="cb76-20"><a href="3.6-aattggoe.html#cb76-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb76-21"><a href="3.6-aattggoe.html#cb76-21" aria-hidden="true" tabindex="-1"></a><span class="co"># print the results to the console</span></span>
-<span id="cb76-22"><a href="3.6-aattggoe.html#cb76-22" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(result, <span class="at">digits =</span> <span class="dv">3</span>)</span>
-<span id="cb76-23"><a href="3.6-aattggoe.html#cb76-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   Year Y_bar_m  s_m  n_m Y_bar_f  s_f  n_f  gap gap_se gap_ci_l gap_ci_u</span></span>
-<span id="cb76-24"><a href="3.6-aattggoe.html#cb76-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 1992    23.3 10.2 1594    20.0 7.87 1368 3.23  0.332     2.58     3.88</span></span>
-<span id="cb76-25"><a href="3.6-aattggoe.html#cb76-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 1996    22.5 10.1 1379    19.0 7.95 1230 3.49  0.354     2.80     4.19</span></span>
-<span id="cb76-26"><a href="3.6-aattggoe.html#cb76-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 2000    24.9 11.6 1303    20.7 9.36 1181 4.14  0.421     3.32     4.97</span></span>
-<span id="cb76-27"><a href="3.6-aattggoe.html#cb76-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 2004    25.1 12.0 1894    21.0 9.36 1735 4.10  0.356     3.40     4.80</span></span>
-<span id="cb76-28"><a href="3.6-aattggoe.html#cb76-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 2008    25.0 11.8 1838    20.9 9.66 1871 4.10  0.354     3.41     4.80</span></span></code></pre></div>
+<span id="cb76-21"><a href="3.6-aattggoe.html#cb76-21" aria-hidden="true" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">cbind</span>(male[,<span class="sc">-</span><span class="dv">1</span>], female[,<span class="sc">-</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>)], gap, gap_se, gap_ci_l, gap_ci_u)</span>
+<span id="cb76-22"><a href="3.6-aattggoe.html#cb76-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb76-23"><a href="3.6-aattggoe.html#cb76-23" aria-hidden="true" tabindex="-1"></a><span class="co"># print the results to the console</span></span>
+<span id="cb76-24"><a href="3.6-aattggoe.html#cb76-24" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(result, <span class="at">digits =</span> <span class="dv">3</span>)</span>
+<span id="cb76-25"><a href="3.6-aattggoe.html#cb76-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   Year Y_bar_m  s_m  n_m Y_bar_f  s_f  n_f  gap gap_se gap_ci_l gap_ci_u</span></span>
+<span id="cb76-26"><a href="3.6-aattggoe.html#cb76-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 1992    23.3 10.2 1594    20.0 7.87 1368 3.23  0.332     2.58     3.88</span></span>
+<span id="cb76-27"><a href="3.6-aattggoe.html#cb76-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 1996    22.5 10.1 1379    19.0 7.95 1230 3.49  0.354     2.80     4.19</span></span>
+<span id="cb76-28"><a href="3.6-aattggoe.html#cb76-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 2000    24.9 11.6 1303    20.7 9.36 1181 4.14  0.421     3.32     4.97</span></span>
+<span id="cb76-29"><a href="3.6-aattggoe.html#cb76-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 2004    25.1 12.0 1894    21.0 9.36 1735 4.10  0.356     3.40     4.80</span></span>
+<span id="cb76-30"><a href="3.6-aattggoe.html#cb76-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 2008    25.0 11.8 1838    20.9 9.66 1871 4.10  0.354     3.41     4.80</span></span></code></pre></div>
 <p>We observe virtually the same results as the ones presented in the book. The computed statistics suggest that there <em>is</em> a gender gap in earnings. Note that we can reject the null hypothesis that the gap is zero for all periods. Further, estimates of the gap and bounds of the <span class="math inline">\(95\%\)</span> confidence intervals indicate that the gap has been quite stable in the recent past.</p>
 </div>
 <h3>References<a href="references.html#references" class="anchor-section" aria-label="Anchor link to header"></a></h3>
