@@ -190,7 +190,8 @@ plot(x = t,
      yaxs = "i", 
      axes = F, 
      ylab = "", 
-     main = expression("Calculating the p-value of a Two-sided Test when" ~ t^act ~ "=-4.75"), 
+     main = expression("Calculating the p-value of a Two-sided Test when"
+             ~ t^act ~ "=-4.75"), 
      cex.lab = 0.7,
      cex.main = 1)
 
@@ -453,7 +454,8 @@ plot( CASchools$score ~ CASchools$D,        # provide the data to be plotted
       ylab = "Test Score",
       main = "Dummy Regression")
 
-points( y = mean.score.for.D.0, x = 0,   col="red", pch = 19)        # Add the average for each group
+# Add the average for each group
+points( y = mean.score.for.D.0, x = 0,   col="red", pch = 19)
 points( y = mean.score.for.D.1, x = 1,   col="red", pch = 19)
 
 ```
@@ -499,7 +501,7 @@ summary(dummy_model)
 <tt>summary()</tt> reports the $p$-value of the test that the coefficient on <tt>(Intercept)</tt> is zero to to be <tt>< 2e-16</tt>. This scientific notation states that the $p$-value is smaller than $\frac{2}{10^{16}}$, so a very small number. The reason for this is that computers cannot handle arbitrary small numbers. In fact, $\frac{2}{10^{16}}$ is the smallest possble number <tt>R</tt> can work with.
 ```
 
-The vector `r ttcode("CASchools\\$D")` has the type `r ttcode("logical")` (to see this, use `r ttcode("typeof(CASchools$D)")`) which is shown in the output of `r ttcode("summary(dummy_model)")`: the label `r ttcode("DTRUE")` states that all entries `r ttcode("TRUE")` are coded as `r ttcode("1")` and all entries `r ttcode("FALSE")` are coded as `r ttcode("0")`. Thus, the interpretation of the coefficient `r ttcode("DTRUE")` is as stated above for $\beta_1$.  
+The vector `r ttcode("CASchools\$D")` has the type `r ttcode("logical")` (to see this, use `r ttcode("typeof(CASchools$D)")`) which is shown in the output of `r ttcode("summary(dummy_model)")`: the label `r ttcode("DTRUE")` states that all entries `r ttcode("TRUE")` are coded as `r ttcode("1")` and all entries `r ttcode("FALSE")` are coded as `r ttcode("0")`. Thus, the interpretation of the coefficient `r ttcode("DTRUE")` is as stated above for $\beta_1$.  
 
 One can see that the expected test score in districts with $STR < 20$ ($D_i = 1$) is predicted to be $650.1 + 7.17 = 657.27$ while districts with $STR \geq 20$ ($D_i = 0$) are expected to have an average test score of only $650.1$.
 
@@ -770,7 +772,7 @@ Now assume we want to generate a coefficient summary as provided by `r  ttcode('
 coeftest(linear_model, vcov. = vcov)
 ```
 
-We see that the values reported in the column `r  ttcode('Std. Error')` are equal those from `r  ttcode('sqrt(diag(vcov))')`.
+We see that the values reported in the column `r  ttcode('Std.Error')` are equal those from `r  ttcode('sqrt(diag(vcov))')`.
 
 How severe are the implications of using homoskedasticity-only standard errors in the presence of heteroskedasticity? The answer is: it depends. As mentioned above we face the risk of drawing wrong conclusions when conducting significance tests. <br> Let us illustrate this by generating another example of a heteroskedastic data set and using it to estimate a simple regression model. We take
 
@@ -822,7 +824,8 @@ In <tt>linearHypothesis()</tt>, there are different ways to specify the hypothes
 linearHypothesis(reg, hypothesis.matrix = "X = 1")$'Pr(>F)'[2] < 0.05
 
 # test hypothesis using the robust standard error formula
-linearHypothesis(reg, hypothesis.matrix = "X = 1", white.adjust = "hc1")$'Pr(>F)'[2] < 0.05
+linearHypothesis(reg, hypothesis.matrix = "X = 1",
+                      white.adjust = "hc1")$'Pr(>F)'[2] < 0.05
 ```
 
 This is a good example of what can go wrong if we ignore heteroskedasticity: for the data set at hand the default method rejects the null hypothesis $\beta_1 = 1$ although it is true. When using the robust standard error formula the test does not reject the null. Of course, we could think this might just be a coincidence and both tests do equally well in maintaining the type I error rate of $5\%$. This can be further investigated by computing *Monte Carlo* estimates of the rejection frequencies of both tests on the basis of a large number of random samples. We proceed as follows:
