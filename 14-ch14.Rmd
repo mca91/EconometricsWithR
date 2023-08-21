@@ -140,7 +140,7 @@ cat('
 <h3 class = "right"> Key Concept 14.1 </h3>
 <h3 class = "left"> Lags, First Differences, Logarithms and Growth Rates </h3>
 
-- Previous values of a time series are called *lags*. The first lag of $Y_t$ is $Y_{t-1}$. The $j^{th}$ lag of $Y_t$ is $Y_{t-j}$. In <tt>`r ttcode("R")`</tt>, lags of univariate or multivariate time series objects are conveniently computed by <tt>lag()</tt>, see <tt>?lag</tt>.
+- Previous values of a time series are called *lags*. The first lag of $Y_t$ is $Y_{t-1}$. The $j^{th}$ lag of $Y_t$ is $Y_{t-j}$. In <tt>R</tt>, lags of univariate or multivariate time series objects are conveniently computed by <tt>lag()</tt>, see <tt>?lag</tt>.
 
 - Sometimes we work with a differenced series. The first difference of a series is $\\Delta Y_{t} = Y_t - Y_{t-1}$, the difference between periods $t$ and $t-1$. If <tt>Y</tt> is a time series, the series of first differences is computed as <tt>diff(Y)</tt>.
 
@@ -287,7 +287,7 @@ plot(as.zoo(USUnemp),
      ylab = "Percent",
      xlab = "Date",
      main = "US Unemployment Rate",
-     cex.main = 1)
+     cex.main = 0.8)
 
 plot(as.zoo(DollarPoundFX),
      col = "steelblue",
@@ -295,7 +295,7 @@ plot(as.zoo(DollarPoundFX),
      ylab = "Dollar per pound",
      xlab = "Date",
      main = "U.S. Dollar / B. Pound Exchange Rate",
-     cex.main = 1)
+     cex.main = 0.8)
 
 plot(as.zoo(JPIndProd),
      col = "steelblue",
@@ -303,7 +303,7 @@ plot(as.zoo(JPIndProd),
      ylab = "Logarithm",
      xlab = "Date",
      main = "Japanese Industrial Production",
-     cex.main = 1)
+     cex.main = 0.8)
 
 plot(as.zoo(NYSESW),
      col = "steelblue",
@@ -311,7 +311,7 @@ plot(as.zoo(NYSESW),
      ylab = "Percent per Day",
      xlab = "Date",
      main = "New York Stock Exchange Composite Index",
-     cex.main = 1)
+     cex.main = 0.8)
 ```
 
 
@@ -508,7 +508,8 @@ We may use the AR($2$) model to obtain a forecast for GDP growth in 2013:Q1 in t
 
 ```{r}
 # AR(2) forecast of GDP growth in 2013:Q1 
-forecast <- c("2013:Q1" = coef(GDPGR_AR2) %*% c(1, GDPGR_level[N-1], GDPGR_level[N-2]))
+forecast <- c("2013:Q1" = coef(GDPGR_AR2) %*% c(1, GDPGR_level[N-1],
+                                                GDPGR_level[N-2]))
 ```
 
 This leads to a forecast error of roughly $-1\%$.
@@ -536,7 +537,8 @@ SReturns <- read_xlsx("Data/Stock_Returns_1931_2002.xlsx",
 ```{r}
 #Alternatively, ASC  cen be read directly from internet.
 
-SReturns <- read.csv("https://www.princeton.edu/~mwatson/Stock-Watson_3u/Students/EE_Datasets/Stock_Returns_1931_2002.asc", sep = "\t", header = FALSE )
+SReturns <- read.csv("https://www.princeton.edu/~mwatson/Stock-Watson_3u/Students/EE_Datasets/Stock_Returns_1931_2002.asc",
+                     sep = "\t", header = FALSE )
 
 colnames(SReturns) <- c( "Year", "Month", "ExReturn", "ln_DivYield" )
 
@@ -628,7 +630,8 @@ stargazer(SR_AR1, SR_AR2, SR_AR4,
   omit.table.layout = "n",
   digits = 3, 
   column.labels = c("AR(1)", "AR(2)", "AR(4)"),
-  dep.var.caption  = "Dependent Variable: Excess returns on the CSRP Value-Weighted Index",
+  dep.var.caption  = "Dependent Variable: Excess returns 
+  on the CSRP Value-Weighted Index",
   dep.var.labels.include = FALSE,
   covariate.labels = c("$excess return_{t-1}$", "$excess return_{t-2}$", "$excess return_{t-3}$", "$excess return_{t-4}$", "Intercept"),
   se = rob_se,
@@ -708,7 +711,8 @@ YToYQTR <- function(years) {
 }
 
 # recessions
-recessions <- YToYQTR(c(1961:1962, 1970, 1974:1975, 1980:1982, 1990:1991, 2001, 2007:2008))
+recessions <- YToYQTR(c(1961:1962, 1970, 1974:1975, 1980:1982, 1990:1991, 2001,
+                        2007:2008))
           
 # add color shading for recessions
 xblocks(time(as.zoo(TB3MS)), 
@@ -758,8 +762,8 @@ ADLdata <- ts.union(GDPGrowth_ts, TSpread_ts)
 
 ```{r}
 # estimate the ADL(2,1) model of GDP growth
-GDPGR_ADL21 <- dynlm(GDPGrowth_ts ~ L(GDPGrowth_ts) + L(GDPGrowth_ts, 2) + L(TSpread_ts), 
-      start = c(1962, 1), end = c(2012, 4))
+GDPGR_ADL21 <- dynlm(GDPGrowth_ts ~ L(GDPGrowth_ts) + L(GDPGrowth_ts, 2) +
+                       L(TSpread_ts), start = c(1962, 1), end = c(2012, 4))
 
 coeftest(GDPGR_ADL21, vcov. = sandwich)
 ```
@@ -776,7 +780,8 @@ All coefficients are significant at the level of $5\%$.
 subset <- window(ADLdata, c(2012, 3), c(2012, 4))
 
 # ADL(2,1) GDP growth forecast for 2013:Q1
-ADL21_forecast <- coef(GDPGR_ADL21) %*% c(1, subset[2, 1], subset[1, 1], subset[2, 2])
+ADL21_forecast <- coef(GDPGR_ADL21) %*% c(1, subset[2, 1], subset[1, 1], 
+                                          subset[2, 2])
 ADL21_forecast
 
 # compute the forecast error
@@ -807,7 +812,8 @@ The coefficients on both lags of the term spread are not significant at the $10\
 
 ```{r}
 # ADL(2,2) GDP growth forecast for 2013:Q1
-ADL22_forecast <- coef(GDPGR_ADL22) %*% c(1, subset[2, 1], subset[1, 1], subset[2, 2], subset[1, 2])
+ADL22_forecast <- coef(GDPGR_ADL22) %*% c(1, subset[2, 1], subset[1, 1],
+                                          subset[2, 2], subset[1, 2])
 ADL22_forecast
 
 # compute the forecast error
@@ -948,7 +954,7 @@ cat('
 <div class = "keyconcept" id="KC14.7">
 <h3 class = "right"> Key Concept 14.7 </h3>
 <h3 class = "left"> Granger Causality Tests </h3>
-The Granger causality test @granger1969 is an $F$ test of the null hypothesis that *all* lags of a variable $X$ included in a time series regression model do not have predictive power for $Y_t$. The Granger causality test does not test whether $X$ actually *causes* $Y$ but whether the included lags are informative in terms of predicting $Y$.
+The Granger causality test @granger1969 is an $F$ test of the null hypothesis that all lags of a variable $X$ included in a time series regression model do not have predictive power for $Y_t$. The Granger causality test does not test whether $X$ actually *causes* $Y$ but whether the included lags are informative in terms of predicting $Y$.
 </div>
 ')
 ```
@@ -1850,11 +1856,11 @@ However, it is possible to examine whether the dividend yield has predictive pow
 That is we estimate three different specifications:
 
 \begin{align*}
-  excess \, returns_t =& \, \beta_0 + \beta_1 excess \, returns_{t-1} + \beta_3 \Delta \log(dividend yield_{t-1}) + u_t \\
+  (I) \ excess \, returns_t =& \, \beta_0 + \beta_1 excess \, returns_{t-1} + \beta_3 \Delta \log(dividend yield_{t-1}) + u_t \\
   \\
-  excess \, returns_t =& \, \beta_0 + \beta_1 excess \, returns_{t-1} + \beta_2 excess \, returns_{t-2} \\ &+ \, \beta_3 \Delta \log(dividend yield_{t-1}) + \beta_4 \Delta \log(dividend yield_{t-2}) + u_t \\
+ (II) \ excess \, returns_t =& \, \beta_0 + \beta_1 excess \, returns_{t-1} + \beta_2 excess \, returns_{t-2} \\ &+ \, \beta_3 \Delta \log(dividend yield_{t-1}) + \beta_4 \Delta \log(dividend yield_{t-2}) + u_t \\
   \\
-  excess \, returns_t =& \, \beta_0 + \beta_1 excess \, returns_{t-1} + \beta_5 \log(dividend yield_{t-1}) + u_t \\
+ (III) \ excess \, returns_t =& \, \beta_0 + \beta_1 excess \, returns_{t-1} + \beta_5 \log(dividend yield_{t-1}) + u_t \\
 \end{align*}
 
 ```{r}
@@ -1933,7 +1939,8 @@ stargazer(CRSP_ADL_1, CRSP_ADL_2, CRSP_ADL_3,
   no.space = T,
   digits = 3, 
   column.labels = c("ADL(1,1)", "ADL(2,2)", "ADL(1,1)"),
-  dep.var.caption  = "Dependent Variable: Excess returns on the CSRP Value-Weighted Index",
+  dep.var.caption  = "Dependent Variable: Excess returns on the CSRP
+  Value-Weighted Index",
   dep.var.labels.include = FALSE,
   covariate.labels = c("$excess return_{t-1}$", "$excess return_{t-2}$", "$1^{st} diff log(dividend yield_{t-1})$", "$1^{st} diff log(dividend yield_{t-2})$", "$log(dividend yield_{t-1})$", "Constant"),
   se = rob_se_CRSP_ADL
