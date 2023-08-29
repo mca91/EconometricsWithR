@@ -23,7 +23,7 @@
 <meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber, and Martin Schmelzer" />
 
 
-<meta name="date" content="2023-07-31" />
+<meta name="date" content="2023-08-29" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -588,8 +588,8 @@ Cointegration
 <span id="cb459-10"><a href="16.3-cointegration.html#cb459-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb459-11"><a href="16.3-cointegration.html#cb459-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; The value of the test statistic is: -3.9308 7.7362</span></span>
 <span id="cb459-12"><a href="16.3-cointegration.html#cb459-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb459-13"><a href="16.3-cointegration.html#cb459-13" aria-hidden="true" tabindex="-1"></a><span class="co"># test if term spread is stationary (cointegration of interest rates) using DF-GLS test</span></span>
-<span id="cb459-14"><a href="16.3-cointegration.html#cb459-14" aria-hidden="true" tabindex="-1"></a><span class="fu">ur.ers</span>(<span class="fu">window</span>(TB10YS, <span class="fu">c</span>(<span class="dv">1962</span>, <span class="dv">1</span>), <span class="fu">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>)) <span class="sc">-</span> <span class="fu">window</span>(TB3MS, <span class="fu">c</span>(<span class="dv">1962</span>, <span class="dv">1</span>), <span class="fu">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>)),</span>
+<span id="cb459-13"><a href="16.3-cointegration.html#cb459-13" aria-hidden="true" tabindex="-1"></a><span class="co"># test if term spread is stationary (cointegration of interest rates) using DF-GLS</span></span>
+<span id="cb459-14"><a href="16.3-cointegration.html#cb459-14" aria-hidden="true" tabindex="-1"></a><span class="fu">ur.ers</span>(<span class="fu">window</span>(TB10YS, <span class="fu">c</span>(<span class="dv">1962</span>, <span class="dv">1</span>), <span class="fu">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>)) <span class="sc">-</span> <span class="fu">window</span>(TB3MS, <span class="fu">c</span>(<span class="dv">1962</span>, <span class="dv">1</span>),<span class="fu">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>)),</span>
 <span id="cb459-15"><a href="16.3-cointegration.html#cb459-15" aria-hidden="true" tabindex="-1"></a>       <span class="at">model =</span> <span class="st">&quot;constant&quot;</span>, </span>
 <span id="cb459-16"><a href="16.3-cointegration.html#cb459-16" aria-hidden="true" tabindex="-1"></a>       <span class="at">lag.max =</span> <span class="dv">6</span>)</span>
 <span id="cb459-17"><a href="16.3-cointegration.html#cb459-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
@@ -634,19 +634,20 @@ Cointegration
 <p>Both tests reject the hypothesis of nonstationarity of the term spread series at the <span class="math inline">\(1\%\)</span> level of significance, which is strong evidence in favor of the hypothesis that the term spread is stationary, implying cointegration of long- and short-term interest rates.</p>
 <p>Since theory suggests that <span class="math inline">\(\theta=1\)</span>, there is no need to estimate <span class="math inline">\(\theta\)</span> so it is not necessary to use the EG-ADF test which allows <span class="math inline">\(\theta\)</span> to be unknown. However, since it is instructive to do so, we follow the book and compute this test statistic. The first-stage OLS regression is <span class="math display">\[TB10YS_t = \beta_0 + \beta_1 TB3MS_t + z_t.\]</span></p>
 <div class="sourceCode" id="cb460"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb460-1"><a href="16.3-cointegration.html#cb460-1" aria-hidden="true" tabindex="-1"></a><span class="co"># estimate first-stage regression of EG-ADF test</span></span>
-<span id="cb460-2"><a href="16.3-cointegration.html#cb460-2" aria-hidden="true" tabindex="-1"></a>FS_EGADF <span class="ot">&lt;-</span> <span class="fu">dynlm</span>(<span class="fu">window</span>(TB10YS, <span class="fu">c</span>(<span class="dv">1962</span>, <span class="dv">1</span>), <span class="fu">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>)) <span class="sc">~</span> <span class="fu">window</span>(TB3MS, <span class="fu">c</span>(<span class="dv">1962</span>, <span class="dv">1</span>), <span class="fu">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>)))</span>
-<span id="cb460-3"><a href="16.3-cointegration.html#cb460-3" aria-hidden="true" tabindex="-1"></a>FS_EGADF</span>
-<span id="cb460-4"><a href="16.3-cointegration.html#cb460-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb460-5"><a href="16.3-cointegration.html#cb460-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Time series regression with &quot;ts&quot; data:</span></span>
-<span id="cb460-6"><a href="16.3-cointegration.html#cb460-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Start = 1962(1), End = 2012(4)</span></span>
-<span id="cb460-7"><a href="16.3-cointegration.html#cb460-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb460-8"><a href="16.3-cointegration.html#cb460-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Call:</span></span>
-<span id="cb460-9"><a href="16.3-cointegration.html#cb460-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; dynlm(formula = window(TB10YS, c(1962, 1), c(2012, 4)) ~ window(TB3MS, </span></span>
-<span id="cb460-10"><a href="16.3-cointegration.html#cb460-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     c(1962, 1), c(2012, 4)))</span></span>
-<span id="cb460-11"><a href="16.3-cointegration.html#cb460-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb460-12"><a href="16.3-cointegration.html#cb460-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Coefficients:</span></span>
-<span id="cb460-13"><a href="16.3-cointegration.html#cb460-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                           (Intercept)  window(TB3MS, c(1962, 1), c(2012, 4))  </span></span>
-<span id="cb460-14"><a href="16.3-cointegration.html#cb460-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                2.4642                                 0.8147</span></span></code></pre></div>
+<span id="cb460-2"><a href="16.3-cointegration.html#cb460-2" aria-hidden="true" tabindex="-1"></a>FS_EGADF <span class="ot">&lt;-</span> <span class="fu">dynlm</span>(<span class="fu">window</span>(TB10YS, <span class="fu">c</span>(<span class="dv">1962</span>, <span class="dv">1</span>), <span class="fu">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>)) <span class="sc">~</span> <span class="fu">window</span>(TB3MS, <span class="fu">c</span>(<span class="dv">1962</span>, <span class="dv">1</span>),</span>
+<span id="cb460-3"><a href="16.3-cointegration.html#cb460-3" aria-hidden="true" tabindex="-1"></a>                                                                  <span class="fu">c</span>(<span class="dv">2012</span>, <span class="dv">4</span>)))</span>
+<span id="cb460-4"><a href="16.3-cointegration.html#cb460-4" aria-hidden="true" tabindex="-1"></a>FS_EGADF</span>
+<span id="cb460-5"><a href="16.3-cointegration.html#cb460-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb460-6"><a href="16.3-cointegration.html#cb460-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Time series regression with &quot;ts&quot; data:</span></span>
+<span id="cb460-7"><a href="16.3-cointegration.html#cb460-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Start = 1962(1), End = 2012(4)</span></span>
+<span id="cb460-8"><a href="16.3-cointegration.html#cb460-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb460-9"><a href="16.3-cointegration.html#cb460-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Call:</span></span>
+<span id="cb460-10"><a href="16.3-cointegration.html#cb460-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; dynlm(formula = window(TB10YS, c(1962, 1), c(2012, 4)) ~ window(TB3MS, </span></span>
+<span id="cb460-11"><a href="16.3-cointegration.html#cb460-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     c(1962, 1), c(2012, 4)))</span></span>
+<span id="cb460-12"><a href="16.3-cointegration.html#cb460-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb460-13"><a href="16.3-cointegration.html#cb460-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Coefficients:</span></span>
+<span id="cb460-14"><a href="16.3-cointegration.html#cb460-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                           (Intercept)  window(TB3MS, c(1962, 1), c(2012, 4))  </span></span>
+<span id="cb460-15"><a href="16.3-cointegration.html#cb460-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;                                2.4642                                 0.8147</span></span></code></pre></div>
 <p>Thus we have
 <span class="math display">\[\begin{align*}
   \widehat{TB10YS}_t = 2.46 + 0.81 \cdot TB3MS_t,
