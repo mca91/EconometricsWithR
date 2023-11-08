@@ -97,7 +97,8 @@ lines(x = CASchools$income[order_id],
       y = fitted(quadratic_model)[order_id],
       col = "red", 
       lwd = 2) 
-legend("bottomright",legend=c("Linear Line","Quadratic Line"),lwd=2,col=c("green","red"))
+legend("bottomright",legend=c("Linear Line","Quadratic Line"),
+       lwd=2,col=c("green","red"))
 ```
 
 
@@ -352,6 +353,7 @@ lines(CASchools$income[order_id],
       fitted(LinearLog_model)[order_id], 
       col = "red", 
       lwd = 2)
+legend("bottomright",legend = "Linear-log line",lwd = 2,col ="red")
 ```
 
 
@@ -795,7 +797,7 @@ $$ Y_i = \\beta_0 + \\beta_1 X_i + \\beta_2 (X_i \\times D_i) + u_i $$
 The following code chunk demonstrates how to replicate the results shown in Figure 8.8 of the book using artificial data.
 
 
-```{r, fig.align='center'}
+```{r, fig.align='center',fig.width=8, fig.height=8}
 # generate artificial data
 set.seed(1)
 
@@ -813,7 +815,7 @@ plot(X, log(Y),
      pch = 20,
      col = "steelblue",
      main = "Different Intercepts, Same Slope",
-     cex.main=0.9)
+     cex.main=1.2)
 
 mod1_coef <- lm(log(Y) ~ X + D)$coefficients
 
@@ -830,7 +832,7 @@ plot(X, log(Y),
      pch = 20,
      col = "steelblue",
      main = "Different Intercepts, Different Slopes",
-     cex.main=0.9)
+     cex.main=1.2)
 
 mod2_coef <- lm(log(Y) ~ X + D + X:D)$coefficients
 
@@ -847,7 +849,7 @@ plot(X, log(Y),
      pch = 20,
      col = "steelblue",
      main = "Same Intercept, Different Slopes",
-     cex.main=0.9)
+     cex.main=1.2)
 
 mod3_coef <- lm(log(Y) ~ X + X:D)$coefficients
 
@@ -1161,7 +1163,7 @@ stargazer(Journals_mod1, Journals_mod2, Journals_mod3, Journals_mod4,
 The subsequent code chunk reproduces Figure 8.9 of the book.
 
 
-```{r}
+```{r,fig.width=10, fig.height=8}
 # divide plotting area
 m <- rbind(c(1, 2), c(3, 0))
 graphics::layout(m)
@@ -1260,23 +1262,26 @@ The considered model specifications are:
 
 ```{r, tidy=TRUE}
 # estimate all models
-TestScore_mod1 <- lm(score ~ size + english + lunch, data = CASchools)
+TestScore_mod1 <- lm(score ~ size + english + lunch,
+                     data = CASchools)
 
-TestScore_mod2 <- lm(score ~ size + english + lunch + log(income), data = CASchools)
+TestScore_mod2 <- lm(score ~ size + english + lunch + log(income),
+                     data = CASchools)
 
-TestScore_mod3 <- lm(score ~ size + HiEL + HiEL:size, data = CASchools)
+TestScore_mod3 <- lm(score ~ size + HiEL + HiEL:size,
+                     data = CASchools)
 
 TestScore_mod4 <- lm(score ~ size + HiEL + HiEL:size + lunch + log(income), 
-                                                                   data = CASchools)
+        data = CASchools)
 
-TestScore_mod5 <- lm(score ~ size + I(size^2) + I(size^3) + HiEL + lunch + 
-                                                        log(income),data = CASchools)
+TestScore_mod5 <- lm(score ~ size + I(size^2) + I(size^3) + HiEL +lunch
+        + log(income),data = CASchools)
 
-TestScore_mod6 <- lm(score ~ size + I(size^2) + I(size^3) + HiEL + HiEL:size +
-             HiEL:I(size^2) + HiEL:I(size^3) + lunch + log(income), data = CASchools)
+TestScore_mod6 <- lm(score ~ size + I(size^2) + I(size^3) + HiEL + HiEL:size
+        +HiEL:I(size^2) + HiEL:I(size^3) + lunch + log(income),data = CASchools)
 
-TestScore_mod7 <- lm(score ~ size + I(size^2) + I(size^3) + english + lunch +
-                                                        log(income), data = CASchools)
+TestScore_mod7 <- lm(score ~ size + I(size^2) + I(size^3) + english
+        +lunch + log(income),data = CASchools)
 ```
 
 We may use `r ttcode("summary()")` to assess the models' fit. Using `r ttcode("stargazer()")` we may also obtain a tabular representation of all regression outputs and which is more convenient for comparison of the models. 

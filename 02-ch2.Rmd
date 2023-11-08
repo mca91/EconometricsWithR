@@ -3,9 +3,9 @@
 This chapter reviews some basic concepts of probability theory and demonstrates how they can be
 applied in `r ttcode("R")`.
 
-Most of the statistical functionalities in base `r ttcode("R")` are collected in the `r ttcode("stats")` package. It provides simple functions which compute descriptive measures and facilitate computations involving a variety of probability distributions. It also contains more sophisticated routines that, enable the user to estimate a large number of models based on the same data or help to conduct extensive simulation studies. `r ttcode("stats")` is part of the base distribution of `r ttcode("R")`, meaning that it is installed by default so there is no need to run `install.packages("stats")` or `library("stats")`. Simply execute `library(help = "stats")` in the console to view the documentation and a complete list of all functions gathered in `r ttcode("stats")`. For most packages a documentation that can be viewed within *RStudio* is available. Documentations can be invoked using the `r ttcode("?")` operator, e.g., upon execution of `?stats` the documentation of the `r ttcode("stats")` package is shown in the help tab of the bottom-right pane.
+Most of the statistical functionalities in base `r ttcode("R")` are collected in the `r ttcode("stats")` package. It provides simple functions which compute descriptive measures and facilitate computations involving a variety of probability distributions. It also contains more sophisticated routines that, enable the user to estimate a large number of models based on the same data or help to conduct extensive simulation studies. `r ttcode("stats")` is part of the base distribution of `r ttcode("R")`, meaning that it is installed by default so there is no need to run `install.packages("stats")` or `library("stats")`. Simply execute `library(help = "stats")` in the console to view the documentation and a complete list of all functions gathered in `r ttcode("stats")`. For most packages a documentation that can be viewed within *RStudio* is available. Documentation can be invoked using the `r ttcode("?")` operator, for example, upon execution of `?stats` the documentation of the `r ttcode("stats")` package is shown in the help tab of the bottom-right pane.
 
-In what follows, our focus is on (some of) the probability distributions that are handled by `r ttcode("R")` and show how to use the relevant functions to solve simple problems. Thereby, we refresh some core concepts of probability theory. Among other things, you will learn how to draw random numbers, how to compute densities, probabilities, quantiles and alike. As we shall see, it is very convenient to rely on these routines.
+In what follows, our focus is on (some of) the probability distributions that are handled by `r ttcode("R")` and show how to use the relevant functions to solve simple problems. Afterwards, we will review some core concepts of probability theory. Among other things, you will learn how to draw random numbers, how to compute densities, probabilities, quantiles and alike. As we shall see, it is very convenient to do these computations in R.
 
 ## Random Variables and Probability Distributions
 
@@ -32,7 +32,7 @@ events, e.g., 'the observed outcome lies between $2$ and $5$'.
 A basic function to draw random samples from a specified set of elements is the function `r ttcode("sample()")`, see `?sample`. We can use it to simulate the random outcome of a dice roll. Let's roll the dice!
 
 ```{r, echo = T, eval = T, message = F, warning = F} 
-sample(1:6, 1) 
+sample(1:6, size=1) 
 ```
 
 The probability distribution of a discrete random variable is the list of all possible values of the variable and their probabilities which sum to $1$. The cumulative probability distribution function gives the probability that the random variable is less than or equal to a particular value.
@@ -54,7 +54,8 @@ probability <- rep(1/6, 6)
 plot(probability,
      xlab = "Outcomes",
      ylab="Probability",
-     main = "Probability Distribution") 
+     main = "Probability Distribution",
+     pch=20) 
 ``` 
 
 For the cumulative probability distribution we need the cumulative probabilities, i.e., we need the cumulative sums of the vector `r ttcode("probability")`. These sums can be computed using `r ttcode("cumsum()")`.
@@ -67,7 +68,8 @@ cum_probability <- cumsum(probability)
 plot(cum_probability, 
      xlab = "Outcomes", 
      ylab="Cumulative Probability",
-     main = "Cumulative Probability Distribution") 
+     main = "Cumulative Probability Distribution",
+     pch=20) 
 ```
 
 ### Bernoulli Trials {-}
@@ -143,7 +145,8 @@ probability <- dbinom(x = k,
 plot(x = k, 
      y = probability,
      ylab="Probability",
-     main = "Probability Distribution Function") 
+     main = "Probability Distribution Function",
+     pch=20) 
 ``` 
 
 In a similar fashion we may plot the cumulative distribution function of $k$ by
@@ -159,7 +162,8 @@ prob <- pbinom(q = k,
 plot(x = k, 
      y = prob,
      ylab="Probability",
-     main = "Cumulative Distribution Function") 
+     main = "Cumulative Distribution Function",
+     pch=20) 
 ```
 
 ### Expected Value, Mean and Variance {-}
@@ -399,7 +403,7 @@ g <- function(x) x * f(x)
 h <- function(x) x^2 * f(x)
 ```
 
-Next, we use `r ttcode("integrate()")` and set lower and upper limits of integration to $1$ and $\infty$ using arguments `r ttcode("lower")` and `r ttcode("upper")`. By default, `r ttcode("integrate()")` prints the result along with an estimate of the approximation error to the console. However, the outcome is not a numeric value one can readily do further calculation with. In order to get only a numeric value of the integral, we need to use the `r ttcode("\\$")` operator in conjunction with `r ttcode("value")`. The `r ttcode("\\$")` operator is used to extract elements by name from an object of type `r ttcode("list")`. 
+Next, we use `r ttcode("integrate()")` and set lower and upper limits of integration to $1$ and $\infty$ using arguments `r ttcode("lower")` and `r ttcode("upper")`. By default, `r ttcode("integrate()")` prints the result along with an estimate of the approximation error to the console. However, the outcome is not a numeric value one can readily do further calculation with. In order to get only a numeric value of the integral, we need to use the `r ttcode("$")` operator in conjunction with `r ttcode("value")`. The `r ttcode("$")` operator is used to extract elements by name from an object of type `r ttcode("list")`. 
 
 ```{r, echo = T, eval = T, message = F, warning = F}
 # compute area under the density curve
@@ -438,7 +442,7 @@ Thus, for the normal distribution we have the `r ttcode("R")` functions `r ttcod
 
 ### The Normal Distribution {-}
 
-The probably most important probability distribution considered here is the normal
+Perhaps the most important probability distribution considered here is the normal
 distribution. This is not least due to the special role of the standard normal distribution and the Central Limit Theorem which is to be treated shortly. Normal distributions are symmetric and bell-shaped. A normal distribution is characterized by its mean $\mu$ and its standard deviation $\sigma$, concisely expressed by
 $\mathcal{N}(\mu,\sigma^2)$. The normal distribution has the PDF
 
@@ -807,7 +811,7 @@ To clarify the basic idea of random sampling, let us jump back to the dice rolli
 
 Suppose we are rolling the dice $n$ times. This means we are interested in the outcomes of random $Y_i, \ i=1,...,n$ which are characterized by the same distribution. Since these outcomes are selected randomly, they are *random variables* themselves and their realizations will differ each time we draw a sample, i.e., each time we roll the dice $n$ times. Furthermore, each observation is randomly drawn from the same population, that is, the numbers from $1$ to $6$, and their individual distribution is the same. Hence $Y_1,\dots,Y_n$ are identically distributed. 
 
-Moreover, we know that the value of any of the $Y_i$ does not provide any information on the remainder of the outcomes In our example, rolling a six as the first observation in our sample does not alter the distributions of $Y_2,\dots,Y_n$: all numbers are equally likely to occur. This means that all $Y_i$ are also independently distributed. Thus $Y_1,\dots,Y_n$ are independently and identically distributed (*i.i.d.*). 
+Moreover, we know that the value of any of the $Y_i$ does not provide any information on the remainder of the outcomes. In our example, rolling a six as the first observation in our sample does not alter the distributions of $Y_2,\dots,Y_n$: all numbers are equally likely to occur. This means that all $Y_i$ are also independently distributed. Thus $Y_1,\dots,Y_n$ are independently and identically distributed (*i.i.d.*). 
 The dice example uses this most simple sampling scheme. That is why it is called *simple random sampling*. This concept is summarized in Key Concept 2.5. 
 
 ```{r, eval = my_output == "html", results='asis', echo=FALSE, purl=FALSE}
@@ -1204,7 +1208,7 @@ In `r ttcode("R")`, realize this as follows:
 
 3. Next, we combine two `r ttcode("for()")` loops to simulate the data and plot the distributions. The inner loop generates $10000$ random samples, each consisting of `r ttcode("n")` observations that are drawn from the Bernoulli distribution, and computes the standardized averages. The outer loop executes the inner loop for the different sample sizes `r ttcode("n")` and produces a plot for each iteration.
 
-```{r, echo = T, eval = T, message = F, warning = F, cache=T, fig.align='center'} 
+```{r, echo = T, eval = T, message = F, warning = F, cache=T, fig.align='center',fig.width=10, fig.height=10} 
 # subdivide the plot panel into a 2-by-2 array
 par(mfrow = c(2, 2))
 
