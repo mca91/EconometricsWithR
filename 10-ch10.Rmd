@@ -128,7 +128,7 @@ plot(x = as.double(Fatalities1982$beertax),
      pch = 20, 
      col = "steelblue")
 
-abline(fatal1982_mod, lwd = 1.5,col="darkred")
+abline(fatal1982_mod, lwd = 1.5, col="darkred")
 legend("topright",lty=1,col="darkred","Estimated Regression Line")
 
 # plot observations and add estimated regression line for 1988 data
@@ -311,12 +311,12 @@ $$\overset{\sim}{FatalityRate} = \beta_1 \overset{\sim}{BeerTax}_{it} + u_{it}. 
 
 ```{r, eval=F}
 # obtain demeaned data
-Fatalities_demeaned <- with(Fatalities,
+fatal_demeaned <- with(Fatalities,
             data.frame(fatal_rate = fatal_rate - ave(fatal_rate, state),
             beertax = beertax - ave(beertax, state)))
 
 # estimate the regression
-summary(lm(fatal_rate ~ beertax - 1, data = Fatalities_demeaned))
+summary(lm(fatal_rate ~ beertax - 1, data = fatal_demeaned))
 ```
 
 The function `r ttcode("ave")` is convenient for computing group averages. We use it to obtain state specific averages of the fatality rate and the beer tax.
@@ -493,50 +493,50 @@ Fatalities$punish <- with(Fatalities, factor(jail == "yes" | service == "yes",
                                              labels = c("no", "yes")))
 
 # the set of observations on all variables for 1982 and 1988
-Fatalities_1982_1988 <- Fatalities[with(Fatalities, year == 1982 | year == 1988), ]
+fatal_1982_1988 <- Fatalities[with(Fatalities, year == 1982 | year == 1988), ]
 ```
 
 Next, we estimate all seven models using `r ttcode("plm()")`.
 
 ```{r}
 # estimate all seven models
-fatalities_mod1 <- lm(fatal_rate ~ beertax, data = Fatalities)
+fat_mod1 <- lm(fatal_rate ~ beertax, data = Fatalities)
 
-fatalities_mod2 <- plm(fatal_rate ~ beertax + state, data = Fatalities)
+fat_mod2 <- plm(fatal_rate ~ beertax + state, data = Fatalities)
 
-fatalities_mod3 <- plm(fatal_rate ~ beertax + state + year,
+fat_mod3 <- plm(fatal_rate ~ beertax + state + year,
                        index = c("state","year"),
                        model = "within",
                        effect = "twoways", 
                        data = Fatalities)
 
-fatalities_mod4 <- plm(fatal_rate ~ beertax + state + year + drinkagec 
+fat_mod4 <- plm(fatal_rate ~ beertax + state + year + drinkagec 
                        + punish + miles + unemp + log(income), 
                        index = c("state", "year"),
                        model = "within",
                        effect = "twoways",
                        data = Fatalities)
 
-fatalities_mod5 <- plm(fatal_rate ~ beertax + state + year + drinkagec 
+fat_mod5 <- plm(fatal_rate ~ beertax + state + year + drinkagec 
                        + punish + miles,
                        index = c("state", "year"),
                        model = "within",
                        effect = "twoways",
                        data = Fatalities)
 
-fatalities_mod6 <- plm(fatal_rate ~ beertax + year + drinkage 
+fat_mod6 <- plm(fatal_rate ~ beertax + year + drinkage 
                        + punish + miles + unemp + log(income), 
                        index = c("state", "year"),
                        model = "within",
                        effect = "twoways",
                        data = Fatalities)
 
-fatalities_mod7 <- plm(fatal_rate ~ beertax + state + year + drinkagec 
+fat_mod7 <- plm(fatal_rate ~ beertax + state + year + drinkagec 
                        + punish + miles + unemp + log(income), 
                        index = c("state", "year"),
                        model = "within",
                        effect = "twoways",
-                       data = Fatalities_1982_1988)
+                       data = fatal_1982_1988)
 ```
 
 We again use `r ttcode("stargazer()")` [@R-stargazer] to generate a comprehensive tabular presentation of the results.
@@ -545,17 +545,22 @@ We again use `r ttcode("stargazer()")` [@R-stargazer] to generate a comprehensiv
 library(stargazer)
 
 # gather clustered standard errors in a list
-rob_se <- list(sqrt(diag(vcovHC(fatalities_mod1, type = "HC1"))),
-               sqrt(diag(vcovHC(fatalities_mod2, type = "HC1"))),
-               sqrt(diag(vcovHC(fatalities_mod3, type = "HC1"))),
-               sqrt(diag(vcovHC(fatalities_mod4, type = "HC1"))),
-               sqrt(diag(vcovHC(fatalities_mod5, type = "HC1"))),
-               sqrt(diag(vcovHC(fatalities_mod6, type = "HC1"))),
-               sqrt(diag(vcovHC(fatalities_mod7, type = "HC1"))))
+rob_se <- list(sqrt(diag(vcovHC(fat_mod1, type = "HC1"))),
+               sqrt(diag(vcovHC(fat_mod2, type = "HC1"))),
+               sqrt(diag(vcovHC(fat_mod3, type = "HC1"))),
+               sqrt(diag(vcovHC(fat_mod4, type = "HC1"))),
+               sqrt(diag(vcovHC(fat_mod5, type = "HC1"))),
+               sqrt(diag(vcovHC(fat_mod6, type = "HC1"))),
+               sqrt(diag(vcovHC(fat_mod7, type = "HC1"))))
 
 # generate the table
-stargazer(fatalities_mod1, fatalities_mod2, fatalities_mod3, 
-          fatalities_mod4, fatalities_mod5, fatalities_mod6, fatalities_mod7, 
+stargazer(fat_mod1, 
+          fat_mod2, 
+          fat_mod3, 
+          fat_mod4, 
+          fat_mod5, 
+          fat_mod6, 
+          fat_mod7, 
           digits = 3,
           header = FALSE,
           type = "latex", 
@@ -572,16 +577,16 @@ stargazer(fatalities_mod1, fatalities_mod2, fatalities_mod3,
 library(stargazer)
 
 rob_se <- list(
-  sqrt(diag(vcovHC(fatalities_mod1, type="HC1"))),
-  sqrt(diag(vcovHC(fatalities_mod2, type="HC1"))),
-  sqrt(diag(vcovHC(fatalities_mod3, type="HC1"))),
-  sqrt(diag(vcovHC(fatalities_mod4, type="HC1"))),
-  sqrt(diag(vcovHC(fatalities_mod5, type="HC1"))),
-  sqrt(diag(vcovHC(fatalities_mod6, type="HC1"))),
-  sqrt(diag(vcovHC(fatalities_mod7, type="HC1")))
+  sqrt(diag(vcovHC(fat_mod1, type="HC1"))),
+  sqrt(diag(vcovHC(fat_mod2, type="HC1"))),
+  sqrt(diag(vcovHC(fat_mod3, type="HC1"))),
+  sqrt(diag(vcovHC(fat_mod4, type="HC1"))),
+  sqrt(diag(vcovHC(fat_mod5, type="HC1"))),
+  sqrt(diag(vcovHC(fat_mod6, type="HC1"))),
+  sqrt(diag(vcovHC(fat_mod7, type="HC1")))
 )
 
-stargazer(fatalities_mod1, fatalities_mod2, fatalities_mod3, fatalities_mod4, fatalities_mod5, fatalities_mod6, fatalities_mod7, 
+stargazer(fat_mod1, fat_mod2, fat_mod3, fat_mod4, fat_mod5, fat_mod6, fat_mod7, 
           digits = 3,
           type = "html",
           header = FALSE,
@@ -600,16 +605,16 @@ stargazer_html_title("Linear Panel Regression Models of Traffic Fatalities due t
 library(stargazer)
 
 rob_se <- list(
-  sqrt(diag(vcovHC(fatalities_mod1, type="HC1"))),
-  sqrt(diag(vcovHC(fatalities_mod2, type="HC1"))),
-  sqrt(diag(vcovHC(fatalities_mod3, type="HC1"))),
-  sqrt(diag(vcovHC(fatalities_mod4, type="HC1"))),
-  sqrt(diag(vcovHC(fatalities_mod5, type="HC1"))),
-  sqrt(diag(vcovHC(fatalities_mod6, type="HC1"))),
-  sqrt(diag(vcovHC(fatalities_mod7, type="HC1")))
+  sqrt(diag(vcovHC(fat_mod1, type="HC1"))),
+  sqrt(diag(vcovHC(fat_mod2, type="HC1"))),
+  sqrt(diag(vcovHC(fat_mod3, type="HC1"))),
+  sqrt(diag(vcovHC(fat_mod4, type="HC1"))),
+  sqrt(diag(vcovHC(fat_mod5, type="HC1"))),
+  sqrt(diag(vcovHC(fat_mod6, type="HC1"))),
+  sqrt(diag(vcovHC(fat_mod7, type="HC1")))
 )
 
-stargazer(fatalities_mod1, fatalities_mod2, fatalities_mod3, fatalities_mod4, fatalities_mod5, fatalities_mod6, fatalities_mod7, 
+stargazer(fat_mod1, fat_mod2, fat_mod3, fat_mod4, fat_mod5, fat_mod6, fat_mod7, 
           digits = 3,
           type = "latex",
           float.env = "sidewaystable",
@@ -632,7 +637,7 @@ The model specifications (4) to (7) include covariates that shall capture the ef
 
 ```{r}
 # test if legal drinking age has no explanatory power
-linearHypothesis(fatalities_mod4,
+linearHypothesis(fat_mod4,
                  test = "F",
                  c("drinkagec[18,19)=0", "drinkagec[19,20)=0", "drinkagec[20,21)"), 
                  vcov. = vcovHC, type = "HC1")
@@ -643,7 +648,7 @@ linearHypothesis(fatalities_mod4,
 4. The economic variables significantly explain traffic fatalities. We can check that the employment rate and per capita income are jointly significant at the level of $0.1\%$.
 ```{r}
 # test if economic indicators have no explanatory power
-linearHypothesis(fatalities_mod4, 
+linearHypothesis(fat_mod4, 
                  test = "F",
                  c("log(income)", "unemp"), 
                  vcov. = vcovHC, type = "HC1")

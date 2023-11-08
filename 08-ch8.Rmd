@@ -47,7 +47,7 @@ plot(CASchools$income, CASchools$score,
 abline(linear_model, 
        col = "red", 
        lwd = 2)
-legend("bottomright",legend="Linear Line",lwd=2,col="red")
+legend("bottomright", legend="linear fit",lwd=2,col="red")
 ```
 
 
@@ -1042,20 +1042,20 @@ We now estimate four different model specifications. All models are log-log mode
 
 ```{r}
 # Estimate models (I) - (IV)
-Journals_mod1 <- lm(log(Subscriptions) ~ log(PricePerCitation), 
+J_mod1 <- lm(log(Subscriptions) ~ log(PricePerCitation), 
                     data = Journals)
 
-Journals_mod2 <- lm(log(Subscriptions) ~ log(PricePerCitation) 
+J_mod2 <- lm(log(Subscriptions) ~ log(PricePerCitation) 
                     + log(Age) + log(Characters), 
                     data = Journals)
 
-Journals_mod3 <- lm(log(Subscriptions) ~ 
+J_mod3 <- lm(log(Subscriptions) ~ 
                     log(PricePerCitation) + I(log(PricePerCitation)^2) 
                     + I(log(PricePerCitation)^3) + log(Age) 
                     + log(Age):log(PricePerCitation) + log(Characters), 
                     data = Journals)
 
-Journals_mod4 <- lm(log(Subscriptions) ~ 
+J_mod4 <- lm(log(Subscriptions) ~ 
                     log(PricePerCitation) + log(Age) 
                     + log(Age):log(PricePerCitation) + 
                     log(Characters), 
@@ -1081,7 +1081,7 @@ We use an $F$-Test to test if the transformations of $\ln(PricePerCitation)$ in 
 
 ```{r}
 # F-Test for significance of cubic terms
-linearHypothesis(Journals_mod3, 
+linearHypothesis(J_mod3, 
                  c("I(log(PricePerCitation)^2)=0", "I(log(PricePerCitation)^3)=0"),
                  vcov. = vcovHC, type = "HC1")
 ```
@@ -1095,13 +1095,13 @@ We now demonstrate how the function `r ttcode("stargazer()")` can be used to gen
 library(stargazer)
 
 # gather robust standard errors in a list
-rob_se <- list(sqrt(diag(vcovHC(Journals_mod1, type = "HC1"))),
-               sqrt(diag(vcovHC(Journals_mod2, type = "HC1"))),
-               sqrt(diag(vcovHC(Journals_mod3, type = "HC1"))),
-               sqrt(diag(vcovHC(Journals_mod4, type = "HC1"))))
+rob_se <- list(sqrt(diag(vcovHC(J_mod1, type = "HC1"))),
+               sqrt(diag(vcovHC(J_mod2, type = "HC1"))),
+               sqrt(diag(vcovHC(J_mod3, type = "HC1"))),
+               sqrt(diag(vcovHC(J_mod4, type = "HC1"))))
 
 # generate a Latex table using stargazer
-stargazer(Journals_mod1, Journals_mod2, Journals_mod3, Journals_mod4,
+stargazer(J_mod1, J_mod2, J_mod3, J_mod4,
           se = rob_se,
           digits = 3,
           column.labels = c("(I)", "(II)", "(III)", "(IV)"))
@@ -1115,14 +1115,14 @@ library(stargazer)
 
 # gather robust standard errors in a list
 rob_se <- list(
-  sqrt(diag(vcovHC(Journals_mod1, type = "HC1"))),
-  sqrt(diag(vcovHC(Journals_mod2, type = "HC1"))),
-  sqrt(diag(vcovHC(Journals_mod3, type = "HC1"))),
-  sqrt(diag(vcovHC(Journals_mod4, type = "HC1")))
+  sqrt(diag(vcovHC(J_mod1, type = "HC1"))),
+  sqrt(diag(vcovHC(J_mod2, type = "HC1"))),
+  sqrt(diag(vcovHC(J_mod3, type = "HC1"))),
+  sqrt(diag(vcovHC(J_mod4, type = "HC1")))
 )
 
 # generate a LaTeX table using stargazer
-stargazer(Journals_mod1, Journals_mod2, Journals_mod3, Journals_mod4,
+stargazer(J_mod1, J_mod2, J_mod3, J_mod4,
           type = "html", 
           model.numbers = FALSE,
           header = FALSE,
@@ -1141,13 +1141,13 @@ stargazer_html_title("Nonlinear Regression Models of Journal Subscribtions", "nr
 library(stargazer)
 
 rob_se <- list(
-  sqrt(diag(vcovHC(Journals_mod1, type = "HC1"))),
-  sqrt(diag(vcovHC(Journals_mod2, type = "HC1"))),
-  sqrt(diag(vcovHC(Journals_mod3, type = "HC1"))),
-  sqrt(diag(vcovHC(Journals_mod4, type = "HC1")))
+  sqrt(diag(vcovHC(J_mod1, type = "HC1"))),
+  sqrt(diag(vcovHC(J_mod2, type = "HC1"))),
+  sqrt(diag(vcovHC(J_mod3, type = "HC1"))),
+  sqrt(diag(vcovHC(J_mod4, type = "HC1")))
 )
 
-stargazer(Journals_mod1, Journals_mod2, Journals_mod3, Journals_mod4,
+stargazer(J_mod1, J_mod2, J_mod3, J_mod4,
           type = "latex", 
           float.env = "sidewaystable",
           dep.var.caption = "Dependent Variable: Logarithm of Subscriptions",
@@ -1186,7 +1186,7 @@ plot(log(Journals$PricePerCitation),
      xlab = "ln(Price per citation)",
      main = "(b)")
 
-abline(Journals_mod1,
+abline(J_mod1,
        lwd = 1.5)
 
 # log-log scatterplot and regression lines (IV) for Age = 5 and Age = 80
@@ -1198,7 +1198,7 @@ plot(log(Journals$PricePerCitation),
      xlab = "ln(Price per citation)",
      main = "(c)")
 
-JM4C <-Journals_mod4$coefficients
+JM4C <-J_mod4$coefficients
 
 # Age = 80
 abline(coef = c(JM4C[1] + JM4C[3] * log(80), 
@@ -1262,25 +1262,25 @@ The considered model specifications are:
 
 ```{r, tidy=TRUE}
 # estimate all models
-TestScore_mod1 <- lm(score ~ size + english + lunch,
+TS_mod1 <- lm(score ~ size + english + lunch,
                      data = CASchools)
 
-TestScore_mod2 <- lm(score ~ size + english + lunch + log(income),
+TS_mod2 <- lm(score ~ size + english + lunch + log(income),
                      data = CASchools)
 
-TestScore_mod3 <- lm(score ~ size + HiEL + HiEL:size,
+TS_mod3 <- lm(score ~ size + HiEL + HiEL:size,
                      data = CASchools)
 
-TestScore_mod4 <- lm(score ~ size + HiEL + HiEL:size + lunch + log(income), 
+TS_mod4 <- lm(score ~ size + HiEL + HiEL:size + lunch + log(income), 
         data = CASchools)
 
-TestScore_mod5 <- lm(score ~ size + I(size^2) + I(size^3) + HiEL +lunch
-        + log(income),data = CASchools)
+TS_mod5 <- lm(score ~ size + I(size^2) + I(size^3) + HiEL +lunch
+        + log(income), data = CASchools)
 
-TestScore_mod6 <- lm(score ~ size + I(size^2) + I(size^3) + HiEL + HiEL:size
+TS_mod6 <- lm(score ~ size + I(size^2) + I(size^3) + HiEL + HiEL:size
         +HiEL:I(size^2) + HiEL:I(size^3) + lunch + log(income),data = CASchools)
 
-TestScore_mod7 <- lm(score ~ size + I(size^2) + I(size^3) + english
+TS_mod7 <- lm(score ~ size + I(size^2) + I(size^3) + english
         +lunch + log(income),data = CASchools)
 ```
 
@@ -1288,22 +1288,22 @@ We may use `r ttcode("summary()")` to assess the models' fit. Using `r ttcode("s
 
 ```{r, eval=FALSE, message=FALSE, warning=FALSE}
 # gather robust standard errors in a list
-rob_se <- list(sqrt(diag(vcovHC(TestScore_mod1, type = "HC1"))),
-               sqrt(diag(vcovHC(TestScore_mod2, type = "HC1"))),
-               sqrt(diag(vcovHC(TestScore_mod3, type = "HC1"))),
-               sqrt(diag(vcovHC(TestScore_mod4, type = "HC1"))),
-               sqrt(diag(vcovHC(TestScore_mod5, type = "HC1"))),
-               sqrt(diag(vcovHC(TestScore_mod6, type = "HC1"))),
-               sqrt(diag(vcovHC(TestScore_mod7, type = "HC1"))))
+rob_se <- list(sqrt(diag(vcovHC(TS_mod1, type = "HC1"))),
+               sqrt(diag(vcovHC(TS_mod2, type = "HC1"))),
+               sqrt(diag(vcovHC(TS_mod3, type = "HC1"))),
+               sqrt(diag(vcovHC(TS_mod4, type = "HC1"))),
+               sqrt(diag(vcovHC(TS_mod5, type = "HC1"))),
+               sqrt(diag(vcovHC(TS_mod6, type = "HC1"))),
+               sqrt(diag(vcovHC(TS_mod7, type = "HC1"))))
 
 # generate a LaTeX table of regression outputs
-stargazer(TestScore_mod1, 
-          TestScore_mod2, 
-          TestScore_mod3, 
-          TestScore_mod4, 
-          TestScore_mod5, 
-          TestScore_mod6, 
-          TestScore_mod7,
+stargazer(TS_mod1, 
+          TS_mod2, 
+          TS_mod3, 
+          TS_mod4, 
+          TS_mod5, 
+          TS_mod6, 
+          TS_mod7,
           digits = 3,
           dep.var.caption = "Dependent Variable: Test Score",
           se = rob_se,
@@ -1314,22 +1314,22 @@ stargazer(TestScore_mod1,
 
 ```{r, echo=F, results='asis', warning=FALSE, message=FALSE, eval = my_output == "html"}
 rob_se <- list(
-  sqrt(diag(vcovHC(TestScore_mod1, type = "HC1"))),
-  sqrt(diag(vcovHC(TestScore_mod2, type = "HC1"))),
-  sqrt(diag(vcovHC(TestScore_mod3, type = "HC1"))),
-  sqrt(diag(vcovHC(TestScore_mod4, type = "HC1"))),
-  sqrt(diag(vcovHC(TestScore_mod5, type = "HC1"))),
-  sqrt(diag(vcovHC(TestScore_mod6, type = "HC1"))),
-  sqrt(diag(vcovHC(TestScore_mod7, type = "HC1")))
+  sqrt(diag(vcovHC(TS_mod1, type = "HC1"))),
+  sqrt(diag(vcovHC(TS_mod2, type = "HC1"))),
+  sqrt(diag(vcovHC(TS_mod3, type = "HC1"))),
+  sqrt(diag(vcovHC(TS_mod4, type = "HC1"))),
+  sqrt(diag(vcovHC(TS_mod5, type = "HC1"))),
+  sqrt(diag(vcovHC(TS_mod6, type = "HC1"))),
+  sqrt(diag(vcovHC(TS_mod7, type = "HC1")))
 )
 
-stargazer(TestScore_mod1, 
-          TestScore_mod2, 
-          TestScore_mod3, 
-          TestScore_mod4, 
-          TestScore_mod5, 
-          TestScore_mod6, 
-          TestScore_mod7,
+stargazer(TS_mod1, 
+          TS_mod2, 
+          TS_mod3, 
+          TS_mod4, 
+          TS_mod5, 
+          TS_mod6, 
+          TS_mod7,
           digits = 3,
           dep.var.caption = "Dependent Variable: Test Score",
           se = rob_se,
@@ -1346,22 +1346,22 @@ stargazer_html_title("Nonlinear Models of Test Scores", "nmots")
 
 ```{r, echo=F, results='asis', warning= FALSE, message=FALSE, eval = my_output == "latex"}
 rob_se <- list(
-  sqrt(diag(vcovHC(TestScore_mod1, type = "HC1"))),
-  sqrt(diag(vcovHC(TestScore_mod2, type = "HC1"))),
-  sqrt(diag(vcovHC(TestScore_mod3, type = "HC1"))),
-  sqrt(diag(vcovHC(TestScore_mod4, type = "HC1"))),
-  sqrt(diag(vcovHC(TestScore_mod5, type = "HC1"))),
-  sqrt(diag(vcovHC(TestScore_mod6, type = "HC1"))),
-  sqrt(diag(vcovHC(TestScore_mod7, type = "HC1")))
+  sqrt(diag(vcovHC(TS_mod1, type = "HC1"))),
+  sqrt(diag(vcovHC(TS_mod2, type = "HC1"))),
+  sqrt(diag(vcovHC(TS_mod3, type = "HC1"))),
+  sqrt(diag(vcovHC(TS_mod4, type = "HC1"))),
+  sqrt(diag(vcovHC(TS_mod5, type = "HC1"))),
+  sqrt(diag(vcovHC(TS_mod6, type = "HC1"))),
+  sqrt(diag(vcovHC(TS_mod7, type = "HC1")))
 )
 
-stargazer(TestScore_mod1, 
-          TestScore_mod2, 
-          TestScore_mod3, 
-          TestScore_mod4, 
-          TestScore_mod5, 
-          TestScore_mod6, 
-          TestScore_mod7,
+stargazer(TS_mod1, 
+          TS_mod2, 
+          TS_mod3, 
+          TS_mod4, 
+          TS_mod5, 
+          TS_mod6, 
+          TS_mod7,
           dep.var.caption = "Dependent Variable: Test Score",
           title = "\\label{tab:nmots} Nonlinear Models of Test Scores",
           digits = 3,
@@ -1386,7 +1386,7 @@ Regression (5) includes a cubic term for the student-teacher ratio and omits the
 Consequently, regression (6) further explores whether the fraction of English learners impacts the student-teacher ratio by using $HiEL \times size$ and the interactions $HiEL \times size^2$ and $HiEL \times size^3$. All individual $t$-tests indicate that that there are significant effects. We check this using a robust $F$-test of $H_0: \beta_6=\beta_7=\beta_8=0$. 
 ```{r}
 # check joint significance of the interaction terms
-linearHypothesis(TestScore_mod6, 
+linearHypothesis(TS_mod6, 
                  c("size:HiEL=0", "I(size^2):HiEL=0", "I(size^3):HiEL=0"),
                  vcov. = vcovHC, type = "HC1")
 ```
@@ -1427,7 +1427,7 @@ new_data <- data.frame("size" = seq(16, 24, 0.05),
                        "HiEL" = mean(CASchools$HiEL))
 
 # add estimated regression function for model (2)
-fitted <- predict(TestScore_mod2, newdata = new_data)
+fitted <- predict(TS_mod2, newdata = new_data)
 
 lines(new_data$size, 
       fitted,
@@ -1435,7 +1435,7 @@ lines(new_data$size,
       col = "blue")
 
 # add estimated regression function for model (5)
-fitted <- predict(TestScore_mod5, newdata = new_data)
+fitted <- predict(TS_mod5, newdata = new_data)
 
 lines(new_data$size, 
       fitted, 
@@ -1443,7 +1443,7 @@ lines(new_data$size,
       col = "red")
 
 # add estimated regression function for model (7)
-fitted <- predict(TestScore_mod7, newdata = new_data)
+fitted <- predict(TS_mod7, newdata = new_data)
 
 lines(new_data$size, 
       fitted, 
@@ -1493,7 +1493,7 @@ new_data <- data.frame("size" = seq(12, 28, 0.05),
                        "HiEL" = 0)
 
 # add estimated regression function for model (6) with HiEL=0
-fitted <- predict(TestScore_mod6, newdata = new_data)
+fitted <- predict(TS_mod6, newdata = new_data)
 
 lines(new_data$size, 
       fitted, 
@@ -1503,7 +1503,7 @@ lines(new_data$size,
 # add estimated regression function for model (6) with HiEL=1
 new_data$HiEL <- 1
 
-fitted <- predict(TestScore_mod6, newdata = new_data)
+fitted <- predict(TS_mod6, newdata = new_data)
 
 lines(new_data$size, 
       fitted, 

@@ -2,15 +2,72 @@
 
 ```{r include=FALSE}
 # generate a BibTeX database automatically for some R packages
-  knitr::write_bib(c(
-  .packages(), 'bookdown', 'knitr', 'rmarkdown'
-), 'packages.bib', width = 500)
+knitr::write_bib(
+  c(
+    .packages(), 'bookdown', 'knitr', 'rmarkdown'
+    ), 
+  'packages.bib', 
+  prefix = "R-",
+  tweak = T,
+  width = 500)
 
 # some adjustments
 library(dplyr)
 l <- gsub(pattern = "note = ", replacement = "version = ", x = readLines("packages.bib")) %>% gsub(pattern = "R package version ", replacement = "")
 
 l[grep("title = ", l)] <- gsub("\\{", "\\{\\{", l[grep("title = ", l)]) %>% gsub(pattern = "\\}", replacement = "\\}\\}")
+
+# add some packages manually because not captured correctly by write_bib for some reason
+
+l <- append(l,
+  c(
+    "@Manual{R-dynlm,
+    title = {{dynlm}: Dynamic Linear Regression},
+    author = {Achim Zeileis},
+    year = {2019},
+    note = {R package version 0.3-6},
+    url = {https://CRAN.R-project.org/package=dynlm},
+    }",
+    
+    "@Book{R-AER,
+    title = {Applied Econometrics with {R}},
+    author = {Christian Kleiber and Achim Zeileis},
+    year = {2008},
+    publisher = {Springer-Verlag},
+    address = {New York},
+    note = {{ISBN} 978-0-387-77316-2},
+    url = {https://CRAN.R-project.org/package=AER},
+    }",
+    
+    "@Manual{R-orcutt,
+    title = {{orcutt}: Estimate Procedure in Case of First Order Autocorrelation},
+    author = {Spada Stefano and Matteo Quartagno and Marco Tamburini and David Robinson},
+    year = {2018},
+    url = {https://CRAN.R-project.org/package=orcutt},
+    }",
+    
+    "@Manual{R-stargazer,
+    title = {stargazer: Well-Formatted Regression and Summary Statistics Tables},
+    author = {Marek Hlavac},
+    year = {2022},
+    note = {R package version 5.2.3},
+    organization = {Social Policy Institute},
+    address = {Bratislava, Slovakia},
+    url = {https://CRAN.R-project.org/package=stargazer},
+    }",
+    
+    "@Book{R-urca,
+    title = {Analysis of Integrated and Cointegrated Time Series with R},
+    author = {B. Pfaff},
+    publisher = {Springer},
+    edition = {Second},
+    address = {New York},
+    year = {2008},
+    note = {ISBN 0-387-27960-1},
+    url = {https://www.pfaffikus.de},
+    }"
+  )
+)
 
 writeLines(l, con = "packages.bib")
 ```

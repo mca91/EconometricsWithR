@@ -34,3 +34,7 @@ ___
 
 #### References
 Stock, J., & Watson, M. (2015). *Introduction to Econometrics, Third Update, Global Edition*. Pearson Education Limited.
+
+#### Notes
+
+We are currently using a modified version of the `stargazer` package to compile LaTeX tables with long model names (there is an issue with the CRAN version for R>=4.2.0). The package can be found [here](https://gist.github.com/alexeyknorre/b0780836f4cec04d41a863a683f91b53).
