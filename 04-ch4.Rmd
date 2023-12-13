@@ -83,14 +83,13 @@ In order to account for these differences between observed data and the systemat
 
 Which other factors are plausible in our example? For one thing, the test scores might be driven by the teachers' quality and the background of the students. It is also possible that in some classes, the students were lucky on the test days and thus achieved higher scores. For now, we will summarize such influences by an additive component:
 
-$$ TestScore = \beta_0 + \beta_1 \times STR + \text{other factors} $$
+$$ TestScore = \beta_0 + \beta_1 \times STR + \text{other factors}. $$
 
-Of course this idea is very general as it can be easily extended to other situations that can be described with a linear model. The basic linear regression model we will work with hence is
+Of course this idea is very general as it can be easily extended to other situations that can be described with a linear model. Hence, the basic linear regression model we will work with is
 
 $$ Y_i = \beta_0 + \beta_1 X_i + u_i. $$
 
-Key Concept 4.1 summarizes the terminology of the simple linear regression model.   
-
+Key Concept 4.1 summarizes the linear regression model and its terminology.
 ```{r, eval = my_output == "html", results='asis', echo=F, purl=F}
 cat('
 <div class = "keyconcept" id="KC4.1">
@@ -99,16 +98,16 @@ cat('
 
 <p> The linear regression model is 
 
-$$Y_i = \\beta_0 + \\beta_1 X_i + u_i$$
+$$Y_i = \\beta_0 + \\beta_1 X_i + u_i,$$
 
 where
 
-- the index $i$ runs over the observations, $i=1,\\dots,n$
-- $Y_i$ is the *dependent variable*, the *regressand*, or simply the *left-hand variable*
-- $X_i$ is the *independent variable*, the *regressor*, or simply the *right-hand variable*
-- $Y = \\beta_0 + \\beta_1 X$ is the *population regression line* also called the *population regression function*
-- $\\beta_0$ is the *intercept* of the population regression line
-- $\\beta_1$ is the *slope* of the population regression line
+- the index $i$ runs over the observations, $i=1,\\dots,n$;
+- $Y_i$ is the *dependent variable*, the *regressand*, or simply the *left-hand variable*;
+- $X_i$ is the *independent variable*, the *regressor*, or simply the *right-hand variable*;
+- $Y = \\beta_0 + \\beta_1 X$ is the *population regression line* also called the *population regression function*;
+- $\\beta_0$ is the *intercept* of the population regression line;
+- $\\beta_1$ is the *slope* of the population regression line;
 - $u_i$ is the *error term*.
 </p>
 </div>
@@ -117,15 +116,15 @@ where
 
 ```{r, eval = my_output == "latex", results='asis', echo=F, purl=F}
 cat('\\begin{keyconcepts}[Terminology for the Linear Regression Model with a Single Regressor]{4.1}
-The linear regression model is $$Y_i = \\beta_0 + \\beta_1 X_1 + u_i$$
+The linear regression model is $$Y_i = \\beta_0 + \\beta_1 X_1 + u_i,$$
 where
 \\begin{itemize}
-\\item the index $i$ runs over the observations, $i=1,\\dots,n$
-\\item $Y_i$ is the \\textit{dependent variable}, the \\textit{regressand}, or simply the \\textit{left-hand variable}
-\\item $X_i$ is the \\textit{independent variable}, the \\textit{regressor}, or simply the \\textit{right-hand variable}
-\\item $Y = \\beta_0 + \\beta_1 X$ is the \\textit{population regression line} also called the \\textit{population regression function}
-\\item $\\beta_0$ is the \\textit{intercept} of the population regression line
-\\item $\\beta_1$ is the \\textit{slope} of the population regression line
+\\item the index $i$ runs over the observations, $i=1,\\dots,n$;
+\\item $Y_i$ is the \\textit{dependent variable}, the \\textit{regressand}, or simply the \\textit{left-hand variable};
+\\item $X_i$ is the \\textit{independent variable}, the \\textit{regressor}, or simply the \\textit{right-hand variable};
+\\item $Y = \\beta_0 + \\beta_1 X$ is the \\textit{population regression line} also called the \\textit{population regression function};
+\\item $\\beta_0$ is the \\textit{intercept} of the population regression line;
+\\item $\\beta_1$ is the \\textit{slope} of the population regression line;
 \\item $u_i$ is the \\textit{error term}.
 \\end{itemize}
 \\end{keyconcepts}
@@ -221,7 +220,7 @@ DistributionSummary
 
 As for the sample data, we use `r ttcode("plot()")`. This allows us to detect characteristics of our data, such as outliers which are harder to discover by looking at mere numbers. This time we add some additional arguments to the call of `r ttcode("plot()")`.
 
-The first argument in our call of `r ttcode("plot()")`, `r ttcode("score ~ STR")`, is again a formula that states variables on the y- and the x-axis. However, this time the two variables are not saved in separate vectors but are columns of `r ttcode("CASchools")`. Therefore, `r ttcode("R")` would not find them without the argument `r ttcode("data")` being correctly specified. `r ttcode("data")` must be in accordance with the name of the `r ttcode("data.frame")` to which the variables belong to, in this case `r ttcode("CASchools")`. Further arguments are used to change the appearance of the plot: while `r ttcode("main")` adds a title, `r ttcode("xlab")` and `r ttcode("ylab")` add custom labels to both axes.  
+The first argument in our call of `r ttcode("plot()")`, `r ttcode("score ~ STR")`, is again a formula that states variables on the y- and the x-axis. However, this time the two variables are not saved in separate vectors but are columns of `r ttcode("CASchools")`. Therefore, `r ttcode("R")` would not find them without the argument `r ttcode("data")` being correctly specified. `r ttcode("data")` must be in accordance with the name of the `r ttcode("data.frame")` to which the variables belong to, in this case `r ttcode("CASchools")`. Further arguments are used to change the appearance of the plot: `r ttcode("main")` adds a title, `r ttcode("xlab")` and `r ttcode("ylab")` add custom labels to both axes.  
 
 
 ```{r, fig.align='center'}
@@ -243,7 +242,7 @@ cor(CASchools$STR, CASchools$score)
 
 As the scatterplot already suggests, the correlation is negative but rather weak. 
 
-The task we are now facing is to find a line which best fits the data. Of course we could simply stick with graphical inspection and correlation analysis and then select the best fitting line by eyeballing. However, this would be rather subjective: different observers would draw different regression lines. On this account, we are interested in techniques that are less arbitrary. Such a technique is given by ordinary least squares (OLS) estimation.   
+The task we are currently facing is to find a line that best fits the data. We could opt for graphical inspection and correlation analysis and then select the best fitting line by eyeballing. However, this would be rather subjective: different observers would draw different regression lines. On this account, we are interested in techniques that are less arbitrary. Such a technique is given by ordinary least squares (OLS) estimation.   
 
 ### The Ordinary Least Squares Estimator {-}
 
@@ -251,7 +250,7 @@ The OLS estimator chooses the regression coefficients such that the estimated re
 
 $$ \sum^n_{i = 1} (Y_i - b_0 - b_1 X_i)^2. $$
 
-The OLS estimator in the simple regression model is the pair of estimators for intercept and slope which minimizes the expression above. The derivation of the OLS estimators for both parameters are presented in Appendix 4.1 of the book. The results are summarized in Key Concept 4.2.
+The OLS estimator in the simple regression model is the pair of estimators for intercept and slope that minimizes the expression above. The derivation of the OLS estimators for both parameters are presented in Appendix 4.1 of the book. The results are summarized in Key Concept 4.2.
 
 ```{r, eval = my_output == "html", results='asis', echo=F, purl=F}
 cat('
@@ -271,7 +270,7 @@ The OLS predicted values $\\widehat{Y}_i$ and residuals $\\hat{u}_i$ are
   \\hat{u}_i & =  Y_i - \\widehat{Y}_i. 
 \\end{align}
 
-The estimated intercept $\\hat{\\beta}_0$, the slope parameter $\\hat{\\beta}_1$ and the residuals $\\left(\\hat{u}_i\\right)$ are computed from a sample of $n$ observations of $X_i$ and $Y_i$, $i$, $...$,  $n$. These are *estimates* of the unknown population intercept $\\left(\\beta_0 \\right)$, slope $\\left(\\beta_1\\right)$, and error term $(u_i)$.
+The estimated intercept $\\hat{\\beta}_0$, the slope parameter $\\hat{\\beta}_1$ and the residuals $\\left(\\hat{u}_i\\right)$ are computed from a sample of $n$ observations of $X_i$ and $Y_i$,$i$=$1$, $...$,$n$. These are *estimates* of the unknown population intercept $\\left(\\beta_0 \\right)$, slope $\\left(\\beta_1\\right)$, and error term $(u_i)$.
 </p>
 
 The formulas presented above may not be very intuitive at first glance. The following interactive application aims to help you understand the mechanics of OLS. You can add observations by clicking into the coordinate system where the data are represented by points. Once two or more observations are available, the application computes a regression line using OLS and some statistics which are displayed in the right panel. The results are updated as you add further observations to the left panel. A double-click resets the application, i.e., all data are removed.
@@ -292,7 +291,7 @@ The OLS estimators of the slope $\\beta_1$ and the intercept $\\beta_0$ in the s
   \\hat{u}_i & =  Y_i - \\widehat{Y}_i. 
 \\end{align*}
 
-The estimated intercept $\\hat{\\beta}_0$, the slope parameter $\\hat{\\beta}_1$ and the residuals $\\left(\\hat{u}_i\\right)$ are computed from a sample of $n$ observations of $X_i$ and $Y_i$, $i$, $...$,  $n$. These are \\textit{estimates} of the unknown true population intercept $\\left(\\beta_0 \\right)$, slope $\\left(\\beta_1\\right)$, and error term $(u_i)$.
+The estimated intercept $\\hat{\\beta}_0$, the slope parameter $\\hat{\\beta}_1$ and the residuals $\\left(\\hat{u}_i\\right)$ are computed from a sample of $n$ observations of $X_i$ and $Y_i$, $i$=$1$,$...$,$n$. These are \\textit{estimates} of the unknown true population intercept $\\left(\\beta_0 \\right)$, slope $\\left(\\beta_1\\right)$, and error term $(u_i)$.
 \\end{keyconcepts}
 ')
 ```
@@ -372,9 +371,9 @@ $R^2$, the *coefficient of determination*, is the fraction of the sample varianc
 
 Since $TSS = ESS + SSR$ we can also write
 
-$$ R^2 = 1- \frac{SSR}{TSS} $$ 
+$$ R^2 = 1- \frac{SSR}{TSS}, $$ 
 
-where $SSR$ is the sum of squared residuals, a measure for the errors made when predicting the $Y$ by $X$. The $SSR$ is defined as
+where $SSR$ is the sum of squared residuals, a measure for the errors made when predicting $Y$ by $X$. The $SSR$ is defined as
 
 $$ SSR = \sum_{i=1}^n \hat{u}_i^2. $$
 
@@ -426,7 +425,7 @@ We find that the results coincide. Note that the values provided by `r ttcode("s
 
 ## The Least Squares Assumptions {#tlsa}
 
-OLS performs well under a quite broad variety of different circumstances. However, there are some assumptions which need to be satisfied in order to ensure that the estimates are normally distributed in large samples (we discuss this in Chapter \@ref(tsdotoe).).
+OLS performs well under a quite broad variety of different circumstances. However, there are some assumptions which need to be satisfied in order to ensure that the estimates are normally distributed in large samples (we discuss this in Chapter \@ref(tsdotoe)).
 
 ```{r, eval = my_output == "html", results='asis', echo=F, purl=F}
 cat('
@@ -467,12 +466,12 @@ $X$ the error tends to be negative. We can use R to construct such an example. T
 
 We will use the following functions:
 
-* `r ttcode("runif()")` - generates uniformly distributed random numbers
-* `r ttcode("rnorm()")` - generates normally distributed random numbers
-* `r ttcode("predict()")` - does predictions based on the results of model fitting functions like `r ttcode("lm()")`
-* `r ttcode("lines()")` - adds line segments to an existing plot
+* `r ttcode("runif()")` - generates uniformly distributed random numbers.
+* `r ttcode("rnorm()")` - generates normally distributed random numbers.
+* `r ttcode("predict()")` - does predictions based on the results of model fitting functions like `r ttcode("lm()")`.
+* `r ttcode("lines()")` - adds line segments to an existing plot.
 
-We start by creating a vector containing values that are uniformly distributed on the interval $[-5,5]$. This can be done with the function `r ttcode("runif()")`. We also need to simulate the error term. For this we generate normally distributed random numbers with a mean equal to $0$ and a variance of $1$ using `r ttcode("rnorm()")`. The $Y$ values are obtained as a quadratic function of the $X$ values and the error.
+We start by creating a vector containing values that are uniformly distributed on the interval $[-5,5]$. This can be done with the function `r ttcode("runif()")`. We also need to simulate the error term. For this we generate normally distributed random numbers with a mean of $0$ and a variance of $1$ using `r ttcode("rnorm()")`. The $Y$ values are obtained as a quadratic function of the $X$ values and the error.
 
 After generating the data we estimate both a simple regression model and a quadratic model that also includes the regressor $X^2$ (this is a multiple regression model, see Chapter \@ref(rmwmr)). Finally, we plot the simulated data and add the estimated regression line of a simple regression model as well as the predictions made with a quadratic model to compare the fit graphically.
 
@@ -511,19 +510,19 @@ legend("topleft",
 ```
 
 
-The plot shows what is meant by $E(u_i|X_i) = 0$ and why it does not hold for the linear model: 
+The plot above shows what is meant by $E(u_i|X_i) = 0$ and why it does not hold for the linear model: 
 
 Using the quadratic model (represented by the black curve) we see that there are no systematic deviations of the observation from the predicted relation. It is credible that the assumption is not violated when such a model is employed. However, using a simple linear regression model we see that the assumption is probably violated as $E(u_i|X_i)$ varies with the $X_i$.
 
 ### Assumption 2: Independently and Identically Distributed Data {-}
 
-Most sampling schemes used when collecting data from populations produce i.i.d.-samples. For example, we could use `r ttcode("R")`'s random number generator to randomly select student IDs from a university's enrollment list and record age $X$ and earnings $Y$ of the corresponding students. This is a typical example of simple random sampling and ensures that all the $(X_i, Y_i)$ are drawn randomly from the same population.
+Most sampling schemes used when collecting data from populations produce i.i.d.-samples. For example, we can use `r ttcode("R")`'s random number generator to randomly select student IDs from a university's enrollment list and record age $X$ and earnings $Y$ of the corresponding students. This is a typical example of simple random sampling and ensures that all the $(X_i, Y_i)$ are drawn randomly from the same population.
 
 A prominent example where the i.i.d. assumption is not fulfilled is time series data where we have observations on the same unit over time. For example, take $X$ as the number of workers in a production company over time. Due to business transformations, the company cuts jobs periodically by a specific share but there are also some non-deterministic influences that relate to economics, politics etc. Using `r ttcode("R")` we can easily simulate such a process and plot it. 
 
 We start the series with a total of 5000 workers and simulate the reduction of employment with an autoregressive process that exhibits a downward movement in the long-run and has normally distributed errors:^[See Chapter \@ref(ittsraf) for more on autoregressive processes and time series analysis in general.]
 
-$$ employment_t = -50 + 0.98 \cdot employment_{t-1} + u_t $$
+$$ employment_t = -50 + 0.98 \cdot employment_{t-1} + u_t. $$
  
 ```{r, fig.align="center"}
 # set seed
@@ -563,7 +562,7 @@ Common cases where we want to exclude or (if possible) correct such outliers is 
 
 What does this mean? One can show that extreme observations receive heavy weighting in the estimation of the unknown regression coefficients when using OLS. Therefore, outliers can lead to strongly distorted estimates of regression coefficients. To get a better impression of this issue, consider the following application where we have placed some sample data on $X$ and $Y$ which are highly correlated. The relation between $X$ and $Y$ seems to be explained pretty well by the plotted regression line: all of the white data points lie close to the red regression line and we have $R^2=0.92$.
 
-Now go ahead and add a further observation at, say, $(18,2)$. This observation clearly is an outlier. The result is quite striking: the estimated regression line differs greatly from the one we adjudged to fit the data well. The slope is heavily downward biased and $R^2$ decreased to a mere $29\%$! <br>
+Now go ahead and add a further observation at, say, $(18.2)$. This observation clearly is an outlier. The result is quite striking: the estimated regression line differs greatly from the one we adjudged to fit the data well. The slope is heavily downward biased and $R^2$ decreased to a mere $29\%$! <br>
 Double-click inside the coordinate system to reset the app. Feel free to experiment. Choose different coordinates for the outlier or add additional ones.
 
 <iframe height="410" width="900" frameborder="0" scrolling="no" src="Outlier.html"></iframe>
@@ -767,7 +766,7 @@ Our variance estimates support the statements made in Key Concept 4.4, coming cl
 ### Simulation Study 2 {-}
 
 A further result implied by Key Concept 4.4 is that both estimators are consistent, i.e., they converge in probability to the true parameters we are interested in. This is because they are asymptotically unbiased and their variances converge to $0$ as $n$ increases. We can check this by repeating the simulation above for a sequence of increasing sample sizes. This means we no longer assign the sample size but a *vector* of sample sizes: `r ttcode("n <- c(...)")`. <br>
-Let us look at the distributions of $\beta_1$. The idea here is to add an additional call of `r ttcode("for()")` to the code. This is done in order to loop over the vector of sample sizes `r ttcode("n")`. For each of the sample sizes we carry out the same simulation as before but plot a density estimate for the outcomes of each iteration over `r ttcode("n")`. Notice that we have to change `r ttcode("n")` to `r ttcode("n[j]")` in the inner loop to ensure that the `r ttcode("j")`$^{th}$ element of `r ttcode("n")` is used. In the simulation, we use sample sizes of $100, 250, 1000$ and $3000$. Consequently we have a total of four distinct simulations using different sample sizes.
+Let us look at the distributions of $\beta_1$. The idea here is to add an additional call for `r ttcode("for()")` to the code. This is done in order to loop over the vector of sample sizes `r ttcode("n")`. For each of the sample sizes we carry out the same simulation as before but plot a density estimate for the outcomes of each iteration over `r ttcode("n")`. Notice that we have to change `r ttcode("n")` to `r ttcode("n[j]")` in the inner loop to ensure that the `r ttcode("j")`$^{th}$ element of `r ttcode("n")` is used. In the simulation, we use sample sizes of $100, 250, 1000$ and $3000$. Consequently we have a total of four distinct simulations using different sample sizes.
 
  
 ```{r, fig.align='center', cache=T,fig.width=8, fig.height=8}
@@ -815,7 +814,7 @@ Furthermore, (4.1) reveals that the variance of the OLS estimator for $\beta_1$ 
 We can visualize this by reproducing Figure 4.6 from the book. To do this, we sample observations $(X_i,Y_i)$, $i=1,\dots,100$ from a bivariate normal distribution with 
 
 $$E(X)=E(Y)=5,$$ 
-$$Var(X)=Var(Y)=5$$ 
+$$Var(X)=Var(Y)=5,$$ 
 and 
 $$Cov(X,Y)=4.$$
 
