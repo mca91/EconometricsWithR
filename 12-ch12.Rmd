@@ -57,7 +57,7 @@ The relation between the demand for and the price of commodities is a simple yet
 
 It is plausible that cigarette consumption can be reduced by taxing cigarettes more heavily. The question is by *how much* taxes must be increased to reach a certain reduction in cigarette consumption. Economists use elasticities to answer this kind of question. Since the price elasticity for the demand of cigarettes is unknown, it must be estimated. As discussed in the box *Who Invented Instrumental Variables Regression* presented in Chapter 12.1 of the book, an OLS regression of log quantity on log price cannot be used to estimate the effect of interest since there is simultaneous causality between demand and supply. Instead, IV regression can be used.
 
-We use the data set `r ttcode("CigarettesSW")` which comes with the package `r ttcode("AER")`. It is a panel data set that contains observations on cigarette consumption and several economic indicators for all 48 continental federal states of the U.S. from 1985 to 1995. Following the book we consider data for the cross section of states in 1995 only.
+We use the data set `r ttcode("CigarettesSW")` which comes with the package `r ttcode("AER")`. It is a panel data set that contains observations on cigarette consumption and several economic indicators for all 48 continental federal states of the U.S. from 1985 to 1995. Following the book, we consider data for the cross section of states in 1995 only.
 
 We start by loading the package, attaching the data set and getting an overview.
 
@@ -107,7 +107,7 @@ cig_s1 <- lm(log(rprice) ~ salestax, data = c1995)
 coeftest(cig_s1, vcov = vcovHC, type = "HC1")
 ```
 
-The first stage regression is $$\widehat{\log(P_i^{cigarettes})} = \underset{(0.03)}{4.62} + \underset{(0.005)}{0.031} SalesTax_i$$ which predicts the relation between sales tax price per cigarettes to be positive. How much of the observed variation in $\log(P^{cigarettes})$ is explained by the instrument $SalesTax$? This can be answered by looking at the regression's $R^2$ which states that about $47\%$ of the variation in after tax prices is explained by the variation of the sales tax across states.
+The first stage regression is $$\widehat{\log(P_i^{cigarettes})} = \underset{(0.03)}{4.62} + \underset{(0.005)}{0.031} SalesTax_i,$$ which predicts the relation between sales tax price per cigarettes to be positive. How much of the observed variation in $\log(P^{cigarettes})$ is explained by the instrument $SalesTax$? This can be answered by looking at the regression's $R^2$ which states that about $47\%$ of the variation in after tax prices is explained by the variation of the sales tax across states.
 
 ```{r}
 # inspect the R^2 of the first stage regression
@@ -148,7 +148,7 @@ coeftest(cig_ivreg, vcov = vcovHC, type = "HC1")
 
 We find that the coefficient estimates coincide for both approaches.
 
-**Two Notes on the Computation of TSLS Standard Errors**
+**Two notes on the computation of TSLS standard errors**
 
 1. We have demonstrated that running the individual regressions for each stage of TSLS using `r ttcode("lm()")` leads to the same coefficient estimates as when using `r ttcode("ivreg()")`. However, the standard errors reported for the second-stage regression (e.g.,`r ttcode("coeftest()")` or `r ttcode("summary()")`) are *invalid* because they do not account for the use of predictions from the first-stage regression as regressors in the second-stage regression. Fortunately, `r ttcode("ivreg()")` performs the necessary adjustment automatically. This is another advantage over manual step-by-step estimation which we have done above for demonstrating the mechanics of the procedure.
   
@@ -172,17 +172,17 @@ cat('
 
 with $i=1,\\dots,n$ is the general instrumental variables regression model where
 
-- $Y_i$ is the dependent variable
+- $Y_i$ is the dependent variable,
 
-- $\\beta_0,\\dots,\\beta_{k+1}$ are $1+k+r$ unknown regression coefficients
+- $\\beta_0,\\dots,\\beta_{k+1}$ are $1+k+r$ unknown regression coefficients,
 
-- $X_{1i},\\dots,X_{ki}$ are $k$ endogenous regressors 
+- $X_{1i},\\dots,X_{ki}$ are $k$ endogenous regressors ,
 
-- $W_{1i},\\dots,W_{ri}$ are $r$ exogenous regressors which are uncorrelated with $u_i$
+- $W_{1i},\\dots,W_{ri}$ are $r$ exogenous regressors which are uncorrelated with $u_i$,
 
-- $u_i$ is the error term
+- $u_i$ is the error term,
 
-- $Z_{1i},\\dots,Z_{mi}$ are $m$ instrumental variables
+- $Z_{1i},\\dots,Z_{mi}$ are $m$ instrumental variables.
 
 The coefficients are overidentified if $m>k$. If $m<k$, the coefficients are underidentified and when $m=k$ they are exactly identified. For estimation of the IV regression model we require exact identification or overidentification.
 
@@ -198,12 +198,12 @@ cat('\\begin{keyconcepts}[The General Instrumental Variables Regression Model an
 with $i=1,\\dots,n$ is the general instrumental variables regression model where\\newline
 
 \\begin{itemize}
-\\item $Y_i$ is the dependent variable
-\\item $\\beta_1,\\dots,\\beta_{k+r}$ are $1+k+r$ unknown regression coefficients
-\\item $X_{1i},\\dots,X_{ki}$ are $k$ endogenous regressors 
-\\item $W_{1i},\\dots,W_{ri}$ are $r$ exogenous regressors which are uncorrelated with $u_i$
-\\item $u_i$ is the error term
-\\item $Z_{1i},\\dots,Z_{mi}$ are $m$ instrumental variables
+\\item $Y_i$ is the dependent variable,
+\\item $\\beta_0,\\dots,\\beta_{k+r}$ are $1+k+r$ unknown regression coefficients,
+\\item $X_{1i},\\dots,X_{ki}$ are $k$ endogenous regressors ,
+\\item $W_{1i},\\dots,W_{ri}$ are $r$ exogenous regressors which are uncorrelated with $u_i$,
+\\item $u_i$ is the error term,
+\\item $Z_{1i},\\dots,Z_{mi}$ are $m$ instrumental variables.
 \\end{itemize}\\vspace{0.5cm}
 
 The coefficients are overidentified if $m>k$. If $m<k$, the coefficients are underidentified and when $m=k$ they are exactly identified. For estimation of the IV regression model we require exact identification or overidentification.
@@ -211,11 +211,11 @@ The coefficients are overidentified if $m>k$. If $m<k$, the coefficients are und
 ')
 ```
 
-While computing both stages of TSLS individually is not a big deal in  \@ref(eq:srm12), the simple regression model with a single endogenous regressor, Key Concept 12.2 clarifies why resorting to TSLS functions like `r ttcode("ivreg()")` are more convenient when the set of potentially endogenous regressors (and instruments) is large.
+While the computation of both stages of TSLS individually in the context of a simple regression model with a single endogenous regressor \@ref(eq:srm12) is not a big deal, Key Concept 12.2 clarifies why employing TSLS functions such as `r ttcode("ivreg()")` becomes more advantageous when dealing with a larger set of potentially endogenous regressors and instruments.
 
 Estimating regression models with TSLS using multiple instruments by means of `r ttcode("ivreg()")` is straightforward. There are, however, some subtleties in correctly specifying the regression formula. 
 
-Assume that you want to estimate the model $$Y_i = \beta_0 + \beta_1 X_{1i} + \beta_2 X_{2i} + W_{1i} + u_i$$ where $X_{1i}$ and $X_{2i}$ are endogenous regressors that shall be instrumented by $Z_{1i}$, $Z_{2i}$ and $Z_{3i}$ and $W_{1i}$ is an exogenous regressor. The corresponding data is available in a `r ttcode("data.frame")` with column names `r ttcode("y")`, `r ttcode("x1")`, `r ttcode("x2")`, `r ttcode("w1")`, `r ttcode("z1")`, `r ttcode("z2")` and `r ttcode("z3")`. It might be tempting to specify the argument `r ttcode("formula")` in your call of `r ttcode("ivreg()")` as `r ttcode("y ~ x1 + x2 + w1 | z1 + z2 + z3")` which is wrong. As explained in the documentation of `r ttcode("ivreg()")` (see `?ivreg`), it is necessary to list *all* exogenous variables as instruments too, that is joining them by `r ttcode("+")`'s on the right of the vertical bar: `r ttcode("y ~ x1 + x2 + w1 | w1 + z1 + z2 + z3")` where `r ttcode("w1")` is "instrumenting itself". 
+Assume that you want to estimate the model $$Y_i = \beta_0 + \beta_1 X_{1i} + \beta_2 X_{2i} + W_{1i} + u_i,$$ where $X_{1i}$ and $X_{2i}$ are endogenous regressors that shall be instrumented by $Z_{1i}$, $Z_{2i}$ and $Z_{3i}$ and $W_{1i}$ is an exogenous regressor. The corresponding data is available in a `r ttcode("data.frame")` with column names `r ttcode("y")`, `r ttcode("x1")`, `r ttcode("x2")`, `r ttcode("w1")`, `r ttcode("z1")`, `r ttcode("z2")` and `r ttcode("z3")`. It might be tempting to specify the argument `r ttcode("formula")` in your call of `r ttcode("ivreg()")` as `r ttcode("y ~ x1 + x2 + w1 | z1 + z2 + z3")` which is wrong. As explained in the documentation of `r ttcode("ivreg()")` (see `?ivreg`), it is necessary to list *all* exogenous variables as instruments too, that is joining them by `r ttcode("+")`'s on the right of the vertical bar: `r ttcode("y ~ x1 + x2 + w1 | w1 + z1 + z2 + z3")` where `r ttcode("w1")` is "instrumenting itself". 
 
 If there is a large number of exogenous variables it may be convenient to provide an update formula with a `r ttcode(".")` (this includes all variables except for the dependent variable) right after the `r ttcode("|")` and to exclude all endogenous variables using a `r ttcode("-")`. For example, if there is one exogenous regressor `r ttcode("w1")` and one endogenous regressor `r ttcode("x1")` with instrument `r ttcode("z1")`, the appropriate formula would be `r ttcode("y ~ w1 + x1 | w1 + z1")` which is equivalent to `r ttcode("y ~ w1 + x1 | . - x1 + z1")`.
 
@@ -227,11 +227,11 @@ cat('
 
 Similarly to the simple IV regression model, the general IV model \\@ref(eq:givmodel) can be estimated using the two-stage least squares estimator:
 
-1. **First-stage regression(s)** 
+1. **First-stage regression(s):** 
     
     Run an OLS regression for each of the endogenous variables ($X_{1i},\\dots,X_{ki}$) on all instrumental variables ($Z_{1i},\\dots,Z_{mi}$), all exogenous variables ($W_{1i},\\dots,W_{ri}$) and an intercept. Compute the fitted values ($\\widehat{X}_{1i},\\dots,\\widehat{X}_{ki}$). 
 
-2. **Second-stage regression** 
+2. **Second-stage regression:** 
 
     Regress the dependent variable on the predicted values of all endogenous regressors, all exogenous variables and an intercept using OLS. This gives $\\widehat{\\beta}_{0}^{TSLS},\\dots,\\widehat{\\beta}_{k+r}^{TSLS}$, the TSLS estimates of the model coefficients.
 </div>
@@ -243,8 +243,8 @@ cat('\\begin{keyconcepts}[Two-Stage Least Squares]{12.2}
 Similarly to the simple IV regression model, the general IV model (\\ref{eq:givmodel}) can be estimated using the two-stage least squares estimator:\\newline
 
 \\begin{itemize}
-\\item \\textbf{First-stage regression(s)}\\newline Run an OLS regression for each of the endogenous variables ($X_{1i},\\dots,X_{ki}$) on all instrumental variables ($Z_{1i},\\dots,Z_{mi}$), all exogenous variables ($W_{1i},\\dots,W_{ri}$) and an intercept. Compute the fitted values ($\\widehat{X}_{1i},\\dots,\\widehat{X}_{ki}$).\\newline 
-\\item \\textbf{Second-stage regression}\\newline Regress the dependent variable on the predicted values of all endogenous regressors, all exogenous variables and an intercept using OLS. This gives $\\widehat{\\beta}_{0}^{TSLS},\\dots,\\widehat{\\beta}_{k+r}^{TSLS}$, the TSLS estimates of the model coefficients.
+\\item \\textbf{First-stage regression(s):}\\newline Run an OLS regression for each of the endogenous variables ($X_{1i},\\dots,X_{ki}$) on all instrumental variables ($Z_{1i},\\dots,Z_{mi}$), all exogenous variables ($W_{1i},\\dots,W_{ri}$) and an intercept. Compute the fitted values ($\\widehat{X}_{1i},\\dots,\\widehat{X}_{ki}$).\\newline 
+\\item \\textbf{Second-stage regression:}\\newline Regress the dependent variable on the predicted values of all endogenous regressors, all exogenous variables and an intercept using OLS. This gives $\\widehat{\\beta}_{0}^{TSLS},\\dots,\\widehat{\\beta}_{k+r}^{TSLS}$, the TSLS estimates of the model coefficients.
 \\end{itemize}
 \\end{keyconcepts}
 ')
@@ -422,7 +422,7 @@ Compute the $F$-statistic which corresponds to the hypothesis that the coefficie
 ')
 ```
 
-The rule of thumb of Key Concept 12.5 is easily implemented in `r ttcode("R")`. Run the first-stage regression using `r ttcode("lm()")` and subsequently compute the heteroskedasticity-robust $F$-statistic by means of `r ttcode("linearHypothesis()")`. This is part of the application to the demand for cigarettes discussed in Chapter \@ref(attdfc).
+The thumb rule of Key Concept 12.5 is easily implemented in `r ttcode("R")`. Run the first-stage regression using `r ttcode("lm()")` and subsequently compute the heteroskedasticity-robust $F$-statistic by means of `r ttcode("linearHypothesis()")`. This is part of the application to the demand for cigarettes discussed in Chapter \@ref(attdfc).
 
 #### If Instruments are Weak {-}
 
@@ -448,7 +448,7 @@ Take $\\widehat{u}_i^{TSLS} \\ , \\ i = 1,\\dots,n$, the residuals of the TSLS e
   \\widehat{u}_i^{TSLS} =& \\, \\delta_0 + \\delta_1 Z_{1i} + \\dots + \\delta_m Z_{mi} + \\delta_{m+1} W_{1i} + \\dots + \\delta_{m+r} W_{ri} + e_i (\\#eq:jstatreg)
 \\end{align}
 
-and test the joint hypothesis $$H_0: \\delta_1 = 0, \\dots, \\delta_{m} = 0$$ which states that all instruments are exogenous. This can be done using the corresponding $F$-statistic by computing $$J = mF.$$ This test is the overidentifying restrictions test and the statistic is called the $J$-statistic with $$J \\sim \\chi^2_{m-k}$$ in large samples under the null and the assumption of homoskedasticity. The degrees of freedom $m-k$ state the degree of overidentification since this is the number of instruments $m$ minus the number of endogenous regressors $k$.
+and test the joint hypothesis $$H_0: \\delta_1 = 0, \\dots, \\delta_{m} = 0,$$ which states that all instruments are exogenous. This can be done using the corresponding $F$-statistic by computing $$J = mF.$$ This test is the overidentifying restrictions test and the statistic is called the $J$-statistic with $$J \\sim \\chi^2_{m-k}$$ in large samples under the null and the assumption of homoskedasticity. The degrees of freedom $m-k$ state the degree of overidentification since this is the number of instruments $m$ minus the number of endogenous regressors $k$.
 
 </div>
 ')
@@ -462,7 +462,7 @@ Take $\\widehat{u}_i^{TSLS} \\ , \\ i = 1,\\dots,n$, the residuals of the TSLS e
   \\widehat{u}_i^{TSLS} =& \\, \\delta_0 + \\delta_1 Z_{1i} + \\dots + \\delta_m Z_{mi} + \\delta_{m+1} W_{1i} + \\dots + \\delta_{m+r} W_{ri} + e_i \\label{eq:jstatreg}
 \\end{align}
 
-and test the joint hypothesis $$H_0: \\delta_1 = 0, \\dots, \\delta_{m} = 0$$ which states that all instruments are exogenous. This can be done using the corresponding $F$-statistic by computing $$J = m  F.$$ This test is the overidentifying restrictions test and the statistic is called the $J$-statistic with $$J \\sim \\chi^2_{m-k}$$ in large samples under the null and the assumption of homoskedasticity. The degrees of freedom $m-k$ state the degree of overidentification since this is the number of instruments $m$ minus the number of endogenous regressors $k$.
+and test the joint hypothesis $$H_0: \\delta_1 = 0, \\dots, \\delta_{m} = 0,$$ which states that all instruments are exogenous. This can be done using the corresponding $F$-statistic by computing $$J = m  F.$$ This test is the overidentifying restrictions test and the statistic is called the $J$-statistic with $$J \\sim \\chi^2_{m-k}$$ in large samples under the null and the assumption of homoskedasticity. The degrees of freedom $m-k$ state the degree of overidentification since this is the number of instruments $m$ minus the number of endogenous regressors $k$.
 \\end{keyconcepts}
 ')
 ```
@@ -590,7 +590,7 @@ stargazer(cig_ivreg_diff1, cig_ivreg_diff2,cig_ivreg_diff3,
   digits = 3,
   type = "latex",
   no.space = T,
-  column.sep.width = "35pt",
+  column.sep.width = "30pt",
   omit.table.layout = "n",
   column.labels = c("IV: salestax", "IV: cigtax", "IVs: salestax, cigtax"),
   dep.var.labels.include = FALSE,
@@ -640,7 +640,7 @@ cig_OR_test <- linearHypothesis(cig_iv_OR,
 cig_OR_test
 ```
 
-**Caution**: In this case the $p$-Value reported by `r ttcode("linearHypothesis()")` is wrong because the degrees of freedom are set to $2$. This differs from the degree of overidentification ($m-k=2-1=1$) so the $J$-statistic is $\chi^2_1$ distributed instead of following a $\chi^2_2$ distribution as assumed defaultly by `r ttcode("linearHypothesis()")`. We may compute the correct $p$-Value using `r ttcode("pchisq()")`. 
+**Caution**: In this case the $p$-Value reported by `r ttcode("linearHypothesis()")` is wrong because the degrees of freedom are set to $2$. This differs from the degree of overidentification ($m-k=2-1=1$) so the $J$-statistic is $\chi^2_1$ distributed instead of following a $\chi^2_2$ distribution as assumed by default in `r ttcode("linearHypothesis()")`. We may compute the correct $p$-Value using `r ttcode("pchisq()")`. 
 
 ```{r}
 # compute correct p-value for J-statistic
