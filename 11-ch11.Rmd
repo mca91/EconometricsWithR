@@ -605,7 +605,7 @@ Next we reproduce the estimation results presented in Table 11.2 of the book.
 
 ```{r}
 # estimate all 6 models for the denial probability
-l_HMDA <- lm(deny ~ black + pirat + hirat + lvrat + chist + mhist + phist 
+lpm_HMDA <- lm(deny ~ black + pirat + hirat + lvrat + chist + mhist + phist 
                + insurance + selfemp, data = HMDA)
 
 logit_HMDA <- glm(deny ~ black + pirat + hirat + lvrat + chist + mhist + phist 
@@ -613,24 +613,24 @@ logit_HMDA <- glm(deny ~ black + pirat + hirat + lvrat + chist + mhist + phist
                   family = binomial(link = "logit"), 
                   data = HMDA)
 
-p_HMDA1 <- glm(deny ~ black + pirat + hirat + lvrat + chist + mhist + phist 
+probit_HMDA1 <- glm(deny ~ black + pirat + hirat + lvrat + chist + mhist + phist 
                      + insurance + selfemp, 
                      family = binomial(link = "probit"), 
                      data = HMDA)
 
-p_HMDA2 <- glm(deny ~ black + pirat + hirat + lvrat + chist + mhist + phist 
+probit_HMDA2 <- glm(deny ~ black + pirat + hirat + lvrat + chist + mhist + phist 
                      + insurance + selfemp + single + hschool + unemp, 
                      family = binomial(link = "probit"), 
                      data = HMDA)
 
-p_HMDA3 <- glm(deny ~ black + pirat + hirat + lvrat + chist + mhist 
+probit_HMDA3 <- glm(deny ~ black + pirat + hirat + lvrat + chist + mhist 
                      + phist + insurance + selfemp + single + hschool + unemp
                      +condomin + I(mhist==3) + I(mhist==4) + I(chist==3) 
                      + I(chist==4) + I(chist==5)+ I(chist==6), 
                      family = binomial(link = "probit"), 
                      data = HMDA)
 
-p_HMDA4 <- glm(deny ~ black * (pirat + hirat) + lvrat + chist + mhist + phist 
+probit_HMDA4 <- glm(deny ~ black * (pirat + hirat) + lvrat + chist + mhist + phist 
                      + insurance + selfemp + single + hschool + unemp, 
                      family = binomial(link = "probit"), 
                      data = HMDA)
@@ -639,15 +639,15 @@ p_HMDA4 <- glm(deny ~ black * (pirat + hirat) + lvrat + chist + mhist + phist
 Just as in previous chapters, we store heteroskedasticity-robust standard errors of the coefficient estimators in a `r ttcode("list")` which is then used as the argument `r ttcode("se")` in `r ttcode("stargazer()")`.
 
 ```{r, eval=FALSE}
-rob_se <- list(sqrt(diag(vcovHC(l_HMDA, type = "HC1"))),
+rob_se <- list(sqrt(diag(vcovHC(lpm_HMDA, type = "HC1"))),
                sqrt(diag(vcovHC(logit_HMDA, type = "HC1"))),
-               sqrt(diag(vcovHC(p_HMDA1, type = "HC1"))),
-               sqrt(diag(vcovHC(p_HMDA2, type = "HC1"))),
-               sqrt(diag(vcovHC(p_HMDA3, type = "HC1"))),
-               sqrt(diag(vcovHC(p_HMDA4, type = "HC1"))))
+               sqrt(diag(vcovHC(probit_HMDA1, type = "HC1"))),
+               sqrt(diag(vcovHC(probit_HMDA2, type = "HC1"))),
+               sqrt(diag(vcovHC(probit_HMDA3, type = "HC1"))),
+               sqrt(diag(vcovHC(probit_HMDA4, type = "HC1"))))
 
-stargazer(l_HMDA, logit_HMDA, p_HMDA1, 
-          p_HMDA2, p_HMDA3, p_HMDA4,  
+stargazer(lpm_HMDA, logit_HMDA, probit_HMDA1, 
+          probit_HMDA2, probit_HMDA3, probit_HMDA4,  
           digits = 3,
           type = "latex", 
           header = FALSE,
@@ -662,15 +662,15 @@ stargazer(l_HMDA, logit_HMDA, p_HMDA1,
 library(stargazer)
 
 rob_se <- list(
-  sqrt(diag(vcovHC(l_HMDA, type = "HC1"))),
+  sqrt(diag(vcovHC(lpm_HMDA, type = "HC1"))),
   sqrt(diag(vcovHC(logit_HMDA, type = "HC1"))),
-  sqrt(diag(vcovHC(p_HMDA1, type = "HC1"))),
-  sqrt(diag(vcovHC(p_HMDA2, type = "HC1"))),
-  sqrt(diag(vcovHC(p_HMDA3, type = "HC1"))),
-  sqrt(diag(vcovHC(p_HMDA4, type = "HC1")))
+  sqrt(diag(vcovHC(probit_HMDA1, type = "HC1"))),
+  sqrt(diag(vcovHC(probit_HMDA2, type = "HC1"))),
+  sqrt(diag(vcovHC(probit_HMDA3, type = "HC1"))),
+  sqrt(diag(vcovHC(probit_HMDA4, type = "HC1")))
 )
 
-stargazer(l_HMDA, logit_HMDA, p_HMDA1, p_HMDA2, p_HMDA3, p_HMDA4, 
+stargazer(lpm_HMDA, logit_HMDA, probit_HMDA1, probit_HMDA2, probit_HMDA3, probit_HMDA4, 
           digits = 3,
           type = "html", 
           se = rob_se,
@@ -689,15 +689,15 @@ stargazer_html_title("HMDA Data: LPM, Probit and Logit Models", "hmdad")
 library(stargazer)
 
 rob_se <- list(
-  sqrt(diag(vcovHC(l_HMDA, type = "HC1"))),
+  sqrt(diag(vcovHC(lpm_HMDA, type = "HC1"))),
   sqrt(diag(vcovHC(logit_HMDA, type = "HC1"))),
-  sqrt(diag(vcovHC(p_HMDA1, type = "HC1"))),
-  sqrt(diag(vcovHC(p_HMDA2, type = "HC1"))),
-  sqrt(diag(vcovHC(p_HMDA3, type = "HC1"))),
-  sqrt(diag(vcovHC(p_HMDA4, type = "HC1")))
+  sqrt(diag(vcovHC(probit_HMDA1, type = "HC1"))),
+  sqrt(diag(vcovHC(probit_HMDA2, type = "HC1"))),
+  sqrt(diag(vcovHC(probit_HMDA3, type = "HC1"))),
+  sqrt(diag(vcovHC(probit_HMDA4, type = "HC1")))
 )
 
-stargazer(l_HMDA, logit_HMDA, p_HMDA1, p_HMDA2, p_HMDA3, p_HMDA4, 
+stargazer(lpm_HMDA, logit_HMDA, probit_HMDA1, probit_HMDA2, probit_HMDA3, probit_HMDA4, 
           title = "\\label{tab:hmdad} HMDA Data: LPM, Probit and Logit Models",
           digits = 3,
           type = "latex",
@@ -736,7 +736,7 @@ new <- data.frame(
   "condomin" = "no")
 
 # differnce predicted by the LPM
-predictions <- predict(l_HMDA, newdata = new)
+predictions <- predict(lpm_HMDA, newdata = new)
 diff(predictions)
 
 # differnce predicted by the logit model
@@ -744,19 +744,19 @@ predictions <- predict(logit_HMDA, newdata = new, type = "response")
 diff(predictions)
 
 # difference predicted by probit model (3)
-predictions <- predict(p_HMDA1, newdata = new, type = "response")
+predictions <- predict(probit_HMDA1, newdata = new, type = "response")
 diff(predictions)
 
 # difference predicted by probit model (4)
-predictions <- predict(p_HMDA2, newdata = new, type = "response")
+predictions <- predict(probit_HMDA2, newdata = new, type = "response")
 diff(predictions)
 
 # difference predicted by probit model (5)
-predictions <- predict(p_HMDA3, newdata = new, type = "response")
+predictions <- predict(probit_HMDA3, newdata = new, type = "response")
 diff(predictions)
 
 # difference predicted by probit model (6)
-predictions <- predict(p_HMDA4, newdata = new, type = "response")
+predictions <- predict(probit_HMDA4, newdata = new, type = "response")
 diff(predictions)
 ```
 
@@ -767,7 +767,7 @@ Regressions (4) to (6) use regression specifications that include different appl
 An interesting question related to racial discrimination can be investigated using the Probit model (6) where the interactions `r ttcode("blackyes:pirat")` and `r ttcode("blackyes:hirat")` are added to model (4). If the coefficient on `r ttcode("blackyes:pirat")` was different  from zero, the effect of the payment-to-income ratio on the denial probability would be different for black and white applicants. Similarly, a non-zero coefficient on `r ttcode("blackyes:hirat")` would indicate that loan officers weight the risk of bankruptcy associated with a high loan-to-value ratio differently for black and white mortgage applicants. We can test whether these coefficients are jointly significant at the $5\%$ level using an $F$-Test.
 
 ```{r}
-linearHypothesis(p_HMDA4,
+linearHypothesis(probit_HMDA4,
                  test = "F",
                  c("blackyes:pirat=0", "blackyes:hirat=0"),
                  vcov = vcovHC, type = "HC1")
@@ -776,7 +776,7 @@ linearHypothesis(p_HMDA4,
 Since $p\text{-value} \approx 0.77$ for this test, the null cannot be rejected. Nonetheless, we can reject the hypothesis that there is no racial discrimination at all since the corresponding $F$-test has a $p\text{-value}$ of about $0.002$.
 
 ```{r}
-linearHypothesis(p_HMDA4,
+linearHypothesis(probit_HMDA4,
                  test = "F",
                  c("blackyes=0", "blackyes:pirat=0", "blackyes:hirat=0"),
                  vcov = vcovHC, type = "HC1")
