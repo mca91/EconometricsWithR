@@ -10,14 +10,14 @@ However, sometimes external circumstances produce what is called a *quasi-experi
 
 The following packages and their dependencies are needed for reproduction of the code chunks presented throughout this chapter:
 
-+ `r ttcode("AER")` [@R-AER]
-+ `r ttcode("dplyr")` [@R-dplyr]
-+ `r ttcode("MASS")` [@R-MASS]
-+ `r ttcode("mvtnorm")` [@R-mvtnorm]
-+ `r ttcode("rddtools")` [@R-rddtools]
-+ `r ttcode("scales")` [@R-scales]
-+ `r ttcode("stargazer")`[@R-stargazer]
-+ `r ttcode("tidyr")` [@R-tidyr]
++ `r ttcode("AER")` [@R-AER],
++ `r ttcode("dplyr")` [@R-dplyr],
++ `r ttcode("MASS")` [@R-MASS],
++ `r ttcode("mvtnorm")` [@R-mvtnorm],
++ `r ttcode("rddtools")` [@R-rddtools],
++ `r ttcode("scales")` [@R-scales],
++ `r ttcode("stargazer")`[@R-stargazer],
++ `r ttcode("tidyr")` [@R-tidyr].
 
 Make sure the following code chunk runs without any errors.
 
@@ -143,7 +143,7 @@ A majority of the variable names contain a suffix (`r ttcode("k")`, `r ttcode("1
 
 The outcome produced by `r ttcode("head()")` shows that some recorded values are `r ttcode("NA")` and thus, there is no data on this variable for the student under consideration. This lies in the nature of the data: for example, take the first observation `STAR[1,]`. 
 
-In the output of `head(STAR, 2)` we find that the student entered the experiment in third grade in a regular class, which is why the class size is recorded in `r ttcode("star3")` and the other class type indicator variables are `r ttcode("NA")`. For the same reason there are no recordings of her math and reading score but for the third grade. It is straightforward to only get her non-`r ttcode("NA")`/`r ttcode("<NA>")` recordings: simply drop the `r ttcode("NA")`s using `r ttcode("!is.na()")`.
+In the output of `head(STAR, 2)` we find that the student entered the experiment in third grade in a regular class, which is why the class size is recorded in `r ttcode("star3")` and the other class type indicator variables are `r ttcode("NA")`. Her math and reading scores for the third grade are available; however, recordings for other grades are not present for the same reason. Obtaining only her non-missing (non-`r ttcode("NA")`) recordings is straightforward: simply eliminate the `r ttcode("NA")`s using the `r ttcode("!is.na()")` function.
 
 ```{r}
 # drop NA recordings for the first observation and print to the console
@@ -152,15 +152,15 @@ STAR[1, !is.na(STAR[1, ])]
 
 `is.na(STAR[1, ])` returns a logical vector with `r ttcode("TRUE")` at positions that correspond to `r ttcode("<NA>")` entries for the first observation. The `r ttcode("!")` operator is used to invert the result such that we obtain only non-`r ttcode("<NA>")` entries for the first observations.
 
-In general it is not necessary to remove rows with missing data because `r ttcode("lm()")` does so by default. Missing data may imply a small sample size and thus may lead to imprecise estimation and wrong inference This is, however, not an issue for the study at hand since, as we will see below, sample sizes lie beyond 5000 observations for each regression conducted.
+In general it is not necessary to remove rows with missing data because `r ttcode("lm()")` does so by default. Missing data may imply a small sample size and thus may lead to imprecise estimation and wrong inference. This is, however, not an issue for the study at hand since, as we will see below, sample sizes lie beyond 5000 observations for each regression conducted.
 
 ### Analysis of the STAR Data {-}
 
-As can be seen from Table \@ref(tab:starstructure) there are two treatment groups in each grade, small classes with only 13 to 17 students and regular classes with 22 to 25 students and a teaching aide. Thus, two binary variables, each being an indicator for the respective treatment group, are introduced for the differences estimator to capture the treatment effect for each treatment group separately. This yields the population regression model 
+As can be seen from Table \@ref(tab:starstructure) that there are two treatment groups in each grade, small classes with only 13 to 17 students and regular classes with 22 to 25 students and a teaching aide. Thus, two binary variables, each being an indicator for the respective treatment group, are introduced for the differences estimator to capture the treatment effect for each treatment group separately. This yields the population regression model 
 \begin{align}
   Y_i = \beta_0 + \beta_1 SmallClass_i + \beta_2 RegAide_i + u_i, (\#eq:starpopreg)
 \end{align}
-with test score $Y_i$, the small class indicator $SmallClass_i$ and $RegAide_i$, the indicator for a regular class with aide.
+with test score $Y_i$ which is the small class indicator $SmallClass_i$ and $RegAide_i$ which is the indicator for a regular class with aide.
 
 We reproduce the results presented in Table 13.1 of the book by performing the regression \@ref(eq:starpopreg) for each grade separately. For each student, the dependent variable is simply the sum of the points scored in the math and reading parts, constructed using `r ttcode("I()")`.
 
@@ -314,7 +314,7 @@ gradeK3 <- lm(I(mathk + readk) ~ stark + experiencek + boy + lunchk
               data = STARK)
 ```
 
-For brevity, we exclude the coefficients for the indicator dummies in `r ttcode("coeftest()")`'s output by subsetting the matrices.
+For brevity, we exclude the coefficients for the indicator dummies in the output of the `r ttcode("coeftest()")`by subsetting the matrices.
 
 ```{r, message=FALSE, warning=FALSE}
 # obtain robust inference on the significance of coefficients
@@ -396,7 +396,7 @@ stargazer(fmk,gradeK1,gradeK2,gradeK3,
   ) 
 ```
 
-The results in column (1) of Table \@ref(tab:psdewarfk) just a repeat the results obtained for \@ref(eq:starpopreg). Columns (2) to (4) reveal that adding student characteristics and school fixed effects does not lead to substantially different estimates of the treatment effects. This result makes it more plausible that the estimates of the effects obtained using model \@ref(eq:starpopreg) do not suffer from failure of random assignment. There is some decrease in the standard errors and some increase in $\bar{R}^2$, implying that the estimates are more precise.
+The results in column (1) of Table \@ref(tab:psdewarfk) same as the results obtained for \@ref(eq:starpopreg). Columns (2) to (4) reveal that adding student characteristics and school fixed effects does not lead to substantially different estimates of the treatment effects. This result makes it more plausible that the estimates of the effects obtained using model \@ref(eq:starpopreg) do not suffer from failure of random assignment. There is some decrease in the standard errors and some increase in $\bar{R}^2$, implying that the estimates are more precise.
 
 Because teachers were randomly assigned to classes, inclusion of school fixed effect allows us to estimate the causal effect of a teacher's experience on test scores of students in kindergarten. Regression (3) predicts the average effect of 10 years experience on test scores to be $10\cdot 0.74=7.4$ points. Be aware that the other estimates on student characteristics in regression (4) *do not* have causal interpretation due to nonrandom assignment (see Chapter 13.3 of the book for a detailed discussion).
 
@@ -501,7 +501,7 @@ It is quite conceivable that such a wage hike is not correlated with other deter
 
 \begin{align}
   \widehat{\beta}_1^{\text{diffs-in-diffs}} =& \, (\overline{Y}^{\text{treatment,after}} - \overline{Y}^{\text{treatment,before}}) - (\overline{Y}^{\text{control,after}} - \overline{Y}^{\text{control,before}}) \\
-  =& \Delta \overline{Y}^{\text{treatment}} - \Delta \overline{Y}^{\text{control}} (\#eq:DID)
+  =& \Delta \overline{Y}^{\text{treatment}} - \Delta \overline{Y}^{\text{control}}, (\#eq:DID)
 \end{align}
 
 with
@@ -587,7 +587,7 @@ y_post <- 7 + 2 + TEffect * TDummy + rnorm(n)
 y_post[1:n/2] <- y_post[1:n/2] - 1 
 ```
 
-Next plot the data. The function `r ttcode("jitter()")` is used to add some artificial dispersion in the horizontal component of the points so that there is less overplotting. The function `r ttcode("alpha()")` from the package `r ttcode("scales")` allows to adjust the opacity of colors used in plots.
+Next we plot the data. The function `r ttcode("jitter()")` is used to add some artificial dispersion in the horizontal component of the points so that there is less overplotting. The function `r ttcode("alpha()")` from the package `r ttcode("scales")` allows to adjust the opacity of colors used in plots.
 
 
 ```{r, fig.align='center'}
@@ -647,9 +647,9 @@ Notice that the estimate is close to $4$, the value chosen as the treatment effe
 lm(I(y_post - y_pre) ~ TDummy)
 ```
 
-We find that the estimates coincide. Furthermore, one can show that the DID estimate obtained by estimating specification \@ref(eq:did) OLS is the same as the OLS estimate of $\beta_{TE}$ in 
+We find that the estimates coincide. Furthermore, one can show that the DID estimate obtained by estimating specification \@ref(eq:did) is the same as the OLS estimate of $\beta_{TE}$ in 
 \begin{align}
-  Y_i =& \beta_0 + \beta_1 D_i + \beta_2 Period_i + \beta_{TE} (Period_i \times D_i) + \varepsilon_i (\#eq:DIDint)
+  Y_i =& \beta_0 + \beta_1 D_i + \beta_2 Period_i + \beta_{TE} (Period_i \times D_i) + \varepsilon_i, (\#eq:DIDint)
 \end{align}
 where $D_i$ is the binary treatment indicator, $Period_i$ is a binary indicator for the after-treatment period and the $Period_i \times D_i$ is the interaction of both.
 
@@ -678,7 +678,7 @@ and let
 X_i =& 
   \begin{cases}
     1, & W_i \geq c \\
-    0, & W_i < c
+    0, & W_i < c,
   \end{cases}
 \end{align*}
 so that the receipt of treatment, $X_i$, is determined by some threshold $c$ of a continuous variable $W_i$, the so called running variable. The idea of *regression discontinuity design* is to use observations with a $W_i$ close to $c$ for estimation of $\beta_1$. $\beta_1$ is the average treatment effect for individuals with $W_i = c$ which is assumed to be a good approximation to the treatment effect in the population. \@ref(eq:SRDDsetting) is called a *sharp regression discontinuity design* because treatment assignment is deterministic and discontinuous at the cutoff: all observations with $W_i < c$ do not receive treatment and all observations where $W_i \geq c$ are treated.   
@@ -738,7 +738,7 @@ As above, the dots represent averages of binned observations.
 
 So far we assumed that crossing of the threshold determines receipt of treatment so that the jump of the population regression functions at the threshold can be regarded as the causal effect of the treatment.
 
-When crossing the threshold $c$ is not the only cause for receipt of the treatment, treatment is not a deterministic function of $W_i$. Instead, it is useful to think of $c$ as a threshold where the *probability* of receiving the treatment jumps.
+When crossing the threshold $c$ is not the only cause for receipt of the treatment, treatment is no a deterministic function of $W_i$. Instead, it is useful to think of $c$ as a threshold where the *probability* of receiving the treatment jumps.
 
 This jump may be due to unobservable variables that have impact on the probability of being treated. Thus, $X_i$ in \@ref(eq:SRDDsetting) will be correlated with the error $u_i$ and it becomes more difficult to consistently estimate the treatment effect. In this setting, using a *fuzzy regression discontinuity design* which is based an IV approach may be a remedy: take the binary variable $Z_i$ as an indicator for crossing of the threshold,
 \begin{align*}
@@ -771,7 +771,7 @@ fuzz <- sapply(X = d$treatProb, FUN = function(x) rbinom(1, 1, prob = x))
 d$Y <- d$Y + fuzz * 2
 ```
 
-`r ttcode("sapply()")` applies the function provided to `r ttcode("FUN")` to every element of the argument `r ttcode("X")`. Here, `r ttcode("d$treatProb")` is a vector and the result is a vector, too.
+`r ttcode("sapply()")` applies the function provided to `r ttcode("FUN")` to every element of the argument `r ttcode("X")`. Here, since `r ttcode("d$treatProb")` is a vector, the result is a vector, too.
 
 We plot all observations and use blue color to mark individuals that did not receive the treatment and use red color for those who received the treatment. 
 
