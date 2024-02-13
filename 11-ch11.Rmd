@@ -4,17 +4,17 @@ This chapter, we discuss a special class of regression models that aim to explai
 
 We review the following concepts:
 
-- the linear probability model
-- the Probit model
-- the Logit model
-- maximum likelihood estimation of nonlinear regression models
+- the linear probability model,
+- the Probit model,
+- the Logit model,
+- maximum likelihood estimation of nonlinear regression models.
 
 Of course, we will also see how to estimate above models using `r ttcode("R")` and discuss an application where we examine the question whether there is racial discrimination in the U.S. mortgage market.
 
 The following packages and their dependencies are needed for reproduction of the code chunks presented throughout this chapter on your computer:
 
-+ `r ttcode("AER")` [@R-AER]
-+ `r ttcode("stargazer")` [@R-stargazer]
++ `r ttcode("AER")` [@R-AER],
++ `r ttcode("stargazer")` [@R-stargazer].
 
 Check whether the following code chunk runs without any errors.
 
@@ -34,7 +34,7 @@ cat('
 The linear regression model 
 
 $$Y_i = \\beta_0 + \\beta_1 X_{1i} + \\beta_2 X_{2i} + \\dots + \\beta_k X_{ki} + u_i$$
-with a binary dependent variable $Y_i$ is called the linear probability model. In the linear probability model we have $$E(Y\\vert X_1,X_2,\\dots,X_k) = P(Y=1\\vert X_1, X_2,\\dots, X_3)$$ where $$ P(Y = 1 \\vert X_1, X_2, \\dots, X_k) = \\beta_0 + \\beta_1 + X_{1i} + \\beta_2 X_{2i} + \\dots + \\beta_k X_{ki}.$$
+with a binary dependent variable $Y_i$ is called the linear probability model. In the linear probability model we have $$E(Y\\vert X_1,X_2,\\dots,X_k) = P(Y=1\\vert X_1, X_2,\\dots, X_3)$$ where $$ P(Y = 1 \\vert X_1, X_2, \\dots, X_k) = \\beta_0 + \\beta_1 + X_1 + \\beta_2 X_2 + \\dots + \\beta_k X_k.$$
 
 Thus, $\\beta_j$ can be interpreted as the change in the probability that $Y_i=1$, holding constant the other $k-1$ regressors. Just as in common multiple regression, the $\\beta_j$ can be estimated using OLS and the robust standard error formulas can be used for hypothesis testing and computation of confidence intervals. 
 
@@ -52,7 +52,7 @@ Linear probability models are easily estimated in <tt>R</tt> using the function 
 cat('\\begin{keyconcepts}[The Linear Probability Model]{11.1}
 The linear regression model 
 $$Y_i = \\beta_0 + \\beta_1 + X_{1i} + \\beta_2 X_{2i} + \\dots + \\beta_k X_{ki} + u_i$$
-with a binary dependent variable $Y_i$ is called the linear probability model. In the linear probability model we have $$E(Y\\vert X_1,X_2,\\dots,X_k) = P(Y=1\\vert X_1, X_2,\\dots, X_3)$$ where $$ P(Y = 1 \\vert X_1, X_2, \\dots, X_k) = \\beta_0 + \\beta_1 + X_{1i} + \\beta_2 X_{2i} + \\dots + \\beta_k X_{ki}.$$
+with a binary dependent variable $Y_i$ is called the linear probability model. In the linear probability model we have $$E(Y\\vert X_1,X_2,\\dots,X_k) = P(Y=1\\vert X_1, X_2,\\dots, X_3)$$ where $$ P(Y = 1 \\vert X_1, X_2, \\dots, X_k) = \\beta_0 + \\beta_1 + X_1 + \\beta_2 X_2 + \\dots + \\beta_k X_k.$$
 
 Thus, $\\beta_j$ can be interpreted as the change in the probability that $Y_i=1$, holding constant the other $k-1$ regressors. Just as in common multiple regression, the $\\beta_j$ can be estimated using OLS and the robust standard error formulas can be used for hypothesis testing and computation of confidence intervals.\\newline 
 
@@ -157,7 +157,7 @@ The estimated regression function is
   \widehat{deny} =& \, -\underset{(0.029)}{0.091} + \underset{(0.089)}{0.559} P/I \ ratio + \underset{(0.025)}{0.177} black. (\#eq:denymod2)
 \end{align}
 
-The coefficient on $black$ is positive and significantly different from zero at the $0.01\%$ level. The interpretation is that, holding constant the $P/I \ ratio$, being black increases the probability of a mortgage application denial by about $17.7\%$. This finding is compatible with racial discrimination. However, it might be distorted by omitted variable bias so discrimination could be a premature conclusion.
+The coefficient on $black$ is positive and significantly different from zero at the $0.01\%$ level. The interpretation is that, holding the $P/I \ ratio$ constant, being black increases the probability of a mortgage application denial by about $17.7\%$. This finding is compatible with racial discrimination. However, it might be distorted by omitted variable bias so discrimination could be a premature conclusion.
 
 ## Probit and Logit Regression {#palr}
 
@@ -172,15 +172,15 @@ In Probit regression, the cumulative standard normal distribution function $\Phi
   E(Y\vert X) = P(Y=1\vert X) = \Phi(\beta_0 + \beta_1 X). (\#eq:probitmodel)
 \end{align}
 
-$\beta_0 + \beta_1 X$ in \@ref(eq:probitmodel) plays the role of a quantile $z$. Remember that $$\Phi(z) = P(Z \leq z) \ , \ Z \sim \mathcal{N}(0,1)$$ such that the Probit coefficient $\beta_1$ in \@ref(eq:probitmodel) is the change in $z$ associated with a one unit change in $X$. Although the effect on $z$ of a change in $X$ is linear, the link between $z$ and the dependent variable $Y$ is nonlinear since $\Phi$ is a nonlinear function of $X$.
+$\beta_0 + \beta_1 X$ in \@ref(eq:probitmodel) plays the role of a quantile $z$. Remember that $$\Phi(z) = P(Z \leq z) \ , \ Z \sim \mathcal{N}(0,1),$$ such that the Probit coefficient $\beta_1$ in \@ref(eq:probitmodel) is the change in $z$ associated with a one unit change in $X$. Although the effect on $z$ of a change in $X$ is linear, the link between $z$ and the dependent variable $Y$ is nonlinear since $\Phi$ is a nonlinear function of $X$.
 
 Since the dependent variable is a nonlinear function of the regressors, the coefficient on $X$ has no simple interpretation. According to Key Concept 8.1, the expected change in the probability that $Y=1$ due to a change in $P/I \ ratio$ can be computed as follows:
 
 1. Compute the predicted probability that $Y=1$ for the original value of $X$.
 2. Compute the predicted probability that $Y=1$ for $X + \Delta X$.
-3. Compute the difference between both predicted probabilities.
+3. Compute the difference between both the predicted probabilities.
 
-Of course we can generalize \@ref(eq:probitmodel) to Probit regression with multiple regressors to mitigate the risk of facing omitted variable bias. Probit regression essentials are summarized in Key Concept 11.2.
+Of course, we can generalize \@ref(eq:probitmodel) to Probit regression with multiple regressors to mitigate the risk of facing omitted variable bias. Probit regression essentials are summarized in Key Concept 11.2.
 
 ```{r, eval = my_output == "html", results='asis', echo=F, purl=F}
 cat('
@@ -197,7 +197,7 @@ is the population Probit model with multiple regressors $X_1, X_2, \\dots, X_k$ 
 
 The predicted probability that $Y=1$ given $X_1, X_2, \\dots, X_k$ can be calculated in two steps:
 
-1. Compute $z = \\beta_0 + \\beta_1 X_1 + \\beta_2 X_2 + \\dots + \\beta_k X_k$
+1. Compute $z = \\beta_0 + \\beta_1 X_1 + \\beta_2 X_2 + \\dots + \\beta_k X_k$,
 
 2. Look up $\\Phi(z)$ by calling <tt>pnorm()</tt>.
 
@@ -223,7 +223,7 @@ is the population Probit model with multiple regressors $X_1, X_2, \\dots, X_k$ 
 The predicted probability that $Y=1$ given $X_1, X_2, \\dots, X_k$ can be calculated in two steps:\\newline
 
 \\begin{enumerate}
-\\item Compute $z = \\beta_0 + \\beta_1 X_1 + \\beta_2 X_2 + \\dots + \\beta_k X_k$
+\\item Compute $z = \\beta_0 + \\beta_1 X_1 + \\beta_2 X_2 + \\dots + \\beta_k X_k$,
 \\item Look up $\\Phi(z)$ by calling \\texttt{pnorm()}.
 \\end{enumerate}\\vspace{0.5cm}
 
@@ -318,18 +318,18 @@ The estimated model equation is
   \widehat{P(deny\vert P/I \ ratio, black)} = \Phi (-\underset{(0.18)}{2.26} + \underset{(0.50)}{2.74} P/I \ ratio + \underset{(0.08)}{0.71} black). (\#eq:denyprobit2) 
 \end{align}
 
-While all coefficients are highly significant, both the estimated coefficients on the payments-to-income ratio and the indicator for African American descent are positive. Again, the coefficients are difficult to interpret but they indicate that, first, African Americans have a higher probability of denial than white applicants, holding constant the payments-to-income ratio and second, applicants with a high payments-to-income ratio face a higher risk of being rejected.
+While all coefficients are highly significant, both the estimated coefficients on the payments-to-income ratio and the indicator for African American descent are positive. Again, the coefficients are difficult to interpret but they indicate that, first, African Americans have a higher probability of denial than white applicants, holding the payments-to-income ratio constant and second, applicants with a high payments-to-income ratio face a higher risk of being rejected.
 
 How big is the estimated difference in denial probabilities between two hypothetical applicants with the same payments-to-income ratio? As before, we may use `r ttcode("predict()")` to compute this difference.
 
 ```{r}
-# 1. compute predictions for P/I ratio = 0.3
+# 1. Compute predictions for P/I ratio = 0.3
 predictions <- predict(denyprobit2, 
                        newdata = data.frame("black" = c("no", "yes"), 
                                             "pirat" = c(0.3, 0.3)),
                        type = "response")
 
-# 2. compute difference in probabilities
+# 2. Compute difference in probabilities
 diff(predictions)
 ```
 
@@ -352,7 +352,7 @@ The population Logit regression function is
   =& \\, \\frac{1}{1+e^{-(\\beta_0 + \\beta_1 X_1 + \\beta_2 X_2 + \\dots + \\beta_k X_k)}}.
 \\end{align*}
 
-The idea is similar to Probit regression except that a different CDF is used: $$F(x) = \\frac{1}{1+e^{-x}}$$ is the CDF of a standard logistically distributed random variable.
+The idea is similar to Probit regression except that a different CDF is used: $$F(x) = \\frac{1}{1+e^{-x}}$$ is the CDF of a standard logistic distribution.
 
 </div>
 ')
@@ -367,7 +367,7 @@ The population Logit regression function is
   =& \\, \\frac{1}{1+e^{-(\\beta_0 + \\beta_1 X_1 + \\beta_2 X_2 + \\dots + \\beta_k X_k)}}.
 \\end{align*}
 
-The idea is similar to Probit regression except that a different CDF is used: $$F(x) = \\frac{1}{1+e^{-x}}$$ is the CDF of a standard logistically distributed random variable.
+The idea is similar to Probit regression except that a different CDF is used: $$F(x) = \\frac{1}{1+e^{-x}}$$ is the CDF of a standard logistic distribution.
 \\end{keyconcepts}
 ')
 ```
@@ -456,7 +456,7 @@ predictions
 diff(predictions)
 ```
 
-We find that the white applicant faces a denial probability of only $7.5\%$, while the African American is rejected with a probability of $22.4\%$, a difference of $14.9$ percentage points.
+We find that the white applicant faces a denial probability of only $7.5\%$, while the African American is rejected with a probability of $22.4\%$, a difference of $14.9\%$ points.
 
 #### Comparison of the Models {-}
 
@@ -479,7 +479,7 @@ However, NLS is inefficient, meaning that there are estimation techniques that h
 
 #### Maximum Likelihood Estimation {-}
 
-In MLE we seek to estimate the unknown parameters choosing them such that the likelihood of drawing the sample observed is maximized. This probability is measured by means of the likelihood function, the joint probability distribution of the data treated as a function of the unknown parameters. Put differently, the maximum likelihood estimates of the unknown parameters are the values that result in a model which is most likely to produce the data observed. It turns out that MLE is more efficient than NLS.
+In MLE we seek to estimate the unknown parameters choosing them such that the likelihood of drawing the sample observed is maximized. This probability is measured by means of the likelihood function, the joint probability distribution of the data treated as a function of the unknown parameters. Put differently, the maximum likelihood estimates of the unknown parameters are the values that result in a model which is most likely to produce the observed data. It turns out that MLE is more efficient than NLS.
 
 As maximum likelihood estimates are normally distributed in large samples, statistical inference for coefficients in nonlinear models like Logit and Probit regression can be made using the same tools that are used for linear regression models: we can compute $t$-statistics and confidence intervals.
 
@@ -489,7 +489,7 @@ Many software packages use an MLE algorithm for estimation of nonlinear models. 
 
 It is important to be aware that the usual $R^2$ and $\bar{R}^2$ are *invalid* for nonlinear regression models. The reason for this is simple: both measures assume that the relation between the dependent and the explanatory variable(s) is linear. This obviously does not hold for Probit and Logit models. Thus $R^2$ need not lie between $0$ and $1$ and there is no meaningful interpretation. However, statistical software sometimes reports these measures anyway.
 
-There are many measures of fit for nonlinear regression models and there is no consensus which one should be reported. The situation is even more complicated because there is no measure of fit that is generally meaningful. For models with a binary response variable like $deny$ one could use the following rule: \newline If $Y_i = 1$ and $\widehat{P(Y_i|X_{i1}, \dots, X_{ik})} > 0.5$ or if $Y_i = 0$ and $\widehat{P(Y_i|X_{i1}, \dots, X_{ik})} < 0.5$, consider the $Y_i$ as correctly predicted. Otherwise $Y_i$ is said to be incorrectly predicted. The measure of fit is the share of correctly predicted observations. The downside of such an approach is that it does not mirror the quality of the prediction: whether $\widehat{P(Y_i = 1|X_{i1}, \dots, X_{ik}) = 0.51}$ or $\widehat{P(Y_i =1|X_{i1}, \dots, X_{ik}) = 0.99}$ is not reflected, we just predict $Y_i = 1$.^[This is in contrast to the case of a numeric dependent variable where we use the squared errors for assessment of the quality of the prediction.]  
+There are many measures of fit for nonlinear regression models and there is no consensus which one should be reported. The situation is even more complicated because there is no measure of fit that is generally meaningful. For models with a binary response variable like $deny$, one could use the following rule: \newline If $Y_i = 1$ and $\widehat{P(Y_i|X_{i1}, \dots, X_{ik})} > 0.5$ or if $Y_i = 0$ and $\widehat{P(Y_i|X_{i1}, \dots, X_{ik})} < 0.5$, consider the $Y_i$ as correctly predicted. Otherwise $Y_i$ is said to be incorrectly predicted. The measure of fit is the share of correctly predicted observations. The downside of such an approach is that it does not mirror the quality of the prediction: whether $\widehat{P(Y_i = 1|X_{i1}, \dots, X_{ik}) = 0.51}$ or $\widehat{P(Y_i =1|X_{i1}, \dots, X_{ik}) = 0.99}$ is not reflected, we just predict $Y_i = 1$.^[This is in contrast to the case of a numeric dependent variable where we use the squared errors for assessment of the quality of the prediction.]  
 
 An alternative to the latter are so called pseudo-$R^2$ measures. In order to measure the quality of the fit, these measures compare the value of the maximized (log-)likelihood of the model with all regressors (the *full model*) to the likelihood of a model with no regressors (*null model*, regression on a constant). 
 
@@ -613,24 +613,24 @@ logit_HMDA <- glm(deny ~ black + pirat + hirat + lvrat + chist + mhist + phist
                   family = binomial(link = "logit"), 
                   data = HMDA)
 
-probit_HMDA_1 <- glm(deny ~ black + pirat + hirat + lvrat + chist + mhist + phist 
+probit_HMDA1 <- glm(deny ~ black + pirat + hirat + lvrat + chist + mhist + phist 
                      + insurance + selfemp, 
                      family = binomial(link = "probit"), 
                      data = HMDA)
 
-probit_HMDA_2 <- glm(deny ~ black + pirat + hirat + lvrat + chist + mhist + phist 
+probit_HMDA2 <- glm(deny ~ black + pirat + hirat + lvrat + chist + mhist + phist 
                      + insurance + selfemp + single + hschool + unemp, 
                      family = binomial(link = "probit"), 
                      data = HMDA)
 
-probit_HMDA_3 <- glm(deny ~ black + pirat + hirat + lvrat + chist + mhist 
+probit_HMDA3 <- glm(deny ~ black + pirat + hirat + lvrat + chist + mhist 
                      + phist + insurance + selfemp + single + hschool + unemp
                      +condomin + I(mhist==3) + I(mhist==4) + I(chist==3) 
                      + I(chist==4) + I(chist==5)+ I(chist==6), 
                      family = binomial(link = "probit"), 
                      data = HMDA)
 
-probit_HMDA_4 <- glm(deny ~ black * (pirat + hirat) + lvrat + chist + mhist + phist 
+probit_HMDA4 <- glm(deny ~ black * (pirat + hirat) + lvrat + chist + mhist + phist 
                      + insurance + selfemp + single + hschool + unemp, 
                      family = binomial(link = "probit"), 
                      data = HMDA)
@@ -641,13 +641,13 @@ Just as in previous chapters, we store heteroskedasticity-robust standard errors
 ```{r, eval=FALSE}
 rob_se <- list(sqrt(diag(vcovHC(lpm_HMDA, type = "HC1"))),
                sqrt(diag(vcovHC(logit_HMDA, type = "HC1"))),
-               sqrt(diag(vcovHC(probit_HMDA_1, type = "HC1"))),
-               sqrt(diag(vcovHC(probit_HMDA_2, type = "HC1"))),
-               sqrt(diag(vcovHC(probit_HMDA_3, type = "HC1"))),
-               sqrt(diag(vcovHC(probit_HMDA_4, type = "HC1"))))
+               sqrt(diag(vcovHC(probit_HMDA1, type = "HC1"))),
+               sqrt(diag(vcovHC(probit_HMDA2, type = "HC1"))),
+               sqrt(diag(vcovHC(probit_HMDA3, type = "HC1"))),
+               sqrt(diag(vcovHC(probit_HMDA4, type = "HC1"))))
 
-stargazer(lpm_HMDA, logit_HMDA, probit_HMDA_1, 
-          probit_HMDA_2, probit_HMDA_3, probit_HMDA_4,  
+stargazer(lpm_HMDA, logit_HMDA, probit_HMDA1, 
+          probit_HMDA2, probit_HMDA3, probit_HMDA4,  
           digits = 3,
           type = "latex", 
           header = FALSE,
@@ -664,13 +664,13 @@ library(stargazer)
 rob_se <- list(
   sqrt(diag(vcovHC(lpm_HMDA, type = "HC1"))),
   sqrt(diag(vcovHC(logit_HMDA, type = "HC1"))),
-  sqrt(diag(vcovHC(probit_HMDA_1, type = "HC1"))),
-  sqrt(diag(vcovHC(probit_HMDA_2, type = "HC1"))),
-  sqrt(diag(vcovHC(probit_HMDA_3, type = "HC1"))),
-  sqrt(diag(vcovHC(probit_HMDA_4, type = "HC1")))
+  sqrt(diag(vcovHC(probit_HMDA1, type = "HC1"))),
+  sqrt(diag(vcovHC(probit_HMDA2, type = "HC1"))),
+  sqrt(diag(vcovHC(probit_HMDA3, type = "HC1"))),
+  sqrt(diag(vcovHC(probit_HMDA4, type = "HC1")))
 )
 
-stargazer(lpm_HMDA, logit_HMDA, probit_HMDA_1, probit_HMDA_2, probit_HMDA_3, probit_HMDA_4, 
+stargazer(lpm_HMDA, logit_HMDA, probit_HMDA1, probit_HMDA2, probit_HMDA3, probit_HMDA4, 
           digits = 3,
           type = "html", 
           se = rob_se,
@@ -691,13 +691,13 @@ library(stargazer)
 rob_se <- list(
   sqrt(diag(vcovHC(lpm_HMDA, type = "HC1"))),
   sqrt(diag(vcovHC(logit_HMDA, type = "HC1"))),
-  sqrt(diag(vcovHC(probit_HMDA_1, type = "HC1"))),
-  sqrt(diag(vcovHC(probit_HMDA_2, type = "HC1"))),
-  sqrt(diag(vcovHC(probit_HMDA_3, type = "HC1"))),
-  sqrt(diag(vcovHC(probit_HMDA_4, type = "HC1")))
+  sqrt(diag(vcovHC(probit_HMDA1, type = "HC1"))),
+  sqrt(diag(vcovHC(probit_HMDA2, type = "HC1"))),
+  sqrt(diag(vcovHC(probit_HMDA3, type = "HC1"))),
+  sqrt(diag(vcovHC(probit_HMDA4, type = "HC1")))
 )
 
-stargazer(lpm_HMDA, logit_HMDA, probit_HMDA_1, probit_HMDA_2, probit_HMDA_3, probit_HMDA_4, 
+stargazer(lpm_HMDA, logit_HMDA, probit_HMDA1, probit_HMDA2, probit_HMDA3, probit_HMDA4, 
           title = "\\label{tab:hmdad} HMDA Data: LPM, Probit and Logit Models",
           digits = 3,
           type = "latex",
@@ -744,19 +744,19 @@ predictions <- predict(logit_HMDA, newdata = new, type = "response")
 diff(predictions)
 
 # difference predicted by probit model (3)
-predictions <- predict(probit_HMDA_1, newdata = new, type = "response")
+predictions <- predict(probit_HMDA1, newdata = new, type = "response")
 diff(predictions)
 
 # difference predicted by probit model (4)
-predictions <- predict(probit_HMDA_2, newdata = new, type = "response")
+predictions <- predict(probit_HMDA2, newdata = new, type = "response")
 diff(predictions)
 
 # difference predicted by probit model (5)
-predictions <- predict(probit_HMDA_3, newdata = new, type = "response")
+predictions <- predict(probit_HMDA3, newdata = new, type = "response")
 diff(predictions)
 
 # difference predicted by probit model (6)
-predictions <- predict(probit_HMDA_4, newdata = new, type = "response")
+predictions <- predict(probit_HMDA4, newdata = new, type = "response")
 diff(predictions)
 ```
 
@@ -767,7 +767,7 @@ Regressions (4) to (6) use regression specifications that include different appl
 An interesting question related to racial discrimination can be investigated using the Probit model (6) where the interactions `r ttcode("blackyes:pirat")` and `r ttcode("blackyes:hirat")` are added to model (4). If the coefficient on `r ttcode("blackyes:pirat")` was different  from zero, the effect of the payment-to-income ratio on the denial probability would be different for black and white applicants. Similarly, a non-zero coefficient on `r ttcode("blackyes:hirat")` would indicate that loan officers weight the risk of bankruptcy associated with a high loan-to-value ratio differently for black and white mortgage applicants. We can test whether these coefficients are jointly significant at the $5\%$ level using an $F$-Test.
 
 ```{r}
-linearHypothesis(probit_HMDA_4,
+linearHypothesis(probit_HMDA4,
                  test = "F",
                  c("blackyes:pirat=0", "blackyes:hirat=0"),
                  vcov = vcovHC, type = "HC1")
@@ -776,7 +776,7 @@ linearHypothesis(probit_HMDA_4,
 Since $p\text{-value} \approx 0.77$ for this test, the null cannot be rejected. Nonetheless, we can reject the hypothesis that there is no racial discrimination at all since the corresponding $F$-test has a $p\text{-value}$ of about $0.002$.
 
 ```{r}
-linearHypothesis(probit_HMDA_4,
+linearHypothesis(probit_HMDA4,
                  test = "F",
                  c("blackyes=0", "blackyes:pirat=0", "blackyes:hirat=0"),
                  vcov = vcovHC, type = "HC1")

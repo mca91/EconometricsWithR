@@ -53,7 +53,7 @@ legend("bottomright", legend="linear fit",lwd=2,col="red")
 
 As pointed out in the book, the linear regression line seems to overestimate the true relationship when income is very high or very low and underestimates it for the middle income group.    
 
-Fortunately, OLS does not only handle linear functions of the regressors. We can for example model test scores as a function of income and the square of income. The corresponding regression model is
+Fortunately, OLS does not only handle linear functions of the regressors. We can, for example, model test scores as a function of income and the square of income. The corresponding regression model is
 
 $$TestScore_i = \beta_0 + \beta_1 \times income_i + \beta_2 \times income_i^2 + u_i,$$ called a *quadratic regression model*. That is, $income^2$ is treated as an additional explanatory variable. Hence, the quadratic model is a special case of a multivariate regression model. When fitting the model with `r ttcode("lm()")` we have to use the `r ttcode("^")` operator in conjunction with the function `r ttcode("I()")` to add the quadratic term as an additional regressor to the argument `r ttcode("formula")`. This is because the regression formula we pass to `r ttcode("formula")` is converted to an object of the class `r ttcode("formula")`. For objects of this class, the operators `r ttcode("+")`, `r ttcode("-")`, `r ttcode("*")` and `r ttcode("^")` have a nonarithmetic interpretation. `r ttcode("I()")` ensures that they are used as arithmetical operators, see `r ttcode("?I")`,
 
@@ -122,7 +122,7 @@ cubic_model <- lm(score ~ poly(income, degree = 3, raw = TRUE), data = CASchools
 
 In practice the question will arise which polynomial order should be chosen. First, similarly as for $r=2$, we can test the null hypothesis that the true relation is linear against the alternative hypothesis that the relationship is a polynomial of degree $r$:
 
-$$ H_0: \beta_2=0, \ \beta_3=0,\dots,\beta_r=0 \ \ \ \text{vs.} \ \ \ H_1: \text{at least one} \ \beta_j\neq0, \ j=2,\dots,r $$
+$$ H_0: \beta_2=0, \ \beta_3=0,\dots,\beta_r=0 \ \ \ \text{vs.} \ \ \ H_1: \text{at least one} \ \beta_j\neq0, \ j=2,\dots,r. $$
 
 This is a joint null hypothesis with $r-1$ restrictions so it can be tested using the $F$-test presented in Chapter \@ref(htaciimr). `r ttcode("linearHypothesis()")` can be used to conduct such tests. For example, we may test the null of a linear model against the alternative of a polynomial of a maximal degree $r=3$ as follows.
 
@@ -191,7 +191,7 @@ The estimated cubic model stored in `r ttcode("cubic_model")` is
 
 $$ \widehat{TestScore}_i = \underset{(5.83)}{600.1} + \underset{(0.86)}{5.02} \times income -\underset{(0.037)}{0.096} \times income^2 - \underset{(0.00047)}{0.00069} \times income^3. $$
 
-The $t$-statistic on $income^3$ is $1.45$ so the null that the relationship is quadratic cannot be rejected, even at the $10\%$ level. This is contrary to the result presented in the book which reports robust standard errors throughout so we will also use robust variance-covariance estimation to reproduce these results.
+The $t$-statistic on $income^3$ is $1.45$ so the null that the relationship is quadratic cannot be rejected, even at the $10\%$ level. This is contrary to the result presented in the book which reports robust standard errors throughout, so we will also use robust variance-covariance estimation to reproduce these results.
 
 ```{r}
 # test the hypothesis using robust standard errors
@@ -207,7 +207,7 @@ linearHypothesis(cubic_model,
                  vcov. = vcovHC, type = "HC1")
 ```
 
-With a $p$-value of $8.945e-13$, i.e., much less than $0.05$, the null hypothesis of linearity is rejected in favor of the alternative that the relationship is quadratic *or* cubic. 
+With a $p$-value of $8.945e-13$, i.e., much less than $0.05$, the null hypothesis of linearity is rejected in favor of the alternative that the relationship is quadratic or cubic. 
 
 #### Interpretation of Coefficients in Nonlinear Regression Models {-}
 
@@ -217,7 +217,7 @@ The coefficients in the polynomial regressions do not have a simple interpretati
 cat('
 <div class = "keyconcept" id="KC8.1">
 <h3 class = "right"> Key Concept 8.1 </h3>          
-<h3 class = "left"> The Expected Effect on $Y$ of a Change in $X_1$ in a Nonlinear Regression Model </h3>
+<h3 class = "left"> The Expected Effect on $Y$ for a Change in $X_1$ in a Nonlinear Regression Model </h3>
 
 Consider the nonlinear population regression model
 
@@ -238,7 +238,7 @@ $$\\Delta \\widehat{Y} = \\hat{f}(X_1 + \\Delta X_1, X_2, \\cdots, X_k) - \\hat{
 ```
 
 ```{r, eval = my_output == "latex", results='asis', echo=F, purl=F}
-cat('\\begin{keyconcepts}[The Expected Effect on $Y$ of a Change in $X_1$ in a Nonlinear Regression Model]{8.1}
+cat('\\begin{keyconcepts}[The Expected Effect on $Y$ for a Change in $X_1$ in a Nonlinear Regression Model]{8.1}
 Consider the nonlinear population regression model
 
 $$ Y_i = f(X_{1i}, X_{2i}, \\dots, X_{ki}) + u_i \\ , \\ i=1,\\dots,n,$$
@@ -268,7 +268,7 @@ Because the regression function is quadratic, this effect depends on the *initia
 
 In order to obtain the $\Delta \widehat{Y}$ associated with a change in income form $10$ to $11$, we use the following formula: 
 
-$$\Delta \widehat{Y} = \left(\hat{\beta}_0 + \hat{\beta}_1 \times 11 + \hat{\beta}_2 \times 11^2\right) - \left(\hat{\beta}_0 + \hat{\beta}_1 \times 10 + \hat{\beta}_2 \times 10^2\right) $$
+$$\Delta \widehat{Y} = \left(\hat{\beta}_0 + \hat{\beta}_1 \times 11 + \hat{\beta}_2 \times 11^2\right) - \left(\hat{\beta}_0 + \hat{\beta}_1 \times 10 + \hat{\beta}_2 \times 10^2\right). $$
 To compute $\widehat{Y}$ using `r ttcode("R")` we may use `r ttcode("predict()")`.
 
 ```{r quadratic}
@@ -307,9 +307,9 @@ Logarithms convert changes in variables into percentage changes. This is conveni
 
 There are three different cases in which logarithms might be used. 
 
-1. Transform $X$ with its logarithm, but not $Y$.
+1. Transform $X$ to its logarithm, but not $Y$.
 
-2. Analogously we could transform $Y$ to its logarithm but leave $X$ at level. 
+2. Analogously we can transform $Y$ to its logarithm but leave $X$ at level. 
 
 3. Both $Y$ and $X$ are transformed to their logarithms. 
 
@@ -317,7 +317,7 @@ The interpretation of the regression coefficients is different in each case.
 
 #### Case I: $X$ is in Logarithm, $Y$ is not. {-}
 
-The regression model then is  $$Y_i = \beta_0 + \beta_1 \times \ln(X_i) + u_i \text{, } i=1,...,n. $$ Similar as for polynomial regressions we do not have to create a new variable before using `r ttcode("lm()")`. We can simply adjust the 
+The regression model then is  $$Y_i = \beta_0 + \beta_1 \times \ln(X_i) + u_i \text{, } i=1,...,n. $$ Similar as for polynomial regressions, we do not have to create a new variable before using `r ttcode("lm()")`. We can simply adjust the 
 `r ttcode("formula")` argument of `r ttcode("lm()")` to tell `r ttcode("R")` that the log-transformation of a variable should be used.    
 
 ```{r}
@@ -372,7 +372,7 @@ Y_hat_matrix <- matrix(Y_hat, nrow = 2, byrow = TRUE)
 Y_hat_matrix[, 2] - Y_hat_matrix[, 1]
 ```
 
-By setting `r ttcode("nrow = 2")` and `r ttcode("byrow = TRUE")` in `r ttcode("matrix()")` we ensure that `r ttcode("Y_hat_matrix")` is a $2\times2$ matrix filled row-wise with the entries of `r ttcode("Y_hat")`. 
+By setting `r ttcode("nrow = 2")` and `r ttcode("byrow = TRUE")` in `r ttcode("matrix()")`, we ensure that `r ttcode("Y_hat_matrix")` is a $2\times2$ matrix filled row-wise with the entries of `r ttcode("Y_hat")`. 
 
 The estimated model states that for an income increase from $\$10000$ to $\$11000$, test scores increase by an expected amount of $3.47$ points. When income increases from $\$40000$ to $\$41000$, the expected increase in test scores is only about $0.90$ points.
 
@@ -503,7 +503,7 @@ cat('\\begin{keyconcepts}[Logarithms in Regression: Three Cases]{8.2}
 
 Of course we can also estimate a *polylog* model like
 
-$$ TestScore_i = \beta_0 + \beta_1 \times \ln(income_i) + \beta_2 \times \ln(income_i)^2 + \beta_3 \times \ln(income_i)^3 + u_i $$
+$$ TestScore_i = \beta_0 + \beta_1 \times \ln(income_i) + \beta_2 \times \ln(income_i)^2 + \beta_3 \times \ln(income_i)^3 + u_i, $$
 
 which models the dependent variable $TestScore$ by a third-degree polynomial of the log-transformed regressor $income$.
 
@@ -570,7 +570,7 @@ legend("bottomright",
 
 Both regression lines look nearly identical. Altogether the linear-log model may be preferable since it is more parsimonious in terms of regressors: it does not include higher-degree polynomials.
 
-## Interactions Between Independent Variables
+## Interactions between Independent Variables
 
 There are research questions where it is interesting to learn how the effect on $Y$ of a change in an independent variable depends on the value of another independent variable. For example, we may ask if districts with many English learners benefit differentially from a decrease in class sizes to those with few English learning students. To assess this using a multiple regression model, we include an interaction term. We consider three cases:
 
@@ -606,7 +606,7 @@ Now assume that
 
 We know that $\beta_1$ measures the average difference in $\ln(Earnings)$ between individuals with and without a college degree and $\beta_2$ is the gender differential in $\ln(Earnings)$, ceteris paribus. This model *does not* allow us to determine if there is a gender specific effect of having a college degree and, if so, *how strong* this effect is. It is easy to come up with a model specification that allows to investigate this:
 
-$$ Y_i = \beta_0 + \beta_1 \times D_{1i} + \beta_2 \times D_{2i} + \beta_3 \times (D_{1i} \times D_{2i}) + u_i $$
+$$ Y_i = \beta_0 + \beta_1 \times D_{1i} + \beta_2 \times D_{2i} + \beta_3 \times (D_{1i} \times D_{2i}) + u_i, $$
 
 $(D_{1i} \times D_{2i})$ is called an interaction term and $\beta_3$ measures the difference in the effect of having a college degree for women versus men.
 
@@ -647,7 +647,7 @@ If $D_{1i}$ switches from $0$ to $1$ we obtain
 
 Hence, the overall effect is
 
-$$ E(Y_i\vert D_{1i}=1, D_{2i} = d_2) - E(Y_i\vert D_{1i}=0, D_{2i} = d_2) = \beta_1 + \beta_3 \times d_2 $$
+$$ E(Y_i\vert D_{1i}=1, D_{2i} = d_2) - E(Y_i\vert D_{1i}=0, D_{2i} = d_2) = \beta_1 + \beta_3 \times d_2, $$
 so the effect is a difference of expected values.
 
 #### Application to the Student-Teacher Ratio and the Percentage of English Learners {-}
@@ -694,7 +694,7 @@ bi_model <- lm(score ~ HiSTR * HiEL, data = CASchools)
 coeftest(bi_model, vcov. = vcovHC, type = "HC1")
 ```
 
-The estimated regression model is $$\widehat{TestScore} = \underset{(1.39)}{664.1} - \underset{(1.93)}{1.9} \times HiSTR - \underset{(2.33)}{18.3} \times HiEL - \underset{(3.12)}{3.3} \times (HiSTR \times HiEL)$$ and it predicts that the effect of moving from a school district with a low student-teacher ratio to a district with a high student-teacher ratio, depending on high or low percentage of english learners is $-1.9-3.3\times HiEL$. So for districts with a low share of english learners ($HiEL = 0$), the estimated effect is a decrease of $1.9$ points in test scores while for districts with a large fraction of English learners ($HiEL = 1$), the predicted decrease in test scores amounts to $1.9 + 3.3 = 5.2$ points.
+The estimated regression model is $$\widehat{TestScore} = \underset{(1.39)}{664.1} - \underset{(1.93)}{1.9} \times HiSTR - \underset{(2.33)}{18.3} \times HiEL - \underset{(3.12)}{3.3} \times (HiSTR \times HiEL),$$ and it predicts that the effect of moving from a school district with a low student-teacher ratio to a district with a high student-teacher ratio, depending on high or low percentage of english learners is $-1.9-3.3\times HiEL$. So for districts with a low share of english learners ($HiEL = 0$), the estimated effect is a decrease of $1.9$ points in test scores while for districts with a large fraction of English learners ($HiEL = 1$), the predicted decrease in test scores amounts to $1.9 + 3.3 = 5.2$ points.
 
 We can also use the model to estimate the mean test score for each possible combination of the included binary variables.
 
@@ -717,10 +717,10 @@ predict(bi_model, newdata = data.frame("HiSTR" = 1, "HiEL" = 1))
 We now verify that these predictions are differences in the coefficient estimates presented in equation \@ref(eq:im):
 
 \begin{align*}
-\widehat{TestScore} = \hat\beta_0 = 664.1 \quad &\Leftrightarrow \quad HiSTR = 0, \, HIEL = 0\\
-\widehat{TestScore} = \hat\beta_0 + \hat\beta_2 = 664.1 - 18.3 = 645.8 \quad &\Leftrightarrow \quad HiSTR = 0, \, HIEL = 1\\
-\widehat{TestScore} = \hat\beta_0 + \hat\beta_1 = 664.1 - 1.9 = 662.2 \quad &\Leftrightarrow \quad HiSTR = 1, \, HIEL = 0\\
-\widehat{TestScore} = \hat\beta_0 + \hat\beta_1 + \hat\beta_2 + \hat\beta_3  = 664.1 - 1.9 - 18.3 - 3.3 = 640.6 \quad &\Leftrightarrow \quad HiSTR = 1, \, HIEL = 1
+\widehat{TestScore} = \hat\beta_0 = 664.1 \quad &\Leftrightarrow \quad HiSTR = 0, \, HIEL = 0.\\
+\widehat{TestScore} = \hat\beta_0 + \hat\beta_2 = 664.1 - 18.3 = 645.8 \quad &\Leftrightarrow \quad HiSTR = 0, \, HIEL = 1.\\
+\widehat{TestScore} = \hat\beta_0 + \hat\beta_1 = 664.1 - 1.9 = 662.2 \quad &\Leftrightarrow \quad HiSTR = 1, \, HIEL = 0.\\
+\widehat{TestScore} = \hat\beta_0 + \hat\beta_1 + \hat\beta_2 + \hat\beta_3  = 664.1 - 1.9 - 18.3 - 3.3 = 640.6 \quad &\Leftrightarrow \quad HiSTR = 1, \, HIEL = 1.
 \end{align*}
 
 #### Interactions Between a Continuous and a Binary Variable {-}
@@ -766,12 +766,12 @@ An interaction term like $X_i \\times D_i$ (where $X_i$ is continuous and $D_i$ 
 variable $D_i$. There are three possibilities:
 
 1. Different intercept and same slope:
-$$ Y_i = \\beta_0 + \\beta_1 X_i + \\beta_2 D_i + u_i $$
+$$ Y_i = \\beta_0 + \\beta_1 X_i + \\beta_2 D_i + u_i . $$
 2. Different intercept and different slope:
-$$ Y_i = \\beta_0 + \\beta_1 X_i + \\beta_2 D_i + \\beta_3 \\times (X_i \\times D_i) + u_i $$
+$$ Y_i = \\beta_0 + \\beta_1 X_i + \\beta_2 D_i + \\beta_3 \\times (X_i \\times D_i) + u_i .$$
 
 3. Same intercept and different slope:
-$$ Y_i = \\beta_0 + \\beta_1 X_i + \\beta_2 (X_i \\times D_i) + u_i $$
+$$ Y_i = \\beta_0 + \\beta_1 X_i + \\beta_2 (X_i \\times D_i) + u_i . $$
 </div>
 ')
 ```
@@ -783,11 +783,11 @@ variable $D_i$. There are three possibilities:\\newline
 
 \\begin{enumerate}
 \\item Different intercept and same slope:
-$$ Y_i = \\beta_0 + \\beta_1 X_i + \\beta_2 D_i + u_i $$
+$$ Y_i = \\beta_0 + \\beta_1 X_i + \\beta_2 D_i + u_i .$$
 \\item Different intercept and different slope:
-$$ Y_i = \\beta_0 + \\beta_1 X_i + \\beta_2 D_i + \\beta_3 \\times (X_i \\times D_i) + u_i $$
+$$ Y_i = \\beta_0 + \\beta_1 X_i + \\beta_2 D_i + \\beta_3 \\times (X_i \\times D_i) + u_i .$$
 \\item Same intercept and different slope:
-$$ Y_i = \\beta_0 + \\beta_1 X_i + \\beta_2 (X_i \\times D_i) + u_i $$
+$$ Y_i = \\beta_0 + \\beta_1 X_i + \\beta_2 (X_i \\times D_i) + u_i .$$
 \\end{enumerate}
 
 \\end{keyconcepts}
@@ -936,12 +936,12 @@ legend("topleft",
 
 Consider a regression model with $Y$ the log earnings and two continuous regressors $X_1$, the years of work experience, and $X_2$, the years of schooling. We want to estimate the effect on wages of an additional year of work experience depending on a given level of schooling. This effect can be assessed by including the interaction term $(X_{1i} \times X_{2i})$ in the model:
 
-$$ \Delta Y_i = \beta_0 + \beta_1 \times X_{1i} + \beta_2 \times X_{2i} + \beta_3 \times (X_{1i} \times X_{2i}) + u_i $$
+$$ \Delta Y_i = \beta_0 + \beta_1 \times X_{1i} + \beta_2 \times X_{2i} + \beta_3 \times (X_{1i} \times X_{2i}) + u_i. $$
 
-Following Key Concept 8.1 we find that the effect on $Y$ of a change on $X_1$ given $X_2$ is 
+Following Key Concept 8.1, we find that the effect on $Y$ for a change on $X_1$ given $X_2$ is 
 $$ \frac{\Delta Y}{\Delta X_1} = \beta_1 + \beta_3 X_2. $$
 
-In the earnings example, a positive $\beta_3$ implies that the effect on log earnings of an additional year of work experience grows linearly with years of schooling. Vice versa we have $$ \frac{\Delta Y}{\Delta X_2} = \beta_2 + \beta_3 X_1 $$ as the effect on log earnings of an additional year of schooling holding work experience constant.
+In the earnings example, a positive $\beta_3$ implies that the effect on log earnings of an additional year of work experience grows linearly with years of schooling. In reverse, we have $$ \frac{\Delta Y}{\Delta X_2} = \beta_2 + \beta_3 X_1 $$ as the effect on log earnings of an additional year of schooling holding work experience constant.
 
 Altogether we find that $\beta_3$ measures the effect of a unit increase in $X_1$ and $X_2$ *beyond* the effects of increasing $X_1$ alone and $X_2$ alone by one unit. The overall change in $Y$ is thus
 
@@ -1028,16 +1028,16 @@ The lowest price observed is a mere $0.5$¢ per citation while the highest price
 We now estimate four different model specifications. All models are log-log models. This is useful because it allows us to directly interpret the coefficients as elasticities, see Key Concept 8.2. $(I)$ is a linear model. To alleviate a possible omitted variable bias, $(II)$ augments $(I)$ by the covariates $\ln(Age)$ and $\ln(Characters)$. The largest model $(III)$ attempts to capture nonlinearities in the relationship of $\ln(Subscriptions)$ and $\ln(PricePerCitation)$ using a cubic regression function of $\ln(PricePerCitation)$ and also adds the interaction term $(PricePerCitation \times Age)$ while specification $(IV)$ does not include the cubic term.
 
 \begin{align*}
-  (I)\quad \ln(Subscriptions_i) =& \, \beta_0 + \beta_1 \ln(PricePerCitation_i) + u_i \\
+  (I)\quad \ln(Subscriptions_i) =& \, \beta_0 + \beta_1 \ln(PricePerCitation_i) + u_i .\\
   \\
-  (II)\quad \ln(Subscriptions_i) =& \, \beta_0 + \beta_1 \ln(PricePerCitation_i) + \beta_4 \ln(Age_i) + \beta_6 \ln(Characters_i) + u_i \\
+  (II)\quad \ln(Subscriptions_i) =& \, \beta_0 + \beta_1 \ln(PricePerCitation_i) + \beta_4 \ln(Age_i) + \beta_6 \ln(Characters_i) + u_i .\\
   \\
   (III)\quad \ln(Subscriptions_i) =& \, \beta_0 + \beta_1 \ln(PricePerCitation_i) + \beta_2 \ln(PricePerCitation_i)^2 \\
   +& \, \beta_3 \ln(PricePerCitation_i)^3 + \beta_4 \ln(Age_i)\\ 
-  +& \, \beta_5 [\ln(Age_i) \times \ln(PricePerCitation_i)] + \beta_6 \ln(Characters_i) + u_i \\
+  +& \, \beta_5 [\ln(Age_i) \times \ln(PricePerCitation_i)] + \beta_6 \ln(Characters_i) + u_i . \\
   \\
   (IV)\quad \ln(Subscriptions_i) =& \, \beta_0 + \beta_1 \ln(PricePerCitation_i) + \beta_4 \ln(Age_i)\\ 
-  +& \, \beta_5 [\ln(Age_i) \times \ln(PricePerCitation_i)] + \beta_6 \ln(Characters_i) + u_i
+  +& \, \beta_5 [\ln(Age_i) \times \ln(PricePerCitation_i)] + \beta_6 \ln(Characters_i) + u_i .
 \end{align*}
 
 ```{r}
@@ -1234,7 +1234,7 @@ In this section we will discuss three specific questions about the relationship 
 
 1. Does the effect on test scores of decreasing the student-teacher ratio depend on the fraction of English learners when we control for economic idiosyncrasies of the different districts?
 
-2. Does this effect depend on the the student-teacher ratio?
+2. Does this effect depend on the student-teacher ratio?
 
 3. *How strong* is the effect of decreasing the student-teacher ratio (by two students per teacher) if we take into account economic characteristics and nonlinearities? 
 
@@ -1245,19 +1245,19 @@ To answer these questions we consider a total of seven models, some of which are
 The considered model specifications are:
 
 \begin{align}
- TestScore_i =& \beta_0 + \beta_1 size_i + \beta_4 english_i + \beta_9 lunch_i + u_i\\ 
+ TestScore_i =& \beta_0 + \beta_1 size_i + \beta_4 english_i + \beta_9 lunch_i + u_i.\\ 
  \\
- TestScore_i =& \beta_0 + \beta_1 size_i + \beta_4 english_i + \beta_9 lunch_i + \beta_{10} \ln(income_i) + u_i \\
+ TestScore_i =& \beta_0 + \beta_1 size_i + \beta_4 english_i + \beta_9 lunch_i + \beta_{10} \ln(income_i) + u_i. \\
  \\
-  TestScore_i =& \beta_0 + \beta_1 size_i + \beta_5 HiEL_i + \beta_6 (HiEL_i\times size_i) + u_i \\
+  TestScore_i =& \beta_0 + \beta_1 size_i + \beta_5 HiEL_i + \beta_6 (HiEL_i\times size_i) + u_i. \\
   \\
-  TestScore_i =& \beta_0 + \beta_1 size_i + \beta_5 HiEL_i + \beta_6 (HiEL_i\times size_i) + \beta_9 lunch_i + \beta_{10} \ln(income_i) + u_i \\
+  TestScore_i =& \beta_0 + \beta_1 size_i + \beta_5 HiEL_i + \beta_6 (HiEL_i\times size_i) + \beta_9 lunch_i + \beta_{10} \ln(income_i) + u_i. \\
   \\
-  TestScore_i =& \beta_0 + \beta_1 size_i + \beta_2 size_i^2 + \beta_5 HiEL_i + \beta_9 lunch_i + \beta_{10} \ln(income_i) + u_i \\
+  TestScore_i =& \beta_0 + \beta_1 size_i + \beta_2 size_i^2 + \beta_5 HiEL_i + \beta_9 lunch_i + \beta_{10} \ln(income_i) + u_i. \\
   \\
-  TestScore_i =& \beta_0 + \beta_1 size_i + \beta_2 size_i^2 + \beta_3 size_i^3 + \beta_5 HiEL_i + \beta_6 (HiEL\times size) \\  &+ \beta_7 (HiEL_i\times size_i^2) + \beta_8 (HiEL_i\times size_i^3) + \beta_9 lunch_i + \beta_{10} \ln(income_i) + u_i \\
+  TestScore_i =& \beta_0 + \beta_1 size_i + \beta_2 size_i^2 + \beta_3 size_i^3 + \beta_5 HiEL_i + \beta_6 (HiEL\times size) \\  &+ \beta_7 (HiEL_i\times size_i^2) + \beta_8 (HiEL_i\times size_i^3) + \beta_9 lunch_i + \beta_{10} \ln(income_i) + u_i. \\
 \\
-  TestScore_i =& \beta_0 + \beta_1 size_i + \beta_2 size_i^2 + \beta_3 size_i^3 + \beta_4 english + \beta_9 lunch_i + \beta_{10} \ln(income_i) + u_i
+  TestScore_i =& \beta_0 + \beta_1 size_i + \beta_2 size_i^2 + \beta_3 size_i^3 + \beta_4 english + \beta_9 lunch_i + \beta_{10} \ln(income_i) + u_i.
 \end{align}
 
 ```{r, tidy=TRUE}
