@@ -32,7 +32,8 @@ events, e.g., 'the observed outcome lies between $2$ and $5$'.
 A basic function to draw random samples from a specified set of elements is the function `r ttcode("sample()")`, see `?sample`. We can use it to simulate the random outcome of a dice roll. Let's roll the dice!
 
 ```{r, echo = T, eval = T, message = F, warning = F} 
-sample(1:6, size=1) 
+sample(1:6,
+       size=1) 
 ```
 
 The probability distribution of a discrete random variable is the list of all possible values of the variable and their probabilities that sum to $1$. The cumulative probability distribution function gives the probability that the random variable is less than or equal to a particular value.
@@ -40,8 +41,13 @@ The probability distribution of a discrete random variable is the list of all po
 For the dice roll, the probability distribution and the cumulative probability distribution are summarized in Table \@ref(tab:pdist).
 
 ```{r pdist, echo=FALSE, purl=FALSE}
-pdfdata <- rbind("Outcome"=as.character(1:6), "Probability"=c("1/6","1/6","1/6","1/6","1/6","1/6"), "Cumulative Probability"=c("1/6","2/6","3/6","4/6","5/6","1"))
-knitr::kable(pdfdata, format = my_output, caption = "PDF and CDF of a Dice Roll")
+pdfdata <- rbind("Outcome" = as.character(1:6),
+                 "Probability" = c("1/6","1/6","1/6","1/6","1/6","1/6"),
+                 "Cumulative Probability" = c("1/6","2/6","3/6","4/6","5/6","1")
+                 )
+knitr::kable(pdfdata,
+             format = my_output,
+             caption = "PDF and CDF of a Dice Roll")
 ```
 
 We can easily plot both functions using `r ttcode("R")`. Since the probability is equal to $1/6$ for each outcome, we can set up the `r ttcode("probability")` vector using the function `r ttcode("rep()")`, which replicates a given value a specified number of times.
@@ -114,7 +120,9 @@ observing $4$, $5$, $6$ or $7$ successes for $B(10, 0.5)$. This may be computed 
 
 ```{r, echo = T, eval = T, message = F, warning = F} 
 # compute P(4 <= k <= 7) using 'dbinom()'
-sum(dbinom(x = 4:7, size = 10, prob = 0.5))
+sum(dbinom(x = 4:7,
+           size = 10,
+           prob = 0.5))
 ```
 
 An alternative approach is to use `r ttcode("pbinom()")`, the distribution function of the binomial distribution to compute $$P(4 \leq k \leq 7) = P(k \leq 7) - P(k\leq3 ).$$
@@ -229,7 +237,9 @@ An example of sampling with replacement is rolling a dice three times in a row.
 set.seed(1)
 
 # rolling a dice three times in a row
-sample(1:6, 3, replace = T)
+sample(1:6,
+       3,
+       replace = T)
 ```
 
 Note that every call of `sample(1:6, 3, replace = T)` gives a different outcome since we draw with replacement at random. To allow you to reproduce the results of computations that involve random numbers, we will use `set.seed()` to set R's random number generator to a specific state. You should check that it actually works: set the seed in your R session to 1 and verify that you obtain the same three random numbers!  
@@ -774,7 +784,9 @@ By definition, the support of both PDF and CDF of an $F_{M,n}$ distributed rando
 Say we have an $F$ distributed random variable $Y$ with numerator degrees of freedom $3$ and denominator degrees of freedom $14$ and are interested in $P(Y \geq 2)$. This can be computed with the help of the function `r ttcode("pf()")`. By setting the argument `r ttcode("lower.tail")` to `r ttcode("FALSE")` we ensure that `r ttcode("R")` computes $1- P(Y \leq 2)$, i.e, the probability mass in the tail right of $2$. 
 
 ```{r, echo = T, eval = T, message = F, warning = F}
-pf(2, df1 = 3, df2 = 14, lower.tail = F)
+pf(2,
+   df1 = 3, df2 = 14,
+   lower.tail = F)
 ```
 
 We can visualize this probability by drawing a line plot of the related density and adding a color shading with `r ttcode("polygon()")`.
@@ -792,7 +804,9 @@ curve(df(x ,3 ,14),
       main = "Density Function")
 
 # draw the polygon
-polygon(x, y, col = "orange")
+polygon(x,
+        y,
+        col = "orange")
 ```
 
 
@@ -837,7 +851,9 @@ In simple random sampling, $n$ objects are drawn at random from a population. Ea
 What happens if we consider functions of the sample data? Consider the example of rolling a dice two times in a row once again. A sample now consists of two independent random draws from the set $\{1,2,3,4,5,6\}$. It is apparent that any function of these two random variables, e.g. their sum, is also random. Convince yourself by executing the code below several times.
 
 ```{r, echo = T, eval = T, message = F, warning = F} 
-sum(sample(1:6, 2, replace = T))
+sum(sample(1:6,
+           2,
+           replace = T))
 ```
 
 Clearly, this sum, let us call it $S$, is a random variable as it depends on randomly drawn summands. For this example, we can completely enumerate all outcomes and hence write down the theoretical probability distribution of our function of the sample data $S$:
@@ -897,7 +913,8 @@ So the distribution of $S$ is known. It is also evident that its distribution di
 
 ```{r, echo = T, eval = T, message = F, warning = F, fig.align='center'} 
 # divide the plotting area into one row with two columns
-par(mfrow = c(1, 2),cex.main=1)
+par(mfrow = c(1, 2),
+    cex.main=1)
 
 # plot the distribution of S
 barplot(PS, 
@@ -1123,7 +1140,9 @@ set.seed(1)
 
 # set number of coin tosses and simulate
 N <- 30000
-Y <- sample(0:1, N, replace = T)
+Y <- sample(0:1,
+            N,
+            replace = T)
 
 # Calculate R_n for 1:N
 S <- cumsum(Y)
