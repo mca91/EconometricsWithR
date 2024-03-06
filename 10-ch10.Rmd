@@ -58,7 +58,8 @@ library(AER)
 library(plm)
 data(Fatalities)
 # pdata.frame() declares the data as panel data.
-Fatalities<- pdata.frame(Fatalities, index = c("state", "year"))
+Fatalities<- pdata.frame(Fatalities,
+                         index = c("state", "year"))
 ```
 
 ```{r, warning=FALSE, message=FALSE}
@@ -97,17 +98,25 @@ We start by reproducing Figure 10.1 of the book. To this end we estimate simple 
 Fatalities$fatal_rate <- Fatalities$fatal / Fatalities$pop * 10000
 
 # subset the data
-Fatalities1982 <- subset(Fatalities, year == "1982")
-Fatalities1988 <- subset(Fatalities, year == "1988")
+Fatalities1982 <- subset(Fatalities, 
+                         year == "1982")
+Fatalities1988 <- subset(Fatalities,
+                         year == "1988")
 ```
 
 ```{r, warning=FALSE, message=FALSE}
 # estimate simple regression models using 1982 and 1988 data
-fatal1982_mod <- lm(fatal_rate ~ beertax, data = Fatalities1982)
-fatal1988_mod <- lm(fatal_rate ~ beertax, data = Fatalities1988)
+fatal1982_mod <- lm(fatal_rate ~ beertax,
+                    data = Fatalities1982)
+fatal1988_mod <- lm(fatal_rate ~ beertax,
+                    data = Fatalities1988)
 
-coeftest(fatal1982_mod, vcov. = vcovHC, type = "HC1")
-coeftest(fatal1988_mod, vcov. = vcovHC, type = "HC1")
+coeftest(fatal1982_mod,
+         vcov. = vcovHC,
+         type = "HC1")
+coeftest(fatal1988_mod,
+         vcov. = vcovHC, 
+         type = "HC1")
 ```
 
 The estimated regression functions are
@@ -128,8 +137,12 @@ plot(x = as.double(Fatalities1982$beertax),
      pch = 20, 
      col = "steelblue")
 
-abline(fatal1982_mod, lwd = 1.5, col="darkred")
-legend("topright",lty=1,col="darkred","Estimated Regression Line")
+abline(fatal1982_mod,
+       lwd = 1.5,
+       col="darkred")
+legend("topright",
+       lty=1,
+       col="darkred","Estimated Regression Line")
 
 # plot observations and add estimated regression line for 1988 data
 plot(x = as.double(Fatalities1988$beertax), 
@@ -141,8 +154,12 @@ plot(x = as.double(Fatalities1988$beertax),
      pch = 20, 
      col = "steelblue")
 
-abline(fatal1988_mod, lwd = 1.5,col="darkred")
-legend("bottomright",lty=1,col="darkred","Estimated Regression Line")
+abline(fatal1988_mod,
+       lwd = 1.5,
+       col="darkred")
+legend("bottomright",
+       lty=1,
+       col="darkred","Estimated Regression Line")
 ```
 
 
@@ -168,7 +185,9 @@ diff_beertax <- Fatalities1988$beertax - Fatalities1982$beertax
 # estimate a regression using differenced data
 fatal_diff_mod <- lm(diff_fatal_rate ~ diff_beertax)
 
-coeftest(fatal_diff_mod, vcov = vcovHC, type = "HC1")
+coeftest(fatal_diff_mod,
+         vcov = vcovHC,
+         type = "HC1")
 ```
 
 Including the intercept allows for a change in the mean fatality rate in the time between 1982 and 1988 in the absence of a change in the beer tax.
@@ -190,9 +209,13 @@ plot(x = as.double(diff_beertax),
      col = "steelblue")
 
 # add the regression line to plot
-abline(fatal_diff_mod, lwd = 1.5,col="darkred")
+abline(fatal_diff_mod,
+       lwd = 1.5,
+       col="darkred")
 #add legend
-legend("topright",lty=1,col="darkred","Estimated Regression Line")
+legend("topright",
+       lty=1,
+       col="darkred","Estimated Regression Line")
 ```
 
 
@@ -301,7 +324,8 @@ a regression of the traffic fatality rate on beer tax and 48 binary regressors -
 We can simply use the function `r ttcode("lm()")` to obtain an estimate of $\beta_1$.
 
 ```{r}
-fatal_fe_lm_mod <- lm(fatal_rate ~ beertax + state - 1, data = Fatalities)
+fatal_fe_lm_mod <- lm(fatal_rate ~ beertax + state - 1,
+                      data = Fatalities)
 fatal_fe_lm_mod
 ```
 
@@ -316,7 +340,8 @@ fatal_demeaned <- with(Fatalities,
             beertax = beertax - ave(beertax, state)))
 
 # estimate the regression
-summary(lm(fatal_rate ~ beertax - 1, data = fatal_demeaned))
+summary(lm(fatal_rate ~ beertax - 1,
+           data = fatal_demeaned))
 ```
 
 The function `r ttcode("ave")` is convenient for computing group averages. We use it to obtain state specific averages of the fatality rate and the beer tax.
@@ -339,7 +364,9 @@ fatal_fe_mod <- plm(fatal_rate ~ beertax,
                     model = "within")
 
 
-coeftest(fatal_fe_mod, vcov. = vcovHC, type = "HC1")
+coeftest(fatal_fe_mod,
+         vcov. = vcovHC,
+         type = "HC1")
 ```
 
 The estimated coefficient is again $-0.6559$. Note that `r ttcode("plm()")` uses the entity-demeaned OLS algorithm and thus does not report dummy coefficients. The estimated regression function is 
@@ -362,7 +389,8 @@ The following code chunk shows how to estimate the combined entity and time fixe
 # estimate a combined time and entity fixed effects regression model
 
 # via lm()
-fatal_tefe_lm_mod <- lm(fatal_rate ~ beertax + state + year - 1, data = Fatalities)
+fatal_tefe_lm_mod <- lm(fatal_rate ~ beertax + state + year - 1,
+                        data = Fatalities)
 fatal_tefe_lm_mod
 
 # via plm()
@@ -372,7 +400,9 @@ fatal_tefe_mod <- plm(fatal_rate ~ beertax,
                       model = "within", 
                       effect = "twoways")
 
-coeftest(fatal_tefe_mod, vcov = vcovHC, type = "HC1")
+coeftest(fatal_tefe_mod,
+         vcov = vcovHC,
+         type = "HC1")
 ```
 
 Before discussing the outcomes we convince ourselves that `r ttcode("state")` and `r ttcode("year")` are of the class `r ttcode("factor")` . 
@@ -451,14 +481,18 @@ class(fatal_tefe_lm_mod)
 
 # obtain a summary based on heteroskedasticity-robust standard errors 
 # (no adjustment for heteroskedasticity only)
-coeftest(fatal_tefe_lm_mod, vcov = vcovHC, type = "HC1")[1, ]
+coeftest(fatal_tefe_lm_mod,
+         vcov = vcovHC,
+         type = "HC1")[1, ]
 
 # check class of the (plm) model object
 class(fatal_tefe_mod)
 
 # obtain a summary based on clustered standard errors 
 # (adjustment for autocorrelation + heteroskedasticity)
-coeftest(fatal_tefe_mod, vcov = vcovHC, type = "HC1")
+coeftest(fatal_tefe_mod,
+         vcov = vcovHC,
+         type = "HC1")
 ```
 
 The outcomes differ rather strongly: imposing no autocorrelation we obtain a standard error of $0.25$ which implies significance of $\hat\beta_1$, the coefficient on $BeerTax$ at the level of $5\%$. On the contrary, using the clustered standard error $0.35$ results in a failure to reject the  null hypothesis $H_0: \beta_1 = 0$ at the same level, see equation \@ref(eq:cbnfemod). Consult Appendix 10.2 of the book (Stock and Watson) for insights on the computation of clustered standard errors.   
@@ -489,20 +523,24 @@ Fatalities$drinkagec <- cut(Fatalities$drinkage,
 Fatalities$drinkagec <- relevel(Fatalities$drinkagec, "[21,22]")
 
 # mandatory jail or community service?
-Fatalities$punish <- with(Fatalities, factor(jail == "yes" | service == "yes", 
+Fatalities$punish <- with(Fatalities,
+                          factor(jail == "yes" | service == "yes", 
                                              labels = c("no", "yes")))
 
 # the set of observations on all variables for 1982 and 1988
-fatal_1982_1988 <- Fatalities[with(Fatalities, year == 1982 | year == 1988), ]
+fatal_1982_1988 <- Fatalities[with(Fatalities,
+                                   year == 1982 | year == 1988), ]
 ```
 
 Next, we estimate all seven models using `r ttcode("plm()")`.
 
 ```{r}
 # estimate all seven models
-fat_mod1 <- lm(fatal_rate ~ beertax, data = Fatalities)
+fat_mod1 <- lm(fatal_rate ~ beertax,
+               data = Fatalities)
 
-fat_mod2 <- plm(fatal_rate ~ beertax + state, data = Fatalities)
+fat_mod2 <- plm(fatal_rate ~ beertax + state,
+                data = Fatalities)
 
 fat_mod3 <- plm(fatal_rate ~ beertax + state + year,
                        index = c("state","year"),
@@ -586,14 +624,22 @@ rob_se <- list(
   sqrt(diag(vcovHC(fat_mod7, type="HC1")))
 )
 
-stargazer(fat_mod1, fat_mod2, fat_mod3, fat_mod4, fat_mod5, fat_mod6, fat_mod7, 
+stargazer(fat_mod1,
+          fat_mod2,
+          fat_mod3,
+          fat_mod4,
+          fat_mod5, 
+          fat_mod6, 
+          fat_mod7, 
           digits = 3,
           type = "html",
           header = FALSE,
           se = rob_se,
+          model.names = FALSE,
           dep.var.caption = "Dependent Variable: Fatality Rate",
-          model.numbers = FALSE,
-          column.labels = c("(1)", "(2)", "(3)", "(4)", "(5)", "(6)", "(7)")
+          dep.var.labels.include =FALSE,
+          model.numbers = TRUE,
+          column.labels = c('OLS','','','Linear Panel Regression')
           )
 
 stargazer_html_title("Linear Panel Regression Models of Traffic Fatalities due to Drunk Driving", "lprmotfdtdd")
@@ -614,13 +660,21 @@ rob_se <- list(
   sqrt(diag(vcovHC(fat_mod7, type="HC1")))
 )
 
-stargazer(fat_mod1, fat_mod2, fat_mod3, fat_mod4, fat_mod5, fat_mod6, fat_mod7, 
+stargazer(fat_mod1,
+          fat_mod2,
+          fat_mod3,
+          fat_mod4, 
+          fat_mod5, 
+          fat_mod6, 
+          fat_mod7, 
           digits = 3,
           type = "latex",
           float.env = "sidewaystable",
           column.sep.width = "-5pt",
           se = rob_se,
           header = FALSE,
+          dep.var.caption = "Dependent Variable: Fatality Rate",
+          dep.var.labels.include =FALSE,
           model.names = FALSE,
           column.labels = c('OLS','','','Linear Panel Regression'),
           omit.stat = "f",
@@ -640,7 +694,8 @@ The model specifications (4) to (7) include covariates that shall capture the ef
 linearHypothesis(fat_mod4,
                  test = "F",
                  c("drinkagec[18,19)=0", "drinkagec[19,20)=0", "drinkagec[20,21)"), 
-                 vcov. = vcovHC, type = "HC1")
+                 vcov. = vcovHC,
+                 type = "HC1")
 ```
 
 3. There is no evidence that punishment for first offenders has a deterring effects on drunk driving: the corresponding coefficient is not significant at the $10\%$ level.
@@ -651,7 +706,8 @@ linearHypothesis(fat_mod4,
 linearHypothesis(fat_mod4, 
                  test = "F",
                  c("log(income)", "unemp"), 
-                 vcov. = vcovHC, type = "HC1")
+                 vcov. = vcovHC,
+                 type = "HC1")
 ```
 
 Model (5) omits the economic factors. The result supports the notion that economic indicators should remain in the model as the coefficient on beer tax is sensitive to the inclusion of the latter.
