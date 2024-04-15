@@ -34,7 +34,7 @@ cat('
 The linear regression model 
 
 $$Y_i = \\beta_0 + \\beta_1 X_{1i} + \\beta_2 X_{2i} + \\dots + \\beta_k X_{ki} + u_i$$
-with a binary dependent variable $Y_i$ is called the linear probability model. In the linear probability model we have $$E(Y\\vert X_1,X_2,\\dots,X_k) = P(Y=1\\vert X_1, X_2,\\dots, X_3)$$ where $$ P(Y = 1 \\vert X_1, X_2, \\dots, X_k) = \\beta_0 + \\beta_1 + X_1 + \\beta_2 X_2 + \\dots + \\beta_k X_k.$$
+with a binary dependent variable $Y_i$ is called the linear probability model. In the linear probability model we have $$E(Y\\vert X_1,X_2,\\dots,X_k) = P(Y=1\\vert X_1, X_2,\\dots, X_3)$$ where $$ P(Y = 1 \\vert X_1, X_2, \\dots, X_k) = \\beta_0 + \\beta_1 X_1 + \\beta_2 X_2 + \\dots + \\beta_k X_k.$$
 
 Thus, $\\beta_j$ can be interpreted as the change in the probability that $Y_i=1$, holding constant the other $k-1$ regressors. Just as in common multiple regression, the $\\beta_j$ can be estimated using OLS and the robust standard error formulas can be used for hypothesis testing and computation of confidence intervals. 
 
@@ -52,7 +52,7 @@ Linear probability models are easily estimated in <tt>R</tt> using the function 
 cat('\\begin{keyconcepts}[The Linear Probability Model]{11.1}
 The linear regression model 
 $$Y_i = \\beta_0 + \\beta_1 + X_{1i} + \\beta_2 X_{2i} + \\dots + \\beta_k X_{ki} + u_i$$
-with a binary dependent variable $Y_i$ is called the linear probability model. In the linear probability model we have $$E(Y\\vert X_1,X_2,\\dots,X_k) = P(Y=1\\vert X_1, X_2,\\dots, X_3)$$ where $$ P(Y = 1 \\vert X_1, X_2, \\dots, X_k) = \\beta_0 + \\beta_1 + X_1 + \\beta_2 X_2 + \\dots + \\beta_k X_k.$$
+with a binary dependent variable $Y_i$ is called the linear probability model. In the linear probability model we have $$E(Y\\vert X_1,X_2,\\dots,X_k) = P(Y=1\\vert X_1, X_2,\\dots, X_3)$$ where $$ P(Y = 1 \\vert X_1, X_2, \\dots, X_k) = \\beta_0 + \\beta_1 X_1 + \\beta_2 X_2 + \\dots + \\beta_k X_k.$$
 
 Thus, $\\beta_j$ can be interpreted as the change in the probability that $Y_i=1$, holding constant the other $k-1$ regressors. Just as in common multiple regression, the $\\beta_j$ can be estimated using OLS and the robust standard error formulas can be used for hypothesis testing and computation of confidence intervals.\\newline 
 
@@ -96,7 +96,8 @@ We estimate this model just as any other linear regression model using `r ttcode
 HMDA$deny <- as.numeric(HMDA$deny) - 1
 
 # estimate a simple linear probabilty model
-denymod1 <- lm(deny ~ pirat, data = HMDA)
+denymod1 <- lm(deny ~ pirat,
+               data = HMDA)
 denymod1
 ```
 
@@ -148,7 +149,8 @@ Following the book we augment the simple model \@ref(eq:denymod1) by an addition
 colnames(HMDA)[colnames(HMDA) == "afam"] <- "black"
 
 # estimate the model
-denymod2 <- lm(deny ~ pirat + black, data = HMDA)
+denymod2 <- lm(deny ~ pirat + black,
+               data = HMDA)
 coeftest(denymod2, vcov. = vcovHC)
 ```
 
@@ -279,7 +281,9 @@ text(2.5, -0.1, cex= 0.8, "Mortgage approved")
 x <- seq(0, 3, 0.01)
 y <- predict(denyprobit, list(pirat = x), type = "response")
 
-lines(x, y, lwd = 1.5, col = "steelblue")
+lines(x, y, 
+      lwd = 1.5,
+      col = "steelblue")
 ```
 
 
@@ -410,8 +414,13 @@ x <- seq(0, 3, 0.01)
 y_probit <- predict(denyprobit, list(pirat = x), type = "response")
 y_logit <- predict(denylogit, list(pirat = x), type = "response")
 
-lines(x, y_probit, lwd = 1.5, col = "steelblue")
-lines(x, y_logit, lwd = 1.5, col = "black", lty = 2)
+lines(x, y_probit,
+      lwd = 1.5,
+      col = "steelblue")
+lines(x, y_logit,
+      lwd = 1.5,
+      col = "black",
+      lty = 2)
 
 # add a legend
 legend("topleft",

@@ -32,7 +32,8 @@ Here, income and test scores are positively related: school districts with above
 
 ```{r fig.align = 'center'}
 # fit a simple linear model
-linear_model<- lm(score ~ income, data = CASchools)
+linear_model<- lm(score ~ income, 
+                  data = CASchools)
 
 # plot the observations
 plot(CASchools$income, CASchools$score,
@@ -47,7 +48,10 @@ plot(CASchools$income, CASchools$score,
 abline(linear_model, 
        col = "red", 
        lwd = 2)
-legend("bottomright", legend="linear fit",lwd=2,col="red")
+legend("bottomright",
+       legend="linear fit",
+       lwd=2,
+       col="red")
 ```
 
 
@@ -59,10 +63,13 @@ $$TestScore_i = \beta_0 + \beta_1 \times income_i + \beta_2 \times income_i^2 + 
 
 ```{r}
 # fit the quadratic Model
-quadratic_model <- lm(score ~ income + I(income^2), data = CASchools)
+quadratic_model <- lm(score ~ income + I(income^2),
+                      data = CASchools)
 
 # obtain the model summary
-coeftest(quadratic_model, vcov. = vcovHC, type = "HC1")
+coeftest(quadratic_model,
+         vcov. = vcovHC,
+         type = "HC1")
 ```
 
 The output tells us that the estimated regression function is
@@ -97,8 +104,10 @@ lines(x = CASchools$income[order_id],
       y = fitted(quadratic_model)[order_id],
       col = "red", 
       lwd = 2) 
-legend("bottomright",legend=c("Linear Line","Quadratic Line"),
-       lwd=2,col=c("green","red"))
+legend("bottomright",
+       legend=c("Linear Line","Quadratic Line"),
+       lwd=2,
+       col=c("green","red"))
 ```
 
 
@@ -115,7 +124,8 @@ A cubic model for instance can be estimated in the same way as the quadratic mod
 
 ```{r cubic}
 # estimate a cubic model
-cubic_model <- lm(score ~ poly(income, degree = 3, raw = TRUE), data = CASchools)
+cubic_model <- lm(score ~ poly(income, degree = 3, raw = TRUE), 
+                  data = CASchools)
 ```
 
 `r ttcode("poly()")` generates orthogonal polynomials which are orthogonal to the constant by default. Here, we set `r ttcode("raw = TRUE")` such that raw polynomials are evaluated, see `?poly`.
@@ -195,7 +205,9 @@ The $t$-statistic on $income^3$ is $1.45$ so the null that the relationship is q
 
 ```{r}
 # test the hypothesis using robust standard errors
-coeftest(cubic_model, vcov. = vcovHC, type = "HC1")
+coeftest(cubic_model, 
+         vcov. = vcovHC,
+         type = "HC1")
 ```
 
 The reported standard errors have changed. Furthermore, the coefficient for `income^3` is now significant at the $5\%$ level. This means we reject the hypothesis that the regression function is quadratic against the alternative that it is cubic. Furthermore, we can also test if the coefficients for `r ttcode("income^2")` and `r ttcode("income^3")` are jointly significant using a robust version of the $F$-test. 
@@ -204,7 +216,8 @@ The reported standard errors have changed. Furthermore, the coefficient for `inc
 # perform robust F-test 
 linearHypothesis(cubic_model, 
                  hypothesis.matrix = R,
-                 vcov. = vcovHC, type = "HC1")
+                 vcov. = vcovHC,
+                 type = "HC1")
 ```
 
 With a $p$-value of $8.945e-13$, i.e., much less than $0.05$, the null hypothesis of linearity is rejected in favor of the alternative that the relationship is quadratic or cubic. 
@@ -273,7 +286,8 @@ To compute $\widehat{Y}$ using `r ttcode("R")` we may use `r ttcode("predict()")
 
 ```{r quadratic}
 # compute and assign the quadratic model
-quadratic_model <- lm(score ~ income + I(income^2), data = CASchools)
+quadratic_model <- lm(score ~ income + I(income^2),
+                      data = CASchools)
 
 # set up data for prediction
 new_data <- data.frame(income = c(10, 11))
@@ -322,11 +336,13 @@ The regression model then is  $$Y_i = \beta_0 + \beta_1 \times \ln(X_i) + u_i \t
 
 ```{r}
 # estimate a level-log model
-LinearLog_model <- lm(score ~ log(income), data = CASchools)
+LinearLog_model <- lm(score ~ log(income),
+                      data = CASchools)
 
 # compute robust summary
 coeftest(LinearLog_model, 
-         vcov = vcovHC, type = "HC1")
+         vcov = vcovHC,
+         type = "HC1")
 ```
 
 Hence, the estimated regression function is
@@ -353,7 +369,10 @@ lines(CASchools$income[order_id],
       fitted(LinearLog_model)[order_id], 
       col = "red", 
       lwd = 2)
-legend("bottomright",legend = "Linear-log line",lwd = 2,col ="red")
+legend("bottomright",
+       legend = "Linear-log line",
+       lwd = 2,
+       col ="red")
 ```
 
 
@@ -386,11 +405,13 @@ $$ \ln(Y_i) = \beta_0 + \beta_1 \times X_i + u_i , \ \ i=1,...,n. $$
 
 ```{r}
 # estimate a log-linear model 
-LogLinear_model <- lm(log(score) ~ income, data = CASchools)
+LogLinear_model <- lm(log(score) ~ income, 
+                      data = CASchools)
 
 # obtain a robust coefficient summary
 coeftest(LogLinear_model, 
-         vcov = vcovHC, type = "HC1")
+         vcov = vcovHC,
+         type = "HC1")
 ```
 
 The estimated regression function is $$\widehat{\ln(TestScore)} = 6.439 + 0.00284 \times income.$$ An increase in district income by $\$1000$ is expected to increase test scores by $100\times 0.00284 \% = 0.284\%$. 
@@ -403,11 +424,13 @@ The log-log regression model is $$\ln(Y_i) = \beta_0 + \beta_1 \times \ln(X_i) +
 
 ```{r log log}
 # estimate the log-log model
-LogLog_model <- lm(log(score) ~ log(income), data = CASchools)
+LogLog_model <- lm(log(score) ~ log(income), 
+                   data = CASchools)
 
 # print robust coefficient summary to the console
 coeftest(LogLog_model, 
-         vcov = vcovHC, type = "HC1")
+         vcov = vcovHC, 
+         type = "HC1")
 ```
 
 The estimated regression function hence is $$\widehat{\ln(TestScore)} = 6.336 + 0.0554 \times \ln(income).$$ In a log-log model, a $1\%$ change in $X$ is associated with an estimated $\hat\beta_1 \%$ change in $Y$. 
@@ -514,7 +537,8 @@ polyLog_model <- lm(score ~ log(income) + I(log(income)^2) + I(log(income)^3),
 
 # print robust summary to the console
 coeftest(polyLog_model, 
-         vcov = vcovHC, type = "HC1")
+         vcov = vcovHC,
+         type = "HC1")
 ```
 
 Comparing by $\bar{R}^2$ we find that, leaving out the log-linear model, all models have a similar adjusted fit. In the class of polynomial models, the cubic specification has the highest $\bar{R}^2$ whereas the linear-log specification is the best of the log-models. 
@@ -688,10 +712,13 @@ There are several ways to add the interaction term to the `r ttcode("formula")` 
 
 ```{r}
 # estimate the model with a binary interaction term
-bi_model <- lm(score ~ HiSTR * HiEL, data = CASchools)
+bi_model <- lm(score ~ HiSTR * HiEL,
+               data = CASchools)
 
 # print a robust summary of the coefficients
-coeftest(bi_model, vcov. = vcovHC, type = "HC1")
+coeftest(bi_model, 
+         vcov. = vcovHC, 
+         type = "HC1")
 ```
 
 The estimated regression model is $$\widehat{TestScore} = \underset{(1.39)}{664.1} - \underset{(1.93)}{1.9} \times HiSTR - \underset{(2.33)}{18.3} \times HiEL - \underset{(3.12)}{3.3} \times (HiSTR \times HiEL),$$ and it predicts that the effect of moving from a school district with a low student-teacher ratio to a district with a high student-teacher ratio, depending on high or low percentage of english learners is $-1.9-3.3\times HiEL$. So for districts with a low share of english learners ($HiEL = 0$), the estimated effect is a decrease of $1.9$ points in test scores while for districts with a large fraction of English learners ($HiEL = 1$), the predicted decrease in test scores amounts to $1.9 + 3.3 = 5.2$ points.
@@ -702,16 +729,20 @@ We can also use the model to estimate the mean test score for each possible comb
 # estimate means for all combinations of HiSTR and HiEL
 
 # 1.
-predict(bi_model, newdata = data.frame("HiSTR" = 0, "HiEL" = 0))
+predict(bi_model,
+        newdata = data.frame("HiSTR" = 0, "HiEL" = 0))
 
 # 2.
-predict(bi_model, newdata = data.frame("HiSTR" = 0, "HiEL" = 1))
+predict(bi_model, 
+        newdata = data.frame("HiSTR" = 0, "HiEL" = 1))
 
 # 3.
-predict(bi_model, newdata = data.frame("HiSTR" = 1, "HiEL" = 0))
+predict(bi_model,
+        newdata = data.frame("HiSTR" = 1, "HiEL" = 0))
 
 # 4.
-predict(bi_model, newdata = data.frame("HiSTR" = 1, "HiEL" = 1))
+predict(bi_model,
+        newdata = data.frame("HiSTR" = 1, "HiEL" = 1))
 ```
 
 We now verify that these predictions are differences in the coefficient estimates presented in equation \@ref(eq:im):
@@ -872,10 +903,13 @@ $$ \widehat{TestScore_i} = \beta_0 + \beta_1 \times size_i + \beta_2 \times HiEL
 
 ```{r}
 # estimate the model
-bci_model <- lm(score ~ size + HiEL + size * HiEL, data = CASchools)
+bci_model <- lm(score ~ size + HiEL + size * HiEL,
+                data = CASchools)
 
 # print robust summary of coefficients to the console
-coeftest(bci_model, vcov. = vcovHC, type = "HC1")
+coeftest(bci_model,
+         vcov. = vcovHC,
+         type = "HC1")
 ```
 
 The estimated regression model is $$ \widehat{TestScore} = \underset{(11.87)}{682.2} - \underset{(0.59)}{0.97} \times size + \underset{(19.51)}{5.6} \times HiEL - \underset{(0.97)}{1.28} \times (size \times HiEL). $$ The estimated regression line for districts with a low fraction of English learners ($HiEL_i=0$) is $$ \widehat{TestScore} = 682.2 - 0.97\times size_i. $$
@@ -936,7 +970,7 @@ legend("topleft",
 
 Consider a regression model with $Y$ the log earnings and two continuous regressors $X_1$, the years of work experience, and $X_2$, the years of schooling. We want to estimate the effect on wages of an additional year of work experience depending on a given level of schooling. This effect can be assessed by including the interaction term $(X_{1i} \times X_{2i})$ in the model:
 
-$$ \Delta Y_i = \beta_0 + \beta_1 \times X_{1i} + \beta_2 \times X_{2i} + \beta_3 \times (X_{1i} \times X_{2i}) + u_i. $$
+$$Y_i = \beta_0 + \beta_1 \times X_{1i} + \beta_2 \times X_{2i} + \beta_3 \times (X_{1i} \times X_{2i}) + u_i. $$
 
 Following Key Concept 8.1, we find that the effect on $Y$ for a change on $X_1$ given $X_2$ is 
 $$ \frac{\Delta Y}{\Delta X_1} = \beta_1 + \beta_3 X_2. $$
@@ -978,10 +1012,13 @@ We now examine the interaction between the continuous variables student-teacher 
 
 ```{r}
 # estimate regression model including the interaction between 'PctEL' and 'size'
-cci_model <- lm(score ~ size + english + english * size, data = CASchools) 
+cci_model <- lm(score ~ size + english + english * size,
+                data = CASchools) 
 
 # print a summary to the console
-coeftest(cci_model, vcov. = vcovHC, type = "HC1")
+coeftest(cci_model,
+         vcov. = vcovHC,
+         type = "HC1")
 ```
 
 The estimated model equation is $$ \widehat{TestScore} = \underset{(11.76)}{686.3} - \underset{(0.59)}{1.12} \times STR - \underset{(0.37)}{0.67} \times PctEL + \underset{(0.02)}{0.0012} \times (STR\times PctEL). $$
@@ -1083,7 +1120,8 @@ We use an $F$-Test to test if the transformations of $\ln(PricePerCitation)$ in 
 # F-Test for significance of cubic terms
 linearHypothesis(J_mod3, 
                  c("I(log(PricePerCitation)^2)=0", "I(log(PricePerCitation)^3)=0"),
-                 vcov. = vcovHC, type = "HC1")
+                 vcov. = vcovHC, 
+                 type = "HC1")
 ```
 
 Clearly, we cannot reject the null hypothesis $H_0: \beta_3=\beta_4=0$ in model $(III)$.
@@ -1275,13 +1313,16 @@ TS_mod4 <- lm(score ~ size + HiEL + HiEL:size + lunch + log(income),
         data = CASchools)
 
 TS_mod5 <- lm(score ~ size + I(size^2) + I(size^3) + HiEL +lunch
-        + log(income), data = CASchools)
+        + log(income), 
+        data = CASchools)
 
 TS_mod6 <- lm(score ~ size + I(size^2) + I(size^3) + HiEL + HiEL:size
-        +HiEL:I(size^2) + HiEL:I(size^3) + lunch + log(income),data = CASchools)
+        +HiEL:I(size^2) + HiEL:I(size^3) + lunch + log(income),
+        data = CASchools)
 
 TS_mod7 <- lm(score ~ size + I(size^2) + I(size^3) + english
-        +lunch + log(income),data = CASchools)
+        +lunch + log(income),
+        data = CASchools)
 ```
 
 We may use `r ttcode("summary()")` to assess the models' fit. Using `r ttcode("stargazer()")` we may also obtain a tabular representation of all regression outputs and which is more convenient for comparison of the models. 
@@ -1388,7 +1429,8 @@ Consequently, regression (6) further explores whether the fraction of English le
 # check joint significance of the interaction terms
 linearHypothesis(TS_mod6, 
                  c("size:HiEL=0", "I(size^2):HiEL=0", "I(size^3):HiEL=0"),
-                 vcov. = vcovHC, type = "HC1")
+                 vcov. = vcovHC, 
+                 type = "HC1")
 ```
 
 We find that the null can be rejected at the level of $5\%$ and conclude that the regression function differs for districts with high and low percentage of English learners.
@@ -1427,7 +1469,8 @@ new_data <- data.frame("size" = seq(16, 24, 0.05),
                        "HiEL" = mean(CASchools$HiEL))
 
 # add estimated regression function for model (2)
-fitted <- predict(TS_mod2, newdata = new_data)
+fitted <- predict(TS_mod2,
+                  newdata = new_data)
 
 lines(new_data$size, 
       fitted,
@@ -1435,7 +1478,8 @@ lines(new_data$size,
       col = "blue")
 
 # add estimated regression function for model (5)
-fitted <- predict(TS_mod5, newdata = new_data)
+fitted <- predict(TS_mod5,
+                  newdata = new_data)
 
 lines(new_data$size, 
       fitted, 
@@ -1443,7 +1487,8 @@ lines(new_data$size,
       col = "red")
 
 # add estimated regression function for model (7)
-fitted <- predict(TS_mod7, newdata = new_data)
+fitted <- predict(TS_mod7,
+                  newdata = new_data)
 
 lines(new_data$size, 
       fitted, 
@@ -1493,7 +1538,8 @@ new_data <- data.frame("size" = seq(12, 28, 0.05),
                        "HiEL" = 0)
 
 # add estimated regression function for model (6) with HiEL=0
-fitted <- predict(TS_mod6, newdata = new_data)
+fitted <- predict(TS_mod6,
+                  newdata = new_data)
 
 lines(new_data$size, 
       fitted, 
@@ -1503,7 +1549,8 @@ lines(new_data$size,
 # add estimated regression function for model (6) with HiEL=1
 new_data$HiEL <- 1
 
-fitted <- predict(TS_mod6, newdata = new_data)
+fitted <- predict(TS_mod6,
+                  newdata = new_data)
 
 lines(new_data$size, 
       fitted, 

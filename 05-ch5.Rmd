@@ -78,21 +78,27 @@ Recall the definition of the $p$-value:
 ```{r, eval = my_output == "latex", results='asis', echo=F, purl=F}
 cat('\\begin{keyconcepts}[Testing Hypotheses regarding $\\beta_1$]{5.2}
 For testing the hypothesis $H_0: \\beta_1 = \\beta_{1,0}$, we need to perform the following steps:\\newline
+
 \\begin{enumerate}
 \\item Compute the standard error of $\\hat{\\beta}_1$, $SE(\\hat{\\beta}_1)$
-\\begin{align*}
-SE(\\hat{\\beta}_1) = \\sqrt{ \\hat{\\sigma}^2_{\\hat{\\beta}_1} }, \\quad 
+
+\\[ SE(\\hat{\\beta}_1) = \\sqrt{ \\hat{\\sigma}^2_{\\hat{\\beta}_1} } \\ \\ , \\ \\ 
   \\hat{\\sigma}^2_{\\hat{\\beta}_1} = \\frac{1}{n} \\times \\frac{\\frac{1}{n-2} \\sum_{i=1}^n (X_i - \\overline{X})^2 \\hat{u_i}^2 }{ \\left[ \\frac{1}{n} \\sum_{i=1}^n (X_i - \\overline{X})^2 \\right]^2}.
-\\end{align*}
+\\]
+
 \\item Compute the $t$-statistic
+
 \\[ t = \\frac{\\hat{\\beta}_1 - \\beta_{1,0}}{ SE(\\hat{\\beta}_1) }. \\]
+
 \\item Given a two sided alternative ($H_1:\\beta_1 \\neq \\beta_{1,0}$) we reject at the $5\\%$ level if $|t^{act}| > 1.96$ or, equivalently, if the $p$-value is less than $0.05$.\\newline  
 Recall the definition of the $p$-value:  
-\\begin{align*}
-  p \\text{-value} =& \\, \\text{Pr}_{H_0} \\left[ \\left| \\frac{ \\hat{\\beta}_1 - \\beta_{1,0} }{ SE(\\hat{\\beta}_1) } \\right| > \\left|        \\frac{ \\hat{\\beta}_1^{act} - \\beta_{1,0} }{ SE(\\hat{\\beta}_1) } \\right| \\right] \\\\
-                   =& \\, \\text{Pr}_{H_0} (|t| > |t^{act}|) \\\\
-                   =& \\, 2 \\cdot \\Phi(-|t^{act}|).
-\\end{align*}  
+
+  \\begin{align*}
+    p \\text{-value} =& \\, \\text{Pr}_{H_0} \\left[ \\left| \\frac{ \\hat{\\beta}_1 - \\beta_{1,0} }{ SE(\\hat{\\beta}_1) } \\right| > \\left|        \\frac{ \\hat{\\beta}_1^{act} - \\beta_{1,0} }{ SE(\\hat{\\beta}_1) } \\right| \\right] \\\\
+    =& \\, \\text{Pr}_{H_0} (|t| > |t^{act}|) \\\\
+    =& \\, 2 \\cdot \\Phi(-|t^{act}|).
+  \\end{align*}  
+
 The last transformation is due to the normal approximation for large samples.
 \\end{enumerate}
 \\end{keyconcepts}
@@ -116,7 +122,8 @@ CASchools$STR <- CASchools$students/CASchools$teachers
 CASchools$score <- (CASchools$read + CASchools$math)/2
 
 # estimate the model
-linear_model <- lm(score ~ STR, data = CASchools)          
+linear_model <- lm(score ~ STR,
+                   data = CASchools)          
 ```
 
 For testing a hypothesis concerning the slope parameter (the coefficient on $STR$), we need $SE(\hat{\beta}_1)$, the standard error of the respective point estimator. As is common in the literature, standard errors are presented in parentheses below the point estimates. 
@@ -191,7 +198,9 @@ plot(x = t,
 
 tact <- -4.75
 
-axis(1, at = c(0, -1.96, 1.96, -tact, tact), cex.axis = 0.7)
+axis(1,
+     at = c(0, -1.96, 1.96, -tact, tact),
+     cex.axis = 0.7)
 
 # Shade the critical regions using polygon():
 
@@ -207,11 +216,15 @@ polygon(x = c(1.96, seq(1.96, 6, 0.01), 6),
         col = 'orange')
 
 # Add arrows and texts indicating critical regions and the p-value
-arrows(-3.5, 0.2, -2.5, 0.02, length = 0.1)
-arrows(3.5, 0.2, 2.5, 0.02, length = 0.1)
+arrows(-3.5, 0.2, -2.5, 0.02, 
+       length = 0.1)
+arrows(3.5, 0.2, 2.5, 0.02,
+       length = 0.1)
 
-arrows(-5, 0.16, -4.75, 0, length = 0.1)
-arrows(5, 0.16, 4.75, 0, length = 0.1)
+arrows(-5, 0.16, -4.75, 0, 
+       length = 0.1)
+arrows(5, 0.16, 4.75, 0,
+       length = 0.1)
 
 text(-3.5, 0.22, 
      labels = expression("0.025"~"="~over(alpha, 2)),
@@ -228,8 +241,14 @@ text(5, 0.18,
      cex = 0.7)
 
 # Add ticks indicating critical values at the 0.05-level, t^act and -t^act 
-rug(c(-1.96, 1.96), ticksize  = 0.145, lwd = 2, col = "darkred")
-rug(c(-tact, tact), ticksize  = -0.0451, lwd = 2, col = "darkgreen")
+rug(c(-1.96, 1.96),
+    ticksize  = 0.145,
+    lwd = 2,
+    col = "darkred")
+rug(c(-tact, tact),
+    ticksize  = -0.0451,
+    lwd = 2,
+    col = "darkgreen")
 ```
 
 
@@ -310,7 +329,8 @@ CI^{\mu}_{0.95} = \left[\hat\mu - 1.96 \times \frac{5}{\sqrt{100}} \ , \ \hat\mu
 It is fairly easy to compute this interval in `r ttcode('R')` by hand. The following code chunk generates a named vector containing the interval bounds:
 
 ```{r}
-cbind(CIlower = mean(Y) - 1.96 * 5 / 10, CIupper = mean(Y) + 1.96 * 5 / 10)
+cbind(CIlower = mean(Y) - 1.96 * 5 / 10, 
+      CIupper = mean(Y) + 1.96 * 5 / 10)
 ```
 
 Knowing that $\mu = 5$ we see that, for our example data, the confidence interval covers the true value.
@@ -334,7 +354,9 @@ upper <- numeric(10000)
 # loop sampling / estimation / CI
 for(i in 1:10000) {
   
-  Y <- rnorm(100, mean = 5, sd = 5)
+  Y <- rnorm(100,
+             mean = 5,
+             sd = 5)
   lower[i] <- mean(Y) - 1.96 * 5 / 10
   upper[i] <- mean(Y) + 1.96 * 5 / 10
   
@@ -449,8 +471,14 @@ plot( CASchools$score ~ CASchools$D,        # provide the data to be plotted
       main = "Dummy Regression")
 
 # Add the average for each group
-points( y = mean.score.for.D.0, x = 0,   col="red", pch = 19)
-points( y = mean.score.for.D.1, x = 1,   col="red", pch = 19)
+points( y = mean.score.for.D.0,
+        x = 0,
+        col="red",
+        pch = 19)
+points( y = mean.score.for.D.1,
+        x = 1,
+        col="red",
+        pch = 19)
 
 ```
 
@@ -461,15 +489,23 @@ points( y = mean.score.for.D.1, x = 1,   col="red", pch = 19)
 CASchools$D <- CASchools$STR < 20
 
 # estimte the dummy regression
-dummy_model <- lm(score ~ D, data = CASchools)
+dummy_model <- lm(score ~ D,
+                  data = CASchools)
 
 # Plot the data
-plot(CASchools$D, CASchools$score, 
-     pch = 20, cex = 0.5 , col = "Steelblue",
-     xlab = expression(D[i]), ylab = "Test Score",
+plot(CASchools$D, 
+     CASchools$score, 
+     pch = 20,
+     cex = 0.5 ,
+     col = "Steelblue",
+     xlab = expression(D[i]), 
+     ylab = "Test Score",
      main = "Dummy Regression")
 #
-points(CASchools$D, predict(dummy_model), col = "red", pch = 20)
+points(CASchools$D, 
+       predict(dummy_model),
+       col = "red",
+       pch = 20)
 ```
 
 
@@ -486,7 +522,8 @@ We will now use `r ttcode('R')` to estimate the dummy regression model as define
 
 ```{r}
 # estimate the dummy regression model
-dummy_model <- lm(score ~ D, data = CASchools)
+dummy_model <- lm(score ~ D,
+                  data = CASchools)
 summary(dummy_model)
 ```
 
@@ -571,16 +608,21 @@ library(scales)
 set.seed(123) 
 
 # set up vector of x coordinates
-x <- rep(c(10, 15, 20, 25), each = 25)
+x <- rep(c(10, 15, 20, 25),
+         each = 25)
 
 # initialize vector of errors
 e <- c()
 
 # sample 100 errors such that the variance increases with x
-e[1:25] <- rnorm(25, sd = 10)
-e[26:50] <- rnorm(25, sd = 15)
-e[51:75] <- rnorm(25, sd = 20)
-e[76:100] <- rnorm(25, sd = 25)
+e[1:25] <- rnorm(25,
+                 sd = 10)
+e[26:50] <- rnorm(25,
+                  sd = 15)
+e[51:75] <- rnorm(25,
+                  sd = 20)
+e[76:100] <- rnorm(25,
+                   sd = 25)
 
 # set up y
 y <- 720 - 3.3 * x + e
@@ -600,7 +642,8 @@ plot(x = x,
      ylim = c(600, 710))
 
 # Add the regression line to the plot
-abline(mod, col = "darkred")
+abline(mod,
+       col = "darkred")
 
 # Add boxplots to the plot
 boxplot(formula = y ~ x, 
@@ -730,7 +773,8 @@ Let us now compute robust standard error estimates for the coefficients in `r tt
 
 ```{r}
 # compute heteroskedasticity-robust standard errors
-vcov <- vcovHC(linear_model, type = "HC1")
+vcov <- vcovHC(linear_model,
+               type = "HC1")
 vcov
 ```
 
@@ -765,7 +809,8 @@ Now assume we want to generate a coefficient summary as provided by `r  ttcode('
 
 ```{r}
 # we invoke the function `coeftest()` on our model
-coeftest(linear_model, vcov. = vcov)
+coeftest(linear_model,
+         vcov. = vcov)
 ```
 
 We see that the values reported in the column `r  ttcode('Std.Error')` are equal those from `r  ttcode('sqrt(diag(vcov))')`.
@@ -781,7 +826,9 @@ set.seed(905)
 
 # generate heteroskedastic data 
 X <- 1:500
-Y <- rnorm(n = 500, mean = X, sd = 0.6 * X)
+Y <- rnorm(n = 500,
+           mean = X,
+           sd = 0.6 * X)
 
 # estimate a simple regression model
 reg <- lm(Y ~ X)
@@ -792,7 +839,8 @@ We plot the data and add the regression line.
 
 ```{r, fig.align='center'}
 # plot the data
-plot(x = X, y = Y, 
+plot(x = X, 
+     y = Y, 
      pch = 19, 
      col = "steelblue", 
      cex = 0.8)
@@ -801,7 +849,10 @@ plot(x = X, y = Y,
 abline(reg, 
        col = "red", 
        lwd = 1.5)
-legend("topleft","Regression line",col="red",lwd=1.5)
+legend("topleft",
+       "Regression line",
+       col="red",
+       lwd=1.5)
 ```
 
 
@@ -857,7 +908,8 @@ for (i in 1:10000) {
 }
 
 # compute the fraction of false rejections
-round(cbind(t = mean(t), t.rob = mean(t.rob)), 3)
+round(cbind(t = mean(t),
+            t.rob = mean(t.rob)), 3)
 ```
 
 These results reveal the increased risk of falsely rejecting the null using the homoskedasticity-only standard error for the testing problem at hand: with the common standard error, $`r round(sum(t)/length(t)*100,3)`\%$ of all tests falsely reject the null hypothesis. In contrast, with the robust test statistic we are closer to the nominal level of $5\%$.
@@ -958,7 +1010,8 @@ lines(density(weightedestimator),
       lwd = 2) 
 
 # add a dashed line at 0 and add a legend to the plot
-abline(v = 0, lty = 2)
+abline(v = 0,
+       lty = 2)
 
 legend('topright', 
        c("OLS", "Weighted"), 

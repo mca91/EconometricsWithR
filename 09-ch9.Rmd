@@ -20,7 +20,8 @@ CASchools$HiSTR <- as.numeric(CASchools$STR >= 20)
 CASchools$HiEL <- as.numeric(CASchools$english >= 10)
 
 # model (2) for California
-TestScore_mod2 <- lm(score ~ STR + english + lunch + log(income), data = CASchools)
+TestScore_mod2 <- lm(score ~ STR + english + lunch + log(income),
+                     data = CASchools)
 ```
 
 The majority of Chapter 9 of the book is of a theoretical nature. Therefore this section briefly reviews the concepts of internal and external validity in general and discusses examples of threats to internal and external validity of multiple regression models. We discuss consequences of
@@ -284,8 +285,7 @@ set.seed(1)
 
 # load the package 'mvtnorm' and simulate bivariate normal data
 library(mvtnorm)
-dat <- data.frame(
-  rmvnorm(1000, c(50, 100), 
+dat <- data.frame(rmvnorm(1000, c(50, 100), 
           sigma = cbind(c(10, 5), c(5, 10))))
 
 # set columns names
@@ -296,11 +296,13 @@ We now estimate a simple linear regression of $Y$ on $X$ using this sample data 
 
 ```{r, eval = T}
 # estimate the model (without measurement error)
-noerror_mod <- lm(Y ~ X, data = dat)
+noerror_mod <- lm(Y ~ X,
+                  data = dat)
 
 # estimate the model (with measurement error in X)
 dat$X <- dat$X + rnorm(n = 1000, sd = sqrt(10))
-error_mod <- lm(Y ~ X, data = dat)
+error_mod <- lm(Y ~ X, 
+                data = dat)
 
 # print estimated coefficients to console
 noerror_mod$coefficients
@@ -385,14 +387,14 @@ If data are missing at random, this is nothing but losing the observations. For 
 set.seed(1)
 
 # simulate data
-dat <- data.frame(
-  rmvnorm(1000, c(50, 100), 
+dat <- data.frame(rmvnorm(1000, c(50, 100), 
           sigma = cbind(c(10, 5), c(5, 10))))
 
 colnames(dat) <- c("X", "Y")
 
 # mark 500 randomly selected observations
-id <- sample(1:1000, size = 500)
+id <- sample(1:1000,
+             size = 500)
 
 plot(dat$X[-id], 
      dat$Y[-id], 
@@ -419,8 +421,10 @@ abline(noerror_mod)
 # estimate model case 1 and add the regression line
 dat <- dat[-id, ]
 
-c1_mod <- lm(dat$Y ~ dat$X, data = dat)
-abline(c1_mod, col = "purple")
+c1_mod <- lm(dat$Y ~ dat$X, 
+             data = dat)
+abline(c1_mod,
+       col = "purple")
 
 # add a legend
 legend("bottomright",
@@ -442,8 +446,7 @@ Selecting data randomly based on the value of a regressor has also the effect of
 set.seed(1)
 
 # simulate data
-dat <- data.frame(
-  rmvnorm(1000, c(50, 100), 
+dat <- data.frame(rmvnorm(1000, c(50, 100), 
           sigma = cbind(c(10, 5), c(5, 10))))
 
 colnames(dat) <- c("X", "Y")
@@ -477,8 +480,10 @@ abline(noerror_mod)
 id <- which(dat$X >= 45)
 dat <- dat[-id, ]
 
-c2_mod <- lm(dat$Y ~ dat$X, data = dat)
-abline(c2_mod, col = "purple")
+c2_mod <- lm(dat$Y ~ dat$X,
+             data = dat)
+abline(c2_mod,
+       col = "purple")
 
 # add legend
 legend("topleft",
@@ -486,8 +491,9 @@ legend("topleft",
        bg = "transparent",
        cex = 0.8,
        col = c("darkgreen", "black", "purple"), 
-       legend = c("Population", "Full sample",expression(paste("Obs.with ",
-                                                               X <= 45))))
+       legend = c("Population", 
+                  "Full sample",
+                  expression(paste("Obs.with ",X <= 45))))
 ```
 
 
@@ -501,8 +507,7 @@ In the third case we face sample selection bias. We can illustrate this by using
 set.seed(1)
 
 # simulate data
-dat <- data.frame(
-  rmvnorm(1000, c(50,100), 
+dat <- data.frame(rmvnorm(1000, c(50,100), 
           sigma = cbind(c(10,5), c(5,10))))
 
 colnames(dat) <- c("X","Y")
@@ -535,8 +540,10 @@ abline(noerror_mod)
 # estimate model case 1, add regression line
 dat <- dat[id, ]
 
-c3_mod <- lm(dat$Y ~ dat$X, data = dat)
-abline(c3_mod, col = "purple")
+c3_mod <- lm(dat$Y ~ dat$X, 
+             data = dat)
+abline(c3_mod,
+       col = "purple")
 
 # add legend
 legend("bottomright",
@@ -544,8 +551,9 @@ legend("bottomright",
        bg = "transparent",
        cex = 0.8,
        col = c("darkgreen", "black", "purple"), 
-       legend = c("Population", "Full sample",expression(paste(X <= 55,"&",
-                                                               Y >= 100))))
+       legend = c("Population", 
+                  "Full sample",
+                  expression(paste(X <= 55,"&",Y >= 100))))
 ```
 
 
@@ -581,10 +589,12 @@ After loading the data set, we pick observations for the year 1995 and plot loga
 # load the data set
 library(AER)
 data("CigarettesSW")
-c1995 <- subset(CigarettesSW, year == "1995")
+c1995 <- subset(CigarettesSW,
+                year == "1995")
 
 # estimate the model
-cigcon_mod <- lm(log(packs) ~ log(price), data = c1995)
+cigcon_mod <- lm(log(packs) ~ log(price),
+                 data = c1995)
 cigcon_mod
 ```
 
@@ -601,7 +611,9 @@ abline(cigcon_mod,
        col = "darkred", 
        lwd = 1.5)
 # add legend
-legend("topright",lty=1,col= "darkred", "Estimated Regression Line")
+legend("topright",
+       lty=1,
+       col= "darkred", "Estimated Regression Line")
 ```
 
 
@@ -671,7 +683,8 @@ Furthermore, if one does not adjust for heteroskedasticity \\textit{and}/\\texti
 Recall the regression of test scores on the student-teacher ratio ($STR$) performed in Chapter \@ref(lrwor):
 
 ```{r}
-linear_model <- lm(score ~ STR, data = CASchools)
+linear_model <- lm(score ~ STR, 
+                   data = CASchools)
 linear_model
 ```
 
@@ -725,15 +738,18 @@ Following the book we examine the relationship between district income and test 
 
 ```{r}
 # estimate linear model
-Linear_model_MA <- lm(score ~ income, data = MASchools)
+Linear_model_MA <- lm(score ~ income, 
+                      data = MASchools)
 Linear_model_MA
 
 # estimate linear-log model
-Linearlog_model_MA <- lm(score ~ log(income), data = MASchools) 
+Linearlog_model_MA <- lm(score ~ log(income),
+                         data = MASchools) 
 Linearlog_model_MA
 
 # estimate Cubic model
-cubic_model_MA <- lm(score ~ I(income) + I(income^2) + I(income^3), data = MASchools)
+cubic_model_MA <- lm(score ~ I(income) + I(income^2) + I(income^3), 
+                     data = MASchools)
 cubic_model_MA
 ```
 
@@ -749,7 +765,8 @@ plot(MASchools$income, MASchools$score,
      ylim = c(620, 780))
 
 # add estimated regression line for the linear model
-abline(Linear_model_MA, lwd = 2)
+abline(Linear_model_MA,
+       lwd = 2)
 
 # add estimated regression function for Linear-log model
 order_id  <- order(MASchools$income)
@@ -781,22 +798,27 @@ We continue by estimating most of the model specifications used for analysis of 
 MASchools$HiEL <- as.numeric(MASchools$english > median(MASchools$english))
 
 # estimate the model specifications from Table 9.2 of the book
-TSMA_mod1 <- lm(score ~ STR, data = MASchools)
+TSMA_mod1 <- lm(score ~ STR,
+                data = MASchools)
 
 TSMA_mod2 <- lm(score ~ STR + english + lunch + log(income), 
                         data = MASchools)
 
 TSMA_mod3 <- lm(score ~ STR + english + lunch + income + I(income^2) 
-                        + I(income^3), data = MASchools)
+                        + I(income^3), 
+                data = MASchools)
 
 TSMA_mod4 <- lm(score ~ STR + I(STR^2) + I(STR^3) + english + lunch + income 
-                        + I(income^2) + I(income^3), data = MASchools)
+                        + I(income^2) + I(income^3), 
+                data = MASchools)
 
 TSMA_mod5 <- lm(score ~ STR + HiEL + I(income^2) + I(income^3) + HiEL:STR 
-                                    + lunch + income, data = MASchools)
+                                    + lunch + income,
+                data = MASchools)
 
 TSMA_mod6 <- lm(score ~ STR + I(income^2) + I(income^3)+ lunch 
-                        + income, data = MASchools)
+                        + income,
+                data = MASchools)
 
 # gather robust standard errors
 rob_se <- list(sqrt(diag(vcovHC(TSMA_mod1, type = "HC1"))),
@@ -827,17 +849,22 @@ stargazer(TSMA_mod1, TSMA_mod2, TSMA_mod3,
 library(TTR)
 library(stargazer)
 MASchools$HiEL <- as.numeric(MASchools$english > median(MASchools$english))
-TSMA_mod1 <- lm(score ~ STR, data = MASchools)
+TSMA_mod1 <- lm(score ~ STR,
+                data = MASchools)
 TSMA_mod2 <- lm(score ~ STR + english + lunch + log(income), 
                         data = MASchools)
-TSMA_mod3 <- lm(score ~ STR + english + lunch + income + I(income^2) 
-                        + I(income^3), data = MASchools)
-TSMA_mod4 <- lm(score ~ STR + I(STR^2) + I(STR^3) + english + lunch + income + I(income^2) 
-                        + I(income^3), data = MASchools)
-TSMA_mod5 <- lm(score ~ STR + HiEL + HiEL:STR + lunch + income + I(income^2) 
-                        + I(income^3), data = MASchools)
+TSMA_mod3 <- lm(score ~ STR + english + lunch + income 
+                + I(income^2) + I(income^3), 
+                data = MASchools)
+TSMA_mod4 <- lm(score ~ STR + I(STR^2) + I(STR^3) + english
+                +lunch + income + I(income^2) + I(income^3),
+                data = MASchools)
+TSMA_mod5 <- lm(score ~ STR + HiEL + HiEL:STR + lunch + income
+                + I(income^2) + I(income^3),
+                data = MASchools)
 TSMA_mod6 <- lm(score ~ STR + lunch + income + I(income^2) 
-                        + I(income^3), data = MASchools)
+                + I(income^3),
+                data = MASchools)
 
 rob_se <- list(
   sqrt(diag(vcovHC(TSMA_mod1, type="HC1"))),
@@ -848,7 +875,8 @@ rob_se <- list(
   sqrt(diag(vcovHC(TSMA_mod6, type="HC1")))
 )
 
-stargazer(TSMA_mod1, TSMA_mod2, TSMA_mod3, TSMA_mod4, TSMA_mod5, TSMA_mod6, 
+stargazer(TSMA_mod1, TSMA_mod2, TSMA_mod3, 
+          TSMA_mod4, TSMA_mod5, TSMA_mod6, 
           se = rob_se,
           type = "html",
           header = FALSE,
@@ -866,17 +894,22 @@ stargazer_html_title("Regressions Using Massachusetts Test Score Data", "rumtsd"
 ```{r, results='asis', echo=F, cache=T, message=FALSE, warning=FALSE, eval=my_output == "latex"}
 library(stargazer)
 MASchools$HiEL <- as.numeric(MASchools$english > median(MASchools$english))
-TSMA_mod1 <- lm(score ~ STR, data = MASchools)
+TSMA_mod1 <- lm(score ~ STR,
+                data = MASchools)
 TSMA_mod2 <- lm(score ~ STR + english + lunch + log(income), 
                         data = MASchools)
-TSMA_mod3 <- lm(score ~ STR + english + lunch + income + I(income^2) 
-                        + I(income^3), data = MASchools)
-TSMA_mod4 <- lm(score ~ STR + I(STR^2) + I(STR^3) + english + lunch + income + I(income^2) 
-                        + I(income^3), data = MASchools)
-TSMA_mod5 <- lm(score ~ STR + HiEL + HiEL:STR + lunch + income + I(income^2) 
-                        + I(income^3), data = MASchools)
+TSMA_mod3 <- lm(score ~ STR + english + lunch + income
+                + I(income^2) + I(income^3),
+                data = MASchools)
+TSMA_mod4 <- lm(score ~ STR + I(STR^2) + I(STR^3) + english
+                + lunch + income + I(income^2)+ I(income^3),
+                data = MASchools)
+TSMA_mod5 <- lm(score ~ STR + HiEL + HiEL:STR + lunch
+                + income + I(income^2) + I(income^3),
+                data = MASchools)
 TSMA_mod6 <- lm(score ~ STR + lunch + income + I(income^2) 
-                        + I(income^3), data = MASchools)
+                        + I(income^3),
+                data = MASchools)
 
 rob_se <- list(
   sqrt(diag(vcovHC(TSMA_mod1, type="HC1"))),
@@ -887,7 +920,8 @@ rob_se <- list(
   sqrt(diag(vcovHC(TSMA_mod6, type="HC1")))
 )
 
-stargazer(TSMA_mod1, TSMA_mod2, TSMA_mod3, TSMA_mod4, TSMA_mod5, TSMA_mod6,
+stargazer(TSMA_mod1, TSMA_mod2, TSMA_mod3,
+          TSMA_mod4, TSMA_mod5, TSMA_mod6,
           digits = 3,
           title = "\\label{tab:rumtsd} Regressions Using Massachusetts Test Score Data",
           type = "latex",

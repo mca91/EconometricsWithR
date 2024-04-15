@@ -208,7 +208,9 @@ The function `r ttcode("VAR()")` can be used to obtain the same coefficient esti
 
 ```{r}
 # set up data for estimation using `VAR()`
-VAR_data <- window(ts.union(GDPGrowth, TSpread), start = c(1980, 3), end = c(2012, 4))
+VAR_data <- window(ts.union(GDPGrowth, TSpread), 
+                   start = c(1980, 3), 
+                   end = c(2012, 4))
 
 # estimate model coefficients using `VAR()`
 VAR_est <- VAR(y = VAR_data, p = 2)
@@ -362,19 +364,29 @@ and then substitute the values of $GDPGR_{2012:Q4}$, $GDPGR_{2012:Q3}$, $TSpread
 ```{r}
 # estimate models for direct two-quarter-ahead forecasts
 VAR_EQ1_direct <- dynlm(GDPGrowth ~ L(GDPGrowth, 2:3) + L(TSpread, 2:3), 
-                        start = c(1981, 1), end = c(2012, 4))
+                        start = c(1981, 1), 
+                        end = c(2012, 4))
 
 VAR_EQ2_direct <- dynlm(TSpread ~ L(GDPGrowth, 2:3) + L(TSpread, 2:3), 
-                        start = c(1981, 1), end = c(2012, 4))
+                        start = c(1981, 1),
+                        end = c(2012, 4))
 
 # compute direct two-quarter-ahead forecasts
 coef(VAR_EQ1_direct) %*% c(1, # intercept
-                           window(GDPGrowth, start = c(2012, 3), end = c(2012, 4)), 
-                           window(TSpread, start = c(2012, 3), end = c(2012, 4)))
+                           window(GDPGrowth,
+                                  start = c(2012, 3),
+                                  end = c(2012, 4)), 
+                           window(TSpread, 
+                                  start = c(2012, 3),
+                                  end = c(2012, 4)))
 
 coef(VAR_EQ2_direct) %*% c(1, # intercept
-                           window(GDPGrowth, start = c(2012, 3), end = c(2012, 4)), 
-                           window(TSpread, start = c(2012, 3), end = c(2012, 4)))
+                           window(GDPGrowth,
+                                  start = c(2012, 3),
+                                  end = c(2012, 4)), 
+                           window(TSpread,
+                                  start = c(2012, 3),
+                                  end = c(2012, 4)))
 ```
 
 Applied economists often use the iterated method since this forecasts are more reliable in terms of $MSFE$, provided that the one-period-ahead model is correctly specified. If this is not the case, for example because one equation in a VAR is believed to be misspecified, it can be beneficial to use direct forecasts since the iterated method will then be biased and thus have a higher $MSFE$ than the direct method. See Chapter \@ref(ooiatdfglsurt) for a more detailed discussion on advantages and disadvantages of both methods.
@@ -458,9 +470,11 @@ A function that performs the DF-GLS test is implemented in the package `r ttcode
 
 ```{r}
 # DF-GLS test for unit root in GDP
-summary(ur.ers(log(window(GDP, start = c(1962, 1), end = c(2012, 4))),
-        model = "trend", 
-        lag.max = 2))
+summary(ur.ers(log(window(GDP,
+                          start = c(1962, 1),
+                          end = c(2012, 4))),
+               model = "trend", 
+               lag.max = 2))
 ```
 
 The summary of the test shows that the test statistic is about $-1.2$. The $10\%$ critical value for the DF-GLS test is $-2.57$. This is, however, **not** the appropriate critical value for the ADF test when an intercept and a time trend are included in the Dickey-Fuller regression: the asymptotic distributions of both test statistics differ and so do their critical values!

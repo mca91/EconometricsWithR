@@ -50,7 +50,8 @@ data(CASchools)
 CASchools$STR <- CASchools$students/CASchools$teachers       
 CASchools$score <- (CASchools$read + CASchools$math)/2
 
-mod <- lm(score ~ STR, data = CASchools)
+mod <- lm(score ~ STR, 
+          data = CASchools)
 mod
 ```
 
@@ -66,7 +67,7 @@ In a time series context, the parent could use data on present and past years te
 
 ## Time Series Data and Serial Correlation {#tsdasc}
 
-GDP is commonly defined as the total value of goods and services produced during a given time period. The dataset us_macro_quarterly.xlsx, provided by the authors, can be downloaded [here](http://wps.pearsoned.co.uk/wps/media/objects/16103/16489878/data3eu/us_macro_quarterly.xlsx). It contains quarterly data on U.S. real GDP (i.e., inflation-adjusted) from 1947 to 2004.
+GDP is commonly defined as the total value added of goods and services produced during a given time period. The dataset us_macro_quarterly.xlsx, provided by the authors, can be downloaded [here](https://github.com/mca91/EconometricsWithR/raw/master/data/us_macro_quarterly.xlsx). It contains quarterly data on U.S. real GDP (i.e., inflation-adjusted) from 1947 to 2004.
 
 As before, a good starting point is to plot the data. The package `r ttcode("quantmod")` provides some convenient functions for plotting and computing with time series data. We also load the package `r ttcode("readxl")` to read the data into `r ttcode("R")`.
 
@@ -132,7 +133,7 @@ plot(as.zoo(GDPGrowth),
 
 ### Notation, Lags, Differences, Logarithms and Growth Rates {-}
 
-For observations of a variable $Y$ recorded over time, $Y_t$ denotes the value observed at time $t$. The period between two sequential observations $Y_t$ and $Y_{t-1}$ is a unit of time: hours, days, weeks, months, quarters, years, etc. Key Concept 14.1 introduces the essential terminology and notation for time series data we use in the subsequent sections.
+For observations of a variable $Y$ recorded over time, $Y_t$ denotes the total value observed at time $t$. The period between two sequential observations $Y_t$ and $Y_{t-1}$ is a unit of time: hours, days, weeks, months, quarters, years, etc. Key Concept 14.1 introduces the essential terminology and notation for time series data we use in the subsequent sections.
 
 ```{r, eval = my_output == "html", results='asis', echo=F, purl=F}
 cat('
@@ -492,7 +493,7 @@ coeftest(GDPGR_AR2, vcov. = sandwich)
 
 The estimation yields
 \begin{align}
-  \widehat{GDPGR}_t = \underset{(0.40)}{1.63} + \underset{(0.08)}{0.28} GDPGR_{t-1} + \underset{(0.08)}{0.18} GDPGR_{t-1}. (\#eq:GDPGRAR2)
+  \widehat{GDPGR}_t = \underset{(0.40)}{1.63} + \underset{(0.08)}{0.28} GDPGR_{t-1} + \underset{(0.08)}{0.18} GDPGR_{t-2}. (\#eq:GDPGRAR2)
 \end{align}
 We see that the coefficient on the second lag is significantly different from zero. The fit improves slightly: $\bar{R}^2$ grows from $0.11$ for the AR($1$) model to about $0.14$ and the $SER$ reduces to $3.13$.
 
@@ -763,7 +764,9 @@ ADLdata <- ts.union(GDPGrowth_ts, TSpread_ts)
 ```{r}
 # estimate the ADL(2,1) model of GDP growth
 GDPGR_ADL21 <- dynlm(GDPGrowth_ts ~ L(GDPGrowth_ts) + L(GDPGrowth_ts, 2) +
-                       L(TSpread_ts), start = c(1962, 1), end = c(2012, 4))
+                       L(TSpread_ts),
+                     start = c(1962, 1), 
+                     end = c(2012, 4))
 
 coeftest(GDPGR_ADL21, vcov. = sandwich)
 ```
@@ -795,7 +798,8 @@ We estimate the ADL($2$,$2$) specification to see whether adding additional info
 # estimate the ADL(2,2) model of GDP growth
 GDPGR_ADL22 <- dynlm(GDPGrowth_ts ~ L(GDPGrowth_ts) + L(GDPGrowth_ts, 2) 
                      + L(TSpread_ts) + L(TSpread_ts, 2), 
-                     start = c(1962, 1), end = c(2012, 4))
+                     start = c(1962, 1), 
+                     end = c(2012, 4))
 
 coeftest(GDPGR_ADL22, vcov. = sandwich)
 ```
@@ -1100,8 +1104,9 @@ To give an example, we estimate ADL($p$,$q$) models of GDP growth where, as abov
 order <- 1:12
 
 BICs <- sapply(order, function(x) 
-         BIC(dynlm(GDPGrowth_ts ~ L(GDPGrowth_ts, 1:x) + L(TSpread_ts, 1:x), 
-                   start = c(1962, 1), end = c(2012, 4))))
+         BIC(dynlm(GDPGrowth_ts ~ L(GDPGrowth_ts, 1:x) + L(TSpread_ts, 1:x),
+                   start = c(1962, 1), 
+                   end = c(2012, 4))))
 
 BICs
 ```
@@ -1868,18 +1873,21 @@ That is we estimate three different specifications:
 # ADL(1,1) (1st difference of log dividend yield)
 CRSP_ADL_1 <- dynlm(ExReturn ~ L(ExReturn) + d(L(ln_DivYield)), 
                     data = StockReturns,
-                    start = c(1960, 1), end = c(2002, 12))
+                    start = c(1960, 1),
+                    end = c(2002, 12))
 
 # ADL(2,2) (1st & 2nd differences of log dividend yield)
 CRSP_ADL_2 <- dynlm(ExReturn ~ L(ExReturn) + L(ExReturn, 2) 
                     + d(L(ln_DivYield)) + d(L(ln_DivYield, 2)), 
                     data = StockReturns,
-                    start = c(1960, 1), end = c(2002, 12))
+                    start = c(1960, 1),
+                    end = c(2002, 12))
 
 # ADL(1,1) (level of log dividend yield)
 CRSP_ADL_3 <- dynlm(ExReturn ~ L(ExReturn) + L(ln_DivYield),
                     data = StockReturns,
-                    start = c(1960, 1), end = c(2002, 12))
+                    start = c(1960, 1),
+                    end = c(2002, 12))
 ```
 
 ```{r}
@@ -1966,12 +1974,14 @@ forecasts <- matrix(nrow = 2,
 for(i in 1:length(EndOfSample)) {
 
   # estimate model (3)
-  mod3 <- dynlm(ExReturn ~ L(ExReturn) + L(ln_DivYield), data = StockReturns, 
+  mod3 <- dynlm(ExReturn ~ L(ExReturn) + L(ln_DivYield),
+                data = StockReturns, 
                 start = c(1960, 1), 
                 end = EndOfSample[i])
   
   # estimate intercept only model
-  modconst <- dynlm(ExReturn ~ 1, data = StockReturns, 
+  modconst <- dynlm(ExReturn ~ 1, 
+                data = StockReturns, 
                 start = c(1960, 1), 
                 end = EndOfSample[i])
   
