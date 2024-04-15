@@ -50,7 +50,8 @@ data(CASchools)
 CASchools$STR <- CASchools$students/CASchools$teachers       
 CASchools$score <- (CASchools$read + CASchools$math)/2
 
-mod <- lm(score ~ STR, data = CASchools)
+mod <- lm(score ~ STR, 
+          data = CASchools)
 mod
 ```
 
@@ -763,7 +764,9 @@ ADLdata <- ts.union(GDPGrowth_ts, TSpread_ts)
 ```{r}
 # estimate the ADL(2,1) model of GDP growth
 GDPGR_ADL21 <- dynlm(GDPGrowth_ts ~ L(GDPGrowth_ts) + L(GDPGrowth_ts, 2) +
-                       L(TSpread_ts), start = c(1962, 1), end = c(2012, 4))
+                       L(TSpread_ts),
+                     start = c(1962, 1), 
+                     end = c(2012, 4))
 
 coeftest(GDPGR_ADL21, vcov. = sandwich)
 ```
@@ -795,7 +798,8 @@ We estimate the ADL($2$,$2$) specification to see whether adding additional info
 # estimate the ADL(2,2) model of GDP growth
 GDPGR_ADL22 <- dynlm(GDPGrowth_ts ~ L(GDPGrowth_ts) + L(GDPGrowth_ts, 2) 
                      + L(TSpread_ts) + L(TSpread_ts, 2), 
-                     start = c(1962, 1), end = c(2012, 4))
+                     start = c(1962, 1), 
+                     end = c(2012, 4))
 
 coeftest(GDPGR_ADL22, vcov. = sandwich)
 ```
@@ -1100,8 +1104,9 @@ To give an example, we estimate ADL($p$,$q$) models of GDP growth where, as abov
 order <- 1:12
 
 BICs <- sapply(order, function(x) 
-         BIC(dynlm(GDPGrowth_ts ~ L(GDPGrowth_ts, 1:x) + L(TSpread_ts, 1:x), 
-                   start = c(1962, 1), end = c(2012, 4))))
+         BIC(dynlm(GDPGrowth_ts ~ L(GDPGrowth_ts, 1:x) + L(TSpread_ts, 1:x),
+                   start = c(1962, 1), 
+                   end = c(2012, 4))))
 
 BICs
 ```
@@ -1868,18 +1873,21 @@ That is we estimate three different specifications:
 # ADL(1,1) (1st difference of log dividend yield)
 CRSP_ADL_1 <- dynlm(ExReturn ~ L(ExReturn) + d(L(ln_DivYield)), 
                     data = StockReturns,
-                    start = c(1960, 1), end = c(2002, 12))
+                    start = c(1960, 1),
+                    end = c(2002, 12))
 
 # ADL(2,2) (1st & 2nd differences of log dividend yield)
 CRSP_ADL_2 <- dynlm(ExReturn ~ L(ExReturn) + L(ExReturn, 2) 
                     + d(L(ln_DivYield)) + d(L(ln_DivYield, 2)), 
                     data = StockReturns,
-                    start = c(1960, 1), end = c(2002, 12))
+                    start = c(1960, 1),
+                    end = c(2002, 12))
 
 # ADL(1,1) (level of log dividend yield)
 CRSP_ADL_3 <- dynlm(ExReturn ~ L(ExReturn) + L(ln_DivYield),
                     data = StockReturns,
-                    start = c(1960, 1), end = c(2002, 12))
+                    start = c(1960, 1),
+                    end = c(2002, 12))
 ```
 
 ```{r}
@@ -1966,12 +1974,14 @@ forecasts <- matrix(nrow = 2,
 for(i in 1:length(EndOfSample)) {
 
   # estimate model (3)
-  mod3 <- dynlm(ExReturn ~ L(ExReturn) + L(ln_DivYield), data = StockReturns, 
+  mod3 <- dynlm(ExReturn ~ L(ExReturn) + L(ln_DivYield),
+                data = StockReturns, 
                 start = c(1960, 1), 
                 end = EndOfSample[i])
   
   # estimate intercept only model
-  modconst <- dynlm(ExReturn ~ 1, data = StockReturns, 
+  modconst <- dynlm(ExReturn ~ 1, 
+                data = StockReturns, 
                 start = c(1960, 1), 
                 end = EndOfSample[i])
   
