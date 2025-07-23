@@ -2,62 +2,62 @@
 <meta charset="utf-8">
 
 <head>
-  <script src="js/d3.js"></script>
-  <link rel="stylesheet" type="text/css" href="d3.slider.css" media="screen" />
-  <script src="js/d3.slider.js"></script>
+<script src="js/d3.js"></script>
+<link rel="stylesheet" type="text/css" href="d3.slider.css" media="screen" />
+<script src="js/d3.slider.js"></script>
 
 <script type="text/javascript" async
-  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML">
+src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML">
 </script>
 
- <script type="text/x-mathjax-config">
-      MathJax.Hub.Config({
-        extensions: ["tex2jax.js", "TeX/AMSmath.js"],
-        tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
-        jax: ["input/TeX","output/SVG"]
-      });
-      MathJax.Hub.processSectionDelay = 0;
-  </script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+extensions: ["tex2jax.js", "TeX/AMSmath.js"],
+tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+jax: ["input/TeX","output/SVG"]
+});
+MathJax.Hub.processSectionDelay = 0;
+</script>
 
 <style>
 
 body {
-  font: 12px sans-serif;
+font: 12px sans-serif;
 }
 
 .axis path, .axis line {
-				fill: none;
-				stroke: white;
-				shape-rendering: crispEdges;
-			}
+fill: none;
+stroke: white;
+shape-rendering: crispEdges;
+}
 
-			text, #tosses, .slider {
-				font-family: Century Gothic, CenturyGothic, AppleGothic, sans-serif;
-				fill: white;
-				font-size: 10px;
-			}
+text, #tosses, .slider {
+font-family: Century Gothic, CenturyGothic, AppleGothic, sans-serif;
+fill: white;
+font-size: 10px;
+}
 
-			.d3slider-rect-value {
-			  fill: white;
-			  stroke: none;
-			}
+.d3slider-rect-value {
+fill: white;
+stroke: none;
+}
 
-			.tick line {
-				stroke:white;
-			}
+.tick line {
+stroke:white;
+}
 
 foreignObject, p {
-  color:white;
+color:white;
 }
 
 .share {
-    stroke: darkred;
-    stroke-width: 2;
-    fill: none;
+stroke: darkred;
+stroke-width: 2;
+fill: none;
 }
 
 </style>
-  
+
 </head>
 
 <body>
@@ -78,13 +78,13 @@ var tosses = Math.round(tossess.value());
 
 // simulate coin tosses
 function sample(tosses) {
-  var values = [];
-  var averages = [];
-  for(var i=0; i<tosses+1; i++) {
-      values[i] = Math.round(Math.random());
-  }
-  values.reduce(function(a,b,i) { return averages[i] = a + b; },0);
-  return averages.map(function(d,i) { return d*1/(i+1); });
+var values = [];
+var averages = [];
+for(var i=0; i<tosses+1; i++) {
+values[i] = Math.round(Math.random());
+}
+values.reduce(function(a,b,i) { return averages[i] = a + b; },0);
+return averages.map(function(d,i) { return d*1/(i+1); });
 }
 
 // data sets
@@ -92,152 +92,152 @@ var data = sample(tosses);
 
 // path function
 var path = d3.svg.line()
-    .x(function(d,i) { return x(i); })
-    .y(function(d) { return y(d); });
+.x(function(d,i) { return x(i); })
+.y(function(d) { return y(d); });
 
 
 // margins
 var margin = {top: 20, right: 30, bottom: 30, left: 50},
-    width = 700 - margin.left - margin.right,
-    height = 450 - margin.top - margin.bottom;
+width = 700 - margin.left - margin.right,
+height = 450 - margin.top - margin.bottom;
 
 // scales
 
 var x = d3.scale.linear()
-      .domain([0, tosses])
-      .range([0, width]);
+.domain([0, tosses])
+.range([0, width]);
 
 var y = d3.scale.linear()
-                .domain([1,0])
-                .range([0,height]);
+.domain([1,0])
+.range([0,height]);
 
 
 // Axis
 
 var xAxis = d3.svg.axis()
-              .scale(x)
-              .orient("bottom");
+.scale(x)
+.orient("bottom");
 
 
 var yAxis = d3.svg.axis()
-              .scale(y)
-              .tickFormat(d3.format(".2f"))
-              .orient("left");
+.scale(y)
+.tickFormat(d3.format(".2f"))
+.orient("left");
 
 svg = d3.select("body")
-        .append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-        .style(
-		  	{
-    			"background-color":"#356185",
-    			"color":"white"
-		  	})
-        .append("g")
-        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+.append("svg")
+.attr("width", width + margin.left + margin.right)
+.attr("height", height + margin.top + margin.bottom)
+.style(
+{
+"background-color":"#356185",
+"color":"white"
+})
+.append("g")
+.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 svg.append("g")
-    .attr("class", "x axis")
-    .attr("transform", "translate(0," + y(0.5) + ")")
-    .call(xAxis);
+.attr("class", "x axis")
+.attr("transform", "translate(0," + y(0.5) + ")")
+.call(xAxis);
 
 // text label for the x axis
 svg.append("foreignObject")
-        .attr("x", width + 10 )
-        .attr("y", 0.5*height - 10 )
-        .attr("width", 20)
-        .attr("height",20)
-        .style("text-anchor", "middle")
-        .text("$n$");
+.attr("x", width + 10 )
+.attr("y", 0.5*height - 10 )
+.attr("width", 20)
+.attr("height",20)
+.style("text-anchor", "middle")
+.text("$n$");
 
 svg.append("foreignObject")
-        .attr("x", 10 )
-        .attr("y", 0)
-        .attr("width", 220)
-        .attr("height",30)
-        .style("text-anchor", "top")
-        .text("$R_n=\\frac{1}{n} \\sum_{i=1}^n Y_i \\ \\ , \\ \\ Y_i \\overset{i.i.d.}{\\sim} B(1,0.5)$");
+.attr("x", 10 )
+.attr("y", 0)
+.attr("width", 220)
+.attr("height",30)
+.style("text-anchor", "top")
+.text("$R_n=\\frac{1}{n} \\sum_{i=1}^n Y_i \\ \\ , \\ \\ Y_i \\overset{i.i.d.}{\\sim} B(1,0.5)$");
 
 // remove 0 tick from x Axis
 svg.selectAll(".tick")
-    .each(function (d) {
-        if ( d === 0 ) {
-            this.remove();
-        }
-    });
+.each(function (d) {
+if ( d === 0 ) {
+this.remove();
+}
+});
 
 svg.append("g")
-    .attr("class", "y axis")
-    .call(yAxis);
+.attr("class", "y axis")
+.call(yAxis);
 
 // interpolation function for smooth transitions
 function getSmoothInterpolation() {
-  var interpolate = d3.scale.linear()
-      .domain([0, 1])
-      .range([1, data.length + 1]);
+var interpolate = d3.scale.linear()
+.domain([0, 1])
+.range([1, data.length + 1]);
 
-  return function(t) {
-      var flooredX = Math.floor(interpolate(t));
-      var interpolatedLine = data.slice(0, flooredX);
+return function(t) {
+var flooredX = Math.floor(interpolate(t));
+var interpolatedLine = data.slice(0, flooredX);
 
-      if(flooredX > 0 && flooredX < data.length) {
-          var weight = interpolate(t) - flooredX;
-          var weightedLineAverage = data[flooredX] * weight + data[flooredX-1] * (1-weight);
-          interpolatedLine.push(weightedLineAverage);
-          }
+if(flooredX > 0 && flooredX < data.length) {
+var weight = interpolate(t) - flooredX;
+var weightedLineAverage = data[flooredX] * weight + data[flooredX-1] * (1-weight);
+interpolatedLine.push(weightedLineAverage);
+}
 
-      return path(interpolatedLine);
-      }
-  }
+return path(interpolatedLine);
+}
+}
 
 // draw path
 svg.append("path")
-        .attr("class", "share")
-        .transition()
-        .duration(10000)
-        .attrTween('d', getSmoothInterpolation);
+.attr("class", "share")
+.transition()
+.duration(10000)
+.attrTween('d', getSmoothInterpolation);
 
 // append status text
 d3.select("#statustext")
-  .append("p")
-  .append("text")
-  .attr("class", "status")
-  .text("Looping enabled");
+.append("p")
+.append("text")
+.attr("class", "status")
+.text("Looping enabled");
 
 
 // refreshing with new data
 var rep = window.setInterval(function() {
 
-      svg.selectAll("path.share").remove();
+svg.selectAll("path.share").remove();
 
-      tosses = Math.round(tossess.value());
+tosses = Math.round(tossess.value());
 
-      x.domain([0, tosses]);
-      xAxis.scale(x);
+x.domain([0, tosses]);
+xAxis.scale(x);
 
-      svg.transition()
-         .duration(3500)
-         .select(".x.axis")
-         .call(xAxis);
+svg.transition()
+.duration(3500)
+.select(".x.axis")
+.call(xAxis);
 
-      svg.selectAll(".tick")
-         .each(function (d) {
-          if ( d === 0 ) {
-            this.remove();
-          }
-      });
+svg.selectAll(".tick")
+.each(function (d) {
+if ( d === 0 ) {
+this.remove();
+}
+});
 
-    svg.select(".y.axis").call(yAxis);
+svg.select(".y.axis").call(yAxis);
 
-      data = sample(tosses);
+data = sample(tosses);
 
-      svg.append("path")
-         .attr("class", "share")
-         .transition()
-         .duration(10000)
-         .attrTween('d', getSmoothInterpolation);
+svg.append("path")
+.attr("class", "share")
+.transition()
+.duration(10000)
+.attrTween('d', getSmoothInterpolation);
 
-    }, 11000);
+}, 11000);
 
 </script>
 
