@@ -23,7 +23,7 @@
 <meta name="author" content="Christoph Hanck, Martin Arnold, Alexander Gerber, and Martin Schmelzer" />
 
 
-<meta name="date" content="2025-10-17" />
+<meta name="date" content="2026-04-04" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -101,8 +101,9 @@ gtag('config', 'UA-110299877-1');
 
 
 <style type="text/css">
+html { -webkit-text-size-adjust: 100%; }
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -112,7 +113,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -173,7 +174,6 @@ code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warni
 div.csl-bib-body { }
 div.csl-entry {
   clear: both;
-  margin-bottom: 0em;
 }
 .hanging div.csl-entry {
   margin-left:2em;
@@ -473,17 +473,19 @@ This book is in <b>Open Review</b>. We want your feedback to make the book bette
 <h2><span class="header-section-number">14.4</span> Can You Beat the Market? (Part I)<a href="14.4-cybtmpi.html#cybtmpi" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>The theory of efficient capital markets states that stock prices embody all currently available information. If this hypothesis holds, it should not be possible to estimate a useful model for forecasting future stock returns using publicly available information on past returns (this is also referred to as the weak-form efficiency hypothesis): if it was possible to forecast the market, traders would be able to arbitrage, e.g., by relying on an AR(<span class="math inline">\(2\)</span>) model, they would use information that is not already priced-in which would push prices until the expected return is zero.</p>
 <p>This idea is presented in the box <em>Can You Beat the Market? (Part I)</em> on p. 582 of the book. This section reproduces the estimation results.</p>
-<p>We start by importing monthly data from 1931:1 to 2002:12 on excess returns of a broad-based index of stock prices, the CRSP value-weighted index. The data are provided by the authors of the book as an excel sheet which can be downloaded <a href="https://www.princeton.edu/~mwatson/Stock-Watson_3u/Students/EE_Datasets/Stock_Returns_1931_2002.xlsx">here</a>.</p>
+<p>We start by importing monthly data from 1931:1 to 2002:12 on excess returns of a broad-based index of stock prices, the CRSP value-weighted index. The data are available at <a href="https://github.com/mca91/EconometricsWithR/raw/master/data/Stock_Returns_1931_2002.xlsx">GitHub</a>.</p>
 <div class="sourceCode" id="cb362"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb362-1"><a href="14.4-cybtmpi.html#cb362-1" tabindex="-1"></a><span class="co"># read in data on stock returns</span></span>
 <span id="cb362-2"><a href="14.4-cybtmpi.html#cb362-2" tabindex="-1"></a>SReturns <span class="ot">&lt;-</span> <span class="fu">read_xlsx</span>(<span class="st">&quot;Data/Stock_Returns_1931_2002.xlsx&quot;</span>,</span>
 <span id="cb362-3"><a href="14.4-cybtmpi.html#cb362-3" tabindex="-1"></a>                      <span class="at">sheet =</span> <span class="dv">1</span>,</span>
 <span id="cb362-4"><a href="14.4-cybtmpi.html#cb362-4" tabindex="-1"></a>                      <span class="at">col_types =</span> <span class="st">&quot;numeric&quot;</span>)</span></code></pre></div>
-<div class="sourceCode" id="cb363"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb363-1"><a href="14.4-cybtmpi.html#cb363-1" tabindex="-1"></a><span class="co">#Alternatively, ASC  cen be read directly from internet.</span></span>
+<div class="sourceCode" id="cb363"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb363-1"><a href="14.4-cybtmpi.html#cb363-1" tabindex="-1"></a><span class="co">#Alternatively, the data can be downloaded directly from GitHub.</span></span>
 <span id="cb363-2"><a href="14.4-cybtmpi.html#cb363-2" tabindex="-1"></a></span>
-<span id="cb363-3"><a href="14.4-cybtmpi.html#cb363-3" tabindex="-1"></a>SReturns <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;https://www.princeton.edu/~mwatson/Stock-Watson_3u/Students/EE_Datasets/Stock_Returns_1931_2002.asc&quot;</span>,</span>
-<span id="cb363-4"><a href="14.4-cybtmpi.html#cb363-4" tabindex="-1"></a>                     <span class="at">sep =</span> <span class="st">&quot;</span><span class="sc">\t</span><span class="st">&quot;</span>, <span class="at">header =</span> <span class="cn">FALSE</span> )</span>
-<span id="cb363-5"><a href="14.4-cybtmpi.html#cb363-5" tabindex="-1"></a></span>
-<span id="cb363-6"><a href="14.4-cybtmpi.html#cb363-6" tabindex="-1"></a><span class="fu">colnames</span>(SReturns) <span class="ot">&lt;-</span> <span class="fu">c</span>( <span class="st">&quot;Year&quot;</span>, <span class="st">&quot;Month&quot;</span>, <span class="st">&quot;ExReturn&quot;</span>, <span class="st">&quot;ln_DivYield&quot;</span> )</span></code></pre></div>
+<span id="cb363-3"><a href="14.4-cybtmpi.html#cb363-3" tabindex="-1"></a>tmp <span class="ot">&lt;-</span> <span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">&quot;.xlsx&quot;</span>)</span>
+<span id="cb363-4"><a href="14.4-cybtmpi.html#cb363-4" tabindex="-1"></a><span class="fu">download.file</span>(<span class="st">&quot;https://github.com/mca91/EconometricsWithR/raw/master/data/Stock_Returns_1931_2002.xlsx&quot;</span>,</span>
+<span id="cb363-5"><a href="14.4-cybtmpi.html#cb363-5" tabindex="-1"></a>              <span class="at">destfile =</span> tmp, <span class="at">mode =</span> <span class="st">&quot;wb&quot;</span>)</span>
+<span id="cb363-6"><a href="14.4-cybtmpi.html#cb363-6" tabindex="-1"></a>SReturns <span class="ot">&lt;-</span> <span class="fu">read_xlsx</span>(tmp, <span class="at">sheet =</span> <span class="dv">1</span>, <span class="at">col_types =</span> <span class="st">&quot;numeric&quot;</span>)</span>
+<span id="cb363-7"><a href="14.4-cybtmpi.html#cb363-7" tabindex="-1"></a></span>
+<span id="cb363-8"><a href="14.4-cybtmpi.html#cb363-8" tabindex="-1"></a><span class="fu">colnames</span>(SReturns) <span class="ot">&lt;-</span> <span class="fu">c</span>( <span class="st">&quot;Year&quot;</span>, <span class="st">&quot;Month&quot;</span>, <span class="st">&quot;ExReturn&quot;</span>, <span class="st">&quot;ln_DivYield&quot;</span> )</span></code></pre></div>
 <p>We continue by converting the data to an object of class <tt>ts</tt>.</p>
 <div class="sourceCode" id="cb364"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb364-1"><a href="14.4-cybtmpi.html#cb364-1" tabindex="-1"></a><span class="co"># convert to ts object</span></span>
 <span id="cb364-2"><a href="14.4-cybtmpi.html#cb364-2" tabindex="-1"></a>StockReturns <span class="ot">&lt;-</span> <span class="fu">ts</span>(SReturns[, <span class="dv">3</span><span class="sc">:</span><span class="dv">4</span>], </span>

@@ -66,7 +66,7 @@ In a time series context, the parent could use data on present and past years te
 
 ## Time Series Data and Serial Correlation {#tsdasc}
 
-GDP is commonly defined as the total value of goods and services produced during a given time period. The dataset us_macro_quarterly.xlsx, provided by the authors, can be downloaded [here](http://wps.pearsoned.co.uk/wps/media/objects/16103/16489878/data3eu/us_macro_quarterly.xlsx). It contains quarterly data on U.S. real GDP (i.e., inflation-adjusted) from 1947 to 2004.
+GDP is commonly defined as the total value of goods and services produced during a given time period. The dataset us_macro_quarterly.xlsx, provided at [GitHub](https://github.com/mca91/EconometricsWithR/raw/master/data/us_macro_quarterly.xlsx), contains quarterly data on U.S. real GDP (i.e., inflation-adjusted) from 1947 to 2004.
 
 As before, a good starting point is to plot the data. The package `r ttcode("quantmod")` provides some convenient functions for plotting and computing with time series data. We also load the package `r ttcode("readxl")` to read the data into `r ttcode("R")`.
 
@@ -525,7 +525,7 @@ The theory of efficient capital markets states that stock prices embody all curr
 
 This idea is presented in the box *Can You Beat the Market? (Part I)* on p. 582 of the book. This section reproduces the estimation results.
 
-We start by importing monthly data from 1931:1 to 2002:12 on excess returns of a broad-based index of stock prices, the CRSP value-weighted index. The data are provided by the authors of the book as an excel sheet which can be downloaded [here](https://www.princeton.edu/~mwatson/Stock-Watson_3u/Students/EE_Datasets/Stock_Returns_1931_2002.xlsx).
+We start by importing monthly data from 1931:1 to 2002:12 on excess returns of a broad-based index of stock prices, the CRSP value-weighted index. The data are available at [GitHub](https://github.com/mca91/EconometricsWithR/raw/master/data/Stock_Returns_1931_2002.xlsx).
 
 ```{r}
 # read in data on stock returns
@@ -535,10 +535,12 @@ SReturns <- read_xlsx("Data/Stock_Returns_1931_2002.xlsx",
 ```
 
 ```{r}
-#Alternatively, ASC  cen be read directly from internet.
+#Alternatively, the data can be downloaded directly from GitHub.
 
-SReturns <- read.csv("https://www.princeton.edu/~mwatson/Stock-Watson_3u/Students/EE_Datasets/Stock_Returns_1931_2002.asc",
-                     sep = "\t", header = FALSE )
+tmp <- tempfile(fileext = ".xlsx")
+download.file("https://github.com/mca91/EconometricsWithR/raw/master/data/Stock_Returns_1931_2002.xlsx",
+              destfile = tmp, mode = "wb")
+SReturns <- read_xlsx(tmp, sheet = 1, col_types = "numeric")
 
 colnames(SReturns) <- c( "Year", "Month", "ExReturn", "ln_DivYield" )
 
